@@ -61,6 +61,15 @@
       "trackingIssue": "https://github.com/kubohiroya/turbowarp-aframe/issues/7",
       "published": false,
       "verification": "pnpm check (17 tests)"
+    },
+    {
+      "repository": "kubohiroya/turbowarp-multiview-pose",
+      "branch": "feat/avatar/poseframe3d-retarget",
+      "commit": "84e7bb9161abf8e97b54974b22d25d0cbf901837",
+      "trackingIssue": "https://github.com/kubohiroya/turbowarp-multiview-pose/issues/4",
+      "published": false,
+      "verification": "pnpm check (113 tests)",
+      "note": "Includes Issues #2-#6 implementation commits; avatar retargeting pins Kalidokit 1.1.5 and requires the unpublished A-Frame capability v1 candidate."
     }
   ],
   "extensions": [
