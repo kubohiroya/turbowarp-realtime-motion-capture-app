@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@kubohiroya/sb3-toolchain':
-        specifier: 0.12.0
-        version: 0.12.0
+        specifier: 0.13.0
+        version: 0.13.0
       '@types/node':
         specifier: 22.13.0
         version: 22.13.0
@@ -27,8 +27,8 @@ packages:
   '@borewit/text-codec@0.2.2':
     resolution: {integrity: sha512-DDaRehssg1aNrH4+2hnj1B7vnUGEjU6OIlyRdkMd0aUdIUvKXrJfXsy8LVtXAy7DRvYVluWbMspsRhz2lcW0mQ==}
 
-  '@kubohiroya/sb3-toolchain@0.12.0':
-    resolution: {integrity: sha512-Foe7ONhQCK0+4oIWe/zm/1OVqrpCwHG3y0pI9JYDWD0EaZa+3URo55U3M4HsWVoFBFp+4Ftn1z2g/asjvbhrrQ==}
+  '@kubohiroya/sb3-toolchain@0.13.0':
+    resolution: {integrity: sha512-/1W+yQKJn1hIvf33vU1xNCs6wYMCXx/kniFqtFo239Tpcbdo1d08wzNpVoAj0qX6wUPvomMt1QaCTgAyd+Qe8Q==}
     engines: {node: '>=22.12.0'}
     hasBin: true
 
@@ -108,7 +108,7 @@ snapshots:
 
   '@borewit/text-codec@0.2.2': {}
 
-  '@kubohiroya/sb3-toolchain@0.12.0':
+  '@kubohiroya/sb3-toolchain@0.13.0':
     dependencies:
       fflate: 0.8.3
       music-metadata: 11.14.0

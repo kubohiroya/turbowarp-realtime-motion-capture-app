@@ -18,7 +18,7 @@
     "check": "pnpm run lint && pnpm run format && pnpm run typecheck && pnpm run check:extensions && pnpm run check:apps && pnpm run test && pnpm run build"
   },
   "devDependencies": {
-    "@kubohiroya/sb3-toolchain": "0.12.0",
+    "@kubohiroya/sb3-toolchain": "0.13.0",
     "@types/node": "22.13.0",
     "typescript": "5.9.3"
   }

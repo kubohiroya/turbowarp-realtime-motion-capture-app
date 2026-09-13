@@ -1,6 +1,8 @@
 import {createHash} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 
+import {tryParseExtensionApiManifest} from '@kubohiroya/sb3-toolchain';
+
 interface BlockContract {
   blockType: string;
   arguments: Record<string, string>;
@@ -50,17 +52,6 @@ interface ReadinessInventory {
   localImplementationCandidates?: LocalImplementationCandidate[];
   extensions: Extension[];
   readinessGates: Record<string, string[]>;
-}
-
-interface PublishedBlock {
-  opcode: string;
-  blockType: string;
-  arguments: {id: string; type: string}[];
-}
-
-interface PublishedManifest {
-  id: string;
-  blocks?: PublishedBlock[];
 }
 
 const inventoryUrl = new URL('../config/extension-readiness.json', import.meta.url);
@@ -153,14 +144,18 @@ if (process.argv.includes('--verify-network')) {
       errors.push(`${extension.role} manifest returned HTTP ${manifestResponse.status}`);
       continue;
     }
-    const manifest = (await manifestResponse.json()) as PublishedManifest;
-    if (manifest.id !== extension.extensionId) {
-      errors.push(`${extension.role} manifest ID mismatch: ${manifest.id}`);
+    const parsed = tryParseExtensionApiManifest(Buffer.from(await manifestResponse.arrayBuffer()), {
+      expectedId: extension.extensionId
+    });
+    if (parsed.manifest === null) {
+      errors.push(`${extension.role} manifest is invalid: ${parsed.error}`);
+      continue;
     }
+    const manifest = parsed.manifest;
     for (const operation of extension.requiredOperations) {
       if (operation.availability !== 'ready' || operation.opcode === null) continue;
       const opcode = operation.opcode;
-      const published = manifest.blocks?.find((block) => block.opcode === opcode);
+      const published = manifest.blocks.find((block) => block.opcode === opcode);
       if (!published) {
         errors.push(`${extension.role}/${opcode} is absent from the published manifest`);
         continue;
