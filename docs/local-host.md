@@ -1,7 +1,9 @@
 # ローカルホストによる配布と運用（設計中）
 
 > [!NOTE]
-> 方針の検討結果です。実装はまだありません。未検証の項目を「未検証」として明示しています。
+> 方針の検討結果です。ホスト本体はまだありません。実装済みなのは
+> [`packages/local-host`](../packages/local-host)のrun lockだけです。未検証の項目を「未検証」として
+> 明示しています。
 
 配布SB3をTurboWarpで開く運用には、ホストページを誰も所有していないという問題があります。この文書は、
 `@kubohiroya/turbowarp-local-preview`を使って会場PCごとにloopback HTTPホストを立て、そこからアプリを
@@ -155,7 +157,9 @@ bind先は設定項目にしません。`createLoopbackPreviewHost`の型が`'12
 
 そこで、**推測ではなくrun lockで判別します**。起動しているホストは、ユーザー単位のruntime
 ディレクトリ（`XDG_RUNTIME_DIR`、無ければOSのtemp配下の`multiview-pose/`）へ、自分のlockファイルを
-置きます。
+置きます。実装は[`packages/local-host/src/run-lock.ts`](../packages/local-host/src/run-lock.ts)に
+あります。`acquireRunLock`が起動時のlock取得を、`findPortHolder`がbind失敗後の占有元特定を担当
+します。
 
 ```json
 {
@@ -189,6 +193,10 @@ tokenは書きません。認証情報をディスクへ残さない方針は、
 pidは再利用されうるので、生死だけでは足りません。**lockが主張するポートが実際にbindできない**ことを
 併せて確認し、両方が揃ったときにだけ「生きている」と判断します。逆にlockはあるがポートが空いている
 場合は、stale lockとして扱います。
+
+プロセスの生死とポートの占有はどちらも差し替え可能な関数として受け取るので、テストは実際のプロセスや
+ポートを用意せずに全分岐を動かせます。既定の実装そのものは、実際にポートをlistenするテストで
+確認します。
 
 ### 運用者による上書き
 

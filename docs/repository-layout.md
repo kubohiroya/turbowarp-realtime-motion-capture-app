@@ -26,6 +26,7 @@ apps/
     dist/fusion-app.sb3（ignore）
 packages/
   app-shell/            アプリ所有のTurboWarp拡張（feature flagと画面）
+  local-host/           ローカルホストの部品（[ローカルホスト](local-host.md)）
 config/
   app-extensions.json        各SB3へ埋め込む拡張の宣言
   local-host.json            ローカルホストの固定port（[ローカルホスト](local-host.md)）
