@@ -85,6 +85,46 @@ static bundleによってSB3は自己完結しているので、後退経路の�
 現実的ではありません。**`@turbowarp/packager`の出力（自己完結HTML）をリリース時に作り、静的routeで
 配信する**方針とします。
 
+#### 実測（`@turbowarp/packager` 3.13.0）
+
+両アプリのSB3をpackagerに通し、生成したHTMLを実ブラウザで読み込んで確認しました。
+
+| アプリ | SB3 | 生成HTML | 実VMで読み込まれた拡張 |
+|---|---|---|---|
+| camera app | 6.1 MB | 27.1 MB | `multiviewposecameraapp` |
+| fusion app | 6.3 MB | 27.8 MB | `multiviewposefusionapp` |
+
+確認できたこと。
+
+- **feature flagが実VMでも正しく適用される。** camera appでは`webgpuMoveNetMultiPose`など5つ、
+  fusion appでは`qrCourierPairing`など6つが有効で、それぞれの宣言と一致します。static bundleの
+  member順による注入が、スタブではなく実際のTurboWarp runtimeで機能しています
+- **パレットが1つに統合される。** fusion appで211項目（うち実ブロック183）。app shell、title-menu、
+  契約拡張のすべてが`<memberId>__`付きで並びます
+- **読み込み時の外部リクエストがゼロ。** HTML本体とblob URLだけで、完全に自己完結しています
+  （MoveNetのmodelはあとで取得するため、そちらは別問題です）
+
+#### 落とし穴: `options.extensions`を渡さないと拡張が黙って消える
+
+**packagerは`options.extensions`に入っていない埋め込み拡張を、警告なく取り除きます。**
+
+既定のまま実行すると9.1 MBのHTMLが生成され、ページは正常に開き、VMも起動し、プロジェクトも
+読み込まれます。しかし`extensionURLs`は空で、拡張は1つも読み込まれません。エラーもコンソール出力も
+ありません。
+
+`loadProject`が返す`analysis.extensions`に検出済みのdata URLが入っているので、これを渡します。
+
+```js
+const project = await Packager.loadProject(data);
+const packager = new Packager.Packager();
+packager.project = project;
+packager.options.target = 'html';
+packager.options.extensions = project.analysis.extensions;
+```
+
+これでHTMLは27 MBになり、拡張が読み込まれます。**サイズが3倍近く変わるので、ビルド側で出力サイズの
+下限を検査すれば取り違えを機械的に防げます。**
+
 ## ポート
 
 ### ポートは設定値ではなく識別子
@@ -328,8 +368,8 @@ Webからダウンロードさせる段階になったら、Apple Developer Prog
 - `turbowarp-local-preview`がBunの`node:`互換でそのまま動くか
 - 起動時のポート確認と実際の待ち受け開始の間に他プロセスへ奪われる余地をどう扱うか
 - run lockの置き場が、対象OSすべてでユーザー単位に分離されているか（共有tempのパーミッション）
-- `@turbowarp/packager`の出力が、埋め込んだ拡張を含めてloopback配信で正しく動くか
 - 固定portのoriginでIndexedDBが期待どおり永続するか
+- hatの発火とUI overlayが、packager化したruntimeでも動くか（拡張の読み込みとパレット生成までは確認済み）
 - ad-hoc署名したクロスコンパイル済みバイナリがApple Siliconで起動するか
 
 ## 実装しないもの
