@@ -39,6 +39,7 @@ frame alignment、人物対応付け、triangulation、3D solveは高位拡張`t
 | 外部TurboWarp拡張のexact version固定とSB3への埋め込み | 利用可能 |
 | アプリシェル（feature flag設定、読み込み表示、エラー表示、診断reporter） | 利用可能 |
 | タイトル画面、アプリメニュー、DSLファイル管理（Title Menu拡張） | 利用可能 |
+| アプリ起動時のblockスクリプト（TypeScriptから生成） | 利用可能 |
 | カメラ取得、QRペアリング、MoveNet姿勢推定のblockスクリプト | 未実装 |
 | 複数視点の校正、3D統合、アバター演出のblockスクリプト | 未実装 |
 | 設定・演出DSLの永続化 | 方針確定・未実装（[永続化設計](docs/persistence.md)） |

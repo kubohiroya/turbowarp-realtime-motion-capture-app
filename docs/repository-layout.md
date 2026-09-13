@@ -27,6 +27,7 @@ apps/
 packages/
   app-shell/            アプリ所有のTurboWarp拡張（feature flagと画面）
   local-host/           ローカルホストの部品（[ローカルホスト](local-host.md)）
+  sb3-script/           SB3のblock列を組み立てる
 config/
   app-extensions.json        各SB3へ埋め込む拡張の宣言
   local-host.json            ローカルホストの固定port（[ローカルホスト](local-host.md)）
@@ -40,7 +41,7 @@ scripts/                     TypeScriptで書き、`node scripts/<name>.ts`で�
 
 | path | 内容 |
 |---|---|
-| `project.source.json` | TurboWarp projectの展開済み正本。`extensions`と`extensionURLs`は生成される |
+| `project.source.json` | TurboWarp projectの展開済み正本。`blocks`、`extensions`、`extensionURLs`は生成される |
 | `sb3-source.json` | SB3へ収録するproject、asset、entryの指定 |
 | `embedded-extensions.json` | 埋め込む拡張、その固定元、static bundleの構成。生成される |
 | `assets/` | costume、soundなどのproject asset |
@@ -121,6 +122,28 @@ bundleの並び順が壊れています。
 有効にするflagは`packages/app-shell/src/apps/`で宣言します。機能を切り戻すときはここからflagを
 外して再ビルドし、`pnpm run pin:extensions`で埋め込み直します。アプリメニューの項目はSB3側で
 `add app menu action`により登録するので、ここには書きません。
+
+## アプリのスクリプト
+
+SB3のblock列は`scripts/app-scripts/`のTypeScriptを正本とし、`pnpm run build:scripts`で
+`project.source.json`の`blocks`へ生成します。
+
+```ts
+script({x: 48, y: 48}, [
+  block('event_whenflagclicked'),
+  block(`${shell}_showAppLoading`, {LABEL: text('カメラアプリを起動しています')}),
+  block(`${cameraSource}_refreshCameraDevices`),
+  block(`${shell}_hideAppLoading`),
+  block(`${titleMenu}_showTitle`)
+]);
+```
+
+idで相互参照する平坦なblock mapは、diffを見ても何が変わったか分かりません。読む対象は上のコードで、
+block mapは生成物です。idは`s<script番号>b<block番号>`で位置から決まるので、無関係な編集で他の
+スクリプトが振り直されることもありません。
+
+opcodeは各拡張が公開しているそのままの名前を書きます。static bundleの名前空間付与はビルドが行うため、
+ソースは拡張のドキュメントと突き合わせて読めます。
 
 ## 会場向けバイナリ
 

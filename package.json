@@ -15,7 +15,7 @@
     "lint": "node scripts/check-repository.ts",
     "test": "node scripts/release-snapshot.ts",
     "typecheck": "tsc --noEmit && pnpm --filter \"./packages/*\" --if-present run typecheck",
-    "check": "pnpm run lint && pnpm run format && pnpm run typecheck && pnpm run check:packages && pnpm run check:pins && pnpm run check:extensions && pnpm run check:apps && pnpm run check:bundle-order && pnpm run test && pnpm run build",
+    "check": "pnpm run lint && pnpm run format && pnpm run typecheck && pnpm run check:packages && pnpm run check:scripts && pnpm run check:pins && pnpm run check:extensions && pnpm run check:apps && pnpm run check:bundle-order && pnpm run test && pnpm run build",
     "pin:extensions": "node scripts/pin-embedded-extensions.ts --write",
     "check:pins": "node scripts/pin-embedded-extensions.ts",
     "update:readiness": "node scripts/update-extension-readiness.ts",
@@ -23,7 +23,9 @@
     "check:packages": "pnpm --filter \"./packages/*\" --if-present run check",
     "snapshot": "node scripts/release-snapshot.ts --write",
     "build:player": "node scripts/build-player.ts",
-    "build:binary": "node scripts/build-binary.ts"
+    "build:binary": "node scripts/build-binary.ts",
+    "build:scripts": "node scripts/build-app-scripts.ts --write",
+    "check:scripts": "node scripts/build-app-scripts.ts"
   },
   "devDependencies": {
     "@kubohiroya/sb3-toolchain": "0.12.0",
