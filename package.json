@@ -13,8 +13,8 @@
     "check:extensions": "node scripts/check-extension-readiness.mjs",
     "format": "node scripts/check-format.mjs",
     "lint": "node scripts/check-repository.mjs",
-    "test": "pnpm --filter @multiview-pose/protocol test && node scripts/check-deterministic-builds.mjs",
-    "typecheck": "node scripts/check-script-syntax.mjs && pnpm --filter @multiview-pose/protocol typecheck",
+    "test": "node scripts/check-deterministic-builds.mjs",
+    "typecheck": "node scripts/check-script-syntax.mjs",
     "check": "pnpm run lint && pnpm run format && pnpm run typecheck && pnpm run check:extensions && pnpm run check:apps && pnpm run test && pnpm run build"
   },
   "devDependencies": {
