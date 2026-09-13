@@ -4,7 +4,6 @@ import test from 'node:test';
 
 import {
   CameraCalibrationSchema,
-  ClockProbeSchema,
   PerformanceDslSchema,
   PoseFrame2DSchema,
   PoseFrame3DSchema,
@@ -41,17 +40,13 @@ const validValues = [
   }],
   [PoseFrame2DSchema, {
     schema: 'twmp/pose-frame-2d', version: 1, cameraId: 'camera-1', peerId: 'source-1', sequence: 42,
-    captureTimestampUs: 123456789, clockId: 'clock-1', frameWidth: 1920, frameHeight: 1080,
+    captureTimestampUs: 123456789, frameWidth: 1920, frameHeight: 1080,
     calibrationId: 'calibration-1', persons: [{trackingId: 'person-1', score: 0.9, keypoints: keypoints2d}]
   }],
   [PoseFrame3DSchema, {
     schema: 'twmp/pose-frame-3d', version: 1, sequence: 42, timestampUs: 123456789,
     persons: [{personId: 'performer-1', score: 0.8, cameraIds: ['camera-1', 'camera-2'],
       meanReprojectionErrorPx: 1.25, keypoints: keypoints3d}]
-  }],
-  [ClockProbeSchema, {
-    schema: 'twmp/clock-probe', version: 1, kind: 'pong', sequence: 9,
-    t0Us: 1000, t1Us: 1100, t2Us: 1150
   }],
   [PerformanceDslSchema, {
     schema: 'twmp/performance-dsl', version: 1,
@@ -84,7 +79,7 @@ test('unknown versions, missing values, oversized arrays, and pairing credential
   assert.equal(validateProtocol(SessionPolicySchema, missingRequired).ok, false);
   assert.equal(validateProtocol(SessionPolicySchema, {...session, offer: 'credential'}).ok, false);
 
-  const dsl = validValues[5][1];
+  const dsl = validValues[4][1];
   assert.equal(validateProtocol(PerformanceDslSchema, {
     ...dsl,
     performers: Array.from({length: 7}, (_, index) => ({...dsl.performers[0], performerId: `actor-${index}`}))

@@ -9,7 +9,6 @@
     "peerId",
     "sequence",
     "captureTimestampUs",
-    "clockId",
     "frameWidth",
     "frameHeight",
     "calibrationId",
@@ -45,12 +44,6 @@
       "minimum": 0,
       "maximum": 9007199254740991,
       "type": "integer"
-    },
-    "clockId": {
-      "minLength": 1,
-      "maxLength": 64,
-      "pattern": "^[A-Za-z0-9._-]+$",
-      "type": "string"
     },
     "frameWidth": {
       "minimum": 1,

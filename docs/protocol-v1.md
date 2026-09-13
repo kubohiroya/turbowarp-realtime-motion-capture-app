@@ -13,11 +13,14 @@ Truthとする。TypeScript型は、`packages/protocol/schemas/`以下のJSON Sc
 | Camera calibration | `twmp/camera-calibration` | 画像geometry、intrinsic、distortion、camera-to-world transform |
 | PoseFrame2D | `twmp/pose-frame-2d` | 最大6人分のtracking IDと順序固定COCO-17画像keypoint |
 | PoseFrame3D | `twmp/pose-frame-3d` | 最大6人分の3D姿勢、使用camera、reprojection品質 |
-| Clock probe | `twmp/clock-probe` | clock offsetとRTT推定用のversion付きping／pong timestamp |
 | Performance DSL | `twmp/performance-dsl` | 最大6人分の色、開始／終了演出、avatar asset |
 
 pairing offer／answer、ICE credential、QR courier partは一時的なprotocol dataである。session
 policyまたはperformance DSLのfieldではなく、永続的なapp設定へ書き込んではならない。
+
+`captureTimestampUs`と`timestampUs`は、別途提供される同期済みlocal time serviceが生成した値を
+そのまま運ぶ。本projectはtime serviceの初期化、offset推定、ping／pong、再調整、timestamp生成を
+実装しない。
 
 v1 parserはfail-closedとする。将来versionは、そのschemaとapplicationの明示対応を追加するまで拒否する。
 validation失敗時はsession開始と3D出力を止める。commit済みv1 parserと最後にvalidだったcalibrationを

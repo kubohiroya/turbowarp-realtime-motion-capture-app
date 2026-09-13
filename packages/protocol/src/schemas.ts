@@ -89,7 +89,6 @@ export const PoseFrame2DSchema = object({
   peerId: identifier,
   sequence: timestampUs,
   captureTimestampUs: timestampUs,
-  clockId: identifier,
   frameWidth: Type.Integer({minimum: 1, maximum: 16_384}),
   frameHeight: Type.Integer({minimum: 1, maximum: 16_384}),
   calibrationId: identifier,
@@ -113,25 +112,6 @@ export const PoseFrame3DSchema = object({
   )
 }, {$id: 'https://kubohiroya.github.io/multiview-pose/schema/pose-frame-3d-v1.json'});
 
-export const ClockProbeSchema = Type.Union([
-  object({
-    schema: Type.Literal('twmp/clock-probe'),
-    version: Type.Literal(1),
-    kind: Type.Literal('ping'),
-    sequence: timestampUs,
-    t0Us: timestampUs
-  }),
-  object({
-    schema: Type.Literal('twmp/clock-probe'),
-    version: Type.Literal(1),
-    kind: Type.Literal('pong'),
-    sequence: timestampUs,
-    t0Us: timestampUs,
-    t1Us: timestampUs,
-    t2Us: timestampUs
-  })
-], {$id: 'https://kubohiroya.github.io/multiview-pose/schema/clock-probe-v1.json'});
-
 export const PerformanceDslSchema = object({
   schema: Type.Literal('twmp/performance-dsl'),
   version: Type.Literal(1),
@@ -150,7 +130,6 @@ export const PerformanceDslSchema = object({
 
 export const protocolSchemas = {
   'camera-calibration-v1.json': CameraCalibrationSchema,
-  'clock-probe-v1.json': ClockProbeSchema,
   'performance-dsl-v1.json': PerformanceDslSchema,
   'pose-frame-2d-v1.json': PoseFrame2DSchema,
   'pose-frame-3d-v1.json': PoseFrame3DSchema,
@@ -161,5 +140,4 @@ export type SessionPolicy = Static<typeof SessionPolicySchema>;
 export type CameraCalibration = Static<typeof CameraCalibrationSchema>;
 export type PoseFrame2D = Static<typeof PoseFrame2DSchema>;
 export type PoseFrame3D = Static<typeof PoseFrame3DSchema>;
-export type ClockProbe = Static<typeof ClockProbeSchema>;
 export type PerformanceDsl = Static<typeof PerformanceDslSchema>;
