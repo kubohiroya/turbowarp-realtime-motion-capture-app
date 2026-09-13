@@ -21,10 +21,13 @@
     "update:readiness": "node scripts/update-extension-readiness.ts",
     "check:bundle-order": "node scripts/check-bundle-order.ts",
     "check:packages": "pnpm --filter \"./packages/*\" --if-present run check",
-    "snapshot": "node scripts/release-snapshot.ts --write"
+    "snapshot": "node scripts/release-snapshot.ts --write",
+    "build:player": "node scripts/build-player.ts",
+    "build:binary": "node scripts/build-binary.ts"
   },
   "devDependencies": {
     "@kubohiroya/sb3-toolchain": "0.12.0",
+    "@turbowarp/packager": "3.13.0",
     "@types/node": "24.13.3",
     "typescript": "5.9.3"
   }

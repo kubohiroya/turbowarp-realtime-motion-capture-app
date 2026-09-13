@@ -122,6 +122,17 @@ bundleの並び順が壊れています。
 外して再ビルドし、`pnpm run pin:extensions`で埋め込み直します。アプリメニューの項目はSB3側で
 `add app menu action`により登録するので、ここには書きません。
 
+## 会場向けバイナリ
+
+```bash
+pnpm build && pnpm run build:player && pnpm run build:binary
+```
+
+`build:player`はSB3を`@turbowarp/packager`で自己完結HTMLへ変換し、`build:binary`がそれを同梱した
+単体バイナリを`bun build --compile`で生成します。生成物は`apps/<app>/dist/`に出るためcommitしません。
+bunはPATHに要求し、リポジトリの依存にはしていません。詳細は[ローカルホスト](local-host.md)を参照して
+ください。
+
 ## ローカルデータ
 
 会場固有のカメラ選択、calibration draft、pairing code、ICE credential、session IDはcommitしません。
