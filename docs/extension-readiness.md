@@ -1,10 +1,14 @@
-# TurboWarp extension readiness
+# TurboWarp拡張 readiness
 
-この文書は[`config/extension-readiness.json`](../config/extension-readiness.json)の人間向け説明である。
+この文書は[`config/extension-readiness.json`](../config/extension-readiness.json)の人間向け要約です。
+利用者向けの実装状況は[README](../README.md)、アプリと拡張の責務分担は
+[システム構成](architecture.md)を参照してください。
+
 [epic #1](https://github.com/kubohiroya/multiview-pose/issues/1)の最初の開発gateとして、必要な操作が
-test可能なTurboWarp blockになるまでapplication scriptへ組み込まない。
+テスト可能なTurboWarp blockになるまでapplication scriptへ組み込みません。表の`Partial`は、公開済み
+拡張に利用可能な機能はあるものの、このアプリが必要とするblockが揃っていない状態を意味します。
 
-## repository境界
+## リポジトリ境界
 
 ```text
 generic extensions
@@ -23,7 +27,7 @@ application repositoryはSB3 script、performance DSL、calibration profile、de
 配布artifactを所有する。`turbowarp-multiview-pose`は再利用可能なmultiview固有処理を所有するが、
 完成品applicationは所有しない。
 
-## 現在のreadiness
+## 現在のreadiness（2026-09-13確認）
 
 | 役割 | package/version | 状態 | 利用可能 | 次に必要な作業 |
 |---|---|---|---|---|
