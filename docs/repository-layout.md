@@ -32,7 +32,7 @@ config/
   extension-requirements.json readinessの要求定義（手で編集する）
   extension-readiness.json    生成物（手で編集しない）
 docs/
-scripts/
+scripts/                     TypeScriptで書き、`node scripts/<name>.ts`で直接実行する
 ```
 
 各`source/`内の役割:
@@ -74,7 +74,7 @@ pnpm check
 
 1. repository構造とJSONの妥当性
 2. text fileの改行・末尾空白
-3. Node.js scriptの構文
+3. repository scriptとworkspace packageの型検査
 4. extension readiness inventoryの生成一致と整合性（拡張の再生成後に実行）と、ローカルホストportの妥当性
 5. `packages/`の検査（app shellのtypecheck、test、build）
 6. 埋め込み拡張の再生成と、commit済みの固定内容との一致
@@ -110,8 +110,8 @@ memberとして入ります。
 
 シェルは`turbowarp-multiview-pose`が読む`globalThis.__TWMP_FEATURE_FLAGS__`を書き込みます。
 契約拡張はモジュール評価時にflagを固定するため、**シェルは必ずbundleの先頭member**でなければ
-なりません。`scripts/pin-embedded-extensions.mjs`はこの順序を強制し、先頭が`workspace` providerで
-なければビルドを失敗させます。さらに`scripts/check-bundle-order.mjs`が、生成されたbundleの中で
+なりません。`scripts/pin-embedded-extensions.ts`はこの順序を強制し、先頭が`workspace` providerで
+なければビルドを失敗させます。さらに`scripts/check-bundle-order.ts`が、生成されたbundleの中で
 実際にshellのソースが契約拡張より前へ置かれていることを確認します。
 
 flagの適用結果は実行時にも`feature flag state`reporterで確認できます。`applied`以外なら、
@@ -144,7 +144,7 @@ bundleの並び順が壊れています。
    ファイルを書き換えるのはこの`--write`付きの実行だけで、`pnpm check`が呼ぶ検査側は、生成物が
    commit済みの内容と一致しない場合に失敗する。
 5. `pnpm run update:readiness`でreadiness inventoryを再生成する。
-6. `node scripts/check-extension-readiness.mjs --verify-network`で公開bundleと照合する。
+6. `node scripts/check-extension-readiness.ts --verify-network`で公開bundleと照合する。
 7. `pnpm check`で全体を検証し、生成された差分を独立したreview可能なcommitにする。
 
 release build中にextensionを暗黙にdownload／updateしてはいけません。現在の導入可否は

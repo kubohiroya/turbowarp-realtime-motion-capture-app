@@ -1,12 +1,14 @@
-import {readFile} from 'node:fs/promises';
-
 import {createDeterministicSb3} from '@kubohiroya/sb3-toolchain';
 
-const repositoryRoot = new URL('../', import.meta.url);
-const declaration = JSON.parse(
-  await readFile(new URL('config/app-extensions.json', repositoryRoot), 'utf8')
-);
-const errors = [];
+import {readJson, repositoryRoot, type AppExtensions} from './repository-config.ts';
+
+interface BundlePlan {
+  bundle: {id: string; members: string[]};
+  contents: Uint8Array;
+}
+
+const declaration = await readJson<AppExtensions>('config/app-extensions.json');
+const errors: string[] = [];
 
 /**
  * The static bundle inlines member sources in declaration order and introduces each one with a
@@ -16,7 +18,9 @@ const errors = [];
  */
 for (const {app, bundle, extensions} of declaration.apps) {
   const sourceDirectory = new URL(`apps/${app}/source/`, repositoryRoot);
-  const {bundlePlans} = await createDeterministicSb3(sourceDirectory.pathname);
+  const {bundlePlans} = (await createDeterministicSb3(sourceDirectory.pathname)) as {
+    bundlePlans: BundlePlan[];
+  };
   const plan = bundlePlans.find((candidate) => candidate.bundle.id === bundle.id);
   if (plan === undefined) {
     errors.push(`${app}: the build produced no bundle named ${bundle.id}`);
@@ -25,12 +29,17 @@ for (const {app, bundle, extensions} of declaration.apps) {
 
   const declaredIds = extensions.map(({id}) => id);
   if (plan.bundle.members.join(' ') !== declaredIds.join(' ')) {
-    errors.push(`${app}: bundle members ${plan.bundle.members.join(', ')} do not match the declaration`);
+    errors.push(
+      `${app}: bundle members ${plan.bundle.members.join(', ')} do not match the declaration`
+    );
     continue;
   }
 
   const source = Buffer.from(plan.contents).toString('utf8');
-  const offsets = declaredIds.map((id) => [id, source.indexOf(`loadComponent("${id}"`)]);
+  const offsets: Array<[string, number]> = declaredIds.map((id) => [
+    id,
+    source.indexOf(`loadComponent("${id}"`)
+  ]);
   for (const [id, offset] of offsets) {
     if (offset < 0) errors.push(`${app}: the bundle never evaluates member ${id}`);
   }

@@ -6,7 +6,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "build": "node scripts/clean-dist.mjs && vite build --config vite.camera.config.ts && vite build --config vite.fusion.config.ts",
+    "build": "node scripts/clean-dist.ts && vite build --config vite.camera.config.ts && vite build --config vite.fusion.config.ts",
     "check": "pnpm run typecheck && pnpm run test && pnpm run build"
   },
   "dependencies": {

@@ -1,6 +1,5 @@
-import {readFile} from 'node:fs/promises';
-
-import {repositoryFiles} from './repository-files.mjs';
+import {readJson, repositoryRoot} from './repository-config.ts';
+import {repositoryFiles} from './repository-files.ts';
 
 const files = await repositoryFiles();
 const required = [
@@ -12,7 +11,7 @@ for (const file of required) {
   if (!files.includes(file)) throw new Error(`Required repository file is missing: ${file}`);
 }
 for (const file of files.filter((candidate) => candidate.endsWith('.json'))) {
-  JSON.parse(await readFile(new URL(`../${file}`, import.meta.url), 'utf8'));
+  await readJson<unknown>(new URL(file, repositoryRoot));
 }
 const forbidden = files.filter((file) => file.endsWith('.local.json') || file.includes('/local/'));
 if (forbidden.length > 0) throw new Error(`Local configuration is tracked: ${forbidden.join(', ')}`);

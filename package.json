@@ -10,22 +10,23 @@
   "scripts": {
     "build": "pnpm --recursive --if-present run build",
     "check:apps": "pnpm --filter \"./apps/*\" --if-present run check",
-    "check:extensions": "node scripts/update-extension-readiness.mjs --check && node scripts/check-extension-readiness.mjs",
-    "format": "node scripts/check-format.mjs",
-    "lint": "node scripts/check-repository.mjs",
-    "test": "node scripts/release-snapshot.mjs",
-    "typecheck": "node scripts/check-script-syntax.mjs",
+    "check:extensions": "node scripts/update-extension-readiness.ts --check && node scripts/check-extension-readiness.ts",
+    "format": "node scripts/check-format.ts",
+    "lint": "node scripts/check-repository.ts",
+    "test": "node scripts/release-snapshot.ts",
+    "typecheck": "tsc --noEmit && pnpm --filter \"./packages/*\" --if-present run typecheck",
     "check": "pnpm run lint && pnpm run format && pnpm run typecheck && pnpm run check:packages && pnpm run check:pins && pnpm run check:extensions && pnpm run check:local-host && pnpm run check:apps && pnpm run check:bundle-order && pnpm run test && pnpm run build",
-    "pin:extensions": "node scripts/pin-embedded-extensions.mjs --write",
-    "check:pins": "node scripts/pin-embedded-extensions.mjs",
-    "update:readiness": "node scripts/update-extension-readiness.mjs",
-    "check:bundle-order": "node scripts/check-bundle-order.mjs",
+    "pin:extensions": "node scripts/pin-embedded-extensions.ts --write",
+    "check:pins": "node scripts/pin-embedded-extensions.ts",
+    "update:readiness": "node scripts/update-extension-readiness.ts",
+    "check:bundle-order": "node scripts/check-bundle-order.ts",
     "check:packages": "pnpm --filter \"./packages/*\" --if-present run check",
-    "snapshot": "node scripts/release-snapshot.mjs --write",
-    "check:local-host": "node scripts/check-local-host.mjs"
+    "snapshot": "node scripts/release-snapshot.ts --write",
+    "check:local-host": "node scripts/check-local-host.ts"
   },
   "devDependencies": {
     "@kubohiroya/sb3-toolchain": "0.12.0",
+    "@types/node": "24.13.3",
     "typescript": "5.9.3"
   }
 }

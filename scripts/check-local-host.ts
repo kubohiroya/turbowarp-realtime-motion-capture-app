@@ -1,11 +1,8 @@
-import {readFile} from 'node:fs/promises';
+import {readJson, type AppExtensions, type LocalHostConfig} from './repository-config.ts';
 
-const repositoryRoot = new URL('../', import.meta.url);
-const config = JSON.parse(await readFile(new URL('config/local-host.json', repositoryRoot), 'utf8'));
-const applications = JSON.parse(
-  await readFile(new URL('config/app-extensions.json', repositoryRoot), 'utf8')
-);
-const errors = [];
+const config = await readJson<LocalHostConfig>('config/local-host.json');
+const applications = await readJson<AppExtensions>('config/app-extensions.json');
+const errors: string[] = [];
 
 if (config.schemaVersion !== 1) {
   errors.push(`Unsupported local-host schemaVersion: ${config.schemaVersion}`);
@@ -22,8 +19,8 @@ if (!Number.isSafeInteger(minimum) || !Number.isSafeInteger(maximum) || minimum 
 /**
  * Every application needs exactly one port, and no application may be missing one.
  *
- * A port is part of the origin, so an app that silently falls back to an ephemeral port would open
- * a different storage area and look like it had lost the venue's calibration. Requiring the two
+ * A port is part of the origin, so an app that silently fell back to an ephemeral port would open a
+ * different storage area and look like it had lost the venue's calibration. Requiring the two
  * declarations to agree means adding an application cannot skip this decision.
  */
 const declaredApps = applications.apps.map(({app}) => app);
@@ -32,10 +29,12 @@ for (const app of declaredApps) {
   if (!configuredApps.includes(app)) errors.push(`${app} has no loopback port.`);
 }
 for (const app of configuredApps) {
-  if (!declaredApps.includes(app)) errors.push(`${app} has a loopback port but is not an application.`);
+  if (!declaredApps.includes(app)) {
+    errors.push(`${app} has a loopback port but is not an application.`);
+  }
 }
 
-const ports = [];
+const ports: Array<[string, number]> = [];
 for (const [app, entry] of Object.entries(config.apps ?? {})) {
   if (!Number.isSafeInteger(entry?.port)) {
     errors.push(`${app} port must be an integer.`);

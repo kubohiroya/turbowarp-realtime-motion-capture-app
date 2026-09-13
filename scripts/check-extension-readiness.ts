@@ -1,20 +1,26 @@
 import {createHash} from 'node:crypto';
-import {readFile} from 'node:fs/promises';
 
-const inventoryUrl = new URL('../config/extension-readiness.json', import.meta.url);
-const inventory = JSON.parse(await readFile(inventoryUrl, 'utf8'));
-const errors = [];
+import {
+  readJson,
+  type ExtensionManifest,
+  type ReadinessExtension,
+  type ReadinessInventory
+} from './repository-config.ts';
 
-const duplicateValues = (values) =>
-  [...new Set(values.filter((value, index) => values.indexOf(value) !== index))];
-const normalizeRecord = (record) =>
+const inventory = await readJson<ReadinessInventory>('config/extension-readiness.json');
+const errors: string[] = [];
+
+const duplicateValues = <T>(values: readonly T[]): T[] => [
+  ...new Set(values.filter((value, index) => values.indexOf(value) !== index))
+];
+const normalizeRecord = (record: Readonly<Record<string, string>>): Record<string, string> =>
   Object.fromEntries(Object.entries(record).sort(([left], [right]) => left.localeCompare(right)));
 
 if (inventory.schemaVersion !== 1) {
   errors.push(`Unsupported schemaVersion: ${inventory.schemaVersion}`);
 }
 
-for (const field of ['role', 'repository', 'package', 'extensionId']) {
+for (const field of ['role', 'repository', 'package', 'extensionId'] as const) {
   for (const value of duplicateValues(inventory.extensions.map((extension) => extension[field]))) {
     errors.push(`Duplicate ${field}: ${value}`);
   }
@@ -28,7 +34,8 @@ for (const [gate, requiredRoles] of Object.entries(inventory.readinessGates)) {
   }
 }
 
-const candidateRepositories = inventory.localImplementationCandidates?.map(({repository}) => repository) ?? [];
+const candidateRepositories =
+  inventory.localImplementationCandidates?.map(({repository}) => repository) ?? [];
 for (const repository of duplicateValues(candidateRepositories)) {
   errors.push(`Duplicate local implementation candidate: ${repository}`);
 }
@@ -71,13 +78,18 @@ for (const extension of inventory.extensions) {
 }
 
 if (process.argv.includes('--verify-network')) {
-  for (const extension of inventory.extensions.filter(({artifact}) => artifact !== null)) {
+  for (const extension of inventory.extensions.filter(
+    (candidate): candidate is ReadinessExtension & {artifact: string; manifest: string | null} =>
+      candidate.artifact !== null
+  )) {
     const response = await fetch(extension.artifact);
     if (!response.ok) {
       errors.push(`${extension.role} artifact returned HTTP ${response.status}`);
       continue;
     }
-    const digest = createHash('sha256').update(Buffer.from(await response.arrayBuffer())).digest('hex');
+    const digest = createHash('sha256')
+      .update(Buffer.from(await response.arrayBuffer()))
+      .digest('hex');
     if (digest !== extension.sha256) {
       errors.push(`${extension.role} artifact sha256 mismatch: ${digest}`);
     }
@@ -88,13 +100,14 @@ if (process.argv.includes('--verify-network')) {
       errors.push(`${extension.role} manifest returned HTTP ${manifestResponse.status}`);
       continue;
     }
-    const manifest = await manifestResponse.json();
+    const manifest = (await manifestResponse.json()) as ExtensionManifest;
     if (manifest.id !== extension.extensionId) {
       errors.push(`${extension.role} manifest ID mismatch: ${manifest.id}`);
     }
     for (const operation of extension.requiredOperations.filter(({availability}) => availability === 'ready')) {
-      const published = manifest.blocks?.find(({opcode}) => opcode === operation.opcode);
+      const published = manifest.blocks.find(({opcode}) => opcode === operation.opcode);
       const expected = extension.blockContracts[operation.opcode];
+      if (expected === undefined) continue;
       if (!published) {
         errors.push(`${extension.role}/${operation.opcode} is absent from the published manifest`);
         continue;

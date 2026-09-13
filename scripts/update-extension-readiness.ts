@@ -1,51 +1,65 @@
 import {createHash} from 'node:crypto';
 import {readFile, writeFile} from 'node:fs/promises';
 
-const repositoryRoot = new URL('../', import.meta.url);
+import {
+  formatJson,
+  readJson,
+  repositoryRoot,
+  type AppExtensions,
+  type EmbeddedExtensions,
+  type ExtensionManifest,
+  type ExtensionManifestBlock,
+  type ExtensionRequirements,
+  type ReadinessExtension
+} from './repository-config.ts';
+
 const checkOnly = process.argv.includes('--check');
-const requirements = JSON.parse(
-  await readFile(new URL('config/extension-requirements.json', repositoryRoot), 'utf8')
-);
-const applications = JSON.parse(
-  await readFile(new URL('config/app-extensions.json', repositoryRoot), 'utf8')
-);
+const requirements = await readJson<ExtensionRequirements>('config/extension-requirements.json');
+const applications = await readJson<AppExtensions>('config/app-extensions.json');
 
 if (requirements.schemaVersion !== 1) {
   throw new Error(`Unsupported requirements schemaVersion: ${requirements.schemaVersion}`);
 }
 
 /** Collects the artifact actually embedded in an SB3, so the inventory cannot drift from the pin. */
-const pinned = new Map();
+const pinned = new Map<string, {app: string; version: string; path: string}>();
 for (const {app} of applications.apps) {
-  const embedded = JSON.parse(
-    await readFile(new URL(`apps/${app}/source/embedded-extensions.json`, repositoryRoot), 'utf8')
+  const embedded = await readJson<EmbeddedExtensions>(
+    new URL(`apps/${app}/source/embedded-extensions.json`, repositoryRoot)
   );
   for (const entry of embedded.extensions) {
     if (entry.source?.provider !== 'npm') continue;
     const previous = pinned.get(entry.id);
     if (previous !== undefined && previous.version !== entry.source.version) {
-      throw new Error(`${entry.id} is pinned to two versions: ${previous.version} and ${entry.source.version}`);
+      throw new Error(
+        `${entry.id} is pinned to two versions: ${previous.version} and ${entry.source.version}`
+      );
     }
     pinned.set(entry.id, {app, version: entry.source.version, path: entry.path});
   }
 }
 
-const cdn = (pkg, version, path) => `https://cdn.jsdelivr.net/npm/${pkg}@${version}/${path}`;
+const cdn = (pkg: string, version: string, path: string): string =>
+  `https://cdn.jsdelivr.net/npm/${pkg}@${version}/${path}`;
 
-const extensions = [];
+const extensions: ReadinessExtension[] = [];
 for (const requirement of requirements.extensions) {
   const pin = pinned.get(requirement.extensionId);
   if (pin === undefined) {
-    throw new Error(`${requirement.role} is required but no application embeds ${requirement.extensionId}`);
+    throw new Error(
+      `${requirement.role} is required but no application embeds ${requirement.extensionId}`
+    );
   }
   const sourceDirectory = new URL(`apps/${pin.app}/source/`, repositoryRoot);
   const javascript = await readFile(new URL(pin.path, sourceDirectory));
-  const manifest = JSON.parse(
-    await readFile(new URL(`extensions/${requirement.extensionId}.manifest.json`, sourceDirectory), 'utf8')
+  const manifest = await readJson<ExtensionManifest>(
+    new URL(`extensions/${requirement.extensionId}.manifest.json`, sourceDirectory)
   );
-  const published = new Map(manifest.blocks.map((block) => [block.opcode, block]));
+  const published = new Map<string, ExtensionManifestBlock>(
+    manifest.blocks.map((block) => [block.opcode, block])
+  );
 
-  const blockContracts = {};
+  const blockContracts: Record<string, {blockType: string; arguments: Record<string, string>}> = {};
   const requiredOperations = requirement.requiredOperations.map(({capability, opcode}) => {
     const block = published.get(opcode);
     if (block !== undefined) {
@@ -92,7 +106,7 @@ const inventory = {
 };
 
 const target = new URL('config/extension-readiness.json', repositoryRoot);
-const contents = `${JSON.stringify(inventory, null, 2)}\n`;
+const contents = formatJson(inventory);
 const existing = await readFile(target, 'utf8').catch(() => null);
 if (existing === contents) {
   console.log('config/extension-readiness.json is up to date.');

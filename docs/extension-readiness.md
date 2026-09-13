@@ -41,7 +41,7 @@ extension pin、配布artifactを所有する。`turbowarp-multiview-pose`は再
 | Diagnostics | `@kubohiroya/turbowarp-diagnostic-overlay@0.4.0` | Ready | block API manifestを配布済み。app readiness payloadは未確定 |
 | Multiview blocks | `@kubohiroya/turbowarp-multiview-pose@0.1.0` | Partial | 公開済みは51 block。frame sync／3D fusion／glow stickは上流実装済みだが未release |
 
-すべての固定artifactは`node scripts/check-extension-readiness.mjs --verify-network`で公開bundleと
+すべての固定artifactは`node scripts/check-extension-readiness.ts --verify-network`で公開bundleと
 manifestに照合済みです。release build自体はnetwork accessなしで、commit済みartifactだけを使用します。
 
 ## 未解決の項目
@@ -57,7 +57,7 @@ manifestに照合済みです。release build自体はnetwork accessなしで、
 
 `@kubohiroya/turbowarp-multiview-pose`の配布bundleはOpenCV.js WebAssemblyを内包するため13.7 MBあり、
 `sb3-toolchain extensions status`の5 MB上限を超えます。integrityは`sb3-toolchain check`とビルドで
-検証されるので配布物の安全性には影響しませんが、更新確認は`scripts/pin-embedded-extensions.mjs`で
+検証されるので配布物の安全性には影響しませんが、更新確認は`scripts/pin-embedded-extensions.ts`で
 行います。
 
 ### メニュー状態行
