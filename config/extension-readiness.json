@@ -11,6 +11,58 @@
     "verifySha256": true,
     "experimentalFeaturesDefaultOff": true
   },
+  "localImplementationCandidates": [
+    {
+      "repository": "kubohiroya/turbowarp-camera-source",
+      "branch": "feat/blocks/gpu-preview-control",
+      "commit": "a28c4529b7bcf83339b793b0cd71921c0565ea7d",
+      "trackingIssue": "https://github.com/kubohiroya/turbowarp-camera-source/issues/8",
+      "published": false,
+      "verification": "pnpm check (21 tests)"
+    },
+    {
+      "repository": "kubohiroya/turbowarp-webrtc",
+      "branch": "feat/datachannel/latest-data",
+      "commit": "51bdde18069bbeb5c2e6bfd49cae2ec7b9f25946",
+      "trackingIssue": "https://github.com/kubohiroya/turbowarp-webrtc/issues/10",
+      "published": false,
+      "verification": "pnpm check (21 tests)",
+      "note": "Based on the repository's unmerged TypeScript migration branch."
+    },
+    {
+      "repository": "kubohiroya/turbowarp-yaml-json",
+      "branch": "feat/parser/safe-yaml-json-parse",
+      "commit": "87b2a736d96db28ef83d40ca5f57fd96e105c4bb",
+      "trackingIssue": "https://github.com/kubohiroya/turbowarp-yaml-json/issues/3",
+      "published": false,
+      "verification": "pnpm check (23 tests)"
+    },
+    {
+      "repository": "kubohiroya/turbowarp-asset-manager",
+      "branch": "chore/manifest/block-api-artifact",
+      "commit": "f6acaafa81a92456ce95b7159ac0391947453d4a",
+      "trackingIssue": "https://github.com/kubohiroya/turbowarp-asset-manager/issues/116",
+      "published": false,
+      "verification": "pnpm check (192 tests)",
+      "note": "Based on the repository's unmerged TypeScript migration branch."
+    },
+    {
+      "repository": "kubohiroya/turbowarp-diagnostic-overlay",
+      "branch": "chore/manifest/block-api",
+      "commit": "3044afbf169b44ae51b4d606320d50d69360a636",
+      "trackingIssue": "https://github.com/kubohiroya/turbowarp-diagnostic-overlay/issues/13",
+      "published": false,
+      "verification": "pnpm check (26 tests)"
+    },
+    {
+      "repository": "kubohiroya/turbowarp-aframe",
+      "branch": "feat/runtime/versioned-scene-capability",
+      "commit": "1e24b32c2e9ddb8d59018fd905fb80dc2e3d5274",
+      "trackingIssue": "https://github.com/kubohiroya/turbowarp-aframe/issues/7",
+      "published": false,
+      "verification": "pnpm check (17 tests)"
+    }
+  ],
   "extensions": [
     {
       "role": "camera-source",

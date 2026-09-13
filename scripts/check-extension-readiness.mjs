@@ -21,9 +21,26 @@ for (const field of ['role', 'repository', 'package', 'extensionId']) {
 }
 
 const roles = new Set(inventory.extensions.map((extension) => extension.role));
+const repositories = new Set(inventory.extensions.map((extension) => extension.repository));
 for (const [gate, requiredRoles] of Object.entries(inventory.readinessGates)) {
   for (const role of requiredRoles) {
     if (!roles.has(role)) errors.push(`Gate ${gate} references unknown role: ${role}`);
+  }
+}
+
+const candidateRepositories = inventory.localImplementationCandidates?.map(({repository}) => repository) ?? [];
+for (const repository of duplicateValues(candidateRepositories)) {
+  errors.push(`Duplicate local implementation candidate: ${repository}`);
+}
+for (const candidate of inventory.localImplementationCandidates ?? []) {
+  if (!repositories.has(candidate.repository)) {
+    errors.push(`Local implementation candidate references unknown repository: ${candidate.repository}`);
+  }
+  if (!/^[a-f0-9]{40}$/.test(candidate.commit)) {
+    errors.push(`Local implementation candidate has an invalid commit: ${candidate.repository}`);
+  }
+  if (candidate.published !== false) {
+    errors.push(`Local implementation candidate must remain unpublished: ${candidate.repository}`);
   }
 }
 
