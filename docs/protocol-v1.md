@@ -12,7 +12,7 @@ Truthとする。TypeScript型は、`packages/protocol/schemas/`以下のJSON Sc
 | Session policy | `twmp/session-policy` | revision、有効期限、session topology、calibration参照、MoveNet設定、運用上限。pairing credentialは含めない |
 | Camera calibration | `twmp/camera-calibration` | 画像geometry、intrinsic、distortion、camera-to-world transform |
 | PoseFrame2D | `twmp/pose-frame-2d` | 最大6人分のtracking IDと順序固定COCO-17画像keypoint |
-| PoseFrame3D | `twmp/pose-frame-3d` | 最大6人分の3D姿勢、使用camera、reprojection品質 |
+| PoseFrame3D | `twmp/pose-frame-3d` | 外部3D serviceから受け取る最大6人分の3D姿勢と品質情報 |
 | Performance DSL | `twmp/performance-dsl` | 最大6人分の色、開始／終了演出、avatar asset |
 
 pairing offer／answer、ICE credential、QR courier partは一時的なprotocol dataである。session
@@ -21,6 +21,11 @@ policyまたはperformance DSLのfieldではなく、永続的なapp設定へ書
 `captureTimestampUs`と`timestampUs`は、別途提供される同期済みlocal time serviceが生成した値を
 そのまま運ぶ。本projectはtime serviceの初期化、offset推定、ping／pong、再調整、timestamp生成を
 実装しない。
+
+複数camera由来のtimestamp付きPoseFrame2Dを時刻対応付けし、履歴を保持し、任意の過去時点の
+PoseFrame3Dを復元する仕組みも別projectの責務とする。本projectはPoseFrame2Dを集約・転送し、外部
+serviceから返されたPoseFrame3Dを表示consumerへ渡すだけで、frame alignment、history query、
+triangulation、3D solveを実装しない。
 
 v1 parserはfail-closedとする。将来versionは、そのschemaとapplicationの明示対応を追加するまで拒否する。
 validation失敗時はsession開始と3D出力を止める。commit済みv1 parserと最後にvalidだったcalibrationを

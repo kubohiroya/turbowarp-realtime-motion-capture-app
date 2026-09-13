@@ -57,10 +57,12 @@ MoveNet MultiPoseはTensorFlow.js WebGPU backendで実行し、選択backendが`
 messageに使えるが、applicationからbackpressureを制御できないため、置換可能なpose frame channelの
 最終実装には使用しない。
 
-### Fusionとavatar demo
+### 集約、外部3D service連携、avatar demo
 
 child Issue #5で`PoseFrame2D`、`PoseFrame3D`、calibration、session policy、performance DSL v1を
-固定してから、retargetingを実装する。
+固定してから、retargetingを実装する。fusion appはtimestamp付きPoseFrame2Dを集約・転送し、外部
+serviceが返したPoseFrame3Dをconsumerへ渡す。frame alignment、履歴、任意過去時点query、
+triangulation、3D solveは実装しない。
 
 ## composite blockへ昇格する基準
 
