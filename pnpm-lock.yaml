@@ -30,8 +30,8 @@ importers:
         specifier: 0.1.0
         version: 0.1.0(@kubohiroya/turbowarp-aframe@0.3.0)(@kubohiroya/turbowarp-camera-source@0.5.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.5.0))(@kubohiroya/turbowarp-webrtc@0.3.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))
       '@kubohiroya/turbowarp-title-menu':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.2.1
+        version: 0.2.1
       '@kubohiroya/turbowarp-webrtc':
         specifier: 0.3.0
         version: 0.3.0
@@ -51,8 +51,8 @@ importers:
         specifier: 0.1.0
         version: 0.1.0(@kubohiroya/turbowarp-aframe@0.3.0)(@kubohiroya/turbowarp-camera-source@0.5.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.5.0))(@kubohiroya/turbowarp-webrtc@0.3.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))
       '@kubohiroya/turbowarp-title-menu':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.2.1
+        version: 0.2.1
       '@kubohiroya/turbowarp-webrtc':
         specifier: 0.3.0
         version: 0.3.0
@@ -149,8 +149,8 @@ packages:
       '@kubohiroya/turbowarp-webrtc':
         optional: true
 
-  '@kubohiroya/turbowarp-title-menu@0.2.0':
-    resolution: {integrity: sha512-kcpmloW4RuUIgYBGLhIEorJPLdCxtxAFq4o/kcMbsEKJTk/Iq0P9gem8muEYU4S0DoC43Cxs58RKSeS0C7YTgw==}
+  '@kubohiroya/turbowarp-title-menu@0.2.1':
+    resolution: {integrity: sha512-7wdeKdSyuEMxaOqsT2F5B8pTyLQ1dyyQ/kdurLD31Oo8LIxhiZ/lS0tEmJ56EdLy/sPM9Vn6CoSSw2a1kYYPOQ==}
     engines: {node: '>=22'}
 
   '@kubohiroya/turbowarp-webrtc@0.3.0':
@@ -954,7 +954,7 @@ snapshots:
       - '@tensorflow/tfjs-backend-webgl'
       - encoding
 
-  '@kubohiroya/turbowarp-title-menu@0.2.0':
+  '@kubohiroya/turbowarp-title-menu@0.2.1':
     dependencies:
       '@kubohiroya/turbowarp-app-shell': 0.2.0
 

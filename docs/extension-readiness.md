@@ -31,7 +31,7 @@ extension pin、配布artifactを所有する。`turbowarp-multiview-pose`は再
 
 | 役割 | package/version | 状態 | 備考 |
 |---|---|---|---|
-| App UI | `@kubohiroya/turbowarp-title-menu@0.2.0` | Ready | タイトル、アプリメニュー、DSLファイル管理。メニュー項目はblockから定義する |
+| App UI | `@kubohiroya/turbowarp-title-menu@0.2.1` | Ready | タイトル、アプリメニュー、DSLファイル管理。メニュー項目はblockから定義する |
 | Camera source | `@kubohiroya/turbowarp-camera-source@0.5.0` | Ready | preview block、実width/height/FPS reporter、device列挙まで揃った |
 | QR reader | `@kubohiroya/turbowarp-jsqr@0.3.0` | Ready with dependency | 非同期結果がruntime variable経由なので、Temporary Variables依存が残る |
 | WebRTC | `@kubohiroya/turbowarp-webrtc@0.3.0` | Ready | latest-data pose channel、backpressure、clock sync、frame latency reportまで揃った |
