@@ -2,7 +2,7 @@ import {createHash} from 'node:crypto';
 
 import {createDeterministicSb3} from '@kubohiroya/sb3-toolchain';
 
-const applications = ['camera-app', 'fusion-app'];
+const applications = ['camera-app', 'fusion-app'] as const;
 
 for (const application of applications) {
   const sourceDirectory = new URL(`../apps/${application}/source/`, import.meta.url);

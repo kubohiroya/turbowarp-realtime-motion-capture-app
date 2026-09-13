@@ -10,15 +10,16 @@
   "scripts": {
     "build": "pnpm --recursive --if-present run build",
     "check:apps": "pnpm --recursive --if-present run check",
-    "check:extensions": "node scripts/check-extension-readiness.mjs",
-    "format": "node scripts/check-format.mjs",
-    "lint": "node scripts/check-repository.mjs",
-    "test": "node scripts/check-deterministic-builds.mjs",
-    "typecheck": "node scripts/check-script-syntax.mjs",
+    "check:extensions": "node --experimental-strip-types scripts/check-extension-readiness.ts",
+    "format": "node --experimental-strip-types scripts/check-format.ts",
+    "lint": "node --experimental-strip-types scripts/check-repository.ts",
+    "test": "node --experimental-strip-types scripts/check-deterministic-builds.ts",
+    "typecheck": "tsc --project tsconfig.json && node --experimental-strip-types scripts/check-script-syntax.ts",
     "check": "pnpm run lint && pnpm run format && pnpm run typecheck && pnpm run check:extensions && pnpm run check:apps && pnpm run test && pnpm run build"
   },
   "devDependencies": {
     "@kubohiroya/sb3-toolchain": "0.12.0",
+    "@types/node": "22.13.0",
     "typescript": "5.9.3"
   }
 }

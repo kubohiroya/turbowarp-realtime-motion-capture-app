@@ -1,6 +1,6 @@
 import {readFile} from 'node:fs/promises';
 
-import {repositoryFiles} from './repository-files.mjs';
+import {repositoryFiles} from './repository-files.ts';
 
 const files = await repositoryFiles();
 const required = [
