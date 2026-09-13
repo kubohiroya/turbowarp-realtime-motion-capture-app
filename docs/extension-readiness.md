@@ -33,9 +33,9 @@ multiview-specific behavior, but it does not own either finished application.
 | WebRTC | `@kubohiroya/turbowarp-webrtc@0.2.0` | Partial | LAN offer/answer, state, reliable JSON messages | [Latest-data pose channel, `bufferedAmount`, drop policy, stable capability API](https://github.com/kubohiroya/turbowarp-webrtc/issues/10) |
 | DSL values/schema | `@kubohiroya/turbowarp-yaml-json@0.2.0` | Partial | Immutable values, JSON/YAML rendering, JSON Schema validation | [Safely parse externally loaded DSL text](https://github.com/kubohiroya/turbowarp-yaml-json/issues/3) |
 | Assets/animation | `@kubohiroya/turbowarp-asset-manager@0.15.0` | Partial | Pinned assets, sprite skins, sounds, actor sequences | [Publish the block API manifest](https://github.com/kubohiroya/turbowarp-asset-manager/issues/116), then confirm the app asset manifest |
-| 3D scene | `@kubohiroya/turbowarp-aframe@0.2.0` | Partial | Scene graph and animation blocks | PoseFrame3D-to-avatar rig/retargeting contract |
+| 3D scene | `@kubohiroya/turbowarp-aframe@0.2.0` | Partial | Scene graph and animation blocks | [PoseFrame3D-to-avatar high-level retargeting block](https://github.com/kubohiroya/turbowarp-multiview-pose/issues/4) |
 | Diagnostics | `@kubohiroya/turbowarp-diagnostic-overlay@0.3.0` | Partial | Structured stage overlay | [Publish the block API manifest](https://github.com/kubohiroya/turbowarp-diagnostic-overlay/issues/13), then define the app readiness payload |
-| Multiview blocks | not released | Missing | Repository and Issues #1/#2 exist | QR display, MoveNet WebGPU, calibration and pose codecs |
+| Multiview blocks | not released | Missing | Repository and implementation subissues exist | [QR display](https://github.com/kubohiroya/turbowarp-multiview-pose/issues/2), [pose codecs](https://github.com/kubohiroya/turbowarp-multiview-pose/issues/3), [avatar retargeting](https://github.com/kubohiroya/turbowarp-multiview-pose/issues/4), [MoveNet WebGPU](https://github.com/kubohiroya/turbowarp-multiview-pose/issues/5), [calibration](https://github.com/kubohiroya/turbowarp-multiview-pose/issues/6) |
 
 ## Gate decisions
 

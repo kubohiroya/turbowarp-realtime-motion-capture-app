@@ -187,6 +187,7 @@
       "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-aframe@0.2.0/dist/extension-manifest.json",
       "sha256": "53511844fb7c43c42514e133ccdfa78dbcc77cda9112be84588da3bdf4283868",
       "status": "partial",
+      "trackingIssues": ["https://github.com/kubohiroya/turbowarp-multiview-pose/issues/4"],
       "requiredOperations": [
         {"capability": "create scene", "opcode": "createScene", "availability": "ready"},
         {"capability": "create node", "opcode": "createNode", "availability": "ready"},
@@ -237,7 +238,11 @@
       "status": "missing",
       "trackingIssues": [
         "https://github.com/kubohiroya/turbowarp-multiview-pose/issues/1",
-        "https://github.com/kubohiroya/turbowarp-multiview-pose/issues/2"
+        "https://github.com/kubohiroya/turbowarp-multiview-pose/issues/2",
+        "https://github.com/kubohiroya/turbowarp-multiview-pose/issues/3",
+        "https://github.com/kubohiroya/turbowarp-multiview-pose/issues/4",
+        "https://github.com/kubohiroya/turbowarp-multiview-pose/issues/5",
+        "https://github.com/kubohiroya/turbowarp-multiview-pose/issues/6"
       ],
       "requiredOperations": [
         {"capability": "QR courier part codec and sprite display", "opcode": null, "availability": "missing"},
