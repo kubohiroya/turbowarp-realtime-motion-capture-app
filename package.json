@@ -10,7 +10,7 @@
   "scripts": {
     "build": "pnpm --recursive --if-present run build",
     "check:apps": "pnpm --filter \"./apps/*\" --if-present run check",
-    "check:extensions": "node --experimental-strip-types scripts/update-extension-readiness.ts --check && node scripts/check-extension-readiness.ts",
+    "check:extensions": "node --experimental-strip-types scripts/update-extension-readiness.ts --check && node --experimental-strip-types scripts/check-extension-readiness.ts",
     "format": "node --experimental-strip-types scripts/check-format.ts",
     "lint": "node --experimental-strip-types scripts/check-repository.ts",
     "test": "node --experimental-strip-types scripts/release-snapshot.ts",
