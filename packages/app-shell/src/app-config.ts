@@ -1,0 +1,38 @@
+import type {AppShellMessageLocales} from '@kubohiroya/turbowarp-app-shell';
+
+import type {FeatureFlagName} from './feature-flags.js';
+
+export type ShellLocale = 'en' | 'ja';
+
+/**
+ * One application's shell configuration.
+ *
+ * The title dialog and the application menu are not here: they come from the shared
+ * `@kubohiroya/turbowarp-title-menu` extension, which sits next to this one in the SB3 bundle. This
+ * package owns only what that extension does not provide — the startup feature flags, the loading
+ * overlay, and the runtime message overlay.
+ */
+export interface AppShellAppConfig {
+  /** TurboWarp extension ID in `[a-z0-9]+` form. */
+  readonly id: string;
+  readonly slug: string;
+  readonly name: string;
+  readonly description: string;
+  readonly author: string;
+  readonly license: string;
+  readonly docsURI: string;
+  readonly blockIconURI: string;
+  /** Flags this application needs from the pinned contract extension. */
+  readonly featureFlags: readonly FeatureFlagName[];
+  readonly messageLocales: AppShellMessageLocales;
+}
+
+const idPattern = /^[a-z0-9]+$/;
+
+/** Validates one application configuration before a build or a registration uses it. */
+export function validateAppConfig(config: AppShellAppConfig): AppShellAppConfig {
+  if (!idPattern.test(config.id)) {
+    throw new TypeError(`Extension ID must match ${String(idPattern)}: ${config.id}`);
+  }
+  return config;
+}

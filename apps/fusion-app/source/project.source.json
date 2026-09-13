@@ -30,8 +30,26 @@
     }
   ],
   "monitors": [],
-  "extensions": [],
-  "extensionURLs": {},
+  "extensions": [
+    "multiviewposefusionshell",
+    "kubohiroyaturbowarptitlemenu",
+    "kubohiroyawebrtc",
+    "kubohiroyayamljson",
+    "kubohiroyamultiviewpose",
+    "kubohiroyaassetmanager",
+    "turbowarpaframe",
+    "kubohiroyadiagnosticoverlay"
+  ],
+  "extensionURLs": {
+    "multiviewposefusionshell": "embedded-extension:extensions/multiviewposefusionshell.js",
+    "kubohiroyaturbowarptitlemenu": "embedded-extension:extensions/kubohiroyaturbowarptitlemenu.js",
+    "kubohiroyawebrtc": "embedded-extension:extensions/kubohiroyawebrtc.js",
+    "kubohiroyayamljson": "embedded-extension:extensions/kubohiroyayamljson.js",
+    "kubohiroyamultiviewpose": "embedded-extension:extensions/kubohiroyamultiviewpose.js",
+    "kubohiroyaassetmanager": "embedded-extension:extensions/kubohiroyaassetmanager.js",
+    "turbowarpaframe": "embedded-extension:extensions/turbowarpaframe.js",
+    "kubohiroyadiagnosticoverlay": "embedded-extension:extensions/kubohiroyadiagnosticoverlay.js"
+  },
   "meta": {
     "semver": "3.0.0",
     "vm": "11.3.0",

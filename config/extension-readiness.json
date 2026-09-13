@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
-  "reviewedOn": "2026-09-13",
+  "generatedFrom": "config/extension-requirements.json",
+  "reviewedOn": "2026-09-14",
   "epic": "https://github.com/kubohiroya/multiview-pose/issues/1",
   "issue": "https://github.com/kubohiroya/multiview-pose/issues/3",
   "policy": {
@@ -12,80 +13,140 @@
     "verifySha256": true,
     "experimentalFeaturesDefaultOff": true
   },
-  "localImplementationCandidates": [
-    {
-      "repository": "kubohiroya/turbowarp-camera-source",
-      "branch": "feat/blocks/gpu-preview-control",
-      "commit": "a28c4529b7bcf83339b793b0cd71921c0565ea7d",
-      "trackingIssue": "https://github.com/kubohiroya/turbowarp-camera-source/issues/8",
-      "published": false,
-      "verification": "pnpm check (21 tests)"
-    },
-    {
-      "repository": "kubohiroya/turbowarp-webrtc",
-      "branch": "feat/datachannel/latest-data",
-      "commit": "51bdde18069bbeb5c2e6bfd49cae2ec7b9f25946",
-      "trackingIssue": "https://github.com/kubohiroya/turbowarp-webrtc/issues/10",
-      "published": false,
-      "verification": "pnpm check (21 tests)",
-      "note": "Based on the repository's unmerged TypeScript migration branch."
-    },
-    {
-      "repository": "kubohiroya/turbowarp-yaml-json",
-      "branch": "feat/parser/safe-yaml-json-parse",
-      "commit": "87b2a736d96db28ef83d40ca5f57fd96e105c4bb",
-      "trackingIssue": "https://github.com/kubohiroya/turbowarp-yaml-json/issues/3",
-      "published": false,
-      "verification": "pnpm check (23 tests)"
-    },
-    {
-      "repository": "kubohiroya/turbowarp-asset-manager",
-      "branch": "chore/manifest/block-api-artifact",
-      "commit": "f6acaafa81a92456ce95b7159ac0391947453d4a",
-      "trackingIssue": "https://github.com/kubohiroya/turbowarp-asset-manager/issues/116",
-      "published": false,
-      "verification": "pnpm check (192 tests)",
-      "note": "Based on the repository's unmerged TypeScript migration branch."
-    },
-    {
-      "repository": "kubohiroya/turbowarp-diagnostic-overlay",
-      "branch": "chore/manifest/block-api",
-      "commit": "3044afbf169b44ae51b4d606320d50d69360a636",
-      "trackingIssue": "https://github.com/kubohiroya/turbowarp-diagnostic-overlay/issues/13",
-      "published": false,
-      "verification": "pnpm check (26 tests)"
-    },
-    {
-      "repository": "kubohiroya/turbowarp-aframe",
-      "branch": "feat/runtime/versioned-scene-capability",
-      "commit": "1e24b32c2e9ddb8d59018fd905fb80dc2e3d5274",
-      "trackingIssue": "https://github.com/kubohiroya/turbowarp-aframe/issues/7",
-      "published": false,
-      "verification": "pnpm check (17 tests)"
-    },
-    {
-      "repository": "kubohiroya/turbowarp-multiview-pose",
-      "branch": "feat/avatar/poseframe3d-retarget",
-      "commit": "84e7bb9161abf8e97b54974b22d25d0cbf901837",
-      "trackingIssue": "https://github.com/kubohiroya/turbowarp-multiview-pose/issues/4",
-      "published": false,
-      "verification": "pnpm check (113 tests)",
-      "note": "Includes Issues #2-#6 implementation commits; avatar retargeting pins Kalidokit 1.1.5 and requires the unpublished A-Frame capability v1 candidate."
-    }
-  ],
   "extensions": [
+    {
+      "role": "app-ui",
+      "repository": "kubohiroya/turbowarp-title-menu",
+      "package": "@kubohiroya/turbowarp-title-menu",
+      "version": "0.2.0",
+      "extensionId": "kubohiroyaturbowarptitlemenu",
+      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-title-menu@0.2.0/dist/turbowarp-title-menu.js",
+      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-title-menu@0.2.0/dist/extension-manifest.json",
+      "sha256": "85efb90fc6e7c9f5ffb9215d9ccc06aa8312a22ce204f44ab1e0dc6308518348",
+      "status": "ready",
+      "embeddedIn": [
+        "camera-app",
+        "fusion-app"
+      ],
+      "requiredOperations": [
+        {
+          "capability": "show title dialog",
+          "opcode": "showTitle",
+          "availability": "ready"
+        },
+        {
+          "capability": "show application menu",
+          "opcode": "showMenu",
+          "availability": "ready"
+        },
+        {
+          "capability": "define a menu action",
+          "opcode": "addAppMenuAction",
+          "availability": "ready"
+        },
+        {
+          "capability": "replace the menu vocabulary",
+          "opcode": "clearAppMenuActions",
+          "availability": "ready"
+        },
+        {
+          "capability": "enable or disable a menu action",
+          "opcode": "setAppMenuActionEnabled",
+          "availability": "ready"
+        },
+        {
+          "capability": "menu action selected",
+          "opcode": "whenAppMenuActionSelected",
+          "availability": "ready"
+        },
+        {
+          "capability": "manage stored DSL files",
+          "opcode": "showDslFiles",
+          "availability": "ready"
+        },
+        {
+          "capability": "DSL source opened",
+          "opcode": "whenDslSourceOpened",
+          "availability": "ready"
+        },
+        {
+          "capability": "read the opened DSL source",
+          "opcode": "openedDslSource",
+          "availability": "ready"
+        },
+        {
+          "capability": "DSL storage failure",
+          "opcode": "lastDslError",
+          "availability": "ready"
+        }
+      ],
+      "blockContracts": {
+        "showTitle": {
+          "blockType": "command",
+          "arguments": {}
+        },
+        "showMenu": {
+          "blockType": "command",
+          "arguments": {}
+        },
+        "addAppMenuAction": {
+          "blockType": "command",
+          "arguments": {
+            "ACTION": "string",
+            "LABEL": "string"
+          }
+        },
+        "clearAppMenuActions": {
+          "blockType": "command",
+          "arguments": {}
+        },
+        "setAppMenuActionEnabled": {
+          "blockType": "command",
+          "arguments": {
+            "ACTION": "string",
+            "ENABLED": "boolean"
+          }
+        },
+        "whenAppMenuActionSelected": {
+          "blockType": "hat",
+          "arguments": {
+            "ACTION": "string"
+          }
+        },
+        "showDslFiles": {
+          "blockType": "command",
+          "arguments": {}
+        },
+        "whenDslSourceOpened": {
+          "blockType": "hat",
+          "arguments": {}
+        },
+        "openedDslSource": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "lastDslError": {
+          "blockType": "reporter",
+          "arguments": {}
+        }
+      },
+      "gaps": [
+        "No loading overlay or runtime message primitive, so the application shell keeps those two.",
+        "No status row block, so the menu status line is unavailable to an SB3 script."
+      ]
+    },
     {
       "role": "camera-source",
       "repository": "kubohiroya/turbowarp-camera-source",
       "package": "@kubohiroya/turbowarp-camera-source",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "extensionId": "kubohiroyacamerasource",
-      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.4.0/dist/camera-source.js",
-      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.4.0/dist/extension-manifest.json",
-      "sha256": "fd2b166e9a8101de8afbddd8a063909bab28e14895167210b0233741003215f6",
-      "status": "partial",
-      "trackingIssues": [
-        "https://github.com/kubohiroya/turbowarp-camera-source/issues/8"
+      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.5.0/dist/camera-source.js",
+      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.5.0/dist/extension-manifest.json",
+      "sha256": "89f4bb62110956848fe59b6f28256093ac840ebf003c4bf7edf3ff667bee8244",
+      "status": "ready",
+      "embeddedIn": [
+        "camera-app"
       ],
       "requiredOperations": [
         {
@@ -109,9 +170,44 @@
           "availability": "ready"
         },
         {
-          "capability": "GPU-backed stage preview",
-          "opcode": null,
-          "availability": "runtime-api-only"
+          "capability": "enumerate devices",
+          "opcode": "refreshCameraDevices",
+          "availability": "ready"
+        },
+        {
+          "capability": "device count",
+          "opcode": "cameraDeviceCount",
+          "availability": "ready"
+        },
+        {
+          "capability": "device label",
+          "opcode": "cameraDeviceLabelAt",
+          "availability": "ready"
+        },
+        {
+          "capability": "show stage preview",
+          "opcode": "showCameraPreview",
+          "availability": "ready"
+        },
+        {
+          "capability": "hide stage preview",
+          "opcode": "hideCameraPreview",
+          "availability": "ready"
+        },
+        {
+          "capability": "actual frame width",
+          "opcode": "cameraFrameWidth",
+          "availability": "ready"
+        },
+        {
+          "capability": "actual frame height",
+          "opcode": "cameraFrameHeight",
+          "availability": "ready"
+        },
+        {
+          "capability": "actual frame rate",
+          "opcode": "cameraFrameRate",
+          "availability": "ready"
         }
       ],
       "blockContracts": {
@@ -120,81 +216,73 @@
           "arguments": {
             "CAMERA_ID": "string",
             "DEVICE_ID": "string"
-          },
-          "result": "void"
+          }
         },
         "stopSharedCamera": {
           "blockType": "command",
           "arguments": {
             "CAMERA_ID": "string"
-          },
-          "result": "void"
+          }
         },
         "isCameraRunning": {
           "blockType": "boolean",
           "arguments": {
             "CAMERA_ID": "string"
-          },
-          "result": "boolean"
+          }
         },
         "cameraDeviceIdReporter": {
           "blockType": "reporter",
           "arguments": {
             "CAMERA_ID": "string"
-          },
-          "result": "string"
-        }
-      },
-      "desiredBlockContracts": {
+          }
+        },
+        "refreshCameraDevices": {
+          "blockType": "command",
+          "arguments": {}
+        },
+        "cameraDeviceCount": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "cameraDeviceLabelAt": {
+          "blockType": "reporter",
+          "arguments": {
+            "INDEX": "string"
+          }
+        },
         "showCameraPreview": {
           "blockType": "command",
           "arguments": {
             "CAMERA_ID": "string",
-            "MIRRORED": "boolean"
-          },
-          "result": "void"
+            "MIRRORED": "string"
+          }
         },
         "hideCameraPreview": {
           "blockType": "command",
           "arguments": {
             "CAMERA_ID": "string"
-          },
-          "result": "void"
+          }
         },
         "cameraFrameWidth": {
           "blockType": "reporter",
           "arguments": {
             "CAMERA_ID": "string"
-          },
-          "result": "number"
+          }
         },
         "cameraFrameHeight": {
           "blockType": "reporter",
           "arguments": {
             "CAMERA_ID": "string"
-          },
-          "result": "number"
+          }
         },
         "cameraFrameRate": {
           "blockType": "reporter",
           "arguments": {
             "CAMERA_ID": "string"
-          },
-          "result": "number"
+          }
         }
       },
-      "runtimeApi": {
-        "path": "Scratch.vm.runtime.ext_kubohiroyacamerasource",
-        "method": "acquireCamera",
-        "previewOptions": {
-          "preview": true,
-          "mirrored": true
-        }
-      },
-      "gaps": [
-        "Expose preview acquire/release and visibility as blocks, or provide an app-level wrapper block.",
-        "Expose actual width, height, and frame rate for readiness diagnostics."
-      ]
+      "gaps": []
     },
     {
       "role": "qr-reader",
@@ -206,6 +294,9 @@
       "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-jsqr@0.3.0/dist/extension-manifest.json",
       "sha256": "9debed81ae10a18b50e24bc8becee7f200d0757859bcb989b9aeddfcd89ed401",
       "status": "ready-with-dependency",
+      "embeddedIn": [
+        "camera-app"
+      ],
       "requiredOperations": [
         {
           "capability": "wait for QR text",
@@ -229,47 +320,38 @@
           "arguments": {
             "CAMERA_ID": "string",
             "RUNTIME_VAR": "string"
-          },
-          "result": "void"
+          }
         },
         "waitForQrTextSetRuntimeVarAndBroadcast": {
           "blockType": "command",
           "arguments": {
             "CAMERA_ID": "string",
-            "RUNTIME_VAR": "string",
-            "MESSAGE": "string"
-          },
-          "result": "void"
+            "MESSAGE": "string",
+            "RUNTIME_VAR": "string"
+          }
         },
         "lastQrTextReporter": {
           "blockType": "reporter",
-          "arguments": {},
-          "result": "string"
+          "arguments": {}
         }
       },
-      "runtimeApi": {
-        "path": "Scratch.vm.runtime.ext_kubohiroyajsqr",
-        "methods": [
-          "waitForQrText",
-          "scanFrame"
-        ]
-      },
       "gaps": [
-        "Block workflow currently requires the Temporary Variables extension for asynchronous result delivery."
+        "Asynchronous result delivery still goes through a runtime variable, so the pairing script depends on the Temporary Variables extension."
       ]
     },
     {
       "role": "webrtc-transport",
       "repository": "kubohiroya/turbowarp-webrtc",
       "package": "@kubohiroya/turbowarp-webrtc",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "extensionId": "kubohiroyawebrtc",
-      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-webrtc@0.2.0/dist/turbowarp-webrtc.js",
-      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-webrtc@0.2.0/dist/extension-manifest.json",
-      "sha256": "e7ab266b0169a03c3fcf330cf9ce855031a8fb47af403a46d6b1c19f576fc112",
-      "status": "partial",
-      "trackingIssues": [
-        "https://github.com/kubohiroya/turbowarp-webrtc/issues/10"
+      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-webrtc@0.3.0/dist/turbowarp-webrtc.js",
+      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-webrtc@0.3.0/dist/extension-manifest.json",
+      "sha256": "8b8f6ed0714620dcde723cbb97f0435554fdacc5af767a76357f9280c4385e8d",
+      "status": "ready",
+      "embeddedIn": [
+        "camera-app",
+        "fusion-app"
       ],
       "requiredOperations": [
         {
@@ -308,14 +390,69 @@
           "availability": "ready"
         },
         {
-          "capability": "latest-data pose channel",
-          "opcode": null,
-          "availability": "missing"
+          "capability": "configure latest-data pose channel",
+          "opcode": "configureLatestDataChannel",
+          "availability": "ready"
         },
         {
-          "capability": "backpressure diagnostics",
-          "opcode": null,
-          "availability": "missing"
+          "capability": "enable latest-data pose channel",
+          "opcode": "setLatestDataEnabled",
+          "availability": "ready"
+        },
+        {
+          "capability": "send latest pose frame",
+          "opcode": "sendLatestData",
+          "availability": "ready"
+        },
+        {
+          "capability": "backpressure depth",
+          "opcode": "latestDataBufferedAmount",
+          "availability": "ready"
+        },
+        {
+          "capability": "dropped pose frames",
+          "opcode": "latestDataDroppedCount",
+          "availability": "ready"
+        },
+        {
+          "capability": "synchronize clocks",
+          "opcode": "syncClock",
+          "availability": "ready"
+        },
+        {
+          "capability": "clock offset",
+          "opcode": "clockOffset",
+          "availability": "ready"
+        },
+        {
+          "capability": "clock uncertainty",
+          "opcode": "clockUncertainty",
+          "availability": "ready"
+        },
+        {
+          "capability": "synchronized local time",
+          "opcode": "localTime",
+          "availability": "ready"
+        },
+        {
+          "capability": "record frame latency sample",
+          "opcode": "recordFrameSyncSample",
+          "availability": "ready"
+        },
+        {
+          "capability": "report frame latency",
+          "opcode": "sendFrameSyncReport",
+          "availability": "ready"
+        },
+        {
+          "capability": "per-camera latency",
+          "opcode": "frameSyncLatencyOfCamera",
+          "availability": "ready"
+        },
+        {
+          "capability": "per-camera offset",
+          "opcode": "frameSyncOffsetOfCamera",
+          "availability": "ready"
         }
       ],
       "blockContracts": {
@@ -323,177 +460,239 @@
           "blockType": "command",
           "arguments": {
             "PEER": "string"
-          },
-          "result": "void"
+          }
         },
         "getOffer": {
           "blockType": "reporter",
           "arguments": {
             "PEER": "string"
-          },
-          "result": "string"
+          }
         },
         "acceptOffer": {
           "blockType": "command",
           "arguments": {
             "CODE": "string",
             "PEER": "string"
-          },
-          "result": "void"
+          }
         },
         "getAnswer": {
           "blockType": "reporter",
           "arguments": {
             "PEER": "string"
-          },
-          "result": "string"
+          }
         },
         "acceptAnswer": {
           "blockType": "command",
           "arguments": {
             "CODE": "string",
             "PEER": "string"
-          },
-          "result": "void"
+          }
         },
         "connectionState": {
           "blockType": "reporter",
           "arguments": {
             "PEER": "string"
-          },
-          "result": "string"
+          }
         },
         "sendEvent": {
           "blockType": "command",
           "arguments": {
-            "TYPE": "string",
-            "PAYLOAD": "string",
             "CHANNEL": "string",
-            "PEER": "string"
-          },
-          "result": "void"
-        }
-      },
-      "desiredBlockContracts": {
-        "openLatestDataChannel": {
+            "PAYLOAD": "string",
+            "PEER": "string",
+            "TYPE": "string"
+          }
+        },
+        "configureLatestDataChannel": {
           "blockType": "command",
           "arguments": {
             "CHANNEL": "string",
+            "HIGH_WATER_MARK": "number",
             "PEER": "string"
-          },
-          "result": "void"
+          }
+        },
+        "setLatestDataEnabled": {
+          "blockType": "command",
+          "arguments": {
+            "ENABLED": "boolean"
+          }
         },
         "sendLatestData": {
           "blockType": "command",
           "arguments": {
+            "CHANNEL": "string",
             "PAYLOAD": "string",
-            "CHANNEL": "string",
             "PEER": "string"
-          },
-          "result": "void"
+          }
         },
-        "dataChannelBufferedAmount": {
+        "latestDataBufferedAmount": {
           "blockType": "reporter",
           "arguments": {
             "CHANNEL": "string",
             "PEER": "string"
-          },
-          "result": "number"
+          }
         },
-        "droppedMessageCount": {
+        "latestDataDroppedCount": {
           "blockType": "reporter",
           "arguments": {
             "CHANNEL": "string",
             "PEER": "string"
-          },
-          "result": "number"
+          }
+        },
+        "syncClock": {
+          "blockType": "command",
+          "arguments": {
+            "PEER": "string"
+          }
+        },
+        "clockOffset": {
+          "blockType": "reporter",
+          "arguments": {
+            "PEER": "string"
+          }
+        },
+        "clockUncertainty": {
+          "blockType": "reporter",
+          "arguments": {
+            "PEER": "string"
+          }
+        },
+        "localTime": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "recordFrameSyncSample": {
+          "blockType": "command",
+          "arguments": {
+            "CAMERA": "string",
+            "CAPTURE_US": "number",
+            "PATTERN_US": "number",
+            "PEER": "string",
+            "WRAP_US": "number"
+          }
+        },
+        "sendFrameSyncReport": {
+          "blockType": "command",
+          "arguments": {
+            "CAMERA": "string",
+            "PEER": "string"
+          }
+        },
+        "frameSyncLatencyOfCamera": {
+          "blockType": "reporter",
+          "arguments": {
+            "CAMERA": "string"
+          }
+        },
+        "frameSyncOffsetOfCamera": {
+          "blockType": "reporter",
+          "arguments": {
+            "CAMERA": "string"
+          }
         }
       },
-      "gaps": [
-        "Add unordered/maxRetransmits=0 channel configuration for replaceable pose frames.",
-        "Expose bufferedAmount, a high-water mark, and dropped-frame behavior as blocks.",
-        "Expose a stable runtime capability for turbowarp-multiview-pose composite blocks."
-      ]
+      "gaps": []
     },
     {
       "role": "dsl-json-schema",
       "repository": "kubohiroya/turbowarp-yaml-json",
       "package": "@kubohiroya/turbowarp-yaml-json",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "extensionId": "kubohiroyayamljson",
-      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-yaml-json@0.2.0/dist/turbowarp-yaml-json.js",
-      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-yaml-json@0.2.0/dist/extension-manifest.json",
-      "sha256": "34ef75b07279c9b6205cce0228d2a4755eeda51e5d4d2771e508ab1b90d32a81",
-      "status": "partial",
-      "trackingIssues": [
-        "https://github.com/kubohiroya/turbowarp-yaml-json/issues/3"
+      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-yaml-json@0.3.0/dist/turbowarp-yaml-json.js",
+      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-yaml-json@0.3.0/dist/extension-manifest.json",
+      "sha256": "ee7c8fb7b966417a09e015704b045deda3cc7a1a3275db68fcc4a10139ad80b8",
+      "status": "ready",
+      "embeddedIn": [
+        "fusion-app"
       ],
       "requiredOperations": [
         {
-          "capability": "build YAML/JSON values",
-          "opcode": "map",
+          "capability": "safe parse of external DSL text",
+          "opcode": "parseText",
+          "availability": "ready"
+        },
+        {
+          "capability": "parse succeeded",
+          "opcode": "lastParseSucceeded",
+          "availability": "ready"
+        },
+        {
+          "capability": "parse diagnostic",
+          "opcode": "lastParseDiagnostic",
+          "availability": "ready"
+        },
+        {
+          "capability": "JSON Schema validation",
+          "opcode": "validateSchema",
+          "availability": "ready"
+        },
+        {
+          "capability": "schema validity",
+          "opcode": "isValidSchema",
           "availability": "ready"
         },
         {
           "capability": "render JSON",
           "opcode": "renderJson",
           "availability": "ready"
-        },
-        {
-          "capability": "validate JSON Schema",
-          "opcode": "validateSchema",
-          "availability": "ready"
-        },
-        {
-          "capability": "parse external performance DSL",
-          "opcode": null,
-          "availability": "missing"
         }
       ],
       "blockContracts": {
-        "map": {
+        "parseText": {
           "blockType": "reporter",
           "arguments": {
-            "ENTRIES": "string"
-          },
-          "result": "string"
+            "FORMAT": "string",
+            "TEXT": "string"
+          }
         },
-        "renderJson": {
+        "lastParseSucceeded": {
+          "blockType": "boolean",
+          "arguments": {}
+        },
+        "lastParseDiagnostic": {
           "blockType": "reporter",
-          "arguments": {
-            "FRAGMENT": "string"
-          },
-          "result": "string"
+          "arguments": {}
         },
         "validateSchema": {
           "blockType": "reporter",
           "arguments": {
             "FRAGMENT": "string",
             "SCHEMA": "string"
-          },
-          "result": "string"
+          }
+        },
+        "isValidSchema": {
+          "blockType": "boolean",
+          "arguments": {
+            "FRAGMENT": "string",
+            "SCHEMA": "string"
+          }
+        },
+        "renderJson": {
+          "blockType": "reporter",
+          "arguments": {
+            "FRAGMENT": "string"
+          }
         }
       },
-      "gaps": [
-        "Select a file/project-asset text source and expose YAML/JSON parse diagnostics before session-policy generation."
-      ]
+      "gaps": []
     },
     {
       "role": "asset-runtime",
       "repository": "kubohiroya/turbowarp-asset-manager",
       "package": "@kubohiroya/turbowarp-asset-manager",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "extensionId": "kubohiroyaassetmanager",
-      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-asset-manager@0.15.0/dist/asset-manager.js",
-      "manifest": null,
+      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-asset-manager@0.16.0/dist/asset-manager.js",
+      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-asset-manager@0.16.0/dist/extension-manifest.json",
       "sha256": "153fd2d85ae9acdfecea8032e89c6232b07853ed690749d9b614217399db18fb",
-      "status": "partial",
-      "trackingIssues": [
-        "https://github.com/kubohiroya/turbowarp-asset-manager/issues/116"
+      "status": "ready",
+      "embeddedIn": [
+        "fusion-app"
       ],
       "requiredOperations": [
         {
-          "capability": "register asset",
+          "capability": "register pinned asset",
           "opcode": "registerAsset",
           "availability": "ready"
         },
@@ -503,13 +702,23 @@
           "availability": "ready"
         },
         {
-          "capability": "set sprite skin",
+          "capability": "asset loaded state",
+          "opcode": "isLoaded",
+          "availability": "ready"
+        },
+        {
+          "capability": "sprite skin",
           "opcode": "setSpriteSkin",
           "availability": "ready"
         },
         {
-          "capability": "play actor sequence",
+          "capability": "actor sequence",
           "opcode": "startActorSequence",
+          "availability": "ready"
+        },
+        {
+          "capability": "sound playback",
+          "opcode": "playSound",
           "availability": "ready"
         }
       ],
@@ -519,24 +728,27 @@
           "arguments": {
             "NAME": "string",
             "RESOURCE_ID": "string"
-          },
-          "result": "void"
+          }
         },
         "loadAsset": {
           "blockType": "command",
           "arguments": {
             "NAME": "string",
             "URL": "string"
-          },
-          "result": "void"
+          }
+        },
+        "isLoaded": {
+          "blockType": "boolean",
+          "arguments": {
+            "NAME": "string"
+          }
         },
         "setSpriteSkin": {
           "blockType": "command",
           "arguments": {
             "NAME": "string",
             "SPRITE": "string"
-          },
-          "result": "void"
+          }
         },
         "startActorSequence": {
           "blockType": "command",
@@ -544,26 +756,31 @@
             "ACTOR": "string",
             "ASSETS": "string",
             "DURATIONS": "string"
-          },
-          "result": "void"
+          }
+        },
+        "playSound": {
+          "blockType": "command",
+          "arguments": {
+            "NAME": "string"
+          }
         }
       },
       "gaps": [
-        "Publish a deterministic dist/extension-manifest.json in the npm artifact."
+        "The application asset manifest is still undefined, so no demo asset is pinned yet."
       ]
     },
     {
       "role": "3d-avatar-renderer",
       "repository": "kubohiroya/turbowarp-aframe",
       "package": "@kubohiroya/turbowarp-aframe",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "extensionId": "turbowarpaframe",
-      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-aframe@0.2.0/dist/turbowarp-aframe.js",
-      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-aframe@0.2.0/dist/extension-manifest.json",
-      "sha256": "53511844fb7c43c42514e133ccdfa78dbcc77cda9112be84588da3bdf4283868",
-      "status": "partial",
-      "trackingIssues": [
-        "https://github.com/kubohiroya/turbowarp-multiview-pose/issues/4"
+      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-aframe@0.3.0/dist/turbowarp-aframe.js",
+      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-aframe@0.3.0/dist/extension-manifest.json",
+      "sha256": "babe0a6815c02919132db8fab843f5c4dac94b857af6e5f4c179692dce7f62a4",
+      "status": "ready",
+      "embeddedIn": [
+        "fusion-app"
       ],
       "requiredOperations": [
         {
@@ -572,19 +789,34 @@
           "availability": "ready"
         },
         {
-          "capability": "create node",
-          "opcode": "createNode",
-          "availability": "ready"
-        },
-        {
-          "capability": "load template",
+          "capability": "load declarative template",
           "opcode": "loadTemplate",
           "availability": "ready"
         },
         {
-          "capability": "apply 3D skeleton to avatar rig",
-          "opcode": null,
-          "availability": "missing"
+          "capability": "instantiate template",
+          "opcode": "createFromTemplate",
+          "availability": "ready"
+        },
+        {
+          "capability": "set node rotation",
+          "opcode": "setRotation",
+          "availability": "ready"
+        },
+        {
+          "capability": "set node position",
+          "opcode": "setPosition",
+          "availability": "ready"
+        },
+        {
+          "capability": "scene ready hat",
+          "opcode": "whenSceneReady",
+          "availability": "ready"
+        },
+        {
+          "capability": "selector event hat",
+          "opcode": "whenEventOnSelector",
+          "availability": "ready"
         }
       ],
       "blockContracts": {
@@ -593,117 +825,292 @@
           "arguments": {
             "LAYER": "string",
             "MODE": "string"
-          },
-          "result": "void"
-        },
-        "createNode": {
-          "blockType": "command",
-          "arguments": {
-            "TYPE": "string",
-            "ID": "string",
-            "PARENT": "string"
-          },
-          "result": "void"
+          }
         },
         "loadTemplate": {
           "blockType": "command",
           "arguments": {
             "ID": "string",
             "SOURCE": "string"
-          },
-          "result": "void"
+          }
+        },
+        "createFromTemplate": {
+          "blockType": "command",
+          "arguments": {
+            "INSTANCE": "string",
+            "PARENT": "string",
+            "TEMPLATE": "string"
+          }
+        },
+        "setRotation": {
+          "blockType": "command",
+          "arguments": {
+            "SELECTOR": "string",
+            "X": "number",
+            "Y": "number",
+            "Z": "number"
+          }
+        },
+        "setPosition": {
+          "blockType": "command",
+          "arguments": {
+            "SELECTOR": "string",
+            "X": "number",
+            "Y": "number",
+            "Z": "number"
+          }
+        },
+        "whenSceneReady": {
+          "blockType": "hat",
+          "arguments": {}
+        },
+        "whenEventOnSelector": {
+          "blockType": "hat",
+          "arguments": {
+            "SELECTOR": "string",
+            "TYPE": "string"
+          }
         }
       },
-      "gaps": [
-        "Define avatar rig/retargeting blocks after PoseFrame3D v1 is fixed."
-      ]
+      "gaps": []
     },
     {
       "role": "diagnostic-ui",
       "repository": "kubohiroya/turbowarp-diagnostic-overlay",
       "package": "@kubohiroya/turbowarp-diagnostic-overlay",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "extensionId": "kubohiroyadiagnosticoverlay",
-      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-diagnostic-overlay@0.3.0/dist/diagnostic-overlay.js",
-      "manifest": null,
-      "sha256": "f4b803d6e7830030856d1ceaed65d8a51fe91c8b5675f2b4db5f761881928c7e",
-      "status": "partial",
-      "trackingIssues": [
-        "https://github.com/kubohiroya/turbowarp-diagnostic-overlay/issues/13"
+      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-diagnostic-overlay@0.4.0/dist/diagnostic-overlay.js",
+      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-diagnostic-overlay@0.4.0/dist/extension-manifest.json",
+      "sha256": "1df63b110ea0cd7d72ae5e2efaa40973423072b1244810414c5c7293bcddeabe",
+      "status": "ready",
+      "embeddedIn": [
+        "camera-app",
+        "fusion-app"
       ],
       "requiredOperations": [
         {
           "capability": "show structured diagnostic",
+          "opcode": "showDiagnostic",
+          "availability": "ready"
+        },
+        {
+          "capability": "show diagnostic from JSON",
           "opcode": "showDiagnosticJson",
           "availability": "ready"
         },
         {
-          "capability": "clear diagnostic",
+          "capability": "clear overlay",
           "opcode": "clearDiagnosticOverlay",
+          "availability": "ready"
+        },
+        {
+          "capability": "overlay visibility",
+          "opcode": "diagnosticOverlayVisible",
           "availability": "ready"
         }
       ],
       "blockContracts": {
+        "showDiagnostic": {
+          "blockType": "command",
+          "arguments": {
+            "CODE": "string",
+            "MESSAGE": "string",
+            "SEVERITY": "string"
+          }
+        },
         "showDiagnosticJson": {
           "blockType": "command",
           "arguments": {
             "DIAGNOSTIC": "string"
-          },
-          "result": "void"
+          }
         },
         "clearDiagnosticOverlay": {
           "blockType": "command",
-          "arguments": {},
-          "result": "void"
+          "arguments": {}
+        },
+        "diagnosticOverlayVisible": {
+          "blockType": "boolean",
+          "arguments": {}
         }
       },
       "gaps": [
-        "Publish a deterministic dist/extension-manifest.json in the npm artifact."
+        "The application readiness payload that feeds the overlay is still undefined."
       ]
     },
     {
       "role": "multiview-high-level-blocks",
       "repository": "kubohiroya/turbowarp-multiview-pose",
       "package": "@kubohiroya/turbowarp-multiview-pose",
-      "version": null,
+      "version": "0.1.0",
       "extensionId": "kubohiroyamultiviewpose",
-      "artifact": null,
-      "manifest": null,
-      "sha256": null,
-      "status": "missing",
-      "trackingIssues": [
-        "https://github.com/kubohiroya/turbowarp-multiview-pose/issues/1",
-        "https://github.com/kubohiroya/turbowarp-multiview-pose/issues/2",
-        "https://github.com/kubohiroya/turbowarp-multiview-pose/issues/3",
-        "https://github.com/kubohiroya/turbowarp-multiview-pose/issues/4",
-        "https://github.com/kubohiroya/turbowarp-multiview-pose/issues/5",
-        "https://github.com/kubohiroya/turbowarp-multiview-pose/issues/6"
+      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-multiview-pose@0.1.0/dist/turbowarp-multiview-pose.js",
+      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-multiview-pose@0.1.0/dist/extension-manifest.json",
+      "sha256": "a047d9dd5c647a03d3016a0db6824df1421a941ac27e4cabe476f2cb4955af15",
+      "status": "partial",
+      "embeddedIn": [
+        "camera-app",
+        "fusion-app"
       ],
       "requiredOperations": [
         {
-          "capability": "QR courier part codec and sprite display",
-          "opcode": null,
+          "capability": "prepare pairing offer QR",
+          "opcode": "prepareOfferQr",
+          "availability": "ready"
+        },
+        {
+          "capability": "show pairing offer QR part",
+          "opcode": "showOfferQrPart",
+          "availability": "ready"
+        },
+        {
+          "capability": "end pairing QR display",
+          "opcode": "endOfferQrDisplay",
+          "availability": "ready"
+        },
+        {
+          "capability": "start WebGPU MoveNet",
+          "opcode": "startWebGpuMoveNetMultiPose",
+          "availability": "ready"
+        },
+        {
+          "capability": "infer next pose frame",
+          "opcode": "inferNextPoseFrame",
+          "availability": "ready"
+        },
+        {
+          "capability": "latest PoseFrame2D",
+          "opcode": "latestPoseFrame2D",
+          "availability": "ready"
+        },
+        {
+          "capability": "validate contract payload",
+          "opcode": "protocolJsonValid",
+          "availability": "ready"
+        },
+        {
+          "capability": "decode contract payload",
+          "opcode": "decodeProtocolJson",
+          "availability": "ready"
+        },
+        {
+          "capability": "solve camera calibration",
+          "opcode": "solveCameraCalibration",
+          "availability": "ready"
+        },
+        {
+          "capability": "export camera calibration",
+          "opcode": "cameraCalibrationJson",
+          "availability": "ready"
+        },
+        {
+          "capability": "import camera calibration",
+          "opcode": "importCameraCalibration",
+          "availability": "ready"
+        },
+        {
+          "capability": "apply PoseFrame3D to avatars",
+          "opcode": "applyPoseFrame3DToAvatars",
+          "availability": "ready"
+        },
+        {
+          "capability": "display frame sync pattern",
+          "opcode": "showFrameSyncPattern",
           "availability": "missing"
         },
         {
-          "capability": "WebGPU MoveNet MultiPose",
-          "opcode": null,
+          "capability": "decode frame sync pattern",
+          "opcode": "startFrameSyncDecoder",
           "availability": "missing"
         },
         {
-          "capability": "camera calibration workflow",
-          "opcode": null,
+          "capability": "buffer PoseFrame2D for fusion",
+          "opcode": "bufferPoseFrame2D",
           "availability": "missing"
         },
         {
-          "capability": "PoseFrame2D/3D codec",
-          "opcode": null,
+          "capability": "fuse PoseFrame3D",
+          "opcode": "fuseBufferedPoseFrame3D",
+          "availability": "missing"
+        },
+        {
+          "capability": "identify performers by glow stick",
+          "opcode": "enableGlowStickMarkers",
           "availability": "missing"
         }
       ],
+      "blockContracts": {
+        "prepareOfferQr": {
+          "blockType": "command",
+          "arguments": {
+            "PEER": "string"
+          }
+        },
+        "showOfferQrPart": {
+          "blockType": "command",
+          "arguments": {
+            "INDEX": "number"
+          }
+        },
+        "endOfferQrDisplay": {
+          "blockType": "command",
+          "arguments": {}
+        },
+        "startWebGpuMoveNetMultiPose": {
+          "blockType": "command",
+          "arguments": {
+            "CALIBRATION_ID": "string",
+            "CAMERA_ID": "string",
+            "PEER_ID": "string"
+          }
+        },
+        "inferNextPoseFrame": {
+          "blockType": "command",
+          "arguments": {
+            "CAPTURE_TIMESTAMP_US": "number"
+          }
+        },
+        "latestPoseFrame2D": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "protocolJsonValid": {
+          "blockType": "boolean",
+          "arguments": {
+            "JSON": "string"
+          }
+        },
+        "decodeProtocolJson": {
+          "blockType": "command",
+          "arguments": {
+            "JSON": "string"
+          }
+        },
+        "solveCameraCalibration": {
+          "blockType": "command",
+          "arguments": {}
+        },
+        "cameraCalibrationJson": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "importCameraCalibration": {
+          "blockType": "command",
+          "arguments": {
+            "JSON": "string"
+          }
+        },
+        "applyPoseFrame3DToAvatars": {
+          "blockType": "command",
+          "arguments": {
+            "POSE2D_JSON": "string",
+            "POSE3D_JSON": "string"
+          }
+        }
+      },
       "gaps": [
-        "Implement only stable high-level operations that are too complex to maintain as SB3 block sequences.",
-        "Publish an extension manifest and immutable artifact before embedding it in either application."
+        "Frame sync, 3D fusion, and glow stick identity are implemented upstream but are not in the published 0.1.0 artifact. They need a 0.2.0 release before the fusion app can use them.",
+        "The published artifact is 13.7 MB because it embeds OpenCV.js, which exceeds the 5 MB limit of `sb3-toolchain extensions status`."
       ]
     }
   ],
@@ -722,12 +1129,22 @@
       "webrtc-transport",
       "multiview-high-level-blocks"
     ],
+    "clockSync": [
+      "webrtc-transport",
+      "multiview-high-level-blocks"
+    ],
     "fusionDemo": [
+      "app-ui",
       "webrtc-transport",
       "dsl-json-schema",
       "asset-runtime",
       "3d-avatar-renderer",
       "diagnostic-ui",
+      "multiview-high-level-blocks"
+    ],
+    "performanceDsl": [
+      "app-ui",
+      "dsl-json-schema",
       "multiview-high-level-blocks"
     ]
   }

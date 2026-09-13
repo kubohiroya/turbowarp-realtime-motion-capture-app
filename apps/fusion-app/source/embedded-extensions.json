@@ -1,4 +1,168 @@
 {
   "formatVersion": 1,
-  "extensions": []
+  "extensions": [
+    {
+      "id": "multiviewposefusionshell",
+      "path": "extensions/multiviewposefusionshell.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64"
+    },
+    {
+      "id": "kubohiroyaturbowarptitlemenu",
+      "path": "extensions/kubohiroyaturbowarptitlemenu.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-title-menu",
+        "version": "0.2.0",
+        "artifact": "dist/turbowarp-title-menu.js",
+        "integrity": "sha256-he+5D8bnyfX/uSFdnMwGqoMSoiziBPRKseDcYwhRg0g=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/kubohiroyaturbowarptitlemenu.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-qMrjKogo0adWj1dnMATQ5wpI6NFERjr1YOJl2/9TWdU="
+        }
+      }
+    },
+    {
+      "id": "kubohiroyawebrtc",
+      "path": "extensions/kubohiroyawebrtc.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-webrtc",
+        "version": "0.3.0",
+        "artifact": "dist/turbowarp-webrtc.js",
+        "integrity": "sha256-i49u0HFGINzecjy7l/BDVVT9rMWvdnp2NX+SgMQ4Xo0=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/kubohiroyawebrtc.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-72MpITJOBh+e+xy4ibJwdM2bn30bXzRvndgHc6GycKc="
+        }
+      }
+    },
+    {
+      "id": "kubohiroyayamljson",
+      "path": "extensions/kubohiroyayamljson.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-yaml-json",
+        "version": "0.3.0",
+        "artifact": "dist/turbowarp-yaml-json.js",
+        "integrity": "sha256-7nyPt7lmQXoJ4BVwSwRd7aPMehoyddto/MShATmtgLg=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/kubohiroyayamljson.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-Qq4cpaZxCfDgIvxjgqtPITuRiVCZrHjwyurD4PIVFWc="
+        }
+      }
+    },
+    {
+      "id": "kubohiroyamultiviewpose",
+      "path": "extensions/kubohiroyamultiviewpose.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-multiview-pose",
+        "version": "0.1.0",
+        "artifact": "dist/turbowarp-multiview-pose.js",
+        "integrity": "sha256-oEfZ3VxkegPTAWoNtoJN8UIalBrCfkyr5Hbyy0lVrxU=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/kubohiroyamultiviewpose.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-ZpIMMcvVY5RTAZvuXfJwD2pTdBs55oh1iT29swOuzaQ="
+        }
+      }
+    },
+    {
+      "id": "kubohiroyaassetmanager",
+      "path": "extensions/kubohiroyaassetmanager.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-asset-manager",
+        "version": "0.16.0",
+        "artifact": "dist/asset-manager.js",
+        "integrity": "sha256-FT/S2FrprN/s6oAy6JxiMrB4U+1pB0nZthQhc5nbGPs=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/kubohiroyaassetmanager.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-GGGXRwfIajmlctUQINMIJFw/ZQPBmVdhoEBOlk8LK8w="
+        }
+      }
+    },
+    {
+      "id": "turbowarpaframe",
+      "path": "extensions/turbowarpaframe.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-aframe",
+        "version": "0.3.0",
+        "artifact": "dist/turbowarp-aframe.js",
+        "integrity": "sha256-ur4KaBXAKRkTLbj6uEP1xNrJS4V69uX0wXlpLc5/YqQ=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/turbowarpaframe.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-TYkgq6cEb0i+ZarTdsjgsMD0ODQy8WzYaCFelWwaf8E="
+        }
+      }
+    },
+    {
+      "id": "kubohiroyadiagnosticoverlay",
+      "path": "extensions/kubohiroyadiagnosticoverlay.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-diagnostic-overlay",
+        "version": "0.4.0",
+        "artifact": "dist/diagnostic-overlay.js",
+        "integrity": "sha256-HfY7EQ6gzX1yrl4u+qQJc0IwcrEkSBBBTFxyk7zd6r4=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/kubohiroyadiagnosticoverlay.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-2uxmqzjKXCmPadwqvPT1zveL2yi5RStLOv3Ba9SuO2U="
+        }
+      }
+    }
+  ],
+  "extensionBundles": [
+    {
+      "id": "multiviewposefusionapp",
+      "name": "Multiview Pose Fusion App",
+      "members": [
+        "multiviewposefusionshell",
+        "kubohiroyaturbowarptitlemenu",
+        "kubohiroyawebrtc",
+        "kubohiroyayamljson",
+        "kubohiroyamultiviewpose",
+        "kubohiroyaassetmanager",
+        "turbowarpaframe",
+        "kubohiroyadiagnosticoverlay"
+      ]
+    }
+  ]
 }

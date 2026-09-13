@@ -1,0 +1,107 @@
+{
+  "blocks": [
+    {
+      "opcode": "showAppLoading",
+      "blockType": "COMMAND",
+      "text": "show loading [LABEL]",
+      "description": "Shows the loading overlay with an indeterminate progress indicator.",
+      "arguments": {
+        "LABEL": {
+          "type": "STRING",
+          "defaultValue": "Starting"
+        }
+      }
+    },
+    {
+      "opcode": "showAppLoadingProgress",
+      "blockType": "COMMAND",
+      "text": "show loading [LABEL] at [PERCENT] %",
+      "description": "Shows the loading overlay with a determinate progress indicator.",
+      "arguments": {
+        "LABEL": {
+          "type": "STRING",
+          "defaultValue": "Calibrating"
+        },
+        "PERCENT": {
+          "type": "NUMBER",
+          "defaultValue": 0
+        }
+      }
+    },
+    {
+      "opcode": "hideAppLoading",
+      "blockType": "COMMAND",
+      "text": "hide loading",
+      "description": "Hides the loading overlay.",
+      "arguments": {}
+    },
+    {
+      "opcode": "showAppMessage",
+      "blockType": "COMMAND",
+      "text": "show message [MESSAGE]",
+      "description": "Shows the runtime message overlay with operator-facing text.",
+      "arguments": {
+        "MESSAGE": {
+          "type": "STRING",
+          "defaultValue": "Camera is not connected"
+        }
+      }
+    },
+    {
+      "opcode": "showAppMessageWithDetails",
+      "blockType": "COMMAND",
+      "text": "show message [MESSAGE] with details [DETAILS]",
+      "description": "Shows the runtime message overlay and renders a JSON object as diagnostic details.",
+      "arguments": {
+        "MESSAGE": {
+          "type": "STRING",
+          "defaultValue": "Pose pipeline stopped"
+        },
+        "DETAILS": {
+          "type": "STRING",
+          "defaultValue": "{\"code\":\"\"}"
+        }
+      }
+    },
+    {
+      "opcode": "hideAppMessage",
+      "blockType": "COMMAND",
+      "text": "hide message",
+      "description": "Hides the runtime message overlay.",
+      "arguments": {}
+    },
+    {
+      "opcode": "appLocale",
+      "blockType": "REPORTER",
+      "text": "app locale",
+      "description": "Reports the resolved shell locale, either en or ja.",
+      "arguments": {}
+    },
+    {
+      "opcode": "appShellState",
+      "blockType": "REPORTER",
+      "text": "app shell state",
+      "description": "Reports unmounted, ready, or unavailable.",
+      "arguments": {}
+    },
+    {
+      "opcode": "appFeatureFlagState",
+      "blockType": "REPORTER",
+      "text": "feature flag state",
+      "description": "Reports applied, replaced, or too-late. Only applied means the contract extension observed this app's flags.",
+      "arguments": {}
+    },
+    {
+      "opcode": "appFeatureEnabled",
+      "blockType": "BOOLEAN",
+      "text": "feature [FEATURE] requested",
+      "description": "Reports whether this application requested the named contract feature flag.",
+      "arguments": {
+        "FEATURE": {
+          "type": "STRING",
+          "menu": "featureFlags"
+        }
+      }
+    }
+  ]
+}

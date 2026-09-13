@@ -1,72 +1,105 @@
 # TurboWarp拡張 readiness
 
 この文書は[`config/extension-readiness.json`](../config/extension-readiness.json)の人間向け要約です。
+そのJSONは[`config/extension-requirements.json`](../config/extension-requirements.json)と、各アプリが
+実際に埋め込んでいるversionから`pnpm run update:readiness`で生成します。手で編集しないでください。
+
 利用者向けの実装状況は[README](../README.md)、アプリと拡張の責務分担は
 [システム構成](architecture.md)を参照してください。
-
-[epic #1](https://github.com/kubohiroya/multiview-pose/issues/1)の最初の開発gateとして、必要な操作が
-テスト可能なTurboWarp blockになるまでapplication scriptへ組み込みません。表の`Partial`は、公開済み
-拡張に利用可能な機能はあるものの、このアプリが必要とするblockが揃っていない状態を意味します。
 
 ## リポジトリ境界
 
 ```text
 generic extensions
-  camera-source / jsqr / webrtc / yaml-json / asset-manager / aframe
+  camera-source / jsqr / webrtc / yaml-json / asset-manager / aframe /
+  diagnostic-overlay / app-shell / title-menu
                          |
                          v
 turbowarp-multiview-pose
-  安定したmultiview固有blockとcomposite block
+  安定したmultiview固有blockとcomposite block、protocol契約、3D fusion
                          |
                          v
 multiview-pose
-  sb3-toolchainでbuildするcamera app.sb3 / fusion app.sb3
+  app shell拡張、SB3 script、extension pin、camera app.sb3 / fusion app.sb3
 ```
 
-application repositoryはSB3 script、performance DSL、calibration profile、demo asset、extension pin、
-配布artifactを所有する。`turbowarp-multiview-pose`は再利用可能なmultiview固有処理を所有するが、
-完成品applicationは所有しない。
+application repositoryはSB3 script、アプリシェル、performance DSL、calibration profile、demo asset、
+extension pin、配布artifactを所有する。`turbowarp-multiview-pose`は再利用可能なmultiview固有処理を
+所有するが、完成品applicationは所有しない。
 
-## 現在のreadiness（2026-09-13確認）
+## 現在のreadiness（2026-09-14確認）
 
-| 役割 | package/version | 状態 | 利用可能 | 次に必要な作業 |
-|---|---|---|---|---|
-| Camera source | `@kubohiroya/turbowarp-camera-source@0.4.0` | Partial | named camera lifecycleとGPU-backed preview runtime API | [preview blockと実width/height/FPS reporter](https://github.com/kubohiroya/turbowarp-camera-source/issues/8) |
-| QR reader | `@kubohiroya/turbowarp-jsqr@0.3.0` | Ready with dependency | 待機、decode、runtime variable格納、broadcast | Temporary Variables依存を維持するか決定 |
-| WebRTC | `@kubohiroya/turbowarp-webrtc@0.2.0` | Partial | LAN offer/answer、state、reliable JSON message | [latest-data pose channel、`bufferedAmount`、drop policy、stable capability API](https://github.com/kubohiroya/turbowarp-webrtc/issues/10) |
-| DSL values/schema | `@kubohiroya/turbowarp-yaml-json@0.2.0` | Partial | immutable value、JSON/YAML render、JSON Schema validation | [外部から読んだDSL textのsafe parse](https://github.com/kubohiroya/turbowarp-yaml-json/issues/3) |
-| Assets/animation | `@kubohiroya/turbowarp-asset-manager@0.15.0` | Partial | pinned asset、sprite skin、sound、actor sequence | [block API manifestの配布](https://github.com/kubohiroya/turbowarp-asset-manager/issues/116)後にapp asset manifestを確定 |
-| 3D scene | `@kubohiroya/turbowarp-aframe@0.2.0` | Partial | scene graphとanimation block | [PoseFrame3D-to-avatar高位retargeting block](https://github.com/kubohiroya/turbowarp-multiview-pose/issues/4) |
-| Diagnostics | `@kubohiroya/turbowarp-diagnostic-overlay@0.3.0` | Partial | structured stage overlay | [block API manifestの配布](https://github.com/kubohiroya/turbowarp-diagnostic-overlay/issues/13)後にapp readiness payloadを確定 |
-| Multiview blocks | 未release | Missing | repositoryと実装sub-issueは作成済み | [QR表示](https://github.com/kubohiroya/turbowarp-multiview-pose/issues/2)、[pose codec](https://github.com/kubohiroya/turbowarp-multiview-pose/issues/3)、[avatar retarget](https://github.com/kubohiroya/turbowarp-multiview-pose/issues/4)、[MoveNet WebGPU](https://github.com/kubohiroya/turbowarp-multiview-pose/issues/5)、[calibration](https://github.com/kubohiroya/turbowarp-multiview-pose/issues/6) |
+| 役割 | package/version | 状態 | 備考 |
+|---|---|---|---|
+| App UI | `@kubohiroya/turbowarp-title-menu@0.2.0` | Ready | タイトル、アプリメニュー、DSLファイル管理。メニュー項目はblockから定義する |
+| Camera source | `@kubohiroya/turbowarp-camera-source@0.5.0` | Ready | preview block、実width/height/FPS reporter、device列挙まで揃った |
+| QR reader | `@kubohiroya/turbowarp-jsqr@0.3.0` | Ready with dependency | 非同期結果がruntime variable経由なので、Temporary Variables依存が残る |
+| WebRTC | `@kubohiroya/turbowarp-webrtc@0.3.0` | Ready | latest-data pose channel、backpressure、clock sync、frame latency reportまで揃った |
+| DSL values/schema | `@kubohiroya/turbowarp-yaml-json@0.3.0` | Ready | 外部DSL textのsafe parseとJSON Schema検証が揃った |
+| Assets/animation | `@kubohiroya/turbowarp-asset-manager@0.16.0` | Ready | block API manifestを配布済み。app asset manifestは未確定 |
+| 3D scene | `@kubohiroya/turbowarp-aframe@0.3.0` | Ready | scene capability v1を公開済みで、avatar retargetが依存できる |
+| Diagnostics | `@kubohiroya/turbowarp-diagnostic-overlay@0.4.0` | Ready | block API manifestを配布済み。app readiness payloadは未確定 |
+| Multiview blocks | `@kubohiroya/turbowarp-multiview-pose@0.1.0` | Partial | 公開済みは51 block。frame sync／3D fusion／glow stickは上流実装済みだが未release |
+
+すべての固定artifactは`node scripts/check-extension-readiness.mjs --verify-network`で公開bundleと
+manifestに照合済みです。release build自体はnetwork accessなしで、commit済みartifactだけを使用します。
+
+## 未解決の項目
+
+### Multiview Pose 0.2.0のrelease
+
+`turbowarp-multiview-pose`のmainには`frameSyncPatternV1`、`poseFusion3D`、`glowStickMarkers`が
+実装済み（93 block）ですが、npmの公開版は0.1.0（51 block）です。fusion appのfeature flagは0.2.0を
+前提に宣言してあり、0.1.0では該当flagが無視されます。fusion demoのgateは0.2.0のreleaseと
+再pinを待ちます。
+
+### `extensions status`が使えない拡張
+
+`@kubohiroya/turbowarp-multiview-pose`の配布bundleはOpenCV.js WebAssemblyを内包するため13.7 MBあり、
+`sb3-toolchain extensions status`の5 MB上限を超えます。integrityは`sb3-toolchain check`とビルドで
+検証されるので配布物の安全性には影響しませんが、更新確認は`scripts/pin-embedded-extensions.mjs`で
+行います。
+
+### メニュー状態行
+
+`turbowarp-title-menu`にはメニューの状態行を設定するblockが無い。状態行はメニューごとtitle-menuへ
+移ったため、現在SB3からは設定できない。必要になった時点でtitle-menu側へblockを追加する。
+
+### app asset manifestとreadiness payload
+
+Asset ManagerとDiagnostic Overlayはblock APIが確定しましたが、このアプリがどのassetを固定し、
+どのreadiness payloadを表示するかは未定です。SB3スクリプトの実装と同時に決めます。
 
 ## gate判定
 
 ### Camera shell
 
-Camera Source 0.4.0でcamera acquisitionを開始できる。applicationが別の`getUserMedia()`を呼ぶことを
-禁止する。camera shell完了には、GPU previewを`acquireCamera({preview: true})`だけでなくblockから
-実行可能にする必要がある。
+Camera Source 0.5.0でcamera acquisitionとGPU previewをblockから実行できる。applicationが別の
+`getUserMedia()`を呼ぶことを禁止する。
 
 ### QR courier pairing
 
 jsQRとreliable WebRTC pairing経路は利用可能である。QR envelope生成、複数part再構成、Version 40
-render、一時sprite skin lifecycle、cleanupは`turbowarp-multiview-pose`で実装する。manual
+render、一時sprite skin lifecycle、cleanupは`turbowarp-multiview-pose`が実装済みである。manual
 copy/paste pairingをrollback経路として維持する。
 
 ### Pose streaming
 
 MoveNet MultiPoseはTensorFlow.js WebGPU backendで実行し、選択backendが`webgpu`でない場合は起動を
-拒否する。CPU、WASM、WebGL inference fallbackは対象外である。現行WebRTC event blockはcontrol
-messageに使えるが、applicationからbackpressureを制御できないため、置換可能なpose frame channelの
-最終実装には使用しない。
+拒否する。CPU、WASM、WebGL inference fallbackは対象外である。pose frameはWebRTC 0.3.0の
+latest-data channelで送り、`bufferedAmount`とdrop countをreadinessに出す。
 
-### 集約、外部3D service連携、avatar demo
+### Clock sync
 
-child Issue #5で`PoseFrame2D`、`PoseFrame3D`、calibration、session policy、performance DSL v1を
-固定してから、retargetingを実装する。fusion appはtimestamp付きPoseFrame2Dを集約・転送し、外部
-serviceが返したPoseFrame3Dをconsumerへ渡す。frame alignment、履歴、任意過去時点query、
-triangulation、3D solveは実装しない。
+WebRTC 0.3.0の`syncClock`／`clockOffset`／`clockUncertainty`を時刻の正本とする。アプリも
+`turbowarp-multiview-pose`もclock推定を実装しない。frame latencyは同拡張のframe sync report blockへ
+集約する。
+
+### 集約、3D fusion、avatar demo
+
+`PoseFrame2D`、`PoseFrame3D`、calibration、session policy、performance DSL v1は0.1.0で固定済みである。
+fusion appはtimestamp付きPoseFrame2Dを`bufferPoseFrame2D`へ入れ、`fuseBufferedPoseFrame3D`の結果を
+`applyPoseFrame3DToAvatars`へ渡す。このgateは0.2.0のreleaseを待つ。
 
 ## composite blockへ昇格する基準
 
@@ -74,14 +107,18 @@ triangulation、3D solveは実装しない。
 runtime API、resource ownership、非同期state、cleanupを一体で扱う必要があり、SB3 block列では保守が
 困難な操作だけを`turbowarp-multiview-pose`の高位blockへ昇格する。
 
+再利用できる画面（タイトル、アプリメニュー、DSLファイル管理）は`turbowarp-title-menu`が所有する。
+このリポジトリが所有する`@multiview-pose/app-shell`拡張に残すのは、起動時のfeature flag注入と、
+title-menuに相当するprimitiveが無い読み込み・エラーoverlayだけとする。
+
 ## artifact policy
 
 applicationへ埋め込む前に、exact npm version、extension ID、artifact URL、SHA-256、block contractを
-inventoryへ記録する。`node scripts/check-extension-readiness.mjs --verify-network`で公開bundleとmanifestを
-照合する。release build自体はnetwork accessなしで、commit済みartifactだけを使用する。
+inventoryへ記録する。記録は[`config/app-extensions.json`](../config/app-extensions.json)の宣言から
+`pnpm run pin:extensions`で生成し、`pnpm run update:readiness`でinventoryへ反映する。
 
 ## rollback
 
 直前のextension pinを保持し、問題がある機能を依存関係の逆順、すなわちavatar/fusion、pose stream、
-QR courier、previewの順で無効化する。camera lifecycleとmanual WebRTC pairingは独立してtest可能な
-状態を維持する。
+QR courier、previewの順で無効化する。機能の無効化はapp shellのfeature flag宣言を変更して再ビルド
+することで行う。camera lifecycleとmanual WebRTC pairingは独立してtest可能な状態を維持する。

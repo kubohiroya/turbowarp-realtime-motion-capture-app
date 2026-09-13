@@ -5,5 +5,14 @@
   "scripts": {
     "build": "node ../../scripts/ensure-source-directories.mjs fusion-app && sb3-toolchain build source --output dist/fusion-app.sb3 --yes",
     "check": "node ../../scripts/ensure-source-directories.mjs fusion-app && sb3-toolchain check source"
+  },
+  "devDependencies": {
+    "@kubohiroya/turbowarp-aframe": "0.3.0",
+    "@kubohiroya/turbowarp-asset-manager": "0.16.0",
+    "@kubohiroya/turbowarp-diagnostic-overlay": "0.4.0",
+    "@kubohiroya/turbowarp-multiview-pose": "0.1.0",
+    "@kubohiroya/turbowarp-title-menu": "0.2.0",
+    "@kubohiroya/turbowarp-webrtc": "0.3.0",
+    "@kubohiroya/turbowarp-yaml-json": "0.3.0"
   }
 }

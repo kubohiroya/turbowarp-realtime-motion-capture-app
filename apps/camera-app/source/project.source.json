@@ -30,8 +30,24 @@
     }
   ],
   "monitors": [],
-  "extensions": [],
-  "extensionURLs": {},
+  "extensions": [
+    "multiviewposecamerashell",
+    "kubohiroyaturbowarptitlemenu",
+    "kubohiroyacamerasource",
+    "kubohiroyajsqr",
+    "kubohiroyawebrtc",
+    "kubohiroyamultiviewpose",
+    "kubohiroyadiagnosticoverlay"
+  ],
+  "extensionURLs": {
+    "multiviewposecamerashell": "embedded-extension:extensions/multiviewposecamerashell.js",
+    "kubohiroyaturbowarptitlemenu": "embedded-extension:extensions/kubohiroyaturbowarptitlemenu.js",
+    "kubohiroyacamerasource": "embedded-extension:extensions/kubohiroyacamerasource.js",
+    "kubohiroyajsqr": "embedded-extension:extensions/kubohiroyajsqr.js",
+    "kubohiroyawebrtc": "embedded-extension:extensions/kubohiroyawebrtc.js",
+    "kubohiroyamultiviewpose": "embedded-extension:extensions/kubohiroyamultiviewpose.js",
+    "kubohiroyadiagnosticoverlay": "embedded-extension:extensions/kubohiroyadiagnosticoverlay.js"
+  },
   "meta": {
     "semver": "3.0.0",
     "vm": "11.3.0",

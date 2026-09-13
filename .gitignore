@@ -5,3 +5,12 @@ coverage/
 *.local.json
 apps/*/local/
 packages/*/dist/
+
+# Vendored extension bundles are regenerated from the pinned packages in node_modules
+# by scripts/pin-embedded-extensions.mjs. Their SHA-256 stays recorded in
+# embedded-extensions.json, and the API manifests next to them stay tracked.
+apps/*/source/extensions/*.js
+
+# Release SB3s are 6 MB each. apps/<app>/release.json records the source identity, SHA-256, and
+# size instead, and scripts/release-snapshot.mjs rebuilds and verifies them.
+apps/*/dist/

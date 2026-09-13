@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "documentation": "Embedded extension composition for each SB3. The first member of every bundle is the app shell, because it writes the contract feature flags the later members read while they are evaluated. The shared title, menu, and DSL file UI follows it.",
+  "apps": [
+    {
+      "app": "camera-app",
+      "bundle": {
+        "id": "multiviewposecameraapp",
+        "name": "Multiview Pose Camera App"
+      },
+      "extensions": [
+        {
+          "id": "multiviewposecamerashell",
+          "provider": "workspace",
+          "package": "@multiview-pose/app-shell",
+          "directory": "packages/app-shell",
+          "artifact": "dist/camera-app/camera-app-shell.js"
+        },
+        {
+          "id": "kubohiroyaturbowarptitlemenu",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-title-menu",
+          "artifact": "dist/turbowarp-title-menu.js",
+          "apiManifest": "dist/extension-manifest.json"
+        },
+        {
+          "id": "kubohiroyacamerasource",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-camera-source",
+          "artifact": "dist/camera-source.js",
+          "apiManifest": "dist/extension-manifest.json"
+        },
+        {
+          "id": "kubohiroyajsqr",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-jsqr",
+          "artifact": "dist/jsqr.js",
+          "apiManifest": "dist/extension-manifest.json"
+        },
+        {
+          "id": "kubohiroyawebrtc",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-webrtc",
+          "artifact": "dist/turbowarp-webrtc.js",
+          "apiManifest": "dist/extension-manifest.json"
+        },
+        {
+          "id": "kubohiroyamultiviewpose",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-multiview-pose",
+          "artifact": "dist/turbowarp-multiview-pose.js",
+          "apiManifest": "dist/extension-manifest.json"
+        },
+        {
+          "id": "kubohiroyadiagnosticoverlay",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-diagnostic-overlay",
+          "artifact": "dist/diagnostic-overlay.js",
+          "apiManifest": "dist/extension-manifest.json"
+        }
+      ]
+    },
+    {
+      "app": "fusion-app",
+      "bundle": {
+        "id": "multiviewposefusionapp",
+        "name": "Multiview Pose Fusion App"
+      },
+      "extensions": [
+        {
+          "id": "multiviewposefusionshell",
+          "provider": "workspace",
+          "package": "@multiview-pose/app-shell",
+          "directory": "packages/app-shell",
+          "artifact": "dist/fusion-app/fusion-app-shell.js"
+        },
+        {
+          "id": "kubohiroyaturbowarptitlemenu",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-title-menu",
+          "artifact": "dist/turbowarp-title-menu.js",
+          "apiManifest": "dist/extension-manifest.json"
+        },
+        {
+          "id": "kubohiroyawebrtc",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-webrtc",
+          "artifact": "dist/turbowarp-webrtc.js",
+          "apiManifest": "dist/extension-manifest.json"
+        },
+        {
+          "id": "kubohiroyayamljson",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-yaml-json",
+          "artifact": "dist/turbowarp-yaml-json.js",
+          "apiManifest": "dist/extension-manifest.json"
+        },
+        {
+          "id": "kubohiroyamultiviewpose",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-multiview-pose",
+          "artifact": "dist/turbowarp-multiview-pose.js",
+          "apiManifest": "dist/extension-manifest.json"
+        },
+        {
+          "id": "kubohiroyaassetmanager",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-asset-manager",
+          "artifact": "dist/asset-manager.js",
+          "apiManifest": "dist/extension-manifest.json"
+        },
+        {
+          "id": "turbowarpaframe",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-aframe",
+          "artifact": "dist/turbowarp-aframe.js",
+          "apiManifest": "dist/extension-manifest.json"
+        },
+        {
+          "id": "kubohiroyadiagnosticoverlay",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-diagnostic-overlay",
+          "artifact": "dist/diagnostic-overlay.js",
+          "apiManifest": "dist/extension-manifest.json"
+        }
+      ]
+    }
+  ]
+}
