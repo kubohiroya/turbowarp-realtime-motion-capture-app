@@ -1,8 +1,8 @@
 # ローカルホストによる配布と運用（設計中）
 
 > [!NOTE]
-> 方針の検討結果です。ホスト本体はまだありません。実装済みなのは
-> [`packages/local-host`](../packages/local-host)のrun lockだけです。未検証の項目を「未検証」として
+> ホストの中核は[`packages/local-host`](../packages/local-host)に実装済みです。残っているのは
+> プレイヤーを生成してバイナリへ同梱するビルド側と、CLIです。未検証の項目を「未検証」として
 > 明示しています。
 
 配布SB3をTurboWarpで開く運用には、ホストページを誰も所有していないという問題があります。この文書は、
@@ -292,6 +292,39 @@ PCで同じ番号を使うのはそもそも問題ではありません。
 [永続化設計](persistence.md)がIndexedDBをキャッシュと位置づけ、ファイルへのexport／importを正の
 保存経路としている理由の1つです。
 
+## 実装状況
+
+[`packages/local-host/src/host.ts`](../packages/local-host/src/host.ts)の`startLocalHost`が、この文書の
+起動シーケンスを実装しています。
+
+1. プレイヤーを読む（無ければlockを取る前に失敗する）
+2. run lockを取る（取れなければ`already-running`）
+3. 固定ポートでbindする（`EADDRINUSE`ならlockを解放し、占有元を特定して分類する）
+4. DSLのwatcherを開始し、SSEへ流す
+
+`/app`でプレイヤーを配信し、ホストの`/`は`/app`へtokenごとredirectします。接続時には必ず1件emitする
+ので、DSLを一度も変更していないページでもストリームが開きます。
+
+失敗は運用者が次にとる行動ごとに分かれます。
+
+| 戻り値 | 意味 |
+|---|---|
+| `already-running` | 同じアプリが起動中。holderにpidと起動時刻が入る |
+| `port-held-by-application` | もう一方のアプリが占有。**アプリ名が確定している** |
+| `port-unavailable` | lockが無い。アプリ名は出さない |
+| `player-missing` | プレイヤーが読めない。lockを取る前に失敗する |
+
+### 通しの実測
+
+パッケージ済みのcamera app（27.1 MB）を`startLocalHost`で配信し、ブラウザで読み込みました。
+
+- origin は `http://127.0.0.1:49711`。宣言した固定ポートのとおり
+- 合成拡張`multiviewposecameraapp`が実VMで読み込まれ、feature flagも5つ有効
+- **IndexedDBに書いた内容が、ホストを再起動しても残る。** 再起動でtokenは変わりましたが、tokenは
+  クエリでoriginに含まれないため保存領域に影響しません。固定ポートがoriginを安定させるという前提が
+  実測で確認できました
+- ホストはNodeとBunで同一に動作します（起動、配信、401、DSLの初回publishと追随、二重起動の拒否、停止）
+
 ## 単体バイナリ
 
 Node.jsを会場の全PCへインストールする運用を避けるため、ランタイムを同梱した単体実行ファイルにします。
@@ -368,7 +401,6 @@ Webからダウンロードさせる段階になったら、Apple Developer Prog
 - `turbowarp-local-preview`がBunの`node:`互換でそのまま動くか
 - 起動時のポート確認と実際の待ち受け開始の間に他プロセスへ奪われる余地をどう扱うか
 - run lockの置き場が、対象OSすべてでユーザー単位に分離されているか（共有tempのパーミッション）
-- 固定portのoriginでIndexedDBが期待どおり永続するか
 - hatの発火とUI overlayが、packager化したruntimeでも動くか（拡張の読み込みとパレット生成までは確認済み）
 - ad-hoc署名したクロスコンパイル済みバイナリがApple Siliconで起動するか
 

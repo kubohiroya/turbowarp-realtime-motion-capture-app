@@ -9,7 +9,7 @@ import {
   findPortHolder,
   type AcquireRunLockOptions,
   type RunLockRecord
-} from '../src/run-lock.js';
+} from '../src/run-lock.ts';
 
 let directory: string;
 let clock: number;

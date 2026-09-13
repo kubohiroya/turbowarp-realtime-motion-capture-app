@@ -2,7 +2,7 @@ import {createServer, type Server} from 'node:net';
 
 import {afterEach, describe, expect, it} from 'vitest';
 
-import {defaultIsPortBound, defaultIsProcessAlive} from '../src/run-lock.js';
+import {defaultIsPortBound, defaultIsProcessAlive} from '../src/run-lock.ts';
 
 /**
  * The other suite injects both probes, so these cover the real ones.
