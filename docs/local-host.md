@@ -256,20 +256,45 @@ PCで同じ番号を使うのはそもそも問題ではありません。
 
 Node.jsを会場の全PCへインストールする運用を避けるため、ランタイムを同梱した単体実行ファイルにします。
 
-| | Bun | Deno |
-|---|---|---|
-| Node API互換 | 高い | 良好だが穴がある |
-| コマンド | `bun build --compile --target=bun-<os>-<arch>` | `deno compile --target` |
-| 権限モデル | なし | `--allow-net=127.0.0.1:<port>`などを焼き込める |
-| サイズ | 50〜100MB程度 | 80〜120MB程度 |
+**Bunを採用します。** `turbowarp-local-preview`が`node:http` / `node:fs` / `node:crypto` /
+`node:net` / `node:stream`で書かれているため互換性が論点でしたが、実測で解決しました。
 
-`turbowarp-local-preview`は`node:http` / `node:fs` / `node:crypto` / `node:net` / `node:stream`で
-書かれているため、**Bunの方がそのまま動く確率が高く、第一候補**とします。Denoの権限モデルは、会場の
-ファイルを読み書きしローカルサーバを開くアプリの範囲を宣言的に絞れる点で優れているので、互換性の
-問題が出ないと確認できた場合の対案とします。
+### 実測（Bun 1.4.2、macOS arm64）
+
+`turbowarp-local-preview` 0.1.0に対して9項目を確認し、**Node 26と同一の結果（9/9）**でした。
+
+- loopback hostの起動、hostページの配信
+- tokenなしのリクエストを401で拒否
+- アプリ定義routeの配信、lifecycle snapshot
+- SSEの接続とイベント配信
+- file watcherの初回publishと、ディスク上の変更への追随
+
+`bun build --compile`も期待どおり動きます。
+
+| target | サイズ | 備考 |
+|---|---|---|
+| `bun-darwin-arm64`（native） | 60 MB | 上記9項目をバイナリのまま通過 |
+| `bun-darwin-x64` | 66 MB | cross-compile。署名あり |
+| `bun-linux-x64` | 78 MB | cross-compile |
+| `bun-windows-x64` | 82 MB | cross-compile |
+
+**`bun build --compile`はad-hoc署名を自動で付けます**（`flags=0x20002(adhoc,linker-signed)`）。
+Apple Siliconが要求する「無署名の実行ファイルは起動できない」条件は、追加作業なしで満たされます。
+Gatekeeperのダウンロード警告は別の話で、これは消えません（[署名](#署名)を参照）。
+
+Denoは対案として残します。権限モデル（`--allow-net=127.0.0.1:<port>`など）を焼き込める点は優れて
+いますが、Bunで動くと分かった以上、いま乗り換える理由はありません。
 
 この選択は低リスクかつ可逆です。バイナリの仕事はHTTPサーバとファイル監視だけで、重い処理
 （TurboWarp VM、姿勢推定、3D統合）はすべてブラウザ側で動きます。
+
+### 実測で判明した実装上の要件
+
+`createLoopbackPreviewHost`は、**書き込みが発生するまでSSEのヘッダをflushしません**。保持イベントが
+無い状態でEventSourceが接続すると、最初のイベントが来るまで接続が開いたことになりません。
+
+したがってホスト実装は、**接続直後に必ず1つ書き込みます**（コメント行かheartbeat）。そうしないと、
+DSLを一度も変更していない起動直後のページが、接続できているのかどうか判別できません。
 
 ## 署名
 
@@ -279,9 +304,9 @@ Node.jsを会場の全PCへインストールする運用を避けるため、�
 
 - Gatekeeperの警告が出るのは`com.apple.quarantine`属性が付いているときだけです。この属性を付けるのは
   ブラウザ、メール、AirDropです。**USBメモリやファイル共有でコピーした場合は付きません**。
-- ただしApple Siliconでは、署名のない実行ファイルはそもそも起動できません。`codesign -s -`による
-  ad-hoc署名が必要ですが、これは**無料**です。クロスコンパイルしたmacOS向けバイナリには自分で
-  当てる必要があります。ad-hoc署名はGatekeeperのダウンロード警告を消すものではありません。
+- Apple Siliconでは署名のない実行ファイルはそもそも起動できませんが、**`bun build --compile`が
+  ad-hoc署名を自動で付ける**ことを実測で確認しました（cross-compileしたdarwin-x64も署名あり）。
+  追加作業は要りません。ad-hoc署名はGatekeeperのダウンロード警告を消すものではありません。
 - Webからダウンロードさせる形にして警告を消すには、Developer ID署名とnotarizationが必要で、
   **Apple Developer Program（年額$99程度）への加入が要ります**。無料のApple IDでは取得できません。
 
