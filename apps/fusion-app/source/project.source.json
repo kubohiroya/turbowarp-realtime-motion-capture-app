@@ -6,7 +6,54 @@
       "variables": {},
       "lists": {},
       "broadcasts": {},
-      "blocks": {},
+      "blocks": {
+        "s1b1": {
+          "opcode": "event_whenflagclicked",
+          "next": "s1b2",
+          "parent": null,
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": true,
+          "x": 48,
+          "y": 48
+        },
+        "s1b2": {
+          "opcode": "multiviewposefusionshell_showAppLoading",
+          "next": "s1b3",
+          "parent": "s1b1",
+          "inputs": {
+            "LABEL": [
+              1,
+              [
+                10,
+                "統合アプリを起動しています"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s1b3": {
+          "opcode": "multiviewposefusionshell_hideAppLoading",
+          "next": "s1b4",
+          "parent": "s1b2",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s1b4": {
+          "opcode": "kubohiroyaturbowarptitlemenu_showTitle",
+          "next": null,
+          "parent": "s1b3",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        }
+      },
       "comments": {},
       "currentCostume": 0,
       "costumes": [
@@ -30,8 +77,26 @@
     }
   ],
   "monitors": [],
-  "extensions": [],
-  "extensionURLs": {},
+  "extensions": [
+    "multiviewposefusionshell",
+    "kubohiroyaturbowarptitlemenu",
+    "kubohiroyawebrtc",
+    "kubohiroyayamljson",
+    "kubohiroyamultiviewpose",
+    "kubohiroyaassetmanager",
+    "turbowarpaframe",
+    "kubohiroyadiagnosticoverlay"
+  ],
+  "extensionURLs": {
+    "multiviewposefusionshell": "embedded-extension:extensions/multiviewposefusionshell.js",
+    "kubohiroyaturbowarptitlemenu": "embedded-extension:extensions/kubohiroyaturbowarptitlemenu.js",
+    "kubohiroyawebrtc": "embedded-extension:extensions/kubohiroyawebrtc.js",
+    "kubohiroyayamljson": "embedded-extension:extensions/kubohiroyayamljson.js",
+    "kubohiroyamultiviewpose": "embedded-extension:extensions/kubohiroyamultiviewpose.js",
+    "kubohiroyaassetmanager": "embedded-extension:extensions/kubohiroyaassetmanager.js",
+    "turbowarpaframe": "embedded-extension:extensions/turbowarpaframe.js",
+    "kubohiroyadiagnosticoverlay": "embedded-extension:extensions/kubohiroyadiagnosticoverlay.js"
+  },
   "meta": {
     "semver": "3.0.0",
     "vm": "11.3.0",

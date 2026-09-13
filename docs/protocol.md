@@ -14,7 +14,7 @@
 | Camera calibration | `twmp/camera-calibration` | 画像geometry、intrinsic、distortion、camera-to-world transform |
 | PoseFrame2D v1 | `twmp/pose-frame-2d` | 最大6人分のtracking IDと順序固定COCO-17画像keypoint |
 | PoseFrame2D v2 | `twmp/pose-frame-2d` | v1に加えて、人物ごとのサイリウムmarker観測（最大4件） |
-| PoseFrame3D | `twmp/pose-frame-3d` | 外部3Dサービスから受け取る最大6人分の3D姿勢と品質情報 |
+| PoseFrame3D | `twmp/pose-frame-3d` | 最大6人分の3D姿勢と品質情報 |
 | Performance DSL | `twmp/performance-dsl` | 最大6人分の色、開始／終了演出、avatar asset |
 
 正本の定義は`turbowarp-multiview-pose`の`src/protocol/schemas.ts`にあり、生成したJSON Schemaは
@@ -38,17 +38,19 @@ pairing offer／answer、ICE credential、QR courier partは一時的なprotocol
 policyまたはperformance DSLのfieldではなく、永続的なapp設定や配布SB3へ書き込んではいけません。
 
 calibrationとperformance DSLは永続化できますが、適用前にschema versionと参照先を検証します。
-会場固有のファイルをリポジトリへcommitしない方針は[SB3開発ガイド](repository-layout.md)を参照して
-ください。
+保存先と復元手順は[永続化設計](persistence.md)、会場固有のファイルをリポジトリへcommitしない方針は
+[SB3開発ガイド](repository-layout.md)を参照してください。
 
 ## timestampと3D処理
 
-`captureTimestampUs`と`timestampUs`は、別途提供される同期済みlocal time serviceが生成した値を
-そのまま運びます。application scriptは値を作り直したり、受信時刻で置き換えたりしません。
+`captureTimestampUs`と`timestampUs`は、WebRTC拡張のclock sync blockが提供する同期済みlocal time
+serviceの値をそのまま運びます。application scriptは値を作り直したり、受信時刻で置き換えたりしません。
+clock offsetの推定、probe、ping／pongはWebRTC拡張が所有し、`turbowarp-multiview-pose`も本アプリも
+実装しません。
 
 複数camera由来のtimestamp付きPoseFrame2Dの時刻対応付け、履歴保持、triangulationによる
-PoseFrame3D復元は外部3Dサービスが実装します。本projectはPoseFrame2Dを集約してserviceへ転送し、
-返されたPoseFrame3Dを表示consumerへ渡すだけで、frame alignment、history query、triangulation、
-3D solveを自前で実装しません。
+PoseFrame3D復元は、高位拡張`turbowarp-multiview-pose`の`poseFusion3D`が実装します。fusion appは
+受信したPoseFrame2Dをfusion blockのbufferへ入れ、統合結果を表示consumerへ渡すだけで、frame
+alignment、history query、triangulation、3D solveを自前で実装しません。
 
 アプリ全体でのデータフローは[システム構成](architecture.md)を参照してください。

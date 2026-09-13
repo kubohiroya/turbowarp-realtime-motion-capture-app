@@ -1,0 +1,135 @@
+{
+  "formatVersion": 1,
+  "id": "kubohiroyacamerasource",
+  "blocks": [
+    {
+      "opcode": "cameraDeviceCount",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "cameraDeviceIdAt",
+      "blockType": "REPORTER",
+      "arguments": [
+        {
+          "id": "INDEX",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "opcode": "cameraDeviceIdReporter",
+      "blockType": "REPORTER",
+      "arguments": [
+        {
+          "id": "CAMERA_ID",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "opcode": "cameraDeviceLabelAt",
+      "blockType": "REPORTER",
+      "arguments": [
+        {
+          "id": "INDEX",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "opcode": "cameraFrameHeight",
+      "blockType": "REPORTER",
+      "arguments": [
+        {
+          "id": "CAMERA_ID",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "opcode": "cameraFrameRate",
+      "blockType": "REPORTER",
+      "arguments": [
+        {
+          "id": "CAMERA_ID",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "opcode": "cameraFrameWidth",
+      "blockType": "REPORTER",
+      "arguments": [
+        {
+          "id": "CAMERA_ID",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "opcode": "hideCameraPreview",
+      "blockType": "COMMAND",
+      "arguments": [
+        {
+          "id": "CAMERA_ID",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "opcode": "isCameraRunning",
+      "blockType": "BOOLEAN",
+      "arguments": [
+        {
+          "id": "CAMERA_ID",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "opcode": "refreshCameraDevices",
+      "blockType": "COMMAND",
+      "arguments": []
+    },
+    {
+      "opcode": "showCameraPreview",
+      "blockType": "COMMAND",
+      "arguments": [
+        {
+          "id": "CAMERA_ID",
+          "type": "STRING"
+        },
+        {
+          "id": "MIRRORED",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "opcode": "startSharedCamera",
+      "blockType": "COMMAND",
+      "arguments": [
+        {
+          "id": "CAMERA_ID",
+          "type": "STRING"
+        },
+        {
+          "id": "DEVICE_ID",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "opcode": "stopSharedCamera",
+      "blockType": "COMMAND",
+      "arguments": [
+        {
+          "id": "CAMERA_ID",
+          "type": "STRING"
+        }
+      ]
+    }
+  ],
+  "menus": []
+}

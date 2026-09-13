@@ -4,8 +4,8 @@
 目的と現在の状態は[README](../README.md)、実行時の責務は[システム構成](architecture.md)を参照して
 ください。
 
-`multiview-pose`は2つのTurboWarpアプリを含むpnpm monorepoです。展開済みSB3ソースを正本とし、
-生成した`.sb3`を決定的な配布artifactとして扱います。
+`multiview-pose`は2つのTurboWarpアプリとアプリシェル拡張を含むpnpm monorepoです。展開済みSB3
+ソースを正本とし、生成した`.sb3`を決定的な配布artifactとして扱います。
 
 ## ディレクトリ構成
 
@@ -18,27 +18,50 @@ apps/
       embedded-extensions.json
       assets/
       extensions/
-    dist/camera-app.sb3
+    release.json
+    dist/camera-app.sb3（ignore）
   fusion-app/
     source/...
-    dist/fusion-app.sb3
+    release.json
+    dist/fusion-app.sb3（ignore）
+packages/
+  app-shell/            アプリ所有のTurboWarp拡張（feature flagと画面）
+  local-host/           ローカルホストの部品（[ローカルホスト](local-host.md)）
+  sb3-script/           SB3のblock列を組み立てる
 config/
-  extension-readiness.json
+  app-extensions.json        各SB3へ埋め込む拡張の宣言
+  local-host.json            ローカルホストの固定port（[ローカルホスト](local-host.md)）
+  extension-requirements.json readinessの要求定義（手で編集する）
+  extension-readiness.json    生成物（手で編集しない）
 docs/
-scripts/
+scripts/                     TypeScriptで書き、`node scripts/<name>.ts`で直接実行する
 ```
 
 各`source/`内の役割:
 
 | path | 内容 |
 |---|---|
-| `project.source.json` | TurboWarp projectの展開済み正本 |
+| `project.source.json` | TurboWarp projectの展開済み正本。`blocks`、`extensions`、`extensionURLs`は生成される |
 | `sb3-source.json` | SB3へ収録するproject、asset、entryの指定 |
-| `embedded-extensions.json` | SB3に埋め込む検証済み拡張の一覧 |
+| `embedded-extensions.json` | 埋め込む拡張、その固定元、static bundleの構成。生成される |
 | `assets/` | costume、soundなどのproject asset |
-| `extensions/` | integrityを確認して固定した拡張bundle |
+| `extensions/` | 固定した拡張bundleとAPI manifest。生成される |
+
+`extensions/*.js`はcommitしません。`node_modules`の固定versionと`packages/app-shell`のビルド出力から
+再生成でき、合計27 MBに達するためです。代わりに、その`.js`のSHA-256を`embedded-extensions.json`が、
+block APIを`extensions/*.manifest.json`が記録し、どちらもcommitします。つまりreviewできる形で
+固定されたまま、リポジトリには大きなbundleが入りません。
+
+`pnpm check`と各アプリの`check`／`build`は、実行の最初に`.js`を再生成します。cloneして
+`pnpm install`した直後でも、追加の手順なしにビルドできます。
 
 `dist/`のSB3を直接編集して変更を正本にしないでください。変更は`source/`へ反映し、再ビルドします。
+
+`dist/`もcommitしません。生成物が1つ6 MBあり、ソースを1行変えるたびに同じ量が積まれるためです。
+代わりに`apps/<app>/release.json`が、展開済みソース全体のidentityと、そこから生成されるarchiveの
+SHA-256・サイズを記録し、これをcommitします。`pnpm test`はSB3を2回ビルドして、決定性、ソース
+identityの一致、記録したSHA-256との一致を検証します。ソースを意図して変えたときは
+`pnpm run snapshot`で記録を更新します。
 
 ## セットアップと検証
 
@@ -53,49 +76,128 @@ pnpm check
 
 1. repository構造とJSONの妥当性
 2. text fileの改行・末尾空白
-3. Node.js scriptの構文
-4. extension readiness inventoryの整合性
-5. camera app／fusion appのSB3 source validation
-6. 同じsourceから同じarchiveを生成できること
-7. 両アプリのSB3 build
+3. repository scriptとworkspace packageの型検査
+4. extension readiness inventoryの生成一致と整合性（拡張の再生成後に実行）
+5. `packages/`の検査（app shellのtypecheck、test、build）
+6. 埋め込み拡張の再生成と、commit済みの固定内容との一致
+7. 生成されたstatic bundleのmember評価順が宣言どおりで、feature flagが契約拡張より先に書かれること
+8. release snapshotの検証（2回ビルドしての決定性、ソースidentity、記録したSHA-256）
+9. 両アプリのSB3 build
 
 個別にも検証・ビルドできます。
 
 ```bash
+pnpm --filter @multiview-pose/app-shell check
 pnpm --filter @multiview-pose/camera-app check
 pnpm --filter @multiview-pose/camera-app build
-pnpm --filter @multiview-pose/fusion-app check
-pnpm --filter @multiview-pose/fusion-app build
 ```
 
-ローカルではビルド後に`git status --short`と`git diff -- apps/camera-app/dist apps/fusion-app/dist`を
-確認し、生成物の差分がソース変更に対応していることをreviewします。CIはclean checkoutで
-`git diff --exit-code`を実行し、commit済みソースから生成物が変化しないことを確認します。
+ローカルではビルド後に`git status --short`と`git diff -- apps/*/release.json`を確認し、記録された
+SHA-256の変化がソース変更に対応していることをreviewします。CIはclean checkoutで
+`git diff --exit-code`を実行し、commit済みソースから生成物と記録が変化しないことを確認します。
+
+## アプリシェル拡張
+
+`packages/app-shell`はcamera app用とfusion app用の2つのTurboWarp拡張bundleをビルドします。
+
+```bash
+pnpm --filter @multiview-pose/app-shell build
+# packages/app-shell/dist/camera-app/camera-app-shell.js
+# packages/app-shell/dist/fusion-app/fusion-app-shell.js
+```
+
+このシェルが持つのは、feature flagの注入と、読み込み・エラーのoverlayだけです。タイトル画面、
+アプリメニュー、DSLファイル管理は`@kubohiroya/turbowarp-title-menu`が担当し、bundleの2番目の
+memberとして入ります。
+
+シェルは`turbowarp-multiview-pose`が読む`globalThis.__TWMP_FEATURE_FLAGS__`を書き込みます。
+契約拡張はモジュール評価時にflagを固定するため、**シェルは必ずbundleの先頭member**でなければ
+なりません。`scripts/pin-embedded-extensions.ts`はこの順序を強制し、先頭が`workspace` providerで
+なければビルドを失敗させます。さらに`scripts/check-bundle-order.ts`が、生成されたbundleの中で
+実際にshellのソースが契約拡張より前へ置かれていることを確認します。
+
+flagの適用結果は実行時にも`feature flag state`reporterで確認できます。`applied`以外なら、
+bundleの並び順が壊れています。
+
+有効にするflagは`packages/app-shell/src/apps/`で宣言します。機能を切り戻すときはここからflagを
+外して再ビルドし、`pnpm run pin:extensions`で埋め込み直します。アプリメニューの項目はSB3側で
+`add app menu action`により登録するので、ここには書きません。
+
+## アプリのスクリプト
+
+SB3のblock列は`scripts/app-scripts/`のTypeScriptを正本とし、`pnpm run build:scripts`で
+`project.source.json`の`blocks`へ生成します。
+
+```ts
+script({x: 48, y: 48}, [
+  block('event_whenflagclicked'),
+  block(`${shell}_showAppLoading`, {LABEL: text('カメラアプリを起動しています')}),
+  block(`${cameraSource}_refreshCameraDevices`),
+  block(`${shell}_hideAppLoading`),
+  block(`${titleMenu}_showTitle`)
+]);
+```
+
+idで相互参照する平坦なblock mapは、diffを見ても何が変わったか分かりません。読む対象は上のコードで、
+block mapは生成物です。idは`s<script番号>b<block番号>`で位置から決まるので、無関係な編集で他の
+スクリプトが振り直されることもありません。
+
+opcodeは各拡張が公開しているそのままの名前を書きます。static bundleの名前空間付与はビルドが行うため、
+ソースは拡張のドキュメントと突き合わせて読めます。
+
+## 会場向けバイナリ
+
+```bash
+pnpm build && pnpm run build:player && pnpm run build:binary
+```
+
+`build:player`はSB3を`@turbowarp/packager`で自己完結HTMLへ変換し、`build:binary`がそれを同梱した
+単体バイナリを`bun build --compile`で生成します。生成物は`apps/<app>/dist/`に出るためcommitしません。
+bunはPATHに要求し、リポジトリの依存にはしていません。詳細は[ローカルホスト](local-host.md)を参照して
+ください。
 
 ## ローカルデータ
 
 会場固有のカメラ選択、calibration draft、pairing code、ICE credential、session IDはcommitしません。
 端末固有データは`apps/<app>/local/`または`*.local.json`に保存します。これらのpathはignoreされ、
-`project.source.json`から参照してはいけません。
+`project.source.json`から参照してはいけません。実行時の保存先の方針は
+[永続化設計](persistence.md)を参照してください。
 
 配布SB3の生成前には、一時的な接続情報や個人・会場固有データが`source/`へ混入していないことを
 確認します。
 
 ## 拡張機能の追加・更新
 
-埋込extensionは、exact npm version、extension ID、artifact SHA-256、block API manifestがreadiness
-inventoryを通過してから`source/extensions/`へcopyします。
+埋め込み拡張は`config/app-extensions.json`で宣言し、スクリプトで固定します。`source/extensions/`と
+`embedded-extensions.json`、`project.source.json`の`extensions`／`extensionURLs`は生成物です。
+手で編集しないでください。
 
-1. `config/extension-readiness.json`へversion、URL、SHA-256、block contractを記録する。
-2. `pnpm check:extensions`でinventoryの整合性を確認する。
-3. 必要に応じて`pnpm check:extensions -- --verify-network`で公開bundleとmanifestを照合する。
-4. 検証済みbundleを`source/extensions/`へ固定し、独立したreview可能な差分にする。
+1. 対象アプリの`package.json`へexact versionのnpm依存を追加する。
+2. `pnpm install`で`node_modules`へ取り込む。
+3. `config/app-extensions.json`へextension ID、package、artifact path、API manifest pathを宣言する。
+4. `pnpm run pin:extensions`でJavaScriptとmanifestをcopyし、SHA-256を記録する。commit対象の
+   ファイルを書き換えるのはこの`--write`付きの実行だけで、`pnpm check`が呼ぶ検査側は、生成物が
+   commit済みの内容と一致しない場合に失敗する。
+5. `pnpm run update:readiness`でreadiness inventoryを再生成する。
+6. `node scripts/check-extension-readiness.ts --verify-network`で公開bundleと照合する。
+7. `pnpm check`で全体を検証し、生成された差分を独立したreview可能なcommitにする。
 
 release build中にextensionを暗黙にdownload／updateしてはいけません。現在の導入可否は
 [TurboWarp拡張 readiness](extension-readiness.md)を参照してください。
 
+## static bundleについて
+
+各アプリは埋め込んだ拡張を1つのstatic bundleへまとめます。TurboWarpの拡張許可プロンプトが
+アプリごとに1回になり、bundle memberの評価順が宣言順に固定されます。bundleの構成は
+`embedded-extensions.json`の`extensionBundles`にあり、これも`config/app-extensions.json`から
+生成されます。
+
+生成されたSB3では、blockのopcodeに`<memberId>__`が付きます。展開済みソース側のopcodeは元のまま
+なので、ソースを読むときはbundle前の名前で読みます。
+
 ## ロールバック
 
-最後に検証済みの`.sb3` release artifactを保持します。toolchain更新で想定外の出力差分が生じた場合は、
-直前のexact versionへ戻し、commit済みの展開済みソースから再ビルドします。アプリ機能は個別の
-既定OFF flagで制御します。repository bootstrap自体にruntime flagはありません。
+最後に検証済みのrelease snapshotを保持します。SB3そのものはreleaseに添付し、リポジトリには
+置きません。toolchain更新で想定外の出力差分が生じた場合は、
+直前のexact versionへ戻し、commit済みの展開済みソースから再ビルドします。アプリ機能はapp shellの
+feature flag宣言で制御します。

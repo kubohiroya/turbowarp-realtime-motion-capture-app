@@ -2,11 +2,14 @@ packages:
   - apps/*
   - packages/*
 
-# @kubohiroya/sb3-toolchain 0.13.0 adds tryParseExtensionApiManifest for
-# scripts/check-extension-readiness.ts. It is our own package, published from
-# the merged sb3-toolchain main, and its registry tarball matches the artifact
-# verified locally. Drop this entry once the release clears the age cutoff.
 minimumReleaseAgeExclude:
-  - '@kubohiroya/sb3-toolchain@0.13.0'
+  - '@kubohiroya/turbowarp-aframe@0.3.0'
+  - '@kubohiroya/turbowarp-asset-manager@0.16.0'
+  - '@kubohiroya/turbowarp-camera-source@0.5.0'
+  - '@kubohiroya/turbowarp-diagnostic-overlay@0.4.0'
+  - '@kubohiroya/turbowarp-multiview-pose@0.1.0'
+  - '@kubohiroya/turbowarp-webrtc@0.3.0'
+  - '@kubohiroya/turbowarp-yaml-json@0.3.0'
+  - '@kubohiroya/turbowarp-title-menu@0.2.0 || 0.2.1'
 
 onlyBuiltDependencies: []

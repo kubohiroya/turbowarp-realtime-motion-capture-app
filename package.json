@@ -5,21 +5,32 @@
   "type": "module",
   "packageManager": "pnpm@11.11.0",
   "engines": {
-    "node": ">=22.13.0"
+    "node": ">=22.18.0"
   },
   "scripts": {
     "build": "pnpm --recursive --if-present run build",
-    "check:apps": "pnpm --recursive --if-present run check",
-    "check:extensions": "node --experimental-strip-types scripts/check-extension-readiness.ts",
+    "check:apps": "pnpm --filter \"./apps/*\" --if-present run check",
+    "check:extensions": "node --experimental-strip-types scripts/update-extension-readiness.ts --check && node --experimental-strip-types scripts/check-extension-readiness.ts",
     "format": "node --experimental-strip-types scripts/check-format.ts",
     "lint": "node --experimental-strip-types scripts/check-repository.ts",
-    "test": "node --experimental-strip-types scripts/check-deterministic-builds.ts",
-    "typecheck": "tsc --project tsconfig.json && node --experimental-strip-types scripts/check-script-syntax.ts",
-    "check": "pnpm run lint && pnpm run format && pnpm run typecheck && pnpm run check:extensions && pnpm run check:apps && pnpm run test && pnpm run build"
+    "test": "node --experimental-strip-types scripts/release-snapshot.ts",
+    "typecheck": "tsc --project tsconfig.json && node --experimental-strip-types scripts/check-script-syntax.ts && pnpm --filter \"./packages/*\" --if-present run typecheck",
+    "check": "pnpm run lint && pnpm run format && pnpm run typecheck && pnpm run check:packages && pnpm run check:scripts && pnpm run check:pins && pnpm run check:extensions && pnpm run check:apps && pnpm run check:bundle-order && pnpm run test && pnpm run build",
+    "pin:extensions": "node --experimental-strip-types scripts/pin-embedded-extensions.ts --write",
+    "check:pins": "node --experimental-strip-types scripts/pin-embedded-extensions.ts",
+    "update:readiness": "node --experimental-strip-types scripts/update-extension-readiness.ts",
+    "check:bundle-order": "node --experimental-strip-types scripts/check-bundle-order.ts",
+    "check:packages": "pnpm --filter \"./packages/*\" --if-present run check",
+    "snapshot": "node --experimental-strip-types scripts/release-snapshot.ts --write",
+    "build:player": "node --experimental-strip-types scripts/build-player.ts",
+    "build:binary": "node --experimental-strip-types scripts/build-binary.ts",
+    "build:scripts": "node --experimental-strip-types scripts/build-app-scripts.ts --write",
+    "check:scripts": "node --experimental-strip-types scripts/build-app-scripts.ts"
   },
   "devDependencies": {
-    "@kubohiroya/sb3-toolchain": "0.13.0",
-    "@types/node": "22.13.0",
+    "@kubohiroya/sb3-toolchain": "0.12.0",
+    "@turbowarp/packager": "3.13.0",
+    "@types/node": "24.13.3",
     "typescript": "5.9.3"
   }
 }

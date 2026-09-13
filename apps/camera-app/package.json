@@ -3,7 +3,15 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "node --experimental-strip-types ../../scripts/ensure-source-directories.ts camera-app && sb3-toolchain build source --output dist/camera-app.sb3 --yes",
-    "check": "node --experimental-strip-types ../../scripts/ensure-source-directories.ts camera-app && sb3-toolchain check source"
+    "build": "node ../../scripts/ensure-source-directories.ts camera-app && sb3-toolchain build source --output dist/camera-app.sb3 --yes",
+    "check": "node ../../scripts/ensure-source-directories.ts camera-app && sb3-toolchain check source"
+  },
+  "devDependencies": {
+    "@kubohiroya/turbowarp-camera-source": "0.5.0",
+    "@kubohiroya/turbowarp-diagnostic-overlay": "0.4.0",
+    "@kubohiroya/turbowarp-jsqr": "0.3.0",
+    "@kubohiroya/turbowarp-multiview-pose": "0.1.0",
+    "@kubohiroya/turbowarp-title-menu": "0.2.1",
+    "@kubohiroya/turbowarp-webrtc": "0.3.0"
   }
 }

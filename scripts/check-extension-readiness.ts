@@ -1,74 +1,26 @@
 import {createHash} from 'node:crypto';
-import {readFile} from 'node:fs/promises';
 
-import {tryParseExtensionApiManifest} from '@kubohiroya/sb3-toolchain';
+import {
+  readJson,
+  type ExtensionManifest,
+  type ReadinessExtension,
+  type ReadinessInventory
+} from './repository-config.ts';
 
-interface BlockContract {
-  blockType: string;
-  arguments: Record<string, string>;
-  result: string;
-}
-
-interface RequiredOperation {
-  capability: string;
-  opcode: string | null;
-  availability: 'ready' | 'runtime-api-only' | 'missing';
-}
-
-interface Extension {
-  role: string;
-  repository: string;
-  package: string;
-  version: string | null;
-  extensionId: string;
-  artifact: string | null;
-  manifest: string | null;
-  sha256: string | null;
-  status: 'ready' | 'ready-with-dependency' | 'partial' | 'missing';
-  trackingIssues: string[];
-  requiredOperations: RequiredOperation[];
-  blockContracts?: Record<string, BlockContract>;
-  desiredBlockContracts?: Record<string, BlockContract>;
-  runtimeApi?: Record<string, unknown>;
-  gaps?: string[];
-}
-
-interface LocalImplementationCandidate {
-  repository: string;
-  branch: string;
-  commit: string;
-  trackingIssue: string;
-  published: boolean;
-  verification: string;
-  note?: string;
-}
-
-interface ReadinessInventory {
-  schemaVersion: number;
-  reviewedOn: string;
-  epic: string;
-  issue: string;
-  policy: Record<string, string | boolean>;
-  localImplementationCandidates?: LocalImplementationCandidate[];
-  extensions: Extension[];
-  readinessGates: Record<string, string[]>;
-}
-
-const inventoryUrl = new URL('../config/extension-readiness.json', import.meta.url);
-const inventory = JSON.parse(await readFile(inventoryUrl, 'utf8')) as ReadinessInventory;
+const inventory = await readJson<ReadinessInventory>('config/extension-readiness.json');
 const errors: string[] = [];
 
-const duplicateValues = <T,>(values: T[]): T[] =>
-  [...new Set(values.filter((value, index) => values.indexOf(value) !== index))];
-const normalizeRecord = (record: Record<string, string>): Record<string, string> =>
+const duplicateValues = <T>(values: readonly T[]): T[] => [
+  ...new Set(values.filter((value, index) => values.indexOf(value) !== index))
+];
+const normalizeRecord = (record: Readonly<Record<string, string>>): Record<string, string> =>
   Object.fromEntries(Object.entries(record).sort(([left], [right]) => left.localeCompare(right)));
 
 if (inventory.schemaVersion !== 1) {
   errors.push(`Unsupported schemaVersion: ${inventory.schemaVersion}`);
 }
 
-const uniqueFields = ['role', 'repository', 'package', 'extensionId'] as const;
-for (const field of uniqueFields) {
+for (const field of ['role', 'repository', 'package', 'extensionId'] as const) {
   for (const value of duplicateValues(inventory.extensions.map((extension) => extension[field]))) {
     errors.push(`Duplicate ${field}: ${value}`);
   }
@@ -82,7 +34,8 @@ for (const [gate, requiredRoles] of Object.entries(inventory.readinessGates)) {
   }
 }
 
-const candidateRepositories = inventory.localImplementationCandidates?.map(({repository}) => repository) ?? [];
+const candidateRepositories =
+  inventory.localImplementationCandidates?.map(({repository}) => repository) ?? [];
 for (const repository of duplicateValues(candidateRepositories)) {
   errors.push(`Duplicate local implementation candidate: ${repository}`);
 }
@@ -118,22 +71,25 @@ for (const extension of inventory.extensions) {
   }
 
   for (const operation of extension.requiredOperations) {
-    if (operation.availability !== 'ready') continue;
-    if (operation.opcode === null || !extension.blockContracts?.[operation.opcode]) {
+    if (operation.availability === 'ready' && !extension.blockContracts?.[operation.opcode]) {
       errors.push(`${extension.role}/${operation.opcode} is ready but has no block contract`);
     }
   }
 }
 
 if (process.argv.includes('--verify-network')) {
-  for (const extension of inventory.extensions) {
-    if (extension.artifact === null) continue;
+  for (const extension of inventory.extensions.filter(
+    (candidate): candidate is ReadinessExtension & {artifact: string; manifest: string | null} =>
+      candidate.artifact !== null
+  )) {
     const response = await fetch(extension.artifact);
     if (!response.ok) {
       errors.push(`${extension.role} artifact returned HTTP ${response.status}`);
       continue;
     }
-    const digest = createHash('sha256').update(Buffer.from(await response.arrayBuffer())).digest('hex');
+    const digest = createHash('sha256')
+      .update(Buffer.from(await response.arrayBuffer()))
+      .digest('hex');
     if (digest !== extension.sha256) {
       errors.push(`${extension.role} artifact sha256 mismatch: ${digest}`);
     }
@@ -144,32 +100,26 @@ if (process.argv.includes('--verify-network')) {
       errors.push(`${extension.role} manifest returned HTTP ${manifestResponse.status}`);
       continue;
     }
-    const parsed = tryParseExtensionApiManifest(Buffer.from(await manifestResponse.arrayBuffer()), {
-      expectedId: extension.extensionId
-    });
-    if (parsed.manifest === null) {
-      errors.push(`${extension.role} manifest is invalid: ${parsed.error}`);
-      continue;
+    const manifest = (await manifestResponse.json()) as ExtensionManifest;
+    if (manifest.id !== extension.extensionId) {
+      errors.push(`${extension.role} manifest ID mismatch: ${manifest.id}`);
     }
-    const manifest = parsed.manifest;
-    for (const operation of extension.requiredOperations) {
-      if (operation.availability !== 'ready' || operation.opcode === null) continue;
-      const opcode = operation.opcode;
-      const published = manifest.blocks.find((block) => block.opcode === opcode);
+    for (const operation of extension.requiredOperations.filter(({availability}) => availability === 'ready')) {
+      const published = manifest.blocks.find(({opcode}) => opcode === operation.opcode);
+      const expected = extension.blockContracts[operation.opcode];
+      if (expected === undefined) continue;
       if (!published) {
-        errors.push(`${extension.role}/${opcode} is absent from the published manifest`);
+        errors.push(`${extension.role}/${operation.opcode} is absent from the published manifest`);
         continue;
       }
-      const expected = extension.blockContracts?.[opcode];
-      if (expected === undefined) continue;
       if (published.blockType.toLowerCase() !== expected.blockType) {
-        errors.push(`${extension.role}/${opcode} block type does not match the published manifest`);
+        errors.push(`${extension.role}/${operation.opcode} block type does not match the published manifest`);
       }
-      const publishedArguments: Record<string, string> = Object.fromEntries(
+      const publishedArguments = Object.fromEntries(
         published.arguments.map(({id, type}) => [id, type.toLowerCase()])
       );
       if (JSON.stringify(normalizeRecord(publishedArguments)) !== JSON.stringify(normalizeRecord(expected.arguments))) {
-        errors.push(`${extension.role}/${opcode} arguments do not match the published manifest`);
+        errors.push(`${extension.role}/${operation.opcode} arguments do not match the published manifest`);
       }
     }
   }

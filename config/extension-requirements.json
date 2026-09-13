@@ -1,0 +1,512 @@
+{
+  "schemaVersion": 1,
+  "reviewedOn": "2026-09-14",
+  "epic": "https://github.com/kubohiroya/multiview-pose/issues/1",
+  "issue": "https://github.com/kubohiroya/multiview-pose/issues/3",
+  "documentation": "Hand-maintained requirements. config/extension-readiness.json is generated from this file and from the versions pinned in each app's embedded-extensions.json.",
+  "policy": {
+    "applicationRepository": "kubohiroya/multiview-pose",
+    "highLevelExtensionRepository": "kubohiroya/turbowarp-multiview-pose",
+    "applicationContractRepository": "kubohiroya/turbowarp-multiview-pose",
+    "requireTurboWarpBlocks": true,
+    "pinExactVersions": true,
+    "verifySha256": true,
+    "experimentalFeaturesDefaultOff": true
+  },
+  "extensions": [
+    {
+      "role": "app-ui",
+      "repository": "kubohiroya/turbowarp-title-menu",
+      "package": "@kubohiroya/turbowarp-title-menu",
+      "extensionId": "kubohiroyaturbowarptitlemenu",
+      "artifactPath": "dist/turbowarp-title-menu.js",
+      "manifestPath": "dist/extension-manifest.json",
+      "status": "ready",
+      "requiredOperations": [
+        {
+          "capability": "show title dialog",
+          "opcode": "showTitle"
+        },
+        {
+          "capability": "show application menu",
+          "opcode": "showMenu"
+        },
+        {
+          "capability": "define a menu action",
+          "opcode": "addAppMenuAction"
+        },
+        {
+          "capability": "replace the menu vocabulary",
+          "opcode": "clearAppMenuActions"
+        },
+        {
+          "capability": "enable or disable a menu action",
+          "opcode": "setAppMenuActionEnabled"
+        },
+        {
+          "capability": "menu action selected",
+          "opcode": "whenAppMenuActionSelected"
+        },
+        {
+          "capability": "manage stored DSL files",
+          "opcode": "showDslFiles"
+        },
+        {
+          "capability": "DSL source opened",
+          "opcode": "whenDslSourceOpened"
+        },
+        {
+          "capability": "read the opened DSL source",
+          "opcode": "openedDslSource"
+        },
+        {
+          "capability": "DSL storage failure",
+          "opcode": "lastDslError"
+        }
+      ],
+      "gaps": [
+        "No loading overlay or runtime message primitive, so the application shell keeps those two.",
+        "No status row block, so the menu status line is unavailable to an SB3 script."
+      ]
+    },
+    {
+      "role": "camera-source",
+      "repository": "kubohiroya/turbowarp-camera-source",
+      "package": "@kubohiroya/turbowarp-camera-source",
+      "extensionId": "kubohiroyacamerasource",
+      "artifactPath": "dist/camera-source.js",
+      "manifestPath": "dist/extension-manifest.json",
+      "status": "ready",
+      "requiredOperations": [
+        {
+          "capability": "start named camera",
+          "opcode": "startSharedCamera"
+        },
+        {
+          "capability": "stop named camera",
+          "opcode": "stopSharedCamera"
+        },
+        {
+          "capability": "camera running state",
+          "opcode": "isCameraRunning"
+        },
+        {
+          "capability": "active device ID",
+          "opcode": "cameraDeviceIdReporter"
+        },
+        {
+          "capability": "enumerate devices",
+          "opcode": "refreshCameraDevices"
+        },
+        {
+          "capability": "device count",
+          "opcode": "cameraDeviceCount"
+        },
+        {
+          "capability": "device label",
+          "opcode": "cameraDeviceLabelAt"
+        },
+        {
+          "capability": "show stage preview",
+          "opcode": "showCameraPreview"
+        },
+        {
+          "capability": "hide stage preview",
+          "opcode": "hideCameraPreview"
+        },
+        {
+          "capability": "actual frame width",
+          "opcode": "cameraFrameWidth"
+        },
+        {
+          "capability": "actual frame height",
+          "opcode": "cameraFrameHeight"
+        },
+        {
+          "capability": "actual frame rate",
+          "opcode": "cameraFrameRate"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "role": "qr-reader",
+      "repository": "kubohiroya/turbowarp-jsqr",
+      "package": "@kubohiroya/turbowarp-jsqr",
+      "extensionId": "kubohiroyajsqr",
+      "artifactPath": "dist/jsqr.js",
+      "manifestPath": "dist/extension-manifest.json",
+      "status": "ready-with-dependency",
+      "requiredOperations": [
+        {
+          "capability": "wait for QR text",
+          "opcode": "waitForQrTextSetRuntimeVar"
+        },
+        {
+          "capability": "wait and broadcast",
+          "opcode": "waitForQrTextSetRuntimeVarAndBroadcast"
+        },
+        {
+          "capability": "last decoded text",
+          "opcode": "lastQrTextReporter"
+        }
+      ],
+      "gaps": [
+        "Asynchronous result delivery still goes through a runtime variable, so the pairing script depends on the Temporary Variables extension."
+      ]
+    },
+    {
+      "role": "webrtc-transport",
+      "repository": "kubohiroya/turbowarp-webrtc",
+      "package": "@kubohiroya/turbowarp-webrtc",
+      "extensionId": "kubohiroyawebrtc",
+      "artifactPath": "dist/turbowarp-webrtc.js",
+      "manifestPath": "dist/extension-manifest.json",
+      "status": "ready",
+      "requiredOperations": [
+        {
+          "capability": "create offer",
+          "opcode": "createOffer"
+        },
+        {
+          "capability": "read offer",
+          "opcode": "getOffer"
+        },
+        {
+          "capability": "accept offer",
+          "opcode": "acceptOffer"
+        },
+        {
+          "capability": "read answer",
+          "opcode": "getAnswer"
+        },
+        {
+          "capability": "accept answer",
+          "opcode": "acceptAnswer"
+        },
+        {
+          "capability": "connection state",
+          "opcode": "connectionState"
+        },
+        {
+          "capability": "send JSON event",
+          "opcode": "sendEvent"
+        },
+        {
+          "capability": "configure latest-data pose channel",
+          "opcode": "configureLatestDataChannel"
+        },
+        {
+          "capability": "enable latest-data pose channel",
+          "opcode": "setLatestDataEnabled"
+        },
+        {
+          "capability": "send latest pose frame",
+          "opcode": "sendLatestData"
+        },
+        {
+          "capability": "backpressure depth",
+          "opcode": "latestDataBufferedAmount"
+        },
+        {
+          "capability": "dropped pose frames",
+          "opcode": "latestDataDroppedCount"
+        },
+        {
+          "capability": "synchronize clocks",
+          "opcode": "syncClock"
+        },
+        {
+          "capability": "clock offset",
+          "opcode": "clockOffset"
+        },
+        {
+          "capability": "clock uncertainty",
+          "opcode": "clockUncertainty"
+        },
+        {
+          "capability": "synchronized local time",
+          "opcode": "localTime"
+        },
+        {
+          "capability": "record frame latency sample",
+          "opcode": "recordFrameSyncSample"
+        },
+        {
+          "capability": "report frame latency",
+          "opcode": "sendFrameSyncReport"
+        },
+        {
+          "capability": "per-camera latency",
+          "opcode": "frameSyncLatencyOfCamera"
+        },
+        {
+          "capability": "per-camera offset",
+          "opcode": "frameSyncOffsetOfCamera"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "role": "dsl-json-schema",
+      "repository": "kubohiroya/turbowarp-yaml-json",
+      "package": "@kubohiroya/turbowarp-yaml-json",
+      "extensionId": "kubohiroyayamljson",
+      "artifactPath": "dist/turbowarp-yaml-json.js",
+      "manifestPath": "dist/extension-manifest.json",
+      "status": "ready",
+      "requiredOperations": [
+        {
+          "capability": "safe parse of external DSL text",
+          "opcode": "parseText"
+        },
+        {
+          "capability": "parse succeeded",
+          "opcode": "lastParseSucceeded"
+        },
+        {
+          "capability": "parse diagnostic",
+          "opcode": "lastParseDiagnostic"
+        },
+        {
+          "capability": "JSON Schema validation",
+          "opcode": "validateSchema"
+        },
+        {
+          "capability": "schema validity",
+          "opcode": "isValidSchema"
+        },
+        {
+          "capability": "render JSON",
+          "opcode": "renderJson"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "role": "asset-runtime",
+      "repository": "kubohiroya/turbowarp-asset-manager",
+      "package": "@kubohiroya/turbowarp-asset-manager",
+      "extensionId": "kubohiroyaassetmanager",
+      "artifactPath": "dist/asset-manager.js",
+      "manifestPath": "dist/extension-manifest.json",
+      "status": "ready",
+      "requiredOperations": [
+        {
+          "capability": "register pinned asset",
+          "opcode": "registerAsset"
+        },
+        {
+          "capability": "load asset",
+          "opcode": "loadAsset"
+        },
+        {
+          "capability": "asset loaded state",
+          "opcode": "isLoaded"
+        },
+        {
+          "capability": "sprite skin",
+          "opcode": "setSpriteSkin"
+        },
+        {
+          "capability": "actor sequence",
+          "opcode": "startActorSequence"
+        },
+        {
+          "capability": "sound playback",
+          "opcode": "playSound"
+        }
+      ],
+      "gaps": [
+        "The application asset manifest is still undefined, so no demo asset is pinned yet."
+      ]
+    },
+    {
+      "role": "3d-avatar-renderer",
+      "repository": "kubohiroya/turbowarp-aframe",
+      "package": "@kubohiroya/turbowarp-aframe",
+      "extensionId": "turbowarpaframe",
+      "artifactPath": "dist/turbowarp-aframe.js",
+      "manifestPath": "dist/extension-manifest.json",
+      "status": "ready",
+      "requiredOperations": [
+        {
+          "capability": "create scene",
+          "opcode": "createScene"
+        },
+        {
+          "capability": "load declarative template",
+          "opcode": "loadTemplate"
+        },
+        {
+          "capability": "instantiate template",
+          "opcode": "createFromTemplate"
+        },
+        {
+          "capability": "set node rotation",
+          "opcode": "setRotation"
+        },
+        {
+          "capability": "set node position",
+          "opcode": "setPosition"
+        },
+        {
+          "capability": "scene ready hat",
+          "opcode": "whenSceneReady"
+        },
+        {
+          "capability": "selector event hat",
+          "opcode": "whenEventOnSelector"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "role": "diagnostic-ui",
+      "repository": "kubohiroya/turbowarp-diagnostic-overlay",
+      "package": "@kubohiroya/turbowarp-diagnostic-overlay",
+      "extensionId": "kubohiroyadiagnosticoverlay",
+      "artifactPath": "dist/diagnostic-overlay.js",
+      "manifestPath": "dist/extension-manifest.json",
+      "status": "ready",
+      "requiredOperations": [
+        {
+          "capability": "show structured diagnostic",
+          "opcode": "showDiagnostic"
+        },
+        {
+          "capability": "show diagnostic from JSON",
+          "opcode": "showDiagnosticJson"
+        },
+        {
+          "capability": "clear overlay",
+          "opcode": "clearDiagnosticOverlay"
+        },
+        {
+          "capability": "overlay visibility",
+          "opcode": "diagnosticOverlayVisible"
+        }
+      ],
+      "gaps": [
+        "The application readiness payload that feeds the overlay is still undefined."
+      ]
+    },
+    {
+      "role": "multiview-high-level-blocks",
+      "repository": "kubohiroya/turbowarp-multiview-pose",
+      "package": "@kubohiroya/turbowarp-multiview-pose",
+      "extensionId": "kubohiroyamultiviewpose",
+      "artifactPath": "dist/turbowarp-multiview-pose.js",
+      "manifestPath": "dist/extension-manifest.json",
+      "status": "partial",
+      "requiredOperations": [
+        {
+          "capability": "prepare pairing offer QR",
+          "opcode": "prepareOfferQr"
+        },
+        {
+          "capability": "show pairing offer QR part",
+          "opcode": "showOfferQrPart"
+        },
+        {
+          "capability": "end pairing QR display",
+          "opcode": "endOfferQrDisplay"
+        },
+        {
+          "capability": "start WebGPU MoveNet",
+          "opcode": "startWebGpuMoveNetMultiPose"
+        },
+        {
+          "capability": "infer next pose frame",
+          "opcode": "inferNextPoseFrame"
+        },
+        {
+          "capability": "latest PoseFrame2D",
+          "opcode": "latestPoseFrame2D"
+        },
+        {
+          "capability": "validate contract payload",
+          "opcode": "protocolJsonValid"
+        },
+        {
+          "capability": "decode contract payload",
+          "opcode": "decodeProtocolJson"
+        },
+        {
+          "capability": "solve camera calibration",
+          "opcode": "solveCameraCalibration"
+        },
+        {
+          "capability": "export camera calibration",
+          "opcode": "cameraCalibrationJson"
+        },
+        {
+          "capability": "import camera calibration",
+          "opcode": "importCameraCalibration"
+        },
+        {
+          "capability": "apply PoseFrame3D to avatars",
+          "opcode": "applyPoseFrame3DToAvatars"
+        },
+        {
+          "capability": "display frame sync pattern",
+          "opcode": "showFrameSyncPattern"
+        },
+        {
+          "capability": "decode frame sync pattern",
+          "opcode": "startFrameSyncDecoder"
+        },
+        {
+          "capability": "buffer PoseFrame2D for fusion",
+          "opcode": "bufferPoseFrame2D"
+        },
+        {
+          "capability": "fuse PoseFrame3D",
+          "opcode": "fuseBufferedPoseFrame3D"
+        },
+        {
+          "capability": "identify performers by glow stick",
+          "opcode": "enableGlowStickMarkers"
+        }
+      ],
+      "gaps": [
+        "Frame sync, 3D fusion, and glow stick identity are implemented upstream but are not in the published 0.1.0 artifact. They need a 0.2.0 release before the fusion app can use them.",
+        "The published artifact is 13.7 MB because it embeds OpenCV.js, which exceeds the 5 MB limit of `sb3-toolchain extensions status`."
+      ]
+    }
+  ],
+  "readinessGates": {
+    "cameraShell": [
+      "camera-source"
+    ],
+    "qrPairing": [
+      "camera-source",
+      "qr-reader",
+      "webrtc-transport",
+      "multiview-high-level-blocks"
+    ],
+    "poseStreaming": [
+      "camera-source",
+      "webrtc-transport",
+      "multiview-high-level-blocks"
+    ],
+    "clockSync": [
+      "webrtc-transport",
+      "multiview-high-level-blocks"
+    ],
+    "fusionDemo": [
+      "app-ui",
+      "webrtc-transport",
+      "dsl-json-schema",
+      "asset-runtime",
+      "3d-avatar-renderer",
+      "diagnostic-ui",
+      "multiview-high-level-blocks"
+    ],
+    "performanceDsl": [
+      "app-ui",
+      "dsl-json-schema",
+      "multiview-high-level-blocks"
+    ]
+  }
+}

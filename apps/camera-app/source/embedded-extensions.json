@@ -1,4 +1,147 @@
 {
   "formatVersion": 1,
-  "extensions": []
+  "extensions": [
+    {
+      "id": "multiviewposecamerashell",
+      "path": "extensions/multiviewposecamerashell.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64"
+    },
+    {
+      "id": "kubohiroyaturbowarptitlemenu",
+      "path": "extensions/kubohiroyaturbowarptitlemenu.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-title-menu",
+        "version": "0.2.1",
+        "artifact": "dist/turbowarp-title-menu.js",
+        "integrity": "sha256-fbnHtyZelSMOIo6KHkk32HsZGqOERQ0UB06Tg5nciQc=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/kubohiroyaturbowarptitlemenu.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-qMrjKogo0adWj1dnMATQ5wpI6NFERjr1YOJl2/9TWdU="
+        }
+      }
+    },
+    {
+      "id": "kubohiroyacamerasource",
+      "path": "extensions/kubohiroyacamerasource.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-camera-source",
+        "version": "0.5.0",
+        "artifact": "dist/camera-source.js",
+        "integrity": "sha256-ifS7YhEJVoSP5ZtvKCVgk6yEDr8APEv37fP/ZnvugkQ=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/kubohiroyacamerasource.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-f8h4ytSjzau56y2uHJ6T3bba4btzH/PDSw8aS7vTyYg="
+        }
+      }
+    },
+    {
+      "id": "kubohiroyajsqr",
+      "path": "extensions/kubohiroyajsqr.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-jsqr",
+        "version": "0.3.0",
+        "artifact": "dist/jsqr.js",
+        "integrity": "sha256-nevtga4QoYtQ4kvIvs7n8gDQdXhZvLmJua7d/Nie1AE=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/kubohiroyajsqr.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-oGecnsSQS5+IDxooDngN2S4V6SN+oB6dpcHBOzF+AZ8="
+        }
+      }
+    },
+    {
+      "id": "kubohiroyawebrtc",
+      "path": "extensions/kubohiroyawebrtc.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-webrtc",
+        "version": "0.3.0",
+        "artifact": "dist/turbowarp-webrtc.js",
+        "integrity": "sha256-i49u0HFGINzecjy7l/BDVVT9rMWvdnp2NX+SgMQ4Xo0=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/kubohiroyawebrtc.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-72MpITJOBh+e+xy4ibJwdM2bn30bXzRvndgHc6GycKc="
+        }
+      }
+    },
+    {
+      "id": "kubohiroyamultiviewpose",
+      "path": "extensions/kubohiroyamultiviewpose.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-multiview-pose",
+        "version": "0.1.0",
+        "artifact": "dist/turbowarp-multiview-pose.js",
+        "integrity": "sha256-oEfZ3VxkegPTAWoNtoJN8UIalBrCfkyr5Hbyy0lVrxU=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/kubohiroyamultiviewpose.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-ZpIMMcvVY5RTAZvuXfJwD2pTdBs55oh1iT29swOuzaQ="
+        }
+      }
+    },
+    {
+      "id": "kubohiroyadiagnosticoverlay",
+      "path": "extensions/kubohiroyadiagnosticoverlay.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-diagnostic-overlay",
+        "version": "0.4.0",
+        "artifact": "dist/diagnostic-overlay.js",
+        "integrity": "sha256-HfY7EQ6gzX1yrl4u+qQJc0IwcrEkSBBBTFxyk7zd6r4=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/kubohiroyadiagnosticoverlay.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-2uxmqzjKXCmPadwqvPT1zveL2yi5RStLOv3Ba9SuO2U="
+        }
+      }
+    }
+  ],
+  "extensionBundles": [
+    {
+      "id": "multiviewposecameraapp",
+      "name": "Multiview Pose Camera App",
+      "members": [
+        "multiviewposecamerashell",
+        "kubohiroyaturbowarptitlemenu",
+        "kubohiroyacamerasource",
+        "kubohiroyajsqr",
+        "kubohiroyawebrtc",
+        "kubohiroyamultiviewpose",
+        "kubohiroyadiagnosticoverlay"
+      ]
+    }
+  ]
 }
