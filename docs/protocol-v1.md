@@ -1,25 +1,24 @@
 # multiview-pose protocol v1
 
-The protocol package is the single source of truth for data exchanged or persisted by camera app
-and fusion app. TypeScript types are derived from the same TypeBox definitions that generate the
-JSON Schema files under `packages/protocol/schemas/`.
+protocol packageを、camera appとfusion appが交換または保存するデータのSingle Source of
+Truthとする。TypeScript型は、`packages/protocol/schemas/`以下のJSON Schemaを生成するものと
+同じTypeBox定義から導出する。
 
-Every payload carries a stable `schema` identifier and literal `version: 1`. Unknown versions,
-unknown fields, missing required fields, unsafe numeric ranges, and oversized collections are
-rejected before application state changes.
+すべてのpayloadは、安定した`schema`識別子とliteralの`version: 1`を持つ。未知version、未知field、
+必須fieldの欠落、安全範囲外の数値、上限を超えるcollectionは、application stateを変更する前に拒否する。
 
-| Contract | Schema identifier | Purpose |
+| 契約 | schema識別子 | 用途 |
 |---|---|---|
-| Session policy | `twmp/session-policy` | Session topology and operational limits; never pairing credentials |
-| Camera calibration | `twmp/camera-calibration` | Image geometry, intrinsics, distortion and camera-to-world transform |
-| PoseFrame2D | `twmp/pose-frame-2d` | Up to six tracked people with ordered COCO-17 image keypoints |
-| PoseFrame3D | `twmp/pose-frame-3d` | Up to six fused people, contributing cameras and reprojection quality |
-| Clock probe | `twmp/clock-probe` | Versioned ping/pong timestamps for offset and RTT estimation |
-| Performance DSL | `twmp/performance-dsl` | Up to six performers and their color, start/end effects and avatar asset |
+| Session policy | `twmp/session-policy` | session topologyと運用上限。pairing credentialは含めない |
+| Camera calibration | `twmp/camera-calibration` | 画像geometry、intrinsic、distortion、camera-to-world transform |
+| PoseFrame2D | `twmp/pose-frame-2d` | 最大6人分のtracking IDと順序固定COCO-17画像keypoint |
+| PoseFrame3D | `twmp/pose-frame-3d` | 最大6人分の3D姿勢、使用camera、reprojection品質 |
+| Clock probe | `twmp/clock-probe` | clock offsetとRTT推定用のversion付きping／pong timestamp |
+| Performance DSL | `twmp/performance-dsl` | 最大6人分の色、開始／終了演出、avatar asset |
 
-Pairing offers, answers, ICE credentials, and QR courier parts are transient protocol data. They are
-not members of session policy or performance DSL and must not be written to persistent app settings.
+pairing offer／answer、ICE credential、QR courier partは一時的なprotocol dataである。session
+policyまたはperformance DSLのfieldではなく、永続的なapp設定へ書き込んではならない。
 
-The v1 parser is fail-closed. A future version is rejected until its schema and explicit application
-support are added. On validation failure, session start and 3D output stop; the committed v1 parser
-and last valid calibration remain the rollback path.
+v1 parserはfail-closedとする。将来versionは、そのschemaとapplicationの明示対応を追加するまで拒否する。
+validation失敗時はsession開始と3D出力を止める。commit済みv1 parserと最後にvalidだったcalibrationを
+rollback先とする。
