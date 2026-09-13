@@ -1,0 +1,714 @@
+{
+  "additionalProperties": false,
+  "$id": "https://kubohiroya.github.io/multiview-pose/schema/pose-frame-3d-v1.json",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "sequence",
+    "timestampUs",
+    "persons"
+  ],
+  "properties": {
+    "schema": {
+      "const": "twmp/pose-frame-3d",
+      "type": "string"
+    },
+    "version": {
+      "const": 1,
+      "type": "number"
+    },
+    "sequence": {
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "type": "integer"
+    },
+    "timestampUs": {
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "type": "integer"
+    },
+    "persons": {
+      "maxItems": 6,
+      "type": "array",
+      "items": {
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "personId",
+          "score",
+          "cameraIds",
+          "meanReprojectionErrorPx",
+          "keypoints"
+        ],
+        "properties": {
+          "personId": {
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9._-]+$",
+            "type": "string"
+          },
+          "score": {
+            "minimum": 0,
+            "maximum": 1,
+            "type": "number"
+          },
+          "cameraIds": {
+            "minItems": 2,
+            "maxItems": 16,
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[A-Za-z0-9._-]+$",
+              "type": "string"
+            }
+          },
+          "meanReprojectionErrorPx": {
+            "minimum": 0,
+            "maximum": 100000,
+            "type": "number"
+          },
+          "keypoints": {
+            "type": "array",
+            "items": [
+              {
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                  "id",
+                  "x",
+                  "y",
+                  "z",
+                  "score"
+                ],
+                "properties": {
+                  "id": {
+                    "const": "nose",
+                    "type": "string"
+                  },
+                  "x": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "y": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "z": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "score": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                  "id",
+                  "x",
+                  "y",
+                  "z",
+                  "score"
+                ],
+                "properties": {
+                  "id": {
+                    "const": "left_eye",
+                    "type": "string"
+                  },
+                  "x": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "y": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "z": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "score": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                  "id",
+                  "x",
+                  "y",
+                  "z",
+                  "score"
+                ],
+                "properties": {
+                  "id": {
+                    "const": "right_eye",
+                    "type": "string"
+                  },
+                  "x": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "y": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "z": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "score": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                  "id",
+                  "x",
+                  "y",
+                  "z",
+                  "score"
+                ],
+                "properties": {
+                  "id": {
+                    "const": "left_ear",
+                    "type": "string"
+                  },
+                  "x": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "y": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "z": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "score": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                  "id",
+                  "x",
+                  "y",
+                  "z",
+                  "score"
+                ],
+                "properties": {
+                  "id": {
+                    "const": "right_ear",
+                    "type": "string"
+                  },
+                  "x": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "y": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "z": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "score": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                  "id",
+                  "x",
+                  "y",
+                  "z",
+                  "score"
+                ],
+                "properties": {
+                  "id": {
+                    "const": "left_shoulder",
+                    "type": "string"
+                  },
+                  "x": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "y": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "z": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "score": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                  "id",
+                  "x",
+                  "y",
+                  "z",
+                  "score"
+                ],
+                "properties": {
+                  "id": {
+                    "const": "right_shoulder",
+                    "type": "string"
+                  },
+                  "x": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "y": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "z": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "score": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                  "id",
+                  "x",
+                  "y",
+                  "z",
+                  "score"
+                ],
+                "properties": {
+                  "id": {
+                    "const": "left_elbow",
+                    "type": "string"
+                  },
+                  "x": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "y": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "z": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "score": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                  "id",
+                  "x",
+                  "y",
+                  "z",
+                  "score"
+                ],
+                "properties": {
+                  "id": {
+                    "const": "right_elbow",
+                    "type": "string"
+                  },
+                  "x": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "y": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "z": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "score": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                  "id",
+                  "x",
+                  "y",
+                  "z",
+                  "score"
+                ],
+                "properties": {
+                  "id": {
+                    "const": "left_wrist",
+                    "type": "string"
+                  },
+                  "x": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "y": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "z": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "score": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                  "id",
+                  "x",
+                  "y",
+                  "z",
+                  "score"
+                ],
+                "properties": {
+                  "id": {
+                    "const": "right_wrist",
+                    "type": "string"
+                  },
+                  "x": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "y": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "z": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "score": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                  "id",
+                  "x",
+                  "y",
+                  "z",
+                  "score"
+                ],
+                "properties": {
+                  "id": {
+                    "const": "left_hip",
+                    "type": "string"
+                  },
+                  "x": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "y": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "z": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "score": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                  "id",
+                  "x",
+                  "y",
+                  "z",
+                  "score"
+                ],
+                "properties": {
+                  "id": {
+                    "const": "right_hip",
+                    "type": "string"
+                  },
+                  "x": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "y": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "z": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "score": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                  "id",
+                  "x",
+                  "y",
+                  "z",
+                  "score"
+                ],
+                "properties": {
+                  "id": {
+                    "const": "left_knee",
+                    "type": "string"
+                  },
+                  "x": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "y": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "z": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "score": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                  "id",
+                  "x",
+                  "y",
+                  "z",
+                  "score"
+                ],
+                "properties": {
+                  "id": {
+                    "const": "right_knee",
+                    "type": "string"
+                  },
+                  "x": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "y": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "z": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "score": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                  "id",
+                  "x",
+                  "y",
+                  "z",
+                  "score"
+                ],
+                "properties": {
+                  "id": {
+                    "const": "left_ankle",
+                    "type": "string"
+                  },
+                  "x": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "y": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "z": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "score": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                  "id",
+                  "x",
+                  "y",
+                  "z",
+                  "score"
+                ],
+                "properties": {
+                  "id": {
+                    "const": "right_ankle",
+                    "type": "string"
+                  },
+                  "x": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "y": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "z": {
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "type": "number"
+                  },
+                  "score": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  }
+                }
+              }
+            ],
+            "additionalItems": false,
+            "minItems": 17,
+            "maxItems": 17
+          }
+        }
+      }
+    }
+  }
+}

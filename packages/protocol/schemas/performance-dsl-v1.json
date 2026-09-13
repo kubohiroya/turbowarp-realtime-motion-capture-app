@@ -1,0 +1,72 @@
+{
+  "additionalProperties": false,
+  "$id": "https://kubohiroya.github.io/multiview-pose/schema/performance-dsl-v1.json",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "performers"
+  ],
+  "properties": {
+    "schema": {
+      "const": "twmp/performance-dsl",
+      "type": "string"
+    },
+    "version": {
+      "const": 1,
+      "type": "number"
+    },
+    "performers": {
+      "minItems": 1,
+      "maxItems": 6,
+      "type": "array",
+      "items": {
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "performerId",
+          "displayName",
+          "glowStickColor",
+          "recognitionStartEffect",
+          "recognitionEndEffect",
+          "avatarAsset"
+        ],
+        "properties": {
+          "performerId": {
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9._-]+$",
+            "type": "string"
+          },
+          "displayName": {
+            "minLength": 1,
+            "maxLength": 80,
+            "type": "string"
+          },
+          "glowStickColor": {
+            "pattern": "^#[0-9A-Fa-f]{6}$",
+            "type": "string"
+          },
+          "recognitionStartEffect": {
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9._-]+$",
+            "type": "string"
+          },
+          "recognitionEndEffect": {
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9._-]+$",
+            "type": "string"
+          },
+          "avatarAsset": {
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9._-]+$",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

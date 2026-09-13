@@ -1,0 +1,14 @@
+{
+  "schema": "twmp/performance-dsl",
+  "version": 2,
+  "performers": [
+    {
+      "performerId": "actor-1",
+      "displayName": "Actor 1",
+      "glowStickColor": "#00FFAA",
+      "recognitionStartEffect": "fade-in",
+      "recognitionEndEffect": "fade-out",
+      "avatarAsset": "avatar-1"
+    }
+  ]
+}

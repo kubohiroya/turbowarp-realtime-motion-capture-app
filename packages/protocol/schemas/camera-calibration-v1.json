@@ -1,0 +1,209 @@
+{
+  "additionalProperties": false,
+  "$id": "https://kubohiroya.github.io/multiview-pose/schema/camera-calibration-v1.json",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "calibrationId",
+    "cameraId",
+    "imageWidth",
+    "imageHeight",
+    "intrinsicMatrix",
+    "distortionCoefficients",
+    "worldFromCameraMatrix",
+    "worldUnit",
+    "calibratedAt"
+  ],
+  "properties": {
+    "schema": {
+      "const": "twmp/camera-calibration",
+      "type": "string"
+    },
+    "version": {
+      "const": 1,
+      "type": "number"
+    },
+    "calibrationId": {
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9._-]+$",
+      "type": "string"
+    },
+    "cameraId": {
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9._-]+$",
+      "type": "string"
+    },
+    "imageWidth": {
+      "minimum": 1,
+      "maximum": 16384,
+      "type": "integer"
+    },
+    "imageHeight": {
+      "minimum": 1,
+      "maximum": 16384,
+      "type": "integer"
+    },
+    "intrinsicMatrix": {
+      "type": "array",
+      "items": [
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        }
+      ],
+      "additionalItems": false,
+      "minItems": 9,
+      "maxItems": 9
+    },
+    "distortionCoefficients": {
+      "minItems": 0,
+      "maxItems": 14,
+      "type": "array",
+      "items": {
+        "minimum": -1000000,
+        "maximum": 1000000,
+        "type": "number"
+      }
+    },
+    "worldFromCameraMatrix": {
+      "type": "array",
+      "items": [
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        },
+        {
+          "minimum": -1000000,
+          "maximum": 1000000,
+          "type": "number"
+        }
+      ],
+      "additionalItems": false,
+      "minItems": 16,
+      "maxItems": 16
+    },
+    "worldUnit": {
+      "const": "meter",
+      "type": "string"
+    },
+    "calibratedAt": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+      "type": "string"
+    }
+  }
+}

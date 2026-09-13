@@ -1,0 +1,87 @@
+{
+  "$id": "https://kubohiroya.github.io/multiview-pose/schema/clock-probe-v1.json",
+  "anyOf": [
+    {
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "schema",
+        "version",
+        "kind",
+        "sequence",
+        "t0Us"
+      ],
+      "properties": {
+        "schema": {
+          "const": "twmp/clock-probe",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "number"
+        },
+        "kind": {
+          "const": "ping",
+          "type": "string"
+        },
+        "sequence": {
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "type": "integer"
+        },
+        "t0Us": {
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "type": "integer"
+        }
+      }
+    },
+    {
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "schema",
+        "version",
+        "kind",
+        "sequence",
+        "t0Us",
+        "t1Us",
+        "t2Us"
+      ],
+      "properties": {
+        "schema": {
+          "const": "twmp/clock-probe",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "number"
+        },
+        "kind": {
+          "const": "pong",
+          "type": "string"
+        },
+        "sequence": {
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "type": "integer"
+        },
+        "t0Us": {
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "type": "integer"
+        },
+        "t1Us": {
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "type": "integer"
+        },
+        "t2Us": {
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "type": "integer"
+        }
+      }
+    }
+  ]
+}

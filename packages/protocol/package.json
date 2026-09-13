@@ -1,0 +1,17 @@
+{
+  "name": "@multiview-pose/protocol",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --project tsconfig.json && node scripts/write-json-schemas.mjs",
+    "check": "pnpm run typecheck && pnpm run test && pnpm run build",
+    "test": "tsc --project tsconfig.json && node --test test/*.test.mjs",
+    "typecheck": "tsc --project tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@sinclair/typebox": "0.34.52"
+  }
+}

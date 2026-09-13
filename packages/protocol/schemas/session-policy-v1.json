@@ -1,0 +1,83 @@
+{
+  "additionalProperties": false,
+  "$id": "https://kubohiroya.github.io/multiview-pose/schema/session-policy-v1.json",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "sessionId",
+    "fusionPeerId",
+    "cameraPeers",
+    "maximumPerformers",
+    "qrCourierPairing",
+    "poseChannelHighWaterBytes"
+  ],
+  "properties": {
+    "schema": {
+      "const": "twmp/session-policy",
+      "type": "string"
+    },
+    "version": {
+      "const": 1,
+      "type": "number"
+    },
+    "sessionId": {
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9._-]+$",
+      "type": "string"
+    },
+    "fusionPeerId": {
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9._-]+$",
+      "type": "string"
+    },
+    "cameraPeers": {
+      "minItems": 1,
+      "maxItems": 16,
+      "type": "array",
+      "items": {
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "cameraId",
+          "peerId",
+          "displayName"
+        ],
+        "properties": {
+          "cameraId": {
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9._-]+$",
+            "type": "string"
+          },
+          "peerId": {
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9._-]+$",
+            "type": "string"
+          },
+          "displayName": {
+            "minLength": 1,
+            "maxLength": 80,
+            "type": "string"
+          }
+        }
+      }
+    },
+    "maximumPerformers": {
+      "minimum": 1,
+      "maximum": 6,
+      "type": "integer"
+    },
+    "qrCourierPairing": {
+      "type": "boolean"
+    },
+    "poseChannelHighWaterBytes": {
+      "minimum": 1024,
+      "maximum": 16777216,
+      "type": "integer"
+    }
+  }
+}
