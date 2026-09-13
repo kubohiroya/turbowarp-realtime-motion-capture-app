@@ -1,11 +1,6 @@
 {
   "schemaVersion": 1,
   "documentation": "Loopback host ports. A port is part of the origin http://127.0.0.1:<port>, and browser storage is scoped to the origin, so the port decides which saved calibration and DSL files an app can see. Treat it as a compatibility identifier like an extension ID, not as a tunable setting. See docs/local-host.md.",
-  "bindHost": "127.0.0.1",
-  "portRange": {
-    "minimum": 49152,
-    "maximum": 65535
-  },
   "apps": {
     "camera-app": {
       "port": 49711,

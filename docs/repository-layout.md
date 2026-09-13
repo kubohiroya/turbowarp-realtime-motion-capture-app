@@ -75,7 +75,7 @@ pnpm check
 1. repository構造とJSONの妥当性
 2. text fileの改行・末尾空白
 3. repository scriptとworkspace packageの型検査
-4. extension readiness inventoryの生成一致と整合性（拡張の再生成後に実行）と、ローカルホストportの妥当性
+4. extension readiness inventoryの生成一致と整合性（拡張の再生成後に実行）
 5. `packages/`の検査（app shellのtypecheck、test、build）
 6. 埋め込み拡張の再生成と、commit済みの固定内容との一致
 7. 生成されたstatic bundleのmember評価順が宣言どおりで、feature flagが契約拡張より先に書かれること

@@ -109,8 +109,6 @@ camera appとfusion appは別originにします。同じ会場PCで両方を動�
 ```json
 {
   "schemaVersion": 1,
-  "bindHost": "127.0.0.1",
-  "portRange": {"minimum": 49152, "maximum": 65535},
   "apps": {
     "camera-app": {"port": 49711, "title": "Multiview Pose Camera App"},
     "fusion-app": {"port": 49712, "title": "Multiview Pose Fusion App"}
@@ -121,9 +119,9 @@ camera appとfusion appは別originにします。同じ会場PCで両方を動�
 番号はIANAのdynamic/private range（49152〜65535）から取ります。値そのものは任意ですが、一度決めたら
 変えない前提です。
 
-`scripts/check-local-host.ts`が`pnpm check`の中で、portが範囲内の整数であること、アプリ間で重複が
-ないこと、`config/app-extensions.json`のアプリと過不足なく対応すること、bindHostがloopbackのままで
-あることを検証します。アプリを追加したときにportの決定を飛ばせないようにするためです。
+bind先は設定項目にしません。`createLoopbackPreviewHost`の型が`'127.0.0.1' | '::1'`しか受け付けず、
+`validateLoopbackPreviewUrl`もloopback以外のURLを拒否するため、loopback以外を選ぶ方法がありません。
+選べない項目を設定ファイルに書くと、選べるかのような誤解を生みます。
 
 `packages/app-shell/src/apps/`には書きません。あちらはブラウザ内で動く拡張の設定で、ポートは
 サーバ側の関心事です。
@@ -176,19 +174,17 @@ camera appとfusion appは別originにします。同じ会場PCで両方を動�
 したがって、校正やDSLが残っているかどうかの提示はアプリ起動後のreadiness表示の担当で、preflightの
 担当ではありません。preflightが保証するのは「起動できる」ところまでです。
 
-#### リポジトリ側で検査するのは2つだけ
+#### リポジトリ側では検査しない
 
-起動時チェックがあれば、設定の不備はほぼすべて会場で明確な失敗として現れます。そこで
-[`scripts/check-local-host.ts`](../scripts/check-local-host.ts)が見るのは、**間違っていても失敗せず、
-成功してしまう**2つに絞ります。
+設定の不備は起動時チェックが明確な失敗として報告するので、リポジトリ側に同じ検査は置きません。
 
-| 検査 | 起動時にどうなるか |
-|---|---|
-| `bindHost`がloopbackでない | 失敗しない。成功したまま会場LANへ露出する |
-| 2つのアプリが同じポート | 1台で両方動かすまで失敗しない。別PCで運用している限り露見しない |
+ポートの重複も同じです。1台のPCで2つ目のアプリを起動したときに「そのポートは使用中」で止まるので、
+エラー文に**もう一方のアプリが使っている可能性**を書けば十分です。別々のPCで同じ番号を使うのは
+そもそも問題ではありません。
 
-ポートが範囲外、アプリにポートが無い、といった不備はリポジトリ側で見ません。起動時に明確な失敗と
-して出るので、二重に検査する価値がないためです。
+ただし運用上の帰結として、同じPCで2つのアプリに同じ番号を使い回すと、同時に起動できないだけでなく、
+**両者が同じoriginを共有するため保存領域も共有します**。アプリごとに別の番号を割り当てているのは
+このためです。
 
 ### 後退経路とは保存領域が別
 

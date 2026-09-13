@@ -143,19 +143,6 @@ export interface ReadinessInventory {
   }>;
 }
 
-export interface LocalHostApp {
-  readonly port: number;
-  readonly title: string;
-}
-
-export interface LocalHostConfig {
-  readonly schemaVersion: number;
-  readonly documentation?: string;
-  readonly bindHost: string;
-  readonly portRange: {readonly minimum: number; readonly maximum: number};
-  readonly apps: Readonly<Record<string, LocalHostApp>>;
-}
-
 export interface ProjectSource {
   extensions: string[];
   extensionURLs: Record<string, string>;
