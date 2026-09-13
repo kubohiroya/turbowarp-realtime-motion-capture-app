@@ -15,13 +15,14 @@
     "lint": "node scripts/check-repository.mjs",
     "test": "node scripts/release-snapshot.mjs",
     "typecheck": "node scripts/check-script-syntax.mjs",
-    "check": "pnpm run lint && pnpm run format && pnpm run typecheck && pnpm run check:packages && pnpm run check:pins && pnpm run check:extensions && pnpm run check:apps && pnpm run check:bundle-order && pnpm run test && pnpm run build",
+    "check": "pnpm run lint && pnpm run format && pnpm run typecheck && pnpm run check:packages && pnpm run check:pins && pnpm run check:extensions && pnpm run check:local-host && pnpm run check:apps && pnpm run check:bundle-order && pnpm run test && pnpm run build",
     "pin:extensions": "node scripts/pin-embedded-extensions.mjs --write",
     "check:pins": "node scripts/pin-embedded-extensions.mjs",
     "update:readiness": "node scripts/update-extension-readiness.mjs",
     "check:bundle-order": "node scripts/check-bundle-order.mjs",
     "check:packages": "pnpm --filter \"./packages/*\" --if-present run check",
-    "snapshot": "node scripts/release-snapshot.mjs --write"
+    "snapshot": "node scripts/release-snapshot.mjs --write",
+    "check:local-host": "node scripts/check-local-host.mjs"
   },
   "devDependencies": {
     "@kubohiroya/sb3-toolchain": "0.12.0",

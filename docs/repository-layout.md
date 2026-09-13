@@ -28,6 +28,7 @@ packages/
   app-shell/            アプリ所有のTurboWarp拡張（feature flagと画面）
 config/
   app-extensions.json        各SB3へ埋め込む拡張の宣言
+  local-host.json            ローカルホストの固定port（[ローカルホスト](local-host.md)）
   extension-requirements.json readinessの要求定義（手で編集する）
   extension-readiness.json    生成物（手で編集しない）
 docs/
@@ -74,7 +75,7 @@ pnpm check
 1. repository構造とJSONの妥当性
 2. text fileの改行・末尾空白
 3. Node.js scriptの構文
-4. extension readiness inventoryの生成一致と整合性（拡張の再生成後に実行）
+4. extension readiness inventoryの生成一致と整合性（拡張の再生成後に実行）と、ローカルホストportの妥当性
 5. `packages/`の検査（app shellのtypecheck、test、build）
 6. 埋め込み拡張の再生成と、commit済みの固定内容との一致
 7. 生成されたstatic bundleのmember評価順が宣言どおりで、feature flagが契約拡張より先に書かれること

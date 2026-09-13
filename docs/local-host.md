@@ -91,22 +91,28 @@ tokenはクエリ文字列で渡り、originには含まれません。tokenは�
 camera appとfusion appは別originにします。同じ会場PCで両方を動かしたときに衝突せず、保存内容も
 混ざりません。
 
-値は`config/local-host.json`で宣言します。`config/app-extensions.json`（bundle構成）や
-`config/extension-requirements.json`（readiness要求）と同じ「リポジトリが所有する固定値」の置き場に
-揃えるためです。
+値は[`config/local-host.json`](../config/local-host.json)で宣言します。
+`config/app-extensions.json`（bundle構成）や`config/extension-requirements.json`（readiness要求）と
+同じ「リポジトリが所有する固定値」の置き場に揃えるためです。
 
 ```json
 {
   "schemaVersion": 1,
+  "bindHost": "127.0.0.1",
+  "portRange": {"minimum": 49152, "maximum": 65535},
   "apps": {
-    "camera-app": {"port": 49711},
-    "fusion-app": {"port": 49712}
+    "camera-app": {"port": 49711, "title": "Multiview Pose Camera App"},
+    "fusion-app": {"port": 49712, "title": "Multiview Pose Fusion App"}
   }
 }
 ```
 
 番号はIANAのdynamic/private range（49152〜65535）から取ります。値そのものは任意ですが、一度決めたら
 変えない前提です。
+
+`scripts/check-local-host.mjs`が`pnpm check`の中で、portが範囲内の整数であること、アプリ間で重複が
+ないこと、`config/app-extensions.json`のアプリと過不足なく対応すること、bindHostがloopbackのままで
+あることを検証します。アプリを追加したときにportの決定を飛ばせないようにするためです。
 
 `packages/app-shell/src/apps/`には書きません。あちらはブラウザ内で動く拡張の設定で、ポートは
 サーバ側の関心事です。
