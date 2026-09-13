@@ -77,7 +77,7 @@ runtime API、resource ownership、非同期state、cleanupを一体で扱う必
 ## artifact policy
 
 applicationへ埋め込む前に、exact npm version、extension ID、artifact URL、SHA-256、block contractを
-inventoryへ記録する。`node scripts/check-extension-readiness.mjs --verify-network`で公開bundleとmanifestを
+inventoryへ記録する。`node --experimental-strip-types scripts/check-extension-readiness.ts --verify-network`で公開bundleとmanifestを
 照合する。release build自体はnetwork accessなしで、commit済みartifactだけを使用する。
 
 ## rollback

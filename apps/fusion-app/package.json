@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "node ../../scripts/ensure-source-directories.mjs fusion-app && sb3-toolchain build source --output dist/fusion-app.sb3 --yes",
-    "check": "node ../../scripts/ensure-source-directories.mjs fusion-app && sb3-toolchain check source"
+    "build": "node --experimental-strip-types ../../scripts/ensure-source-directories.ts fusion-app && sb3-toolchain build source --output dist/fusion-app.sb3 --yes",
+    "check": "node --experimental-strip-types ../../scripts/ensure-source-directories.ts fusion-app && sb3-toolchain check source"
   }
 }

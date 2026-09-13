@@ -2,4 +2,11 @@ packages:
   - apps/*
   - packages/*
 
+# @kubohiroya/sb3-toolchain 0.13.0 adds tryParseExtensionApiManifest for
+# scripts/check-extension-readiness.ts. It is our own package, published from
+# the merged sb3-toolchain main, and its registry tarball matches the artifact
+# verified locally. Drop this entry once the release clears the age cutoff.
+minimumReleaseAgeExclude:
+  - '@kubohiroya/sb3-toolchain@0.13.0'
+
 onlyBuiltDependencies: []

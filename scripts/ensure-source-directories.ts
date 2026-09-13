@@ -1,7 +1,9 @@
 import {mkdir} from 'node:fs/promises';
 
+const applications = ['camera-app', 'fusion-app'] as const;
+
 const application = process.argv[2];
-if (!['camera-app', 'fusion-app'].includes(application)) {
+if (application === undefined || !(applications as readonly string[]).includes(application)) {
   throw new Error(`Unknown application: ${application ?? ''}`);
 }
 
