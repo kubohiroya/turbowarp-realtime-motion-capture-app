@@ -1,0 +1,9 @@
+{
+  "name": "@multiview-pose/camera-app",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node ../../scripts/ensure-source-directories.mjs camera-app && sb3-toolchain build source --output dist/camera-app.sb3 --yes",
+    "check": "node ../../scripts/ensure-source-directories.mjs camera-app && sb3-toolchain check source"
+  }
+}
