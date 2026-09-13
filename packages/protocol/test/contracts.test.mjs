@@ -11,7 +11,8 @@ import {
   SessionPolicySchema,
   coco17KeypointIds,
   protocolSchemas,
-  validateProtocol
+  validateProtocol,
+  validateSessionPolicy
 } from '../dist/src/index.js';
 
 const keypoints2d = coco17KeypointIds.map((id, index) => ({id, x: index * 10, y: index * 5, score: 0.9}));
@@ -25,9 +26,12 @@ const keypoints3d = coco17KeypointIds.map((id, index) => ({
 
 const validValues = [
   [SessionPolicySchema, {
-    schema: 'twmp/session-policy', version: 1, sessionId: 'show-2026', fusionPeerId: 'fusion-1',
-    cameraPeers: [{cameraId: 'camera-1', peerId: 'source-1', displayName: 'Stage left'}],
-    maximumPerformers: 6, qrCourierPairing: true, poseChannelHighWaterBytes: 262144
+    schema: 'twmp/session-policy', version: 1, sessionId: 'show-2026', revision: 1,
+    issuedAt: '2026-09-13T12:00:00Z', expiresAt: '2026-09-13T18:00:00Z', fusionPeerId: 'fusion-1',
+    cameraPeers: [{cameraId: 'camera-1', peerId: 'source-1', displayName: 'Stage left', calibrationId: 'calibration-1'}],
+    maximumPerformers: 6,
+    poseModel: {model: 'movenet-multipose-lightning', maxPoses: 6, minPoseScore: 0.2, minKeypointScore: 0.2},
+    qrCourierPairing: true, poseChannelHighWaterBytes: 262144
   }],
   [CameraCalibrationSchema, {
     schema: 'twmp/camera-calibration', version: 1, calibrationId: 'calibration-1', cameraId: 'camera-1',
@@ -61,6 +65,16 @@ test('all v1 contracts validate and survive a JSON round trip', () => {
     const roundTripped = JSON.parse(JSON.stringify(value));
     assert.deepEqual(validateProtocol(schema, roundTripped), {ok: true, value: roundTripped});
   }
+});
+
+test('session policy rejects invalid or expired validity windows', () => {
+  const session = validValues[0][1];
+  assert.equal(validateSessionPolicy(session, Date.parse('2026-09-13T13:00:00Z')).ok, true);
+  assert.equal(validateSessionPolicy(
+    {...session, expiresAt: session.issuedAt},
+    Date.parse('2026-09-13T11:00:00Z')
+  ).ok, false);
+  assert.equal(validateSessionPolicy(session, Date.parse('2026-09-13T19:00:00Z')).ok, false);
 });
 
 test('unknown versions, missing values, oversized arrays, and pairing credentials are rejected', () => {

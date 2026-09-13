@@ -6,9 +6,13 @@
     "schema",
     "version",
     "sessionId",
+    "revision",
+    "issuedAt",
+    "expiresAt",
     "fusionPeerId",
     "cameraPeers",
     "maximumPerformers",
+    "poseModel",
     "qrCourierPairing",
     "poseChannelHighWaterBytes"
   ],
@@ -27,6 +31,19 @@
       "pattern": "^[A-Za-z0-9._-]+$",
       "type": "string"
     },
+    "revision": {
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "type": "integer"
+    },
+    "issuedAt": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+      "type": "string"
+    },
+    "expiresAt": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+      "type": "string"
+    },
     "fusionPeerId": {
       "minLength": 1,
       "maxLength": 64,
@@ -43,7 +60,8 @@
         "required": [
           "cameraId",
           "peerId",
-          "displayName"
+          "displayName",
+          "calibrationId"
         ],
         "properties": {
           "cameraId": {
@@ -62,6 +80,12 @@
             "minLength": 1,
             "maxLength": 80,
             "type": "string"
+          },
+          "calibrationId": {
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9._-]+$",
+            "type": "string"
           }
         }
       }
@@ -70,6 +94,37 @@
       "minimum": 1,
       "maximum": 6,
       "type": "integer"
+    },
+    "poseModel": {
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "model",
+        "maxPoses",
+        "minPoseScore",
+        "minKeypointScore"
+      ],
+      "properties": {
+        "model": {
+          "const": "movenet-multipose-lightning",
+          "type": "string"
+        },
+        "maxPoses": {
+          "minimum": 1,
+          "maximum": 6,
+          "type": "integer"
+        },
+        "minPoseScore": {
+          "minimum": 0,
+          "maximum": 1,
+          "type": "number"
+        },
+        "minKeypointScore": {
+          "minimum": 0,
+          "maximum": 1,
+          "type": "number"
+        }
+      }
     },
     "qrCourierPairing": {
       "type": "boolean"

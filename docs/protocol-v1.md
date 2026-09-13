@@ -9,7 +9,7 @@ Truthとする。TypeScript型は、`packages/protocol/schemas/`以下のJSON Sc
 
 | 契約 | schema識別子 | 用途 |
 |---|---|---|
-| Session policy | `twmp/session-policy` | session topologyと運用上限。pairing credentialは含めない |
+| Session policy | `twmp/session-policy` | revision、有効期限、session topology、calibration参照、MoveNet設定、運用上限。pairing credentialは含めない |
 | Camera calibration | `twmp/camera-calibration` | 画像geometry、intrinsic、distortion、camera-to-world transform |
 | PoseFrame2D | `twmp/pose-frame-2d` | 最大6人分のtracking IDと順序固定COCO-17画像keypoint |
 | PoseFrame3D | `twmp/pose-frame-3d` | 最大6人分の3D姿勢、使用camera、reprojection品質 |

@@ -4,6 +4,7 @@ const identifier = Type.String({minLength: 1, maxLength: 64, pattern: '^[A-Za-z0
 const timestampUs = Type.Integer({minimum: 0, maximum: Number.MAX_SAFE_INTEGER});
 const score = Type.Number({minimum: 0, maximum: 1});
 const boundedNumber = Type.Number({minimum: -1_000_000, maximum: 1_000_000});
+const utcDateTime = Type.String({pattern: '^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$'});
 
 export const coco17KeypointIds = [
   'nose',
@@ -43,12 +44,26 @@ export const SessionPolicySchema = object({
   schema: Type.Literal('twmp/session-policy'),
   version: Type.Literal(1),
   sessionId: identifier,
+  revision: Type.Integer({minimum: 1, maximum: Number.MAX_SAFE_INTEGER}),
+  issuedAt: utcDateTime,
+  expiresAt: utcDateTime,
   fusionPeerId: identifier,
   cameraPeers: Type.Array(
-    object({cameraId: identifier, peerId: identifier, displayName: Type.String({minLength: 1, maxLength: 80})}),
+    object({
+      cameraId: identifier,
+      peerId: identifier,
+      displayName: Type.String({minLength: 1, maxLength: 80}),
+      calibrationId: identifier
+    }),
     {minItems: 1, maxItems: 16}
   ),
   maximumPerformers: Type.Integer({minimum: 1, maximum: 6}),
+  poseModel: object({
+    model: Type.Literal('movenet-multipose-lightning'),
+    maxPoses: Type.Integer({minimum: 1, maximum: 6}),
+    minPoseScore: score,
+    minKeypointScore: score
+  }),
   qrCourierPairing: Type.Boolean(),
   poseChannelHighWaterBytes: Type.Integer({minimum: 1024, maximum: 16_777_216})
 }, {$id: 'https://kubohiroya.github.io/multiview-pose/schema/session-policy-v1.json'});
@@ -64,7 +79,7 @@ export const CameraCalibrationSchema = object({
   distortionCoefficients: Type.Array(boundedNumber, {minItems: 0, maxItems: 14}),
   worldFromCameraMatrix: Type.Tuple(Array.from({length: 16}, () => boundedNumber)),
   worldUnit: Type.Literal('meter'),
-  calibratedAt: Type.String({pattern: '^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$'})
+  calibratedAt: utcDateTime
 }, {$id: 'https://kubohiroya.github.io/multiview-pose/schema/camera-calibration-v1.json'});
 
 export const PoseFrame2DSchema = object({

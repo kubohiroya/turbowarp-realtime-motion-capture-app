@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc --project tsconfig.json && node scripts/write-json-schemas.mjs",
     "check": "pnpm run typecheck && pnpm run test && pnpm run build",
-    "test": "tsc --project tsconfig.json && node --test test/*.test.mjs",
+    "test": "tsc --project tsconfig.json && node scripts/write-json-schemas.mjs && node --test test/*.test.mjs",
     "typecheck": "tsc --project tsconfig.json --noEmit"
   },
   "dependencies": {
