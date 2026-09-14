@@ -25,7 +25,7 @@ USB camera ─ camera app ─┐
 USB camera ─ camera app ─┘
 ```
 
-frame alignment、人物対応付け、triangulation、3D solveは高位拡張`turbowarp-multiview-pose`の
+frame alignment、人物対応付け、triangulation、3D solveは高位拡張`turbowarp-realtime-motion-capture`の
 `poseFusion3D`が実装します。本リポジトリはその機能を利用するアプリケーションです。
 
 詳しい責務とデータフローは[システム構成](docs/architecture.md)を参照してください。

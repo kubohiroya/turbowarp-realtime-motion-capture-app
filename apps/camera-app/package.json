@@ -10,7 +10,7 @@
     "@kubohiroya/turbowarp-camera-source": "0.6.0",
     "@kubohiroya/turbowarp-diagnostic-overlay": "0.4.0",
     "@kubohiroya/turbowarp-jsqr": "0.3.0",
-    "@kubohiroya/turbowarp-realtime-motion-capture": "0.2.0",
+    "@kubohiroya/turbowarp-realtime-motion-capture": "0.2.1",
     "@kubohiroya/turbowarp-title-menu": "0.2.2",
     "@kubohiroya/turbowarp-webrtc": "0.3.0"
   }

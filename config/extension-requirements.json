@@ -6,8 +6,8 @@
   "documentation": "Hand-maintained requirements. config/extension-readiness.json is generated from this file and from the versions pinned in each app's embedded-extensions.json.",
   "policy": {
     "applicationRepository": "kubohiroya/multiview-pose",
-    "highLevelExtensionRepository": "kubohiroya/turbowarp-multiview-pose",
-    "applicationContractRepository": "kubohiroya/turbowarp-multiview-pose",
+    "highLevelExtensionRepository": "kubohiroya/turbowarp-realtime-motion-capture",
+    "applicationContractRepository": "kubohiroya/turbowarp-realtime-motion-capture",
     "requireTurboWarpBlocks": true,
     "pinExactVersions": true,
     "verifySha256": true,
@@ -397,10 +397,10 @@
     },
     {
       "role": "multiview-high-level-blocks",
-      "repository": "kubohiroya/turbowarp-multiview-pose",
+      "repository": "kubohiroya/turbowarp-realtime-motion-capture",
       "package": "@kubohiroya/turbowarp-realtime-motion-capture",
       "extensionId": "kubohiroyarealtimemotioncapture",
-      "artifactPath": "dist/turbowarp-multiview-pose.js",
+      "artifactPath": "dist/turbowarp-realtime-motion-capture.js",
       "manifestPath": "dist/extension-manifest.json",
       "status": "ready",
       "requiredOperations": [

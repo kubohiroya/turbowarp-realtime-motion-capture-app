@@ -3,7 +3,7 @@
 この文書はcamera appとfusion appが利用するデータ契約と、安全に扱うためのアプリ側の方針を示します。
 具体的なfield定義や上限値の正本ではありません。
 
-データ契約（schema）は高位拡張`kubohiroya/turbowarp-multiview-pose`が所有します。本リポジトリは
+データ契約（schema）は高位拡張`kubohiroya/turbowarp-realtime-motion-capture`が所有します。本リポジトリは
 その契約の利用者であり、定義を複製しません。依存方向はapplicationからextensionへの一方向です。
 
 ## 利用する契約
@@ -17,7 +17,7 @@
 | PoseFrame3D | `twrmc/pose-frame-3d` | 最大6人分の3D姿勢と品質情報 |
 | Performance DSL | `twrmc/performance-dsl` | 最大6人分の色、開始／終了演出、avatar asset |
 
-正本の定義は`turbowarp-multiview-pose`の`src/protocol/schemas.ts`にあり、生成したJSON Schemaは
+正本の定義は`turbowarp-realtime-motion-capture`の`src/protocol/schemas.ts`にあり、生成したJSON Schemaは
 同repositoryの`schemas/`で配布します。app側はextensionのcodec blockを通してvalidateとencodeを
 行い、JSON Schemaを再実装しません。extensionのexact versionとartifact SHA-256は
 [`config/extension-readiness.json`](../config/extension-readiness.json)で固定します。
@@ -45,11 +45,11 @@ calibrationとperformance DSLは永続化できますが、適用前にschema ve
 
 `captureTimestampUs`と`timestampUs`は、WebRTC拡張のclock sync blockが提供する同期済みlocal time
 serviceの値をそのまま運びます。application scriptは値を作り直したり、受信時刻で置き換えたりしません。
-clock offsetの推定、probe、ping／pongはWebRTC拡張が所有し、`turbowarp-multiview-pose`も本アプリも
+clock offsetの推定、probe、ping／pongはWebRTC拡張が所有し、`turbowarp-realtime-motion-capture`も本アプリも
 実装しません。
 
 複数camera由来のtimestamp付きPoseFrame2Dの時刻対応付け、履歴保持、triangulationによる
-PoseFrame3D復元は、高位拡張`turbowarp-multiview-pose`の`poseFusion3D`が実装します。fusion appは
+PoseFrame3D復元は、高位拡張`turbowarp-realtime-motion-capture`の`poseFusion3D`が実装します。fusion appは
 受信したPoseFrame2Dをfusion blockのbufferへ入れ、統合結果を表示consumerへ渡すだけで、frame
 alignment、history query、triangulation、3D solveを自前で実装しません。
 

@@ -48,7 +48,7 @@
           "id": "kubohiroyarealtimemotioncapture",
           "provider": "npm",
           "package": "@kubohiroya/turbowarp-realtime-motion-capture",
-          "artifact": "dist/turbowarp-multiview-pose.js",
+          "artifact": "dist/turbowarp-realtime-motion-capture.js",
           "apiManifest": "dist/extension-manifest.json"
         },
         {
@@ -99,7 +99,7 @@
           "id": "kubohiroyarealtimemotioncapture",
           "provider": "npm",
           "package": "@kubohiroya/turbowarp-realtime-motion-capture",
-          "artifact": "dist/turbowarp-multiview-pose.js",
+          "artifact": "dist/turbowarp-realtime-motion-capture.js",
           "apiManifest": "dist/extension-manifest.json"
         },
         {

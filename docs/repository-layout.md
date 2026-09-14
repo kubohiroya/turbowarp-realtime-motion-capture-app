@@ -110,7 +110,7 @@ pnpm --filter @multiview-pose/app-shell build
 アプリメニュー、DSLファイル管理は`@kubohiroya/turbowarp-title-menu`が担当し、bundleの2番目の
 memberとして入ります。
 
-シェルは`turbowarp-multiview-pose`が読む`globalThis.__TWMP_FEATURE_FLAGS__`を書き込みます。
+シェルは`turbowarp-realtime-motion-capture`が読む`globalThis.__TWMP_FEATURE_FLAGS__`を書き込みます。
 契約拡張はモジュール評価時にflagを固定するため、**シェルは必ずbundleの先頭member**でなければ
 なりません。`scripts/pin-embedded-extensions.ts`はこの順序を強制し、先頭が`workspace` providerで
 なければビルドを失敗させます。さらに`scripts/check-bundle-order.ts`が、生成されたbundleの中で

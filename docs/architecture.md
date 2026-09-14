@@ -7,7 +7,7 @@
 fusion app、そのアプリ固有スクリプト、アプリシェル、設定、演出DSL、デモasset、配布SB3を所有します。
 
 汎用的なカメラ、QR、WebRTC、データ変換、3D表示の機能は個別のTurboWarp拡張が所有します。複数拡張に
-またがる処理のうち、SB3のblock列では安全な管理が難しいものは高位拡張`turbowarp-multiview-pose`が
+またがる処理のうち、SB3のblock列では安全な管理が難しいものは高位拡張`turbowarp-realtime-motion-capture`が
 所有します。3D統合（frame alignment、人物対応付け、triangulation、3D solve）もこの高位拡張の
 `poseFusion3D`が実装しており、本リポジトリでは実装しません。
 
@@ -43,7 +43,7 @@ v0.1.0の基準構成ではfusion appが拡張のfusion blockで3Dを復元し�
 | `@multiview-pose/app-shell`（本リポジトリ所有、member 1） | contract feature flagの注入、読み込み表示、エラー表示、flag診断 |
 | `@kubohiroya/turbowarp-title-menu`（member 2） | タイトル／about画面、アプリメニュー、DSLファイルの保管と管理 |
 
-順序には意味があります。`turbowarp-multiview-pose`は評価時にfeature flagを固定するため、それを
+順序には意味があります。`turbowarp-realtime-motion-capture`は評価時にfeature flagを固定するため、それを
 書き込むapp-shellが必ず先頭でなければなりません。
 
 タイトルとメニューをtitle-menuへ寄せているのは、同じUIを二重に実装しないためです。メニューの項目は
@@ -56,7 +56,7 @@ app-shellがtitle-menuに渡さず持ち続けているのは、title-menuに相
 
 app-shellの役割は次の2つです。
 
-1. `turbowarp-multiview-pose`が読むfeature flagを、その拡張が評価される前に書き込む。
+1. `turbowarp-realtime-motion-capture`が読むfeature flagを、その拡張が評価される前に書き込む。
 2. `@kubohiroya/turbowarp-app-shell`のDOM primitiveを使い、日本語・英語のロケール対応で、
    読み込み表示とエラー表示をステージ上に出す。
 
