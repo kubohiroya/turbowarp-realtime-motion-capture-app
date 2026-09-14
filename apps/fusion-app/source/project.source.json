@@ -19,7 +19,7 @@
           "y": 48
         },
         "s1b2": {
-          "opcode": "multiviewposefusionshell_showAppLoading",
+          "opcode": "realtimemotioncapturefusionshell_showAppLoading",
           "next": "s1b3",
           "parent": "s1b1",
           "inputs": {
@@ -93,7 +93,7 @@
           "topLevel": false
         },
         "s1b6": {
-          "opcode": "multiviewposefusionshell_hideAppLoading",
+          "opcode": "realtimemotioncapturefusionshell_hideAppLoading",
           "next": "s1b7",
           "parent": "s1b5",
           "inputs": {},
@@ -147,7 +147,7 @@
           "y": 480
         },
         "s3b2": {
-          "opcode": "multiviewposefusionshell_showAppNotice",
+          "opcode": "realtimemotioncapturefusionshell_showAppNotice",
           "next": null,
           "parent": "s3b1",
           "inputs": {
@@ -215,7 +215,7 @@
           "y": 660
         },
         "s4b2": {
-          "opcode": "multiviewposefusionshell_showAppNotice",
+          "opcode": "realtimemotioncapturefusionshell_showAppNotice",
           "next": null,
           "parent": "s4b1",
           "inputs": {
@@ -258,7 +258,7 @@
           "topLevel": false
         },
         "s4b4": {
-          "opcode": "multiviewposefusionshell_appFeatureFlagState",
+          "opcode": "realtimemotioncapturefusionshell_appFeatureFlagState",
           "next": null,
           "parent": "s4b3",
           "inputs": {},
@@ -291,21 +291,21 @@
   ],
   "monitors": [],
   "extensions": [
-    "multiviewposefusionshell",
+    "realtimemotioncapturefusionshell",
     "kubohiroyaturbowarptitlemenu",
     "kubohiroyawebrtc",
     "kubohiroyayamljson",
-    "kubohiroyamultiviewpose",
+    "kubohiroyarealtimemotioncapture",
     "kubohiroyaassetmanager",
     "turbowarpaframe",
     "kubohiroyadiagnosticoverlay"
   ],
   "extensionURLs": {
-    "multiviewposefusionshell": "embedded-extension:extensions/multiviewposefusionshell.js",
+    "realtimemotioncapturefusionshell": "embedded-extension:extensions/realtimemotioncapturefusionshell.js",
     "kubohiroyaturbowarptitlemenu": "embedded-extension:extensions/kubohiroyaturbowarptitlemenu.js",
     "kubohiroyawebrtc": "embedded-extension:extensions/kubohiroyawebrtc.js",
     "kubohiroyayamljson": "embedded-extension:extensions/kubohiroyayamljson.js",
-    "kubohiroyamultiviewpose": "embedded-extension:extensions/kubohiroyamultiviewpose.js",
+    "kubohiroyarealtimemotioncapture": "embedded-extension:extensions/kubohiroyarealtimemotioncapture.js",
     "kubohiroyaassetmanager": "embedded-extension:extensions/kubohiroyaassetmanager.js",
     "turbowarpaframe": "embedded-extension:extensions/turbowarpaframe.js",
     "kubohiroyadiagnosticoverlay": "embedded-extension:extensions/kubohiroyadiagnosticoverlay.js"

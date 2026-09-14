@@ -2,8 +2,8 @@
   "formatVersion": 1,
   "extensions": [
     {
-      "id": "multiviewposefusionshell",
-      "path": "extensions/multiviewposefusionshell.js",
+      "id": "realtimemotioncapturefusionshell",
+      "path": "extensions/realtimemotioncapturefusionshell.js",
       "mediaType": "text/javascript",
       "parameters": [],
       "encoding": "base64"
@@ -69,22 +69,22 @@
       }
     },
     {
-      "id": "kubohiroyamultiviewpose",
-      "path": "extensions/kubohiroyamultiviewpose.js",
+      "id": "kubohiroyarealtimemotioncapture",
+      "path": "extensions/kubohiroyarealtimemotioncapture.js",
       "mediaType": "text/javascript",
       "parameters": [],
       "encoding": "base64",
       "source": {
         "provider": "npm",
-        "package": "@kubohiroya/turbowarp-multiview-pose",
+        "package": "@kubohiroya/turbowarp-realtime-motion-capture",
         "version": "0.2.0",
-        "artifact": "dist/turbowarp-multiview-pose.js",
-        "integrity": "sha256-AvjWmx/kGGSKiWi33CQXg+tb4BEXSWybe5PI+zyigXk=",
+        "artifact": "dist/turbowarp-realtime-motion-capture.js",
+        "integrity": "sha256-8wSqj4QL7Abe2DByQYgnVd/gagOGbiE2atdCfgNa9Qw=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
-          "path": "extensions/kubohiroyamultiviewpose.manifest.json",
+          "path": "extensions/kubohiroyarealtimemotioncapture.manifest.json",
           "formatVersion": 1,
-          "integrity": "sha256-SrT+/bxzP+XRxpRfp6DOhvWs3KsLN//eozcVmfDmRlQ="
+          "integrity": "sha256-YE4G6GLSEFTwW51PPdKgal09Ml4Eov24wgfys6KFFZM="
         }
       }
     },
@@ -151,14 +151,14 @@
   ],
   "extensionBundles": [
     {
-      "id": "multiviewposefusionapp",
+      "id": "realtimemotioncapturefusionapp",
       "name": "Multiview Pose Fusion App",
       "members": [
-        "multiviewposefusionshell",
+        "realtimemotioncapturefusionshell",
         "kubohiroyaturbowarptitlemenu",
         "kubohiroyawebrtc",
         "kubohiroyayamljson",
-        "kubohiroyamultiviewpose",
+        "kubohiroyarealtimemotioncapture",
         "kubohiroyaassetmanager",
         "turbowarpaframe",
         "kubohiroyadiagnosticoverlay"
