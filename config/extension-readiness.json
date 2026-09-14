@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "generatedFrom": "config/extension-requirements.json",
   "reviewedOn": "2026-09-14",
-  "epic": "https://github.com/kubohiroya/multiview-pose/issues/1",
-  "issue": "https://github.com/kubohiroya/multiview-pose/issues/3",
+  "epic": "https://github.com/kubohiroya/turbowarp-realtime-motion-capture-app/issues/1",
+  "issue": "https://github.com/kubohiroya/turbowarp-realtime-motion-capture-app/issues/3",
   "policy": {
-    "applicationRepository": "kubohiroya/multiview-pose",
+    "applicationRepository": "kubohiroya/turbowarp-realtime-motion-capture-app",
     "highLevelExtensionRepository": "kubohiroya/turbowarp-realtime-motion-capture",
     "applicationContractRepository": "kubohiroya/turbowarp-realtime-motion-capture",
     "requireTurboWarpBlocks": true,

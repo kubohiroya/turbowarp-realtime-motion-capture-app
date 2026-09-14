@@ -4,7 +4,7 @@
 目的と現在の状態は[README](../README.md)、実行時の責務は[システム構成](architecture.md)を参照して
 ください。
 
-`multiview-pose`は2つのTurboWarpアプリとアプリシェル拡張を含むpnpm monorepoです。展開済みSB3
+`turbowarp-realtime-motion-capture-app`は2つのTurboWarpアプリとアプリシェル拡張を含むpnpm monorepoです。展開済みSB3
 ソースを正本とし、生成した`.sb3`を決定的な配布artifactとして扱います。
 
 ## ディレクトリ構成
