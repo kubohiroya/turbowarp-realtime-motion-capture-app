@@ -1,5 +1,5 @@
 /**
- * Startup-fixed feature flags owned by `@kubohiroya/turbowarp-multiview-pose`.
+ * Startup-fixed feature flags owned by `@kubohiroya/turbowarp-realtime-motion-capture`.
  *
  * That extension freezes its flag set while its module body runs, so the value has to exist on the
  * global object before its source is evaluated. Inside a static extension bundle the member order in
@@ -24,7 +24,7 @@ export type FeatureFlagSet = Readonly<Record<FeatureFlagName, boolean>>;
 export const featureFlagGlobalKey = '__TWMP_FEATURE_FLAGS__';
 
 /** The runtime key the contract extension registers itself under once it has read the flags. */
-export const contractRuntimeKey = 'ext_kubohiroyamultiviewpose';
+export const contractRuntimeKey = 'ext_kubohiroyarealtimemotioncapture';
 
 export type FeatureFlagApplicationState = 'applied' | 'replaced' | 'too-late';
 

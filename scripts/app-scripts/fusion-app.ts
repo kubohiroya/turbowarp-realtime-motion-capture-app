@@ -1,6 +1,6 @@
 import {block, reporter, script, text, type Script} from '../../packages/sb3-script/src/blocks.ts';
 
-const shell = 'multiviewposefusionshell';
+const shell = 'realtimemotioncapturefusionshell';
 const titleMenu = 'kubohiroyaturbowarptitlemenu';
 
 /** Menu action ids. The hat matches on these, so they are part of the script's contract. */

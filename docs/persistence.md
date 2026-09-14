@@ -24,7 +24,7 @@
 内容のSHA-256を記録し、参照を解決してから適用します。
 
 - 読み込んだテキストは`@kubohiroya/turbowarp-yaml-json`の`parse text`でsafe parseし、
-  `twmp/performance-dsl` v1として`validate schema`で検証してから適用する。
+  `twrmc/performance-dsl` v1として`validate schema`で検証してから適用する。
 - 読み込んだDSLはブラウザにキャッシュし、次回起動時に選び直さなくてよいようにする。
   キャッシュのキーは読み込んだ内容のSHA-256とし、同じ内容を二重に持たない。
 - **DSLをSB3へ埋め込むことはしない。** 配布SB3にはDSLが1つも入らないため、fusion appは起動時に
@@ -47,7 +47,7 @@ fusion側に置くのは責務分担と一致します。camera app側にも同�
 
 ### キャッシュのキー
 
-キーは**`cameraId`と`calibrationId`の組**とします。どちらも`twmp/camera-calibration` v1が持つ
+キーは**`cameraId`と`calibrationId`の組**とします。どちらも`twrmc/camera-calibration` v1が持つ
 fieldで、`cameraId`は運用者が付ける安定した名前（例: `stage-left`）、`calibrationId`はその校正
 実施を識別します。fusion appは`cameraId`で候補を引き、`calibrationId`で世代を区別します。
 
@@ -83,7 +83,7 @@ IPアドレスは候補を並べ替えるヒントとしてなら使えますが
 
 復元はfail-closedにします。適用前に次を確認し、1つでも合わなければ適用せずreadinessを失敗にします。
 
-- `twmp/camera-calibration` v1として検証できること
+- `twrmc/camera-calibration` v1として検証できること
 - `cameraId`が今つないでいるcameraと一致すること
 - 実際のカメラ解像度が校正時の解像度と一致すること
 - pairing credentialを含むkeyが混入していないこと（拡張のimportがすでに再帰的に拒否する）

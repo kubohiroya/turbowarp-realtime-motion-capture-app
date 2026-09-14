@@ -15,7 +15,7 @@ generic extensions
   diagnostic-overlay / app-shell / title-menu
                          |
                          v
-turbowarp-multiview-pose
+turbowarp-realtime-motion-capture
   安定したmultiview固有blockとcomposite block、protocol契約、3D fusion
                          |
                          v
@@ -24,7 +24,7 @@ multiview-pose
 ```
 
 application repositoryはSB3 script、アプリシェル、performance DSL、calibration profile、demo asset、
-extension pin、配布artifactを所有する。`turbowarp-multiview-pose`は再利用可能なmultiview固有処理を
+extension pin、配布artifactを所有する。`turbowarp-realtime-motion-capture`は再利用可能なmultiview固有処理を
 所有するが、完成品applicationは所有しない。
 
 ## 現在のreadiness（2026-09-14確認）
@@ -39,7 +39,7 @@ extension pin、配布artifactを所有する。`turbowarp-multiview-pose`は再
 | Assets/animation | `@kubohiroya/turbowarp-asset-manager@0.16.0` | Ready | block API manifestを配布済み。app asset manifestは未確定 |
 | 3D scene | `@kubohiroya/turbowarp-aframe@0.3.0` | Ready | scene capability v1を公開済みで、avatar retargetが依存できる |
 | Diagnostics | `@kubohiroya/turbowarp-diagnostic-overlay@0.4.0` | Ready | block API manifestを配布済み。app readiness payloadは未確定 |
-| Multiview blocks | `@kubohiroya/turbowarp-multiview-pose@0.2.0` | Ready | 93 block。frame sync、3D fusion、glow stickまで公開済み |
+| Motion capture blocks | `@kubohiroya/turbowarp-realtime-motion-capture@0.2.1` | Ready | 93 block。frame sync、3D fusion、glow stickまで公開済み |
 
 すべての固定artifactは`node scripts/check-extension-readiness.ts --verify-network`で公開bundleと
 manifestに照合済みです。release build自体はnetwork accessなしで、commit済みartifactだけを使用します。
@@ -48,7 +48,7 @@ manifestに照合済みです。release build自体はnetwork accessなしで、
 
 ### `extensions status`が使えない拡張
 
-`@kubohiroya/turbowarp-multiview-pose`の配布bundleはOpenCV.js WebAssemblyを内包するため13.7 MBあり、
+`@kubohiroya/turbowarp-realtime-motion-capture`の配布bundleはOpenCV.js WebAssemblyを内包するため13.7 MBあり、
 `sb3-toolchain extensions status`の5 MB上限を超えます。integrityは`sb3-toolchain check`とビルドで
 検証されるので配布物の安全性には影響しませんが、更新確認は`scripts/pin-embedded-extensions.ts`で
 行います。
@@ -73,7 +73,7 @@ Camera Source 0.5.0でcamera acquisitionとGPU previewをblockから実行でき
 ### QR courier pairing
 
 jsQRとreliable WebRTC pairing経路は利用可能である。QR envelope生成、複数part再構成、Version 40
-render、一時sprite skin lifecycle、cleanupは`turbowarp-multiview-pose`が実装済みである。manual
+render、一時sprite skin lifecycle、cleanupは`turbowarp-realtime-motion-capture`が実装済みである。manual
 copy/paste pairingをrollback経路として維持する。
 
 ### Pose streaming
@@ -85,7 +85,7 @@ latest-data channelで送り、`bufferedAmount`とdrop countをreadinessに出�
 ### Clock sync
 
 WebRTC 0.3.0の`syncClock`／`clockOffset`／`clockUncertainty`を時刻の正本とする。アプリも
-`turbowarp-multiview-pose`もclock推定を実装しない。frame latencyは同拡張のframe sync report blockへ
+`turbowarp-realtime-motion-capture`もclock推定を実装しない。frame latencyは同拡張のframe sync report blockへ
 集約する。
 
 ### 集約、3D fusion、avatar demo
@@ -98,7 +98,7 @@ fusion appはtimestamp付きPoseFrame2Dを`bufferPoseFrame2D`へ入れ、`fuseBu
 
 単一extensionの安定したblockで表現できる操作は、そのgeneric extensionに置く。複数extensionの
 runtime API、resource ownership、非同期state、cleanupを一体で扱う必要があり、SB3 block列では保守が
-困難な操作だけを`turbowarp-multiview-pose`の高位blockへ昇格する。
+困難な操作だけを`turbowarp-realtime-motion-capture`の高位blockへ昇格する。
 
 再利用できる画面（タイトル、アプリメニュー、DSLファイル管理）は`turbowarp-title-menu`が所有する。
 このリポジトリが所有する`@multiview-pose/app-shell`拡張に残すのは、起動時のfeature flag注入と、

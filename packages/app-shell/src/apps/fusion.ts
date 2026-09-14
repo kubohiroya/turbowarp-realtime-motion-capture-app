@@ -1,7 +1,7 @@
 import type {AppShellAppConfig} from '../app-config.js';
 
 export const fusionAppConfig: AppShellAppConfig = {
-  id: 'multiviewposefusionshell',
+  id: 'realtimemotioncapturefusionshell',
   slug: 'fusion-app-shell',
   name: 'Multiview Pose Fusion App',
   description: 'Application shell and contract feature flags for the multiview-pose fusion app.',

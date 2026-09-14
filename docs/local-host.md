@@ -90,8 +90,8 @@ static bundleによってSB3は自己完結しているので、後退経路の�
 
 | アプリ | SB3 | 生成HTML | 実VMで読み込まれた拡張 |
 |---|---|---|---|
-| camera app | 6.1 MB | 27.1 MB | `multiviewposecameraapp` |
-| fusion app | 6.3 MB | 27.8 MB | `multiviewposefusionapp` |
+| camera app | 6.1 MB | 27.1 MB | `realtimemotioncapturecameraapp` |
+| fusion app | 6.3 MB | 27.8 MB | `realtimemotioncapturefusionapp` |
 
 確認できたこと。
 
@@ -345,7 +345,7 @@ pnpm run build:binary     # プレイヤーを同梱した単体バイナリ
 パッケージ済みのcamera app（27.1 MB）を`startLocalHost`で配信し、ブラウザで読み込みました。
 
 - origin は `http://127.0.0.1:49711`。宣言した固定ポートのとおり
-- 合成拡張`multiviewposecameraapp`が実VMで読み込まれ、feature flagも5つ有効
+- 合成拡張`realtimemotioncapturecameraapp`が実VMで読み込まれ、feature flagも5つ有効
 - **IndexedDBに書いた内容が、ホストを再起動しても残る。** 再起動でtokenは変わりましたが、tokenは
   クエリでoriginに含まれないため保存領域に影響しません。固定ポートがoriginを安定させるという前提が
   実測で確認できました

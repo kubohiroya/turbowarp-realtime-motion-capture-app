@@ -1,7 +1,7 @@
 import type {AppShellAppConfig} from '../app-config.js';
 
 export const cameraAppConfig: AppShellAppConfig = {
-  id: 'multiviewposecamerashell',
+  id: 'realtimemotioncapturecamerashell',
   slug: 'camera-app-shell',
   name: 'Multiview Pose Camera App',
   description: 'Application shell and contract feature flags for the multiview-pose camera app.',

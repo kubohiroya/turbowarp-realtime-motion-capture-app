@@ -27,7 +27,7 @@ import {
   whenFlagClicked
 } from '../../packages/sb3-script/src/standard.ts';
 
-const shell = 'multiviewposecamerashell';
+const shell = 'realtimemotioncapturecamerashell';
 const titleMenu = 'kubohiroyaturbowarptitlemenu';
 const cameraSource = 'kubohiroyacamerasource';
 
