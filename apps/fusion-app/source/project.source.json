@@ -36,7 +36,7 @@
           "topLevel": false
         },
         "s1b3": {
-          "opcode": "multiviewposefusionshell_hideAppLoading",
+          "opcode": "kubohiroyaturbowarptitlemenu_clearAppMenuActions",
           "next": "s1b4",
           "parent": "s1b2",
           "inputs": {},
@@ -45,9 +45,222 @@
           "topLevel": false
         },
         "s1b4": {
-          "opcode": "kubohiroyaturbowarptitlemenu_showTitle",
-          "next": null,
+          "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
+          "next": "s1b5",
           "parent": "s1b3",
+          "inputs": {
+            "ACTION": [
+              1,
+              [
+                10,
+                "dslFiles"
+              ]
+            ],
+            "LABEL": [
+              1,
+              [
+                10,
+                "演出ファイルを選ぶ"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s1b5": {
+          "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
+          "next": "s1b6",
+          "parent": "s1b4",
+          "inputs": {
+            "ACTION": [
+              1,
+              [
+                10,
+                "diagnostics"
+              ]
+            ],
+            "LABEL": [
+              1,
+              [
+                10,
+                "動作状況を見る"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s1b6": {
+          "opcode": "multiviewposefusionshell_hideAppLoading",
+          "next": "s1b7",
+          "parent": "s1b5",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s1b7": {
+          "opcode": "kubohiroyaturbowarptitlemenu_showMenu",
+          "next": null,
+          "parent": "s1b6",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b1": {
+          "opcode": "kubohiroyaturbowarptitlemenu_whenAppMenuActionSelected",
+          "next": "s2b2",
+          "parent": null,
+          "inputs": {},
+          "fields": {
+            "ACTION": [
+              "dslFiles",
+              null
+            ]
+          },
+          "shadow": false,
+          "topLevel": true,
+          "x": 48,
+          "y": 320
+        },
+        "s2b2": {
+          "opcode": "kubohiroyaturbowarptitlemenu_showDslFiles",
+          "next": null,
+          "parent": "s2b1",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s3b1": {
+          "opcode": "kubohiroyaturbowarptitlemenu_whenDslSourceOpened",
+          "next": "s3b2",
+          "parent": null,
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": true,
+          "x": 48,
+          "y": 480
+        },
+        "s3b2": {
+          "opcode": "multiviewposefusionshell_showAppNotice",
+          "next": null,
+          "parent": "s3b1",
+          "inputs": {
+            "MESSAGE": [
+              3,
+              "s3b3",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s3b3": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s3b2",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "読み込んだ演出ファイル: "
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s3b4",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s3b4": {
+          "opcode": "kubohiroyaturbowarptitlemenu_openedDslName",
+          "next": null,
+          "parent": "s3b3",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b1": {
+          "opcode": "kubohiroyaturbowarptitlemenu_whenAppMenuActionSelected",
+          "next": "s4b2",
+          "parent": null,
+          "inputs": {},
+          "fields": {
+            "ACTION": [
+              "diagnostics",
+              null
+            ]
+          },
+          "shadow": false,
+          "topLevel": true,
+          "x": 48,
+          "y": 660
+        },
+        "s4b2": {
+          "opcode": "multiviewposefusionshell_showAppNotice",
+          "next": null,
+          "parent": "s4b1",
+          "inputs": {
+            "MESSAGE": [
+              3,
+              "s4b3",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b3": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s4b2",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "起動時の機能設定: "
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s4b4",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b4": {
+          "opcode": "multiviewposefusionshell_appFeatureFlagState",
+          "next": null,
+          "parent": "s4b3",
           "inputs": {},
           "fields": {},
           "shadow": false,

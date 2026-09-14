@@ -17,7 +17,11 @@ export const cameraAppConfig: AppShellAppConfig = {
     'frameSyncPatternV1',
     'glowStickMarkers'
   ],
-  messageLocales: {
+  noticeLocales: {
+    en: {title: 'Camera app'},
+    ja: {title: 'カメラアプリからのお知らせ'}
+  },
+  errorLocales: {
     en: {title: 'Camera app stopped'},
     ja: {title: 'カメラアプリが停止しました'}
   }

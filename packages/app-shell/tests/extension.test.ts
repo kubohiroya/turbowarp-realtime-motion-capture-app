@@ -79,12 +79,18 @@ describe('shell blocks', () => {
     expect(calls[0]).toEqual({name: 'showLoading', args: ['Starting', null]});
   });
 
-  it('renders only a JSON object as message details', () => {
+  it('renders only a JSON object as error details', () => {
     const {calls, extension} = createExtension();
-    extension.showAppMessageWithDetails({MESSAGE: 'stopped', DETAILS: '{"code":"E1"}'});
-    extension.showAppMessageWithDetails({MESSAGE: 'stopped', DETAILS: '[1,2]'});
-    extension.showAppMessageWithDetails({MESSAGE: 'stopped', DETAILS: 'not json'});
+    extension.showAppError({MESSAGE: 'stopped', DETAILS: '{"code":"E1"}'});
+    extension.showAppError({MESSAGE: 'stopped', DETAILS: '[1,2]'});
+    extension.showAppError({MESSAGE: 'stopped', DETAILS: 'not json'});
     expect(calls.map((call) => call.args[1])).toEqual([{code: 'E1'}, {}, {}]);
+  });
+
+  it('keeps a notice off the failure path', () => {
+    const {calls, extension} = createExtension();
+    extension.showAppNotice({MESSAGE: 'two cameras are connected'});
+    expect(calls[0]?.name).toBe('showNotice');
   });
 
 });

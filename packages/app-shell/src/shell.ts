@@ -21,7 +21,8 @@ export interface MultiviewPoseShell {
   state(): ShellState;
   showLoading(label: string, progress: number | null): void;
   hideLoading(): void;
-  showMessage(message: string, details: Record<string, unknown>): void;
+  showNotice(message: string): void;
+  showError(message: string, details: Record<string, unknown>): void;
   hideMessage(): void;
   dispose(): void;
 }
@@ -31,7 +32,15 @@ type MessageIndicator = ReturnType<typeof createRuntimeMessageIndicator>;
 
 interface MountedParts {
   readonly loading: LoadingPresenter;
-  readonly message: MessageIndicator;
+  /**
+   * Two indicators, because one heading cannot serve both.
+   *
+   * A notice that reports a camera count under a heading reading "the application stopped" tells the
+   * operator something false, and an operator who learns to ignore that heading will ignore it when
+   * it is true.
+   */
+  readonly notice: MessageIndicator;
+  readonly error: MessageIndicator;
 }
 
 function normalizeLocale(value: string | undefined): ShellLocale {
@@ -65,13 +74,21 @@ export function createMultiviewPoseShell(
     if (document === null || target === null) return null;
     try {
       const loading = createAppShellLoadingPresenter({document, mount: target});
-      const message = createRuntimeMessageIndicator({
+      const notice = createRuntimeMessageIndicator({
         document,
         mount: target,
         initialLocale: locale,
-        locales: config.messageLocales
+        tone: 'info',
+        locales: config.noticeLocales
       });
-      parts = {loading, message};
+      const error = createRuntimeMessageIndicator({
+        document,
+        mount: target,
+        initialLocale: locale,
+        tone: 'error',
+        locales: config.errorLocales
+      });
+      parts = {loading, notice, error};
       state = 'ready';
       return parts;
     } catch {
@@ -89,17 +106,26 @@ export function createMultiviewPoseShell(
     hideLoading() {
       parts?.loading.hide();
     },
-    showMessage(message, details) {
-      mount()?.message.show(Object.keys(details).length === 0 ? {message} : {message, details});
+    showNotice(message) {
+      const mounted = mount();
+      mounted?.error.hide();
+      mounted?.notice.show({message});
+    },
+    showError(message, details) {
+      const mounted = mount();
+      mounted?.notice.hide();
+      mounted?.error.show(Object.keys(details).length === 0 ? {message} : {message, details});
     },
     hideMessage() {
-      parts?.message.hide();
+      parts?.notice.hide();
+      parts?.error.hide();
     },
     dispose() {
       if (disposed) return;
       disposed = true;
       parts?.loading.dispose();
-      parts?.message.dispose();
+      parts?.notice.dispose();
+      parts?.error.dispose();
       parts = null;
       state = 'unmounted';
     }

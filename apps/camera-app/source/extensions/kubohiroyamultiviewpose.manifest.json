@@ -68,6 +68,26 @@
       ]
     },
     {
+      "opcode": "bufferPoseFrame2D",
+      "blockType": "COMMAND",
+      "arguments": [
+        {
+          "id": "JSON",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "opcode": "calibrateFrameSyncDecoder",
+      "blockType": "COMMAND",
+      "arguments": [
+        {
+          "id": "SECONDS",
+          "type": "NUMBER"
+        }
+      ]
+    },
+    {
       "opcode": "cameraCalibrationBackend",
       "blockType": "REPORTER",
       "arguments": []
@@ -133,6 +153,11 @@
       "arguments": []
     },
     {
+      "opcode": "cleanupPoseFusion",
+      "blockType": "COMMAND",
+      "arguments": []
+    },
+    {
       "opcode": "createAndShowOfferQr",
       "blockType": "COMMAND",
       "arguments": [
@@ -158,6 +183,21 @@
       "arguments": []
     },
     {
+      "opcode": "disableGlowStickMarkers",
+      "blockType": "COMMAND",
+      "arguments": []
+    },
+    {
+      "opcode": "enableGlowStickMarkers",
+      "blockType": "COMMAND",
+      "arguments": [
+        {
+          "id": "KEYPOINTS",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
       "opcode": "encodeProtocolJson",
       "blockType": "REPORTER",
       "arguments": [
@@ -170,6 +210,86 @@
     {
       "opcode": "endOfferQrDisplay",
       "blockType": "COMMAND",
+      "arguments": []
+    },
+    {
+      "opcode": "frameSyncDecodeRate",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "frameSyncDecoderError",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "frameSyncDecoderState",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "frameSyncFrameAgeUs",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "frameSyncFrameTimestampUs",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "frameSyncObservationAvailable",
+      "blockType": "BOOLEAN",
+      "arguments": []
+    },
+    {
+      "opcode": "frameSyncPatternShown",
+      "blockType": "BOOLEAN",
+      "arguments": []
+    },
+    {
+      "opcode": "frameSyncPatternTimestampUs",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "frameSyncPatternWrapUs",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "fuseBufferedPoseFrame3D",
+      "blockType": "COMMAND",
+      "arguments": []
+    },
+    {
+      "opcode": "fusePoseFrame3DAt",
+      "blockType": "COMMAND",
+      "arguments": [
+        {
+          "id": "TIMESTAMP_US",
+          "type": "NUMBER"
+        }
+      ]
+    },
+    {
+      "opcode": "glowStickMarkerCount",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "glowStickPaletteSize",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "hideFrameSyncPattern",
+      "blockType": "COMMAND",
+      "arguments": []
+    },
+    {
+      "opcode": "identifiedPerformerCount",
+      "blockType": "REPORTER",
       "arguments": []
     },
     {
@@ -194,6 +314,36 @@
     },
     {
       "opcode": "latestPoseFrame2D",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "latestPoseFrame3D",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "loadFusionCameraCalibration",
+      "blockType": "COMMAND",
+      "arguments": [
+        {
+          "id": "JSON",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "opcode": "loadGlowStickPalette",
+      "blockType": "COMMAND",
+      "arguments": [
+        {
+          "id": "JSON",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "opcode": "mirrorCorrectedViewCount",
       "blockType": "REPORTER",
       "arguments": []
     },
@@ -229,6 +379,56 @@
     },
     {
       "opcode": "poseErrorCode",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "poseFusionBufferedFrameCount",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "poseFusionCameraCount",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "poseFusionDroppedFrameCount",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "poseFusionError",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "poseFusionErrorCode",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "poseFusionPersonCount",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "poseFusionReady",
+      "blockType": "BOOLEAN",
+      "arguments": []
+    },
+    {
+      "opcode": "poseFusionReprojectionErrorPx",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "poseFusionState",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "poseFusionTimestampUs",
       "blockType": "REPORTER",
       "arguments": []
     },
@@ -301,6 +501,25 @@
       "arguments": []
     },
     {
+      "opcode": "setPerformerGlowStick",
+      "blockType": "COMMAND",
+      "arguments": [
+        {
+          "id": "KEYPOINT",
+          "type": "STRING"
+        },
+        {
+          "id": "PERFORMER_ID",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "opcode": "showFrameSyncPattern",
+      "blockType": "COMMAND",
+      "arguments": []
+    },
+    {
       "opcode": "showNextOfferQrPart",
       "blockType": "COMMAND",
       "arguments": []
@@ -351,6 +570,38 @@
       ]
     },
     {
+      "opcode": "startFrameSyncDecoder",
+      "blockType": "COMMAND",
+      "arguments": [
+        {
+          "id": "CAMERA_ID",
+          "type": "STRING"
+        },
+        {
+          "id": "SECONDS",
+          "type": "NUMBER"
+        }
+      ]
+    },
+    {
+      "opcode": "startPoseFusion",
+      "blockType": "COMMAND",
+      "arguments": [
+        {
+          "id": "DELAY_MS",
+          "type": "NUMBER"
+        },
+        {
+          "id": "JITTER_MS",
+          "type": "NUMBER"
+        },
+        {
+          "id": "MIN_SCORE",
+          "type": "NUMBER"
+        }
+      ]
+    },
+    {
       "opcode": "startWebGpuMoveNetMultiPose",
       "blockType": "COMMAND",
       "arguments": [
@@ -369,7 +620,27 @@
       ]
     },
     {
+      "opcode": "stopFrameSyncDecoder",
+      "blockType": "COMMAND",
+      "arguments": []
+    },
+    {
+      "opcode": "stopPoseFusion",
+      "blockType": "COMMAND",
+      "arguments": []
+    },
+    {
       "opcode": "stopWebGpuMoveNetMultiPose",
+      "blockType": "COMMAND",
+      "arguments": []
+    },
+    {
+      "opcode": "synchronizedPoseSet2D",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "takeFrameSyncObservation",
       "blockType": "COMMAND",
       "arguments": []
     },
