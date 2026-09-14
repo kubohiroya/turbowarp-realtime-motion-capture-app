@@ -1,7 +1,44 @@
 {
-  "name": "multiview-pose",
-  "version": "0.0.0",
-  "private": true,
+  "name": "turbowarp-realtime-motion-capture-app",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Reproducible source workspace for the TurboWarp Realtime Motion Capture camera and fusion apps.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kubohiroya/turbowarp-realtime-motion-capture-app.git"
+  },
+  "homepage": "https://github.com/kubohiroya/turbowarp-realtime-motion-capture-app#readme",
+  "bugs": {
+    "url": "https://github.com/kubohiroya/turbowarp-realtime-motion-capture-app/issues"
+  },
+  "keywords": [
+    "turbowarp",
+    "scratch",
+    "motion-capture",
+    "multiview",
+    "sb3"
+  ],
+  "files": [
+    "apps/*/package.json",
+    "apps/*/release.json",
+    "apps/*/source/**/*.json",
+    "apps/*/source/assets",
+    "config",
+    "docs",
+    "packages/*/package.json",
+    "packages/*/scripts",
+    "packages/*/src",
+    "packages/*/tests",
+    "packages/*/tsconfig.json",
+    "packages/*/vite.*.config.ts",
+    "scripts",
+    "pnpm-lock.yaml",
+    "pnpm-workspace.yaml",
+    "tsconfig.json"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "packageManager": "pnpm@11.11.0",
   "engines": {

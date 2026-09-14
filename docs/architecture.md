@@ -2,7 +2,7 @@
 
 ## 目的と対象範囲
 
-`multiview-pose`は、複数視点の映像から得た2D人物姿勢を会場内ネットワークで集約し、復元した3D姿勢を
+`turbowarp-realtime-motion-capture-app`は、複数視点の映像から得た2D人物姿勢を会場内ネットワークで集約し、復元した3D姿勢を
 演出用アバターへ反映するTurboWarpアプリケーションです。このリポジトリは完成品のcamera appと
 fusion app、そのアプリ固有スクリプト、アプリシェル、設定、演出DSL、デモasset、配布SB3を所有します。
 

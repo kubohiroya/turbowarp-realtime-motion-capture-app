@@ -39,7 +39,7 @@ const knownNames: ReadonlySet<string> = new Set(featureFlagNames);
 export function resolveFeatureFlags(enabled: readonly string[]): FeatureFlagSet {
   const unknown = enabled.filter((name) => !knownNames.has(name));
   if (unknown.length > 0) {
-    throw new TypeError(`Unknown multiview-pose feature flags: ${unknown.join(', ')}`);
+    throw new TypeError(`Unknown realtime motion capture app feature flags: ${unknown.join(', ')}`);
   }
   const requested = new Set(enabled);
   return Object.freeze(

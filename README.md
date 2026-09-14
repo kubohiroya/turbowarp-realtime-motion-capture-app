@@ -1,7 +1,11 @@
-# multiview-pose
+# TurboWarp Realtime Motion Capture Apps
 
 複数のカメラで人物の2D姿勢を推定し、復元した3D姿勢を演出に利用する、TurboWarpベースのアプリケーション
 です。カメラごとに動かす`camera app`と、各カメラの結果を集約する`fusion app`の2つのSB3を提供します。
+
+npm package `turbowarp-realtime-motion-capture-app`は、これらのアプリを再現可能にビルドするための
+ソースworkspaceを配布します。完成済みのlibrary runtimeではなく、SB3ソース、固定した拡張情報、
+ビルド・検証script、設計文書をまとめたapplication source packageです。
 
 > [!IMPORTANT]
 > 現在はv0.1.0に向けた開発中です。必要なTurboWarp拡張はすべて公開版に固定してSB3へ埋め込み済みで、
@@ -47,7 +51,7 @@ frame alignment、人物対応付け、triangulation、3D solveは高位拡張`t
 | 単体バイナリでのローカルホスト配布 | 設計中（[ローカルホスト](docs/local-host.md)） |
 | 会場機材でのE2E検証とv0.1.0配布 | 未実施 |
 
-進捗の正本は[GitHub Issues](https://github.com/kubohiroya/multiview-pose/issues)です。拡張ごとの
+進捗の正本は[GitHub Issues](https://github.com/kubohiroya/turbowarp-realtime-motion-capture-app/issues)です。拡張ごとの
 準備状況は[TurboWarp拡張 readiness](docs/extension-readiness.md)に記録しています。
 
 ## 配布SB3の中身
@@ -57,10 +61,10 @@ frame alignment、人物対応付け、triangulation、3D solveは高位拡張`t
 
 | アプリ | 埋め込む拡張（bundle member順） |
 |---|---|
-| camera app | app shell、Title Menu、Camera Source、jsQR、WebRTC、Multiview Pose、Diagnostic Overlay |
-| fusion app | app shell、Title Menu、WebRTC、YAML/JSON、Multiview Pose、Asset Manager、A-Frame、Diagnostic Overlay |
+| camera app | app shell、Title Menu、Camera Source、jsQR、WebRTC、Realtime Motion Capture、Diagnostic Overlay |
+| fusion app | app shell、Title Menu、WebRTC、YAML/JSON、Realtime Motion Capture、Asset Manager、A-Frame、Diagnostic Overlay |
 
-app shellが先頭なのは意図的です。Multiview Pose拡張は評価時にfeature flagを固定するため、それより
+app shellが先頭なのは意図的です。Realtime Motion Capture拡張は評価時にfeature flagを固定するため、それより
 先にflagを書き込む必要があります。詳細は[SB3開発ガイド](docs/repository-layout.md)を参照してください。
 
 タイトル画面、アプリメニュー、DSLファイルの管理は`@kubohiroya/turbowarp-title-menu`が担当します。

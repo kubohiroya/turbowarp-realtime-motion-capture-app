@@ -19,7 +19,7 @@ turbowarp-realtime-motion-capture
   安定したmultiview固有blockとcomposite block、protocol契約、3D fusion
                          |
                          v
-multiview-pose
+turbowarp-realtime-motion-capture-app
   app shell拡張、SB3 script、extension pin、camera app.sb3 / fusion app.sb3
 ```
 
