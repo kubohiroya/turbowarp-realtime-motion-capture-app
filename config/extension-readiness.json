@@ -952,11 +952,11 @@
     {
       "role": "multiview-high-level-blocks",
       "repository": "kubohiroya/turbowarp-multiview-pose",
-      "package": "@kubohiroya/turbowarp-multiview-pose",
+      "package": "@kubohiroya/turbowarp-realtime-motion-capture",
       "version": "0.2.0",
       "extensionId": "kubohiroyarealtimemotioncapture",
-      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-multiview-pose@0.2.0/dist/turbowarp-multiview-pose.js",
-      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-multiview-pose@0.2.0/dist/extension-manifest.json",
+      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-realtime-motion-capture@0.2.0/dist/turbowarp-multiview-pose.js",
+      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-realtime-motion-capture@0.2.0/dist/extension-manifest.json",
       "sha256": "02f8d69b1fe418648a8968b7dc241783eb5be01117496c9b7b93c8fb3ca28179",
       "status": "ready",
       "embeddedIn": [

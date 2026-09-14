@@ -398,7 +398,7 @@
     {
       "role": "multiview-high-level-blocks",
       "repository": "kubohiroya/turbowarp-multiview-pose",
-      "package": "@kubohiroya/turbowarp-multiview-pose",
+      "package": "@kubohiroya/turbowarp-realtime-motion-capture",
       "extensionId": "kubohiroyarealtimemotioncapture",
       "artifactPath": "dist/turbowarp-multiview-pose.js",
       "manifestPath": "dist/extension-manifest.json",

@@ -39,7 +39,7 @@ extension pin、配布artifactを所有する。`turbowarp-multiview-pose`は再
 | Assets/animation | `@kubohiroya/turbowarp-asset-manager@0.16.0` | Ready | block API manifestを配布済み。app asset manifestは未確定 |
 | 3D scene | `@kubohiroya/turbowarp-aframe@0.3.0` | Ready | scene capability v1を公開済みで、avatar retargetが依存できる |
 | Diagnostics | `@kubohiroya/turbowarp-diagnostic-overlay@0.4.0` | Ready | block API manifestを配布済み。app readiness payloadは未確定 |
-| Multiview blocks | `@kubohiroya/turbowarp-multiview-pose@0.2.0` | Ready | 93 block。frame sync、3D fusion、glow stickまで公開済み |
+| Multiview blocks | `@kubohiroya/turbowarp-realtime-motion-capture@0.2.0` | Ready | 93 block。frame sync、3D fusion、glow stickまで公開済み |
 
 すべての固定artifactは`node scripts/check-extension-readiness.ts --verify-network`で公開bundleと
 manifestに照合済みです。release build自体はnetwork accessなしで、commit済みartifactだけを使用します。
@@ -48,7 +48,7 @@ manifestに照合済みです。release build自体はnetwork accessなしで、
 
 ### `extensions status`が使えない拡張
 
-`@kubohiroya/turbowarp-multiview-pose`の配布bundleはOpenCV.js WebAssemblyを内包するため13.7 MBあり、
+`@kubohiroya/turbowarp-realtime-motion-capture`の配布bundleはOpenCV.js WebAssemblyを内包するため13.7 MBあり、
 `sb3-toolchain extensions status`の5 MB上限を超えます。integrityは`sb3-toolchain check`とビルドで
 検証されるので配布物の安全性には影響しませんが、更新確認は`scripts/pin-embedded-extensions.ts`で
 行います。

@@ -1,5 +1,5 @@
 /**
- * Startup-fixed feature flags owned by `@kubohiroya/turbowarp-multiview-pose`.
+ * Startup-fixed feature flags owned by `@kubohiroya/turbowarp-realtime-motion-capture`.
  *
  * That extension freezes its flag set while its module body runs, so the value has to exist on the
  * global object before its source is evaluated. Inside a static extension bundle the member order in
