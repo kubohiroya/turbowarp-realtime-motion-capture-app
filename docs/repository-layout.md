@@ -145,6 +145,12 @@ block mapは生成物です。idは`s<script番号>b<block番号>`で位置か�
 opcodeは各拡張が公開しているそのままの名前を書きます。static bundleの名前空間付与はビルドが行うため、
 ソースは拡張のドキュメントと突き合わせて読めます。
 
+`packages/sb3-script/src/standard.ts`には、条件分岐、反復、待機、broadcast、variable／list操作など、
+アプリscriptで実際に使用するScratch標準blockの薄いwrapperがあります。C blockのbodyはsubstackとして
+親子関係と`next`を自動生成します。variable、list、broadcastは表示名だけで参照せず、展開済みsourceの
+IDを含む`NamedReference`を渡します。これによりsender、receiver、data blockが同じentityを安定して
+参照できます。
+
 ## 会場向けバイナリ
 
 ```bash
