@@ -5,12 +5,12 @@
     {
       "app": "camera-app",
       "bundle": {
-        "id": "multiviewposecameraapp",
+        "id": "realtimemotioncapturecameraapp",
         "name": "Multiview Pose Camera App"
       },
       "extensions": [
         {
-          "id": "multiviewposecamerashell",
+          "id": "realtimemotioncapturecamerashell",
           "provider": "workspace",
           "package": "@multiview-pose/app-shell",
           "directory": "packages/app-shell",
@@ -45,7 +45,7 @@
           "apiManifest": "dist/extension-manifest.json"
         },
         {
-          "id": "kubohiroyamultiviewpose",
+          "id": "kubohiroyarealtimemotioncapture",
           "provider": "npm",
           "package": "@kubohiroya/turbowarp-multiview-pose",
           "artifact": "dist/turbowarp-multiview-pose.js",
@@ -63,12 +63,12 @@
     {
       "app": "fusion-app",
       "bundle": {
-        "id": "multiviewposefusionapp",
+        "id": "realtimemotioncapturefusionapp",
         "name": "Multiview Pose Fusion App"
       },
       "extensions": [
         {
-          "id": "multiviewposefusionshell",
+          "id": "realtimemotioncapturefusionshell",
           "provider": "workspace",
           "package": "@multiview-pose/app-shell",
           "directory": "packages/app-shell",
@@ -96,7 +96,7 @@
           "apiManifest": "dist/extension-manifest.json"
         },
         {
-          "id": "kubohiroyamultiviewpose",
+          "id": "kubohiroyarealtimemotioncapture",
           "provider": "npm",
           "package": "@kubohiroya/turbowarp-multiview-pose",
           "artifact": "dist/turbowarp-multiview-pose.js",

@@ -24,7 +24,7 @@ export type FeatureFlagSet = Readonly<Record<FeatureFlagName, boolean>>;
 export const featureFlagGlobalKey = '__TWMP_FEATURE_FLAGS__';
 
 /** The runtime key the contract extension registers itself under once it has read the flags. */
-export const contractRuntimeKey = 'ext_kubohiroyamultiviewpose';
+export const contractRuntimeKey = 'ext_kubohiroyarealtimemotioncapture';
 
 export type FeatureFlagApplicationState = 'applied' | 'replaced' | 'too-late';
 

@@ -50,7 +50,7 @@ for (const {app, bundle, extensions} of declaration.apps) {
   }
 
   const flagOffset = source.indexOf('__TWMP_FEATURE_FLAGS__');
-  const contractOffset = source.indexOf('loadComponent("kubohiroyamultiviewpose"');
+  const contractOffset = source.indexOf('loadComponent("kubohiroyarealtimemotioncapture"');
   if (flagOffset < 0) {
     errors.push(`${app}: the bundle never writes the contract feature flags`);
   } else if (contractOffset >= 0 && flagOffset > contractOffset) {
