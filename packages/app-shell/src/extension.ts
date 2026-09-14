@@ -97,6 +97,20 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
     return this.shell.state();
   }
 
+  public async webGpuAvailable(): Promise<boolean> {
+    const navigatorValue: unknown = globalThis.navigator;
+    if (typeof navigatorValue !== 'object' || navigatorValue === null) return false;
+    const gpu: unknown = (navigatorValue as {gpu?: unknown}).gpu;
+    if (typeof gpu !== 'object' || gpu === null) return false;
+    const requestAdapter: unknown = (gpu as {requestAdapter?: unknown}).requestAdapter;
+    if (typeof requestAdapter !== 'function') return false;
+    try {
+      return (await requestAdapter.call(gpu)) !== null;
+    } catch {
+      return false;
+    }
+  }
+
   public appFeatureFlagState(): string {
     return this.flags.state;
   }

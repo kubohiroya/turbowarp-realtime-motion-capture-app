@@ -5,7 +5,7 @@ packages:
 minimumReleaseAgeExclude:
   - '@kubohiroya/turbowarp-aframe@0.3.0'
   - '@kubohiroya/turbowarp-asset-manager@0.16.0'
-  - '@kubohiroya/turbowarp-camera-source@0.5.0'
+  - '@kubohiroya/turbowarp-camera-source@0.5.0 || 0.6.0'
   - '@kubohiroya/turbowarp-diagnostic-overlay@0.4.0'
   - '@kubohiroya/turbowarp-multiview-pose@0.1.0 || 0.2.0'
   - '@kubohiroya/turbowarp-webrtc@0.3.0'

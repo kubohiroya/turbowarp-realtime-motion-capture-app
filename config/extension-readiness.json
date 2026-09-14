@@ -139,11 +139,11 @@
       "role": "camera-source",
       "repository": "kubohiroya/turbowarp-camera-source",
       "package": "@kubohiroya/turbowarp-camera-source",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "extensionId": "kubohiroyacamerasource",
-      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.5.0/dist/camera-source.js",
-      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.5.0/dist/extension-manifest.json",
-      "sha256": "89f4bb62110956848fe59b6f28256093ac840ebf003c4bf7edf3ff667bee8244",
+      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.6.0/dist/camera-source.js",
+      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.6.0/dist/extension-manifest.json",
+      "sha256": "6f1c3547e24f2e76921d28726d12766faa642324570fe264615216417d675521",
       "status": "ready",
       "embeddedIn": [
         "camera-app"
@@ -162,6 +162,11 @@
         {
           "capability": "camera running state",
           "opcode": "isCameraRunning",
+          "availability": "ready"
+        },
+        {
+          "capability": "camera start error code",
+          "opcode": "cameraErrorCode",
           "availability": "ready"
         },
         {
@@ -226,6 +231,12 @@
         },
         "isCameraRunning": {
           "blockType": "boolean",
+          "arguments": {
+            "CAMERA_ID": "string"
+          }
+        },
+        "cameraErrorCode": {
+          "blockType": "reporter",
           "arguments": {
             "CAMERA_ID": "string"
           }

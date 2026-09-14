@@ -40,7 +40,8 @@ frame alignment、人物対応付け、triangulation、3D solveは高位拡張`t
 | アプリシェル（feature flag設定、読み込み表示、エラー表示、診断reporter） | 利用可能 |
 | タイトル画面、アプリメニュー、DSLファイル管理（Title Menu拡張） | 利用可能 |
 | アプリ起動時のblockスクリプト（TypeScriptから生成） | 利用可能 |
-| カメラ取得、QRペアリング、MoveNet姿勢推定のblockスクリプト | 未実装 |
+| カメラ選択、GPU preview、停止、切断監視のblockスクリプト | 利用可能（実機確認前） |
+| QRペアリング、MoveNet姿勢推定のblockスクリプト | 未実装 |
 | 複数視点の校正、3D統合、アバター演出のblockスクリプト | 未実装 |
 | 設定・演出DSLの永続化 | 方針確定・未実装（[永続化設計](docs/persistence.md)） |
 | 単体バイナリでのローカルホスト配布 | 設計中（[ローカルホスト](docs/local-host.md)） |

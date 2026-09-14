@@ -91,6 +91,10 @@
           "opcode": "isCameraRunning"
         },
         {
+          "capability": "camera start error code",
+          "opcode": "cameraErrorCode"
+        },
+        {
           "capability": "active device ID",
           "opcode": "cameraDeviceIdReporter"
         },
