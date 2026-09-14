@@ -1,6 +1,7 @@
 import {describe, expect, it} from 'vitest';
 
 import {block, buildBlocks, number, reporter, script, text} from '../src/blocks.ts';
+import {equals, forever, ifElse, ifThen, label, whenFlagClicked} from '../src/standard.ts';
 
 describe('buildBlocks', () => {
   it('links a stack through next and parent', () => {
@@ -109,5 +110,102 @@ describe('fields', () => {
 describe('script', () => {
   it('refuses an empty script', () => {
     expect(() => script({x: 0, y: 0}, [])).toThrow(/at least one block/);
+  });
+});
+
+describe('control flow', () => {
+  it('links a body into the mouth of a C block', () => {
+    const blocks = buildBlocks([
+      script({x: 0, y: 0}, [
+        block('event_whenflagclicked'),
+        ifThen(block('camera_isCameraRunning'), [
+          block('shell_showAppNotice'),
+          block('shell_hideAppLoading')
+        ])
+      ])
+    ]);
+
+    const branch = blocks['s1b2'] as {inputs: Record<string, unknown[]>};
+    const [kind, firstId] = branch.inputs['SUBSTACK'] as [number, string];
+    expect(kind).toBe(2);
+
+    const first = blocks[firstId];
+    expect(first).toMatchObject({opcode: 'shell_showAppNotice', parent: 's1b2', topLevel: false});
+    const second = blocks[first?.next as string];
+    expect(second).toMatchObject({opcode: 'shell_hideAppLoading', parent: firstId, next: null});
+  });
+
+  it('writes a boolean condition without a shadow', () => {
+    const blocks = buildBlocks([
+      script({x: 0, y: 0}, [ifThen(block('camera_isCameraRunning'), [block('shell_hideAppLoading')])])
+    ]);
+
+    const input = (blocks['s1b1'] as {inputs: Record<string, unknown[]>}).inputs['CONDITION'];
+    expect(input?.[0]).toBe(2);
+    expect(input).toHaveLength(2);
+    expect(blocks[input?.[1] as string]?.opcode).toBe('camera_isCameraRunning');
+  });
+
+  it('keeps the two branches of an if/else apart', () => {
+    const blocks = buildBlocks([
+      script({x: 0, y: 0}, [
+        ifElse(block('camera_isCameraRunning'), [block('shell_hideAppLoading')], [block('shell_showAppError')])
+      ])
+    ]);
+
+    const inputs = (blocks['s1b1'] as {inputs: Record<string, unknown[]>}).inputs;
+    const body = blocks[(inputs['SUBSTACK'] as [number, string])[1]];
+    const otherwise = blocks[(inputs['SUBSTACK2'] as [number, string])[1]];
+    expect(body?.opcode).toBe('shell_hideAppLoading');
+    expect(otherwise?.opcode).toBe('shell_showAppError');
+  });
+
+  it('continues the stack after a C block', () => {
+    const blocks = buildBlocks([
+      script({x: 0, y: 0}, [
+        block('event_whenflagclicked'),
+        forever([block('shell_hideAppLoading')]),
+        block('shell_showAppNotice')
+      ])
+    ]);
+
+    expect(blocks['s1b2']?.next).toBe('s1b3');
+    expect(blocks['s1b3']).toMatchObject({opcode: 'shell_showAppNotice', parent: 's1b2'});
+  });
+
+  it('nests a C block inside a C block', () => {
+    const blocks = buildBlocks([
+      script({x: 0, y: 0}, [
+        forever([ifThen(block('camera_isCameraRunning'), [block('shell_hideAppLoading')])])
+      ])
+    ]);
+
+    const opcodes = Object.values(blocks).map((entry) => entry.opcode);
+    expect(opcodes).toEqual([
+      'control_forever',
+      'control_if',
+      'camera_isCameraRunning',
+      'shell_hideAppLoading'
+    ]);
+  });
+
+  it('refuses an empty body, because an empty mouth is a mistake not a shape', () => {
+    expect(() => ifThen(block('camera_isCameraRunning'), [])).toThrow(/at least one block/);
+  });
+
+  it('stays deterministic with nesting', () => {
+    const build = () =>
+      buildBlocks([
+        script({x: 0, y: 0}, [
+          whenFlagClicked(),
+          ifElse(
+            equals(reporter(block('camera_cameraDeviceCount')), text('0')),
+            [block('shell_showAppError', {MESSAGE: text('no camera')})],
+            [block('shell_showAppNotice', {MESSAGE: label('cameras: ', block('camera_cameraDeviceCount'))})]
+          )
+        ])
+      ]);
+
+    expect(JSON.stringify(build())).toBe(JSON.stringify(build()));
   });
 });

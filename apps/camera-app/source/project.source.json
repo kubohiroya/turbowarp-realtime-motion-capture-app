@@ -60,7 +60,7 @@
               1,
               [
                 10,
-                "カメラを選ぶ"
+                "カメラを使う"
               ]
             ]
           },
@@ -72,6 +72,30 @@
           "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
           "next": "s1b6",
           "parent": "s1b4",
+          "inputs": {
+            "ACTION": [
+              1,
+              [
+                10,
+                "stopCamera"
+              ]
+            ],
+            "LABEL": [
+              1,
+              [
+                10,
+                "カメラを止める"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s1b6": {
+          "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
+          "next": "s1b7",
+          "parent": "s1b5",
           "inputs": {
             "ACTION": [
               1,
@@ -92,17 +116,8 @@
           "shadow": false,
           "topLevel": false
         },
-        "s1b6": {
-          "opcode": "kubohiroyacamerasource_refreshCameraDevices",
-          "next": "s1b7",
-          "parent": "s1b5",
-          "inputs": {},
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
         "s1b7": {
-          "opcode": "multiviewposecamerashell_hideAppLoading",
+          "opcode": "kubohiroyacamerasource_refreshCameraDevices",
           "next": "s1b8",
           "parent": "s1b6",
           "inputs": {},
@@ -111,9 +126,18 @@
           "topLevel": false
         },
         "s1b8": {
+          "opcode": "multiviewposecamerashell_hideAppLoading",
+          "next": "s1b9",
+          "parent": "s1b7",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s1b9": {
           "opcode": "kubohiroyaturbowarptitlemenu_showMenu",
           "next": null,
-          "parent": "s1b7",
+          "parent": "s1b8",
           "inputs": {},
           "fields": {},
           "shadow": false,
@@ -133,7 +157,7 @@
           "shadow": false,
           "topLevel": true,
           "x": 48,
-          "y": 320
+          "y": 360
         },
         "s2b2": {
           "opcode": "kubohiroyacamerasource_refreshCameraDevices",
@@ -145,17 +169,21 @@
           "topLevel": false
         },
         "s2b3": {
-          "opcode": "multiviewposecamerashell_showAppNotice",
+          "opcode": "control_if_else",
           "next": null,
           "parent": "s2b2",
           "inputs": {
-            "MESSAGE": [
-              3,
-              "s2b4",
-              [
-                10,
-                ""
-              ]
+            "CONDITION": [
+              2,
+              "s2b4"
+            ],
+            "SUBSTACK": [
+              2,
+              "s2b6"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s2b7"
             ]
           },
           "fields": {},
@@ -163,23 +191,23 @@
           "topLevel": false
         },
         "s2b4": {
-          "opcode": "operator_join",
+          "opcode": "operator_equals",
           "next": null,
           "parent": "s2b3",
           "inputs": {
-            "STRING1": [
-              1,
-              [
-                10,
-                "つながっているカメラの数: "
-              ]
-            ],
-            "STRING2": [
+            "OPERAND1": [
               3,
               "s2b5",
               [
                 10,
                 ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "0"
               ]
             ]
           },
@@ -196,9 +224,353 @@
           "shadow": false,
           "topLevel": false
         },
+        "s2b6": {
+          "opcode": "multiviewposecamerashell_showAppError",
+          "next": null,
+          "parent": "s2b3",
+          "inputs": {
+            "MESSAGE": [
+              1,
+              [
+                10,
+                "カメラが見つかりません。接続を確認してください。"
+              ]
+            ],
+            "DETAILS": [
+              1,
+              [
+                10,
+                "{\"cameraId\":\"pose\"}"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b7": {
+          "opcode": "kubohiroyacamerasource_startSharedCamera",
+          "next": "s2b8",
+          "parent": "s2b3",
+          "inputs": {
+            "CAMERA_ID": [
+              1,
+              [
+                10,
+                "pose"
+              ]
+            ],
+            "DEVICE_ID": [
+              1,
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b8": {
+          "opcode": "control_if_else",
+          "next": null,
+          "parent": "s2b7",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s2b9"
+            ],
+            "SUBSTACK": [
+              2,
+              "s2b11"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s2b12"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b9": {
+          "opcode": "operator_not",
+          "next": null,
+          "parent": "s2b8",
+          "inputs": {
+            "OPERAND": [
+              2,
+              "s2b10"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b10": {
+          "opcode": "kubohiroyacamerasource_isCameraRunning",
+          "next": null,
+          "parent": "s2b9",
+          "inputs": {
+            "CAMERA_ID": [
+              1,
+              [
+                10,
+                "pose"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b11": {
+          "opcode": "multiviewposecamerashell_showAppError",
+          "next": null,
+          "parent": "s2b8",
+          "inputs": {
+            "MESSAGE": [
+              1,
+              [
+                10,
+                "カメラを開始できませんでした。ブラウザのカメラ使用許可を確認してください。"
+              ]
+            ],
+            "DETAILS": [
+              1,
+              [
+                10,
+                "{\"cameraId\":\"pose\"}"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b12": {
+          "opcode": "kubohiroyacamerasource_showCameraPreview",
+          "next": "s2b13",
+          "parent": "s2b8",
+          "inputs": {
+            "CAMERA_ID": [
+              1,
+              [
+                10,
+                "pose"
+              ]
+            ],
+            "MIRRORED": [
+              1,
+              [
+                10,
+                "true"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b13": {
+          "opcode": "multiviewposecamerashell_showAppNotice",
+          "next": null,
+          "parent": "s2b12",
+          "inputs": {
+            "MESSAGE": [
+              3,
+              "s2b14",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b14": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s2b13",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s2b15",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s2b17",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b15": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s2b14",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "映像: "
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s2b16",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b16": {
+          "opcode": "kubohiroyacamerasource_cameraFrameWidth",
+          "next": null,
+          "parent": "s2b15",
+          "inputs": {
+            "CAMERA_ID": [
+              1,
+              [
+                10,
+                "pose"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b17": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s2b14",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                " x "
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s2b18",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b18": {
+          "opcode": "kubohiroyacamerasource_cameraFrameHeight",
+          "next": null,
+          "parent": "s2b17",
+          "inputs": {
+            "CAMERA_ID": [
+              1,
+              [
+                10,
+                "pose"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
         "s3b1": {
           "opcode": "kubohiroyaturbowarptitlemenu_whenAppMenuActionSelected",
           "next": "s3b2",
+          "parent": null,
+          "inputs": {},
+          "fields": {
+            "ACTION": [
+              "stopCamera",
+              null
+            ]
+          },
+          "shadow": false,
+          "topLevel": true,
+          "x": 48,
+          "y": 720
+        },
+        "s3b2": {
+          "opcode": "kubohiroyacamerasource_hideCameraPreview",
+          "next": "s3b3",
+          "parent": "s3b1",
+          "inputs": {
+            "CAMERA_ID": [
+              1,
+              [
+                10,
+                "pose"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s3b3": {
+          "opcode": "kubohiroyacamerasource_stopSharedCamera",
+          "next": "s3b4",
+          "parent": "s3b2",
+          "inputs": {
+            "CAMERA_ID": [
+              1,
+              [
+                10,
+                "pose"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s3b4": {
+          "opcode": "multiviewposecamerashell_showAppNotice",
+          "next": null,
+          "parent": "s3b3",
+          "inputs": {
+            "MESSAGE": [
+              1,
+              [
+                10,
+                "カメラを止めました。"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b1": {
+          "opcode": "kubohiroyaturbowarptitlemenu_whenAppMenuActionSelected",
+          "next": "s4b2",
           "parent": null,
           "inputs": {},
           "fields": {
@@ -210,16 +582,16 @@
           "shadow": false,
           "topLevel": true,
           "x": 48,
-          "y": 520
+          "y": 900
         },
-        "s3b2": {
+        "s4b2": {
           "opcode": "multiviewposecamerashell_showAppNotice",
           "next": null,
-          "parent": "s3b1",
+          "parent": "s4b1",
           "inputs": {
             "MESSAGE": [
               3,
-              "s3b3",
+              "s4b3",
               [
                 10,
                 ""
@@ -230,10 +602,36 @@
           "shadow": false,
           "topLevel": false
         },
-        "s3b3": {
+        "s4b3": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s3b2",
+          "parent": "s4b2",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s4b4",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s4b6",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b4": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s4b3",
           "inputs": {
             "STRING1": [
               1,
@@ -244,7 +642,7 @@
             ],
             "STRING2": [
               3,
-              "s3b4",
+              "s4b5",
               [
                 10,
                 ""
@@ -255,11 +653,53 @@
           "shadow": false,
           "topLevel": false
         },
-        "s3b4": {
+        "s4b5": {
           "opcode": "multiviewposecamerashell_appFeatureFlagState",
           "next": null,
-          "parent": "s3b3",
+          "parent": "s4b4",
           "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b6": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s4b3",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                " / 解像度: "
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s4b7",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b7": {
+          "opcode": "kubohiroyacamerasource_cameraFrameWidth",
+          "next": null,
+          "parent": "s4b6",
+          "inputs": {
+            "CAMERA_ID": [
+              1,
+              [
+                10,
+                "pose"
+              ]
+            ]
+          },
           "fields": {},
           "shadow": false,
           "topLevel": false

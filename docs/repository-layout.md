@@ -145,6 +145,11 @@ block mapは生成物です。idは`s<script番号>b<block番号>`で位置か�
 opcodeは各拡張が公開しているそのままの名前を書きます。static bundleの名前空間付与はビルドが行うため、
 ソースは拡張のドキュメントと突き合わせて読めます。
 
+制御構文は`packages/sb3-script/src/standard.ts`が包みます。`ifThen`、`ifElse`、`forever`、`repeat`、
+`repeatUntil`、`wait`と、条件や文字列結合に使う演算子です。Scratchの全opcodeを包むと保守すべき目録が
+2つになるので、実際に使うものだけを置いています。中身が空のC blockは書けません。Scratchは空の口を
+inputなしで表しますが、空のまま書いたのはたいてい書き間違いなので、その場で失敗させます。
+
 ## 会場向けバイナリ
 
 ```bash

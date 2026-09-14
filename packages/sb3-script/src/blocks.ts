@@ -25,6 +25,7 @@ export type SerializedBlocks = Record<BlockId, SerializedBlock>;
 /** Scratch's input type tags, named so the encoding is legible where it is used. */
 const inputKind = {
   shadowOnly: 1,
+  blockOnly: 2,
   blockWithShadow: 3
 } as const;
 
@@ -33,8 +34,15 @@ const primitive = {
   text: 10
 } as const;
 
+/** Allocates the blocks an input needs, already parented to the block holding the input. */
+export interface Allocator {
+  block(node: BlockNode): BlockId;
+  /** Links a body into a chain and returns the id of its first block. */
+  stack(nodes: readonly BlockNode[]): BlockId;
+}
+
 export interface InputValue {
-  readonly encode: (allocate: (block: BlockNode) => BlockId) => unknown[];
+  readonly encode: (allocate: Allocator) => unknown[];
 }
 
 export interface BlockNode {
@@ -60,7 +68,7 @@ export function number(value: number): InputValue {
 }
 
 /**
- * A reporter or boolean block placed in a slot.
+ * A reporter placed in a round slot.
  *
  * The slot keeps an empty text shadow underneath, which is what Scratch writes when a reporter is
  * dropped onto a slot that had a literal, so removing the reporter in the editor leaves a usable
@@ -68,8 +76,24 @@ export function number(value: number): InputValue {
  */
 export function reporter(node: BlockNode): InputValue {
   return {
-    encode: (allocate) => [inputKind.blockWithShadow, allocate(node), [primitive.text, '']]
+    encode: (allocate) => [inputKind.blockWithShadow, allocate.block(node), [primitive.text, '']]
   };
+}
+
+/** A boolean block placed in a hexagonal slot. Those slots hold no shadow. */
+export function condition(node: BlockNode): InputValue {
+  return {encode: (allocate) => [inputKind.blockOnly, allocate.block(node)]};
+}
+
+/**
+ * A body inside a C block.
+ *
+ * An empty body is rejected rather than encoded. Scratch writes no input at all for an empty mouth,
+ * and a control block written with nothing in it is a mistake worth catching where it was made.
+ */
+export function substack(nodes: readonly BlockNode[]): InputValue {
+  if (nodes.length === 0) throw new TypeError('A substack needs at least one block.');
+  return {encode: (allocate) => [inputKind.blockOnly, allocate.stack(nodes)]};
 }
 
 export function block(
@@ -88,8 +112,8 @@ export function script(position: {x: number; y: number}, blocks: readonly BlockN
 /**
  * Flattens scripts into the serialized form.
  *
- * Ids are `<scriptIndex>-<blockIndex>` so a reviewer can find a block in the diff by where it sits,
- * and so an unrelated edit does not renumber every other script.
+ * Ids are `s<script>b<block>` so a reviewer can find a block in the diff by where it sits, and so an
+ * unrelated edit does not renumber every other script.
  */
 export function buildBlocks(scripts: readonly Script[]): SerializedBlocks {
   const serialized: SerializedBlocks = {};
@@ -114,16 +138,33 @@ export function buildBlocks(scripts: readonly Script[]): SerializedBlocks {
       }
       serialized[id] = entry;
 
-      for (const [name, value] of Object.entries(node.inputs ?? {})) {
-        entry.inputs[name] = value.encode((child) => {
+      const allocate: Allocator = {
+        block: (child) => {
           const childId = nextId();
           emit(child, childId, id, false);
           return childId;
-        });
+        },
+        stack: (body) => emitChain(body, id)
+      };
+
+      for (const [name, value] of Object.entries(node.inputs ?? {})) {
+        entry.inputs[name] = value.encode(allocate);
       }
       for (const [name, value] of Object.entries(node.fields ?? {})) {
         entry.fields[name] = [value, null];
       }
+    };
+
+    /** Emits a chain and returns its first id. The chain's parent is the block that holds it. */
+    const emitChain = (nodes: readonly BlockNode[], parent: BlockId | null): BlockId => {
+      const ids = nodes.map(() => nextId());
+      nodes.forEach((node, index) => {
+        const id = ids[index] as BlockId;
+        emit(node, id, index === 0 ? parent : (ids[index - 1] as BlockId), false);
+        const next = ids[index + 1];
+        if (next !== undefined) (serialized[id] as SerializedBlock).next = next;
+      });
+      return ids[0] as BlockId;
     };
 
     const ids = current.blocks.map(() => nextId());
