@@ -31,7 +31,7 @@ extension pin、配布artifactを所有する。`turbowarp-multiview-pose`は再
 
 | 役割 | package/version | 状態 | 備考 |
 |---|---|---|---|
-| App UI | `@kubohiroya/turbowarp-title-menu@0.2.1` | Ready | タイトル、アプリメニュー、DSLファイル管理。メニュー項目はblockから定義する |
+| App UI | `@kubohiroya/turbowarp-title-menu@0.2.2` | Ready | タイトル、アプリメニュー、DSLファイル管理。メニュー項目はblockから定義する |
 | Camera source | `@kubohiroya/turbowarp-camera-source@0.5.0` | Ready | preview block、実width/height/FPS reporter、device列挙まで揃った |
 | QR reader | `@kubohiroya/turbowarp-jsqr@0.3.0` | Ready with dependency | 非同期結果がruntime variable経由なので、Temporary Variables依存が残る |
 | WebRTC | `@kubohiroya/turbowarp-webrtc@0.3.0` | Ready | latest-data pose channel、backpressure、clock sync、frame latency reportまで揃った |
@@ -39,19 +39,12 @@ extension pin、配布artifactを所有する。`turbowarp-multiview-pose`は再
 | Assets/animation | `@kubohiroya/turbowarp-asset-manager@0.16.0` | Ready | block API manifestを配布済み。app asset manifestは未確定 |
 | 3D scene | `@kubohiroya/turbowarp-aframe@0.3.0` | Ready | scene capability v1を公開済みで、avatar retargetが依存できる |
 | Diagnostics | `@kubohiroya/turbowarp-diagnostic-overlay@0.4.0` | Ready | block API manifestを配布済み。app readiness payloadは未確定 |
-| Multiview blocks | `@kubohiroya/turbowarp-multiview-pose@0.1.0` | Partial | 公開済みは51 block。frame sync／3D fusion／glow stickは上流実装済みだが未release |
+| Multiview blocks | `@kubohiroya/turbowarp-multiview-pose@0.2.0` | Ready | 93 block。frame sync、3D fusion、glow stickまで公開済み |
 
 すべての固定artifactは`node scripts/check-extension-readiness.ts --verify-network`で公開bundleと
 manifestに照合済みです。release build自体はnetwork accessなしで、commit済みartifactだけを使用します。
 
 ## 未解決の項目
-
-### Multiview Pose 0.2.0のrelease
-
-`turbowarp-multiview-pose`のmainには`frameSyncPatternV1`、`poseFusion3D`、`glowStickMarkers`が
-実装済み（93 block）ですが、npmの公開版は0.1.0（51 block）です。fusion appのfeature flagは0.2.0を
-前提に宣言してあり、0.1.0では該当flagが無視されます。fusion demoのgateは0.2.0のreleaseと
-再pinを待ちます。
 
 ### `extensions status`が使えない拡張
 

@@ -36,30 +36,30 @@
       "arguments": {}
     },
     {
-      "opcode": "showAppMessage",
+      "opcode": "showAppNotice",
       "blockType": "COMMAND",
-      "text": "show message [MESSAGE]",
-      "description": "Shows the runtime message overlay with operator-facing text.",
+      "text": "show notice [MESSAGE]",
+      "description": "Shows an ordinary notice. Use this for anything that is not a failure.",
       "arguments": {
         "MESSAGE": {
           "type": "STRING",
-          "defaultValue": "Camera is not connected"
+          "defaultValue": "2 cameras are connected"
         }
       }
     },
     {
-      "opcode": "showAppMessageWithDetails",
+      "opcode": "showAppError",
       "blockType": "COMMAND",
-      "text": "show message [MESSAGE] with details [DETAILS]",
-      "description": "Shows the runtime message overlay and renders a JSON object as diagnostic details.",
+      "text": "show error [MESSAGE] with details [DETAILS]",
+      "description": "Shows a failure that stopped the application, and renders a JSON object as diagnostic details.",
       "arguments": {
         "MESSAGE": {
           "type": "STRING",
-          "defaultValue": "Pose pipeline stopped"
+          "defaultValue": "The camera is not connected"
         },
         "DETAILS": {
           "type": "STRING",
-          "defaultValue": "{\"code\":\"\"}"
+          "defaultValue": "{}"
         }
       }
     },

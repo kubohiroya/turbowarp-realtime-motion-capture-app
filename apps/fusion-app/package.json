@@ -10,8 +10,8 @@
     "@kubohiroya/turbowarp-aframe": "0.3.0",
     "@kubohiroya/turbowarp-asset-manager": "0.16.0",
     "@kubohiroya/turbowarp-diagnostic-overlay": "0.4.0",
-    "@kubohiroya/turbowarp-multiview-pose": "0.1.0",
-    "@kubohiroya/turbowarp-title-menu": "0.2.1",
+    "@kubohiroya/turbowarp-multiview-pose": "0.2.0",
+    "@kubohiroya/turbowarp-title-menu": "0.2.2",
     "@kubohiroya/turbowarp-webrtc": "0.3.0",
     "@kubohiroya/turbowarp-yaml-json": "0.3.0"
   }

@@ -24,7 +24,10 @@ export interface AppShellAppConfig {
   readonly blockIconURI: string;
   /** Flags this application needs from the pinned contract extension. */
   readonly featureFlags: readonly FeatureFlagName[];
-  readonly messageLocales: AppShellMessageLocales;
+  /** Heading for ordinary notices. Must not claim anything went wrong. */
+  readonly noticeLocales: AppShellMessageLocales;
+  /** Heading for a failure that stopped the application. */
+  readonly errorLocales: AppShellMessageLocales;
 }
 
 const idPattern = /^[a-z0-9]+$/;

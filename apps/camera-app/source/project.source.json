@@ -36,7 +36,7 @@
           "topLevel": false
         },
         "s1b3": {
-          "opcode": "kubohiroyacamerasource_refreshCameraDevices",
+          "opcode": "kubohiroyaturbowarptitlemenu_clearAppMenuActions",
           "next": "s1b4",
           "parent": "s1b2",
           "inputs": {},
@@ -45,18 +45,220 @@
           "topLevel": false
         },
         "s1b4": {
-          "opcode": "multiviewposecamerashell_hideAppLoading",
+          "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
           "next": "s1b5",
           "parent": "s1b3",
-          "inputs": {},
+          "inputs": {
+            "ACTION": [
+              1,
+              [
+                10,
+                "selectCamera"
+              ]
+            ],
+            "LABEL": [
+              1,
+              [
+                10,
+                "カメラを選ぶ"
+              ]
+            ]
+          },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
         "s1b5": {
-          "opcode": "kubohiroyaturbowarptitlemenu_showTitle",
-          "next": null,
+          "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
+          "next": "s1b6",
           "parent": "s1b4",
+          "inputs": {
+            "ACTION": [
+              1,
+              [
+                10,
+                "diagnostics"
+              ]
+            ],
+            "LABEL": [
+              1,
+              [
+                10,
+                "動作状況を見る"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s1b6": {
+          "opcode": "kubohiroyacamerasource_refreshCameraDevices",
+          "next": "s1b7",
+          "parent": "s1b5",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s1b7": {
+          "opcode": "multiviewposecamerashell_hideAppLoading",
+          "next": "s1b8",
+          "parent": "s1b6",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s1b8": {
+          "opcode": "kubohiroyaturbowarptitlemenu_showMenu",
+          "next": null,
+          "parent": "s1b7",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b1": {
+          "opcode": "kubohiroyaturbowarptitlemenu_whenAppMenuActionSelected",
+          "next": "s2b2",
+          "parent": null,
+          "inputs": {},
+          "fields": {
+            "ACTION": [
+              "selectCamera",
+              null
+            ]
+          },
+          "shadow": false,
+          "topLevel": true,
+          "x": 48,
+          "y": 320
+        },
+        "s2b2": {
+          "opcode": "kubohiroyacamerasource_refreshCameraDevices",
+          "next": "s2b3",
+          "parent": "s2b1",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b3": {
+          "opcode": "multiviewposecamerashell_showAppNotice",
+          "next": null,
+          "parent": "s2b2",
+          "inputs": {
+            "MESSAGE": [
+              3,
+              "s2b4",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b4": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s2b3",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "つながっているカメラの数: "
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s2b5",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b5": {
+          "opcode": "kubohiroyacamerasource_cameraDeviceCount",
+          "next": null,
+          "parent": "s2b4",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s3b1": {
+          "opcode": "kubohiroyaturbowarptitlemenu_whenAppMenuActionSelected",
+          "next": "s3b2",
+          "parent": null,
+          "inputs": {},
+          "fields": {
+            "ACTION": [
+              "diagnostics",
+              null
+            ]
+          },
+          "shadow": false,
+          "topLevel": true,
+          "x": 48,
+          "y": 520
+        },
+        "s3b2": {
+          "opcode": "multiviewposecamerashell_showAppNotice",
+          "next": null,
+          "parent": "s3b1",
+          "inputs": {
+            "MESSAGE": [
+              3,
+              "s3b3",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s3b3": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s3b2",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "起動時の機能設定: "
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s3b4",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s3b4": {
+          "opcode": "multiviewposecamerashell_appFeatureFlagState",
+          "next": null,
+          "parent": "s3b3",
           "inputs": {},
           "fields": {},
           "shadow": false,

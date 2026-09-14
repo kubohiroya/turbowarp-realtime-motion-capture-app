@@ -398,7 +398,7 @@
       "extensionId": "kubohiroyamultiviewpose",
       "artifactPath": "dist/turbowarp-multiview-pose.js",
       "manifestPath": "dist/extension-manifest.json",
-      "status": "partial",
+      "status": "ready",
       "requiredOperations": [
         {
           "capability": "prepare pairing offer QR",
@@ -470,8 +470,7 @@
         }
       ],
       "gaps": [
-        "Frame sync, 3D fusion, and glow stick identity are implemented upstream but are not in the published 0.1.0 artifact. They need a 0.2.0 release before the fusion app can use them.",
-        "The published artifact is 13.7 MB because it embeds OpenCV.js, which exceeds the 5 MB limit of `sb3-toolchain extensions status`."
+        "The published bundle is 13.8 MB because it embeds OpenCV.js, which exceeds the 5 MB limit of `sb3-toolchain extensions status`."
       ]
     }
   ],

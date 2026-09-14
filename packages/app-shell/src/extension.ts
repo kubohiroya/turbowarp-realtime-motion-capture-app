@@ -77,12 +77,12 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
     this.shell.hideLoading();
   }
 
-  public showAppMessage(args: {MESSAGE: unknown}): void {
-    this.shell.showMessage(Scratch.Cast.toString(args.MESSAGE), {});
+  public showAppNotice(args: {MESSAGE: unknown}): void {
+    this.shell.showNotice(Scratch.Cast.toString(args.MESSAGE));
   }
 
-  public showAppMessageWithDetails(args: {MESSAGE: unknown; DETAILS: unknown}): void {
-    this.shell.showMessage(Scratch.Cast.toString(args.MESSAGE), toDetails(args.DETAILS));
+  public showAppError(args: {MESSAGE: unknown; DETAILS: unknown}): void {
+    this.shell.showError(Scratch.Cast.toString(args.MESSAGE), toDetails(args.DETAILS));
   }
 
   public hideAppMessage(): void {

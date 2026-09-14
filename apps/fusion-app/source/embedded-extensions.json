@@ -17,14 +17,14 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-title-menu",
-        "version": "0.2.1",
+        "version": "0.2.2",
         "artifact": "dist/turbowarp-title-menu.js",
-        "integrity": "sha256-fbnHtyZelSMOIo6KHkk32HsZGqOERQ0UB06Tg5nciQc=",
+        "integrity": "sha256-w+O2wIYfhVFCAurHPfaF2y3080gQ/IpXfW26FyJCGng=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyaturbowarptitlemenu.manifest.json",
           "formatVersion": 1,
-          "integrity": "sha256-qMrjKogo0adWj1dnMATQ5wpI6NFERjr1YOJl2/9TWdU="
+          "integrity": "sha256-JdY5jdmedo38O02l7996DrQCpsf3yA8CBHJYGd3e2lo="
         }
       }
     },
@@ -77,14 +77,14 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-multiview-pose",
-        "version": "0.1.0",
+        "version": "0.2.0",
         "artifact": "dist/turbowarp-multiview-pose.js",
-        "integrity": "sha256-oEfZ3VxkegPTAWoNtoJN8UIalBrCfkyr5Hbyy0lVrxU=",
+        "integrity": "sha256-AvjWmx/kGGSKiWi33CQXg+tb4BEXSWybe5PI+zyigXk=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyamultiviewpose.manifest.json",
           "formatVersion": 1,
-          "integrity": "sha256-ZpIMMcvVY5RTAZvuXfJwD2pTdBs55oh1iT29swOuzaQ="
+          "integrity": "sha256-SrT+/bxzP+XRxpRfp6DOhvWs3KsLN//eozcVmfDmRlQ="
         }
       }
     },

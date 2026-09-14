@@ -18,7 +18,11 @@ export const fusionAppConfig: AppShellAppConfig = {
     'poseFusion3D',
     'glowStickMarkers'
   ],
-  messageLocales: {
+  noticeLocales: {
+    en: {title: 'Fusion app'},
+    ja: {title: '統合アプリからのお知らせ'}
+  },
+  errorLocales: {
     en: {title: 'Fusion app stopped'},
     ja: {title: '統合アプリが停止しました'}
   }

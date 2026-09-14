@@ -3,7 +3,11 @@ import {describe, expect, it} from 'vitest';
 import {cameraAppConfig} from '../src/apps/camera.js';
 import {createMultiviewPoseShell, type ShellHost} from '../src/shell.js';
 
-import {fakeDocument, fakeElement} from './fake-dom.js';
+import {fakeDocument, fakeElement, type FakeElement} from './fake-dom.js';
+
+function collect(element: FakeElement): FakeElement[] {
+  return [element, ...element.children.flatMap((child) => collect(child))];
+}
 
 function createHost(overrides: Partial<ShellHost> = {}) {
   const mount = fakeElement('div');
@@ -46,7 +50,7 @@ describe('createMultiviewPoseShell', () => {
     const {host} = createHost({document: brokenDocument});
     const shell = createMultiviewPoseShell(cameraAppConfig, host);
 
-    expect(() => shell.showMessage('stopped', {})).not.toThrow();
+    expect(() => shell.showError('stopped', {})).not.toThrow();
     expect(shell.state()).toBe('unavailable');
   });
 
@@ -55,14 +59,29 @@ describe('createMultiviewPoseShell', () => {
     expect(createMultiviewPoseShell(cameraAppConfig, host).locale).toBe('ja');
   });
 
-  it('mounts the message overlay when a message is shown', () => {
+  it('mounts the overlays when a notice is shown', () => {
     const {host, mount} = createHost();
     const shell = createMultiviewPoseShell(cameraAppConfig, host);
 
-    shell.showMessage('stopped', {code: 'E1'});
+    shell.showNotice('two cameras are connected');
 
     expect(shell.state()).toBe('ready');
     expect(mount.children.length).toBeGreaterThan(0);
+  });
+
+  it('separates a notice from a failure, so a heading never claims the wrong thing', () => {
+    const {host, mount} = createHost();
+    const shell = createMultiviewPoseShell(cameraAppConfig, host);
+
+    shell.showNotice('two cameras are connected');
+    const headings = () =>
+      collect(mount)
+        .filter((element) => element.tagName === 'h1' && element.parentNode?.style['display'] !== 'none')
+        .map((element) => element.textContent);
+
+    // A notice must not appear under the heading that says the application stopped.
+    shell.showError('the camera is not connected', {});
+    expect(headings()).toContain(cameraAppConfig.errorLocales.ja.title);
   });
 
   it('removes every mounted overlay on dispose', () => {

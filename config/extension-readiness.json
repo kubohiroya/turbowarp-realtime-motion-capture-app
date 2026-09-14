@@ -18,11 +18,11 @@
       "role": "app-ui",
       "repository": "kubohiroya/turbowarp-title-menu",
       "package": "@kubohiroya/turbowarp-title-menu",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "extensionId": "kubohiroyaturbowarptitlemenu",
-      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-title-menu@0.2.1/dist/turbowarp-title-menu.js",
-      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-title-menu@0.2.1/dist/extension-manifest.json",
-      "sha256": "7db9c7b7265e95230e228e8a1e4937d87b191aa384450d14074e938399dc8907",
+      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-title-menu@0.2.2/dist/turbowarp-title-menu.js",
+      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-title-menu@0.2.2/dist/extension-manifest.json",
+      "sha256": "c3e3b6c0861f85514202eac73df685db2df4f34810fc8a577d6dba1722421a78",
       "status": "ready",
       "embeddedIn": [
         "camera-app",
@@ -942,12 +942,12 @@
       "role": "multiview-high-level-blocks",
       "repository": "kubohiroya/turbowarp-multiview-pose",
       "package": "@kubohiroya/turbowarp-multiview-pose",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "extensionId": "kubohiroyamultiviewpose",
-      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-multiview-pose@0.1.0/dist/turbowarp-multiview-pose.js",
-      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-multiview-pose@0.1.0/dist/extension-manifest.json",
-      "sha256": "a047d9dd5c647a03d3016a0db6824df1421a941ac27e4cabe476f2cb4955af15",
-      "status": "partial",
+      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-multiview-pose@0.2.0/dist/turbowarp-multiview-pose.js",
+      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-multiview-pose@0.2.0/dist/extension-manifest.json",
+      "sha256": "02f8d69b1fe418648a8968b7dc241783eb5be01117496c9b7b93c8fb3ca28179",
+      "status": "ready",
       "embeddedIn": [
         "camera-app",
         "fusion-app"
@@ -1016,27 +1016,27 @@
         {
           "capability": "display frame sync pattern",
           "opcode": "showFrameSyncPattern",
-          "availability": "missing"
+          "availability": "ready"
         },
         {
           "capability": "decode frame sync pattern",
           "opcode": "startFrameSyncDecoder",
-          "availability": "missing"
+          "availability": "ready"
         },
         {
           "capability": "buffer PoseFrame2D for fusion",
           "opcode": "bufferPoseFrame2D",
-          "availability": "missing"
+          "availability": "ready"
         },
         {
           "capability": "fuse PoseFrame3D",
           "opcode": "fuseBufferedPoseFrame3D",
-          "availability": "missing"
+          "availability": "ready"
         },
         {
           "capability": "identify performers by glow stick",
           "opcode": "enableGlowStickMarkers",
-          "availability": "missing"
+          "availability": "ready"
         }
       ],
       "blockContracts": {
@@ -1106,11 +1106,37 @@
             "POSE2D_JSON": "string",
             "POSE3D_JSON": "string"
           }
+        },
+        "showFrameSyncPattern": {
+          "blockType": "command",
+          "arguments": {}
+        },
+        "startFrameSyncDecoder": {
+          "blockType": "command",
+          "arguments": {
+            "CAMERA_ID": "string",
+            "SECONDS": "number"
+          }
+        },
+        "bufferPoseFrame2D": {
+          "blockType": "command",
+          "arguments": {
+            "JSON": "string"
+          }
+        },
+        "fuseBufferedPoseFrame3D": {
+          "blockType": "command",
+          "arguments": {}
+        },
+        "enableGlowStickMarkers": {
+          "blockType": "command",
+          "arguments": {
+            "KEYPOINTS": "string"
+          }
         }
       },
       "gaps": [
-        "Frame sync, 3D fusion, and glow stick identity are implemented upstream but are not in the published 0.1.0 artifact. They need a 0.2.0 release before the fusion app can use them.",
-        "The published artifact is 13.7 MB because it embeds OpenCV.js, which exceeds the 5 MB limit of `sb3-toolchain extensions status`."
+        "The published bundle is 13.8 MB because it embeds OpenCV.js, which exceeds the 5 MB limit of `sb3-toolchain extensions status`."
       ]
     }
   ],
