@@ -85,6 +85,13 @@
       "arguments": {}
     },
     {
+      "opcode": "webGpuAvailable",
+      "blockType": "BOOLEAN",
+      "text": "WebGPU available?",
+      "description": "Reports whether this browser exposes the WebGPU navigator API.",
+      "arguments": {}
+    },
+    {
       "opcode": "appFeatureFlagState",
       "blockType": "REPORTER",
       "text": "feature flag state",

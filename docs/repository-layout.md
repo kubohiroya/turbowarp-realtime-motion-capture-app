@@ -151,6 +151,11 @@ opcodeは各拡張が公開しているそのままの名前を書きます。st
 IDを含む`NamedReference`を渡します。これによりsender、receiver、data blockが同じentityを安定して
 参照できます。
 
+camera appは最初のcamera取得でbrowser permissionを要求し、許可後に再列挙した最大8 deviceをapp menuへ
+登録します。選択したdeviceは`pose`というnamed cameraで保持し、previewと後続のMoveNet consumerが同じ
+streamを共有します。明示停止前のtrack終了は0.5秒間隔で検出し、permission拒否、device未検出、実行中の
+切断、WebGPU API未対応を別のdiagnostic codeとして表示します。
+
 ## 会場向けバイナリ
 
 ```bash

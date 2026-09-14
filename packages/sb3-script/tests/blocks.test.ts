@@ -17,6 +17,7 @@ import {
 import {
   addToList,
   broadcastMessage,
+  broadcastMessageAndWait,
   equals,
   forever,
   greaterThan,
@@ -313,5 +314,22 @@ describe('stable Scratch references', () => {
         'data_addtolist'
       ])
     );
+  });
+
+  it('waits for broadcast handlers when ordered follow-up work depends on them', () => {
+    const blocks = buildBlocks([
+      script({x: 0, y: 0}, [
+        whenFlagClicked(),
+        broadcastMessageAndWait(scanQr),
+        block('shell_showAppNotice')
+      ])
+    ]);
+
+    expect(blocks['s1b2']?.opcode).toBe('event_broadcastandwait');
+    expect(blocks['s1b2']?.inputs['BROADCAST_INPUT']).toEqual([
+      1,
+      [11, 'scan qr', 'broadcast:scan-qr']
+    ]);
+    expect(blocks['s1b2']?.next).toBe('s1b3');
   });
 });

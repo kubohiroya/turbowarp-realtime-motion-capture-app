@@ -23,6 +23,9 @@ export const whenBroadcastReceived = (message: NamedReference): BlockNode =>
 export const broadcastMessage = (message: NamedReference): BlockNode =>
   block('event_broadcast', {BROADCAST_INPUT: broadcast(message)});
 
+export const broadcastMessageAndWait = (message: NamedReference): BlockNode =>
+  block('event_broadcastandwait', {BROADCAST_INPUT: broadcast(message)});
+
 export const ifThen = (test: BlockNode, body: readonly BlockNode[]): BlockNode =>
   block('control_if', {CONDITION: condition(test), SUBSTACK: substack(body)});
 

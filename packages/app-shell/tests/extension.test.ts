@@ -1,4 +1,4 @@
-import {beforeAll, describe, expect, it} from 'vitest';
+import {beforeAll, describe, expect, it, vi} from 'vitest';
 
 import {installScratchStub} from './scratch-stub.js';
 
@@ -52,7 +52,7 @@ describe('getInfo', () => {
   it('leaves the title, menu, and DSL surface to turbowarp-title-menu', () => {
     const blocks = info['blocks'] as Array<Record<string, unknown>>;
     const opcodes = blocks.map((block) => block['opcode']);
-    expect(blocks).toHaveLength(10);
+    expect(blocks).toHaveLength(11);
     for (const absent of ['whenAppMenuActionSelected', 'setAppStatus', 'setAppMenuActionEnabled']) {
       expect(opcodes).not.toContain(absent);
     }
@@ -112,5 +112,29 @@ describe('diagnostic reporters', () => {
     const {extension} = createExtension();
     expect(extension.appLocale()).toBe('ja');
     expect(extension.appShellState()).toBe('unmounted');
+  });
+
+  it('reports WebGPU only when the browser can provide an adapter', async () => {
+    const original = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+    const requestAdapter = vi.fn()
+      .mockResolvedValueOnce({})
+      .mockResolvedValueOnce(null)
+      .mockRejectedValueOnce(new Error('adapter unavailable'));
+    Object.defineProperty(globalThis, 'navigator', {
+      configurable: true,
+      value: {gpu: {requestAdapter}}
+    });
+    try {
+      const extension = createExtension().extension;
+      await expect(extension.webGpuAvailable()).resolves.toBe(true);
+      await expect(extension.webGpuAvailable()).resolves.toBe(false);
+      await expect(extension.webGpuAvailable()).resolves.toBe(false);
+
+      Object.defineProperty(globalThis, 'navigator', {configurable: true, value: {}});
+      await expect(extension.webGpuAvailable()).resolves.toBe(false);
+    } finally {
+      if (original === undefined) delete (globalThis as {navigator?: unknown}).navigator;
+      else Object.defineProperty(globalThis, 'navigator', original);
+    }
   });
 });
