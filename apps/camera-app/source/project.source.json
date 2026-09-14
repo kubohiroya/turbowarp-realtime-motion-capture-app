@@ -57,7 +57,7 @@
           "topLevel": false
         },
         "s1b3": {
-          "opcode": "multiviewposecamerashell_showAppLoading",
+          "opcode": "realtimemotioncapturecamerashell_showAppLoading",
           "next": "s1b4",
           "parent": "s1b2",
           "inputs": {
@@ -155,7 +155,7 @@
           "topLevel": false
         },
         "s1b8": {
-          "opcode": "multiviewposecamerashell_hideAppLoading",
+          "opcode": "realtimemotioncapturecamerashell_hideAppLoading",
           "next": "s1b9",
           "parent": "s1b7",
           "inputs": {},
@@ -200,7 +200,7 @@
           "topLevel": false
         },
         "s1b12": {
-          "opcode": "multiviewposecamerashell_webGpuAvailable",
+          "opcode": "realtimemotioncapturecamerashell_webGpuAvailable",
           "next": null,
           "parent": "s1b11",
           "inputs": {},
@@ -209,7 +209,7 @@
           "topLevel": false
         },
         "s1b13": {
-          "opcode": "multiviewposecamerashell_showAppError",
+          "opcode": "realtimemotioncapturecamerashell_showAppError",
           "next": null,
           "parent": "s1b9",
           "inputs": {
@@ -425,7 +425,7 @@
           "topLevel": false
         },
         "s1b24": {
-          "opcode": "multiviewposecamerashell_showAppError",
+          "opcode": "realtimemotioncapturecamerashell_showAppError",
           "next": null,
           "parent": "s1b23",
           "inputs": {
@@ -793,7 +793,7 @@
           "topLevel": false
         },
         "s2b20": {
-          "opcode": "multiviewposecamerashell_showAppError",
+          "opcode": "realtimemotioncapturecamerashell_showAppError",
           "next": null,
           "parent": "s2b17",
           "inputs": {
@@ -868,7 +868,7 @@
           "topLevel": false
         },
         "s2b23": {
-          "opcode": "multiviewposecamerashell_showAppError",
+          "opcode": "realtimemotioncapturecamerashell_showAppError",
           "next": null,
           "parent": "s2b21",
           "inputs": {
@@ -943,7 +943,7 @@
           "topLevel": false
         },
         "s2b26": {
-          "opcode": "multiviewposecamerashell_showAppError",
+          "opcode": "realtimemotioncapturecamerashell_showAppError",
           "next": null,
           "parent": "s2b24",
           "inputs": {
@@ -967,7 +967,7 @@
           "topLevel": false
         },
         "s2b27": {
-          "opcode": "multiviewposecamerashell_showAppError",
+          "opcode": "realtimemotioncapturecamerashell_showAppError",
           "next": null,
           "parent": "s2b24",
           "inputs": {
@@ -1859,7 +1859,7 @@
           "topLevel": false
         },
         "s11b11": {
-          "opcode": "multiviewposecamerashell_showAppNotice",
+          "opcode": "realtimemotioncapturecamerashell_showAppNotice",
           "next": null,
           "parent": "s11b10",
           "inputs": {
@@ -2214,7 +2214,7 @@
           "topLevel": false
         },
         "s11b27": {
-          "opcode": "multiviewposecamerashell_showAppError",
+          "opcode": "realtimemotioncapturecamerashell_showAppError",
           "next": null,
           "parent": "s11b24",
           "inputs": {
@@ -2289,7 +2289,7 @@
           "topLevel": false
         },
         "s11b30": {
-          "opcode": "multiviewposecamerashell_showAppError",
+          "opcode": "realtimemotioncapturecamerashell_showAppError",
           "next": null,
           "parent": "s11b28",
           "inputs": {
@@ -2364,7 +2364,7 @@
           "topLevel": false
         },
         "s11b33": {
-          "opcode": "multiviewposecamerashell_showAppError",
+          "opcode": "realtimemotioncapturecamerashell_showAppError",
           "next": null,
           "parent": "s11b31",
           "inputs": {
@@ -2388,7 +2388,7 @@
           "topLevel": false
         },
         "s11b34": {
-          "opcode": "multiviewposecamerashell_showAppError",
+          "opcode": "realtimemotioncapturecamerashell_showAppError",
           "next": null,
           "parent": "s11b31",
           "inputs": {
@@ -2511,7 +2511,7 @@
           "topLevel": false
         },
         "s12b7": {
-          "opcode": "multiviewposecamerashell_showAppNotice",
+          "opcode": "realtimemotioncapturecamerashell_showAppNotice",
           "next": null,
           "parent": "s12b6",
           "inputs": {
@@ -2607,7 +2607,7 @@
           "topLevel": false
         },
         "s13b6": {
-          "opcode": "multiviewposecamerashell_webGpuAvailable",
+          "opcode": "realtimemotioncapturecamerashell_webGpuAvailable",
           "next": null,
           "parent": "s13b5",
           "inputs": {},
@@ -2616,7 +2616,7 @@
           "topLevel": false
         },
         "s13b7": {
-          "opcode": "multiviewposecamerashell_showAppError",
+          "opcode": "realtimemotioncapturecamerashell_showAppError",
           "next": null,
           "parent": "s13b4",
           "inputs": {
@@ -2679,7 +2679,7 @@
           "topLevel": false
         },
         "s13b10": {
-          "opcode": "multiviewposecamerashell_showAppNotice",
+          "opcode": "realtimemotioncapturecamerashell_showAppNotice",
           "next": null,
           "parent": "s13b8",
           "inputs": {
@@ -2943,7 +2943,7 @@
           "topLevel": false
         },
         "s13b22": {
-          "opcode": "multiviewposecamerashell_showAppNotice",
+          "opcode": "realtimemotioncapturecamerashell_showAppNotice",
           "next": null,
           "parent": "s13b8",
           "inputs": {
@@ -4024,21 +4024,21 @@
   ],
   "monitors": [],
   "extensions": [
-    "multiviewposecamerashell",
+    "realtimemotioncapturecamerashell",
     "kubohiroyaturbowarptitlemenu",
     "kubohiroyacamerasource",
     "kubohiroyajsqr",
     "kubohiroyawebrtc",
-    "kubohiroyamultiviewpose",
+    "kubohiroyarealtimemotioncapture",
     "kubohiroyadiagnosticoverlay"
   ],
   "extensionURLs": {
-    "multiviewposecamerashell": "embedded-extension:extensions/multiviewposecamerashell.js",
+    "realtimemotioncapturecamerashell": "embedded-extension:extensions/realtimemotioncapturecamerashell.js",
     "kubohiroyaturbowarptitlemenu": "embedded-extension:extensions/kubohiroyaturbowarptitlemenu.js",
     "kubohiroyacamerasource": "embedded-extension:extensions/kubohiroyacamerasource.js",
     "kubohiroyajsqr": "embedded-extension:extensions/kubohiroyajsqr.js",
     "kubohiroyawebrtc": "embedded-extension:extensions/kubohiroyawebrtc.js",
-    "kubohiroyamultiviewpose": "embedded-extension:extensions/kubohiroyamultiviewpose.js",
+    "kubohiroyarealtimemotioncapture": "embedded-extension:extensions/kubohiroyarealtimemotioncapture.js",
     "kubohiroyadiagnosticoverlay": "embedded-extension:extensions/kubohiroyadiagnosticoverlay.js"
   },
   "meta": {
