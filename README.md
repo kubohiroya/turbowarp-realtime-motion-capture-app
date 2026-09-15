@@ -1,27 +1,32 @@
 # TurboWarp Realtime Motion Capture Apps
 
-複数のカメラで人物の2D姿勢を推定し、復元した3D姿勢を演出に利用する、TurboWarpベースのアプリケーション
-です。カメラごとに動かす`camera app`と、各カメラの結果を集約する`fusion app`の2つのSB3を提供します。
+**English** | [日本語](README.ja.md)
 
-npm package `turbowarp-realtime-motion-capture-app`は、これらのアプリを再現可能にビルドするための
-ソースworkspaceを配布します。完成済みのlibrary runtimeではなく、SB3ソース、固定した拡張情報、
-ビルド・検証script、設計文書をまとめたapplication source packageです。
+TurboWarp-based applications that estimate the 2D pose of people from several cameras and use the
+reconstructed 3D pose to drive a performance. Two SB3s are provided: a `camera app` that runs once per
+camera, and a `fusion app` that aggregates the results from every camera.
+
+The npm package `turbowarp-realtime-motion-capture-app` distributes the source workspace that makes these
+apps reproducibly buildable. It is not a finished library runtime but an application source package: SB3
+sources, pinned extension information, build and verification scripts, and design documents.
 
 > [!IMPORTANT]
-> 現在はv0.1.0に向けた開発中です。必要なTurboWarp拡張はすべて公開版に固定してSB3へ埋め込み済みで、
-> アプリの起動シェル（画面表示とfeature flag設定）も動作します。ただしSB3のblockスクリプトは未作成
-> のため、カメラ取得、ペアリング、姿勢推定、3D統合、アバター表示はまだ利用できません。
+> Development towards v0.1.0 is in progress. Every required TurboWarp extension is pinned to a published
+> version and already embedded in the SB3, and the app startup shell (screen display and feature flag
+> setup) works. However, the SB3 block scripts have not been written yet, so camera capture, pairing,
+> pose estimation, 3D fusion, and avatar display are not available.
 
-## アプリの構成
+## App structure
 
-| アプリ | 実行場所 | 役割 |
+| App | Where it runs | Role |
 |---|---|---|
-| camera app | カメラに接続したPC（1カメラにつき1台） | 映像から最大6人の2D姿勢を推定し、`PoseFrame2D`だけを送信する |
-| fusion app | 統合PC | 2D姿勢を集約して3D姿勢へ統合し、アバターと演出を制御する |
+| camera app | A PC connected to a camera (one per camera) | Estimates the 2D pose of up to 6 people from the video and sends only `PoseFrame2D` |
+| fusion app | The fusion PC | Aggregates the 2D poses into a 3D pose and drives the avatar and the performance |
 
-カメラ映像そのものは通常の通信経路へ流さず、各camera app内で処理します。カメラとfusion appの接続は
-QRコードを標準経路、手動入力を復旧経路とする計画です。会場内でインターネット接続なしに運用できる
-構成を目標にしています。
+The camera video itself is never sent over the ordinary communication path; it is processed inside each
+camera app. The plan is to connect cameras to the fusion app via QR codes as the standard path, with
+manual entry as the recovery path. The goal is a configuration that runs at a venue with no internet
+connection.
 
 ```text
 USB camera ─ camera app ─┐
@@ -29,52 +34,56 @@ USB camera ─ camera app ─┐
 USB camera ─ camera app ─┘
 ```
 
-frame alignment、人物対応付け、triangulation、3D solveは高位拡張`turbowarp-realtime-motion-capture`の
-`poseFusion3D`が実装します。本リポジトリはその機能を利用するアプリケーションです。
+Frame alignment, person association, triangulation, and the 3D solve are implemented by `poseFusion3D` in
+the higher-level `turbowarp-realtime-motion-capture` extension. This repository is the application that
+uses that functionality.
 
-詳しい責務とデータフローは[システム構成](docs/architecture.md)を参照してください。
+See [System architecture](docs/architecture.md) (Japanese) for the detailed responsibilities and data flow.
 
-## 現在の実装状況
+## Current implementation status
 
-| 項目 | 状態 |
+| Item | Status |
 |---|---|
-| camera app／fusion appの展開済みSB3ソース | 利用可能 |
-| 決定的なSB3ビルドとCI検証 | 利用可能 |
-| 外部TurboWarp拡張のexact version固定とSB3への埋め込み | 利用可能 |
-| アプリシェル（feature flag設定、読み込み表示、エラー表示、診断reporter） | 利用可能 |
-| タイトル画面、アプリメニュー、DSLファイル管理（Title Menu拡張） | 利用可能 |
-| アプリ起動時のblockスクリプト（TypeScriptから生成） | 利用可能 |
-| カメラ選択、GPU preview、停止、切断監視のblockスクリプト | 利用可能（実機確認前） |
-| QRペアリング、MoveNet姿勢推定のblockスクリプト | 未実装 |
-| 複数視点の校正、3D統合、アバター演出のblockスクリプト | 未実装 |
-| 設定・演出DSLの永続化 | 方針確定・未実装（[永続化設計](docs/persistence.md)） |
-| 単体バイナリでのローカルホスト配布 | 設計中（[ローカルホスト](docs/local-host.md)） |
-| 会場機材でのE2E検証とv0.1.0配布 | 未実施 |
+| Unpacked SB3 sources for the camera app and fusion app | Available |
+| Deterministic SB3 builds and CI verification | Available |
+| Exact-version pinning of external TurboWarp extensions and embedding into the SB3 | Available |
+| App shell (feature flag setup, loading display, error display, diagnostic reporter) | Available |
+| Title screen, app menu, DSL file management (Title Menu extension) | Available |
+| Startup block scripts (generated from TypeScript) | Available |
+| Block scripts for camera selection, GPU preview, stop, and disconnect monitoring | Available (not yet verified on real hardware) |
+| Block scripts for QR pairing and MoveNet pose estimation | Not implemented |
+| Block scripts for multi-view calibration, 3D fusion, and avatar performance | Not implemented |
+| Persistence of settings and performance DSL | Decided, not implemented ([Persistence design](docs/persistence.md)) |
+| Local-host distribution as a single binary | In design ([Local host](docs/local-host.md)) |
+| End-to-end verification on venue hardware and the v0.1.0 release | Not started |
 
-進捗の正本は[GitHub Issues](https://github.com/kubohiroya/turbowarp-realtime-motion-capture-app/issues)です。拡張ごとの
-準備状況は[TurboWarp拡張 readiness](docs/extension-readiness.md)に記録しています。
+[GitHub Issues](https://github.com/kubohiroya/turbowarp-realtime-motion-capture-app/issues) are the source
+of truth for progress. Per-extension readiness is recorded in
+[TurboWarp extension readiness](docs/extension-readiness.md) (Japanese).
 
-## 配布SB3の中身
+## What the distributed SB3s contain
 
-各SB3は、必要な拡張をすべて1つのstatic bundleとして埋め込みます。TurboWarpでの拡張許可プロンプトは
-アプリごとに1回だけです。
+Each SB3 embeds every extension it needs as a single static bundle. TurboWarp asks for extension
+permission only once per app.
 
-| アプリ | 埋め込む拡張（bundle member順） |
+| App | Embedded extensions (in bundle member order) |
 |---|---|
-| camera app | app shell、Title Menu、Camera Source、jsQR、WebRTC、Realtime Motion Capture、Diagnostic Overlay |
-| fusion app | app shell、Title Menu、WebRTC、YAML/JSON、Realtime Motion Capture、Asset Manager、A-Frame、Diagnostic Overlay |
+| camera app | app shell, Title Menu, Camera Source, jsQR, WebRTC, Realtime Motion Capture, Diagnostic Overlay |
+| fusion app | app shell, Title Menu, WebRTC, YAML/JSON, Realtime Motion Capture, Asset Manager, A-Frame, Diagnostic Overlay |
 
-app shellが先頭なのは意図的です。Realtime Motion Capture拡張は評価時にfeature flagを固定するため、それより
-先にflagを書き込む必要があります。詳細は[SB3開発ガイド](docs/repository-layout.md)を参照してください。
+The app shell comes first deliberately. The Realtime Motion Capture extension fixes its feature flags at
+evaluation time, so the flags have to be written before it. See the
+[SB3 development guide](docs/repository-layout.md) (Japanese) for details.
 
-タイトル画面、アプリメニュー、DSLファイルの管理は`@kubohiroya/turbowarp-title-menu`が担当します。
-このリポジトリのapp shellは、feature flagの注入と、読み込み・エラーのoverlayだけを持ちます。
+The title screen, the app menu, and DSL file management are handled by
+`@kubohiroya/turbowarp-title-menu`. The app shell in this repository only injects feature flags and
+provides the loading and error overlays.
 
-## 開発環境のセットアップ
+## Setting up a development environment
 
-必要なもの:
+Requirements:
 
-- Node.js 22.13.0以上
+- Node.js 22.13.0 or later
 - pnpm 11.11.0
 
 ```bash
@@ -82,10 +91,11 @@ pnpm install --frozen-lockfile
 pnpm check
 ```
 
-`pnpm check`はリポジトリ構造、書式、スクリプト構文、拡張inventory、各workspace packageの検査、
-埋め込み拡張の固定状態、決定的ビルドを順に検証し、最後にSB3を再生成します。
+`pnpm check` verifies, in order, the repository structure, formatting, script syntax, the extension
+inventory, each workspace package, the pinned state of the embedded extensions, and the deterministic
+build, then regenerates the SB3s at the end.
 
-個別にビルドする場合:
+To build individually:
 
 ```bash
 pnpm --filter @turbowarp-realtime-motion-capture-app/app-shell build
@@ -93,30 +103,33 @@ pnpm --filter @turbowarp-realtime-motion-capture-app/camera-app build
 pnpm --filter @turbowarp-realtime-motion-capture-app/fusion-app build
 ```
 
-生成物は次の場所に出力されます。どちらもリポジトリにはcommitせず、`apps/<app>/release.json`が
-ソースのidentityとarchiveのSHA-256を記録します。
+The artifacts are written to the paths below. Neither is committed to the repository;
+`apps/<app>/release.json` records the identity of the source and the SHA-256 of the archive.
 
 - `apps/camera-app/dist/camera-app.sb3`
 - `apps/fusion-app/dist/fusion-app.sb3`
 
-現段階のSB3はTurboWarpで開けて拡張のblockも使えますが、アプリ固有のスクリプトが未作成のため、
-カメラシステムとしては動作しません。ソース編集、拡張の固定方法は
-[SB3開発ガイド](docs/repository-layout.md)を参照してください。
+The SB3s at this stage open in TurboWarp and their extension blocks work, but because the app-specific
+scripts have not been written, they do not yet function as a camera system. For editing the sources and
+pinning extensions, see the [SB3 development guide](docs/repository-layout.md) (Japanese).
 
-## 設計上の原則
+## Design principles
 
-- SB3の展開済みソースを正本とし、`.sb3`は決定的に再生成する。
-- 外部拡張はバージョン、配布物、SHA-256、block contractを固定する。
-- 実験的な機能は既定OFFにし、機能単位で切り戻せるようにする。
-- セッション情報や認証情報など、端末・会場固有のデータをリポジトリや配布SB3へ含めない。
-- 共通protocolの定義は高位拡張側に集約し、このアプリでは再実装しない。
-- 未知のschema versionや不正なpayloadは、アプリ状態を変える前に拒否する。
+- Treat the unpacked SB3 sources as the source of truth, and regenerate `.sb3` deterministically.
+- Pin external extensions by version, artifact, SHA-256, and block contract.
+- Keep experimental features OFF by default, so they can be rolled back one feature at a time.
+- Keep device- and venue-specific data, such as session or credential information, out of the repository
+  and the distributed SB3s.
+- Keep shared protocol definitions in the higher-level extension, and do not reimplement them in this app.
+- Reject unknown schema versions and malformed payloads before they change any app state.
 
-## ドキュメント
+## Documentation
 
-- [システム構成](docs/architecture.md) — 実行構成、データフロー、責務、縮退動作
-- [SB3開発ガイド](docs/repository-layout.md) — ディレクトリ、編集、ビルド、検証、拡張の固定
-- [アプリ間protocol](docs/protocol.md) — 利用するschemaと互換性・安全性の方針
-- [永続化設計](docs/persistence.md) — 演出DSLと校正データの保存・復元（方針確定・未実装）
-- [ローカルホスト](docs/local-host.md) — 単体バイナリでの配布と会場運用（設計中）
-- [TurboWarp拡張 readiness](docs/extension-readiness.md) — 外部拡張の利用可否と導入gate
+These documents are written in Japanese.
+
+- [System architecture](docs/architecture.md) — runtime structure, data flow, responsibilities, degraded behavior
+- [SB3 development guide](docs/repository-layout.md) — directories, editing, building, verification, pinning extensions
+- [Inter-app protocol](docs/protocol.md) — the schemas used, and the compatibility and safety policy
+- [Persistence design](docs/persistence.md) — saving and restoring the performance DSL and calibration data (decided, not implemented)
+- [Local host](docs/local-host.md) — single-binary distribution and venue operation (in design)
+- [TurboWarp extension readiness](docs/extension-readiness.md) — availability of external extensions and the adoption gate
