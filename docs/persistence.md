@@ -106,7 +106,7 @@ IndexedDBの読み書きblockはどの拡張も持っていません。選択肢
 
 1. 汎用のstorage拡張を新設する。リポジトリ境界の原則（単一拡張で表現できる操作はgeneric extensionへ）
    に沿う。
-2. 当面はこのリポジトリが所有する`@multiview-pose/app-shell`拡張に置き、2つ目のアプリが必要とした
+2. 当面はこのリポジトリが所有する`@turbowarp-realtime-motion-capture-app/app-shell`拡張に置き、2つ目のアプリが必要とした
    時点で汎用拡張へ昇格する。
 
 2から始めて1へ移すのが現実的です。app shellはすでに各SB3のbundleに入っており、ブラウザAPIを

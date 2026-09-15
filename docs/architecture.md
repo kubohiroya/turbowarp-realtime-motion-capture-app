@@ -40,7 +40,7 @@ v0.1.0の基準構成ではfusion appが拡張のfusion blockで3Dを復元し�
 
 | 拡張 | 担当 |
 |---|---|
-| `@multiview-pose/app-shell`（本リポジトリ所有、member 1） | contract feature flagの注入、読み込み表示、エラー表示、flag診断 |
+| `@turbowarp-realtime-motion-capture-app/app-shell`（本リポジトリ所有、member 1） | contract feature flagの注入、読み込み表示、エラー表示、flag診断 |
 | `@kubohiroya/turbowarp-title-menu`（member 2） | タイトル／about画面、アプリメニュー、DSLファイルの保管と管理 |
 
 順序には意味があります。`turbowarp-realtime-motion-capture`は評価時にfeature flagを固定するため、それを
