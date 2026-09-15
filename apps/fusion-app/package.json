@@ -1,5 +1,5 @@
 {
-  "name": "@multiview-pose/fusion-app",
+  "name": "@turbowarp-realtime-motion-capture-app/fusion-app",
   "version": "0.0.0",
   "private": true,
   "scripts": {

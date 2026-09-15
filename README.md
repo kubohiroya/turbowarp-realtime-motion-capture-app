@@ -88,9 +88,9 @@ pnpm check
 個別にビルドする場合:
 
 ```bash
-pnpm --filter @multiview-pose/app-shell build
-pnpm --filter @multiview-pose/camera-app build
-pnpm --filter @multiview-pose/fusion-app build
+pnpm --filter @turbowarp-realtime-motion-capture-app/app-shell build
+pnpm --filter @turbowarp-realtime-motion-capture-app/camera-app build
+pnpm --filter @turbowarp-realtime-motion-capture-app/fusion-app build
 ```
 
 生成物は次の場所に出力されます。どちらもリポジトリにはcommitせず、`apps/<app>/release.json`が

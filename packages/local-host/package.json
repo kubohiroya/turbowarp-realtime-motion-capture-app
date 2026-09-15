@@ -1,5 +1,5 @@
 {
-  "name": "@multiview-pose/local-host",
+  "name": "@turbowarp-realtime-motion-capture-app/local-host",
   "version": "0.0.0",
   "private": true,
   "type": "module",

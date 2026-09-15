@@ -1,5 +1,5 @@
 {
-  "name": "@multiview-pose/camera-app",
+  "name": "@turbowarp-realtime-motion-capture-app/camera-app",
   "version": "0.0.0",
   "private": true,
   "scripts": {

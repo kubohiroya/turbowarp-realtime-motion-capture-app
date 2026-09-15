@@ -12,7 +12,7 @@
         {
           "id": "realtimemotioncapturecamerashell",
           "provider": "workspace",
-          "package": "@multiview-pose/app-shell",
+          "package": "@turbowarp-realtime-motion-capture-app/app-shell",
           "directory": "packages/app-shell",
           "artifact": "dist/camera-app/camera-app-shell.js"
         },
@@ -70,7 +70,7 @@
         {
           "id": "realtimemotioncapturefusionshell",
           "provider": "workspace",
-          "package": "@multiview-pose/app-shell",
+          "package": "@turbowarp-realtime-motion-capture-app/app-shell",
           "directory": "packages/app-shell",
           "artifact": "dist/fusion-app/fusion-app-shell.js"
         },

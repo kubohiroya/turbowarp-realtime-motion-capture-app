@@ -1,5 +1,5 @@
 {
-  "name": "@multiview-pose/app-shell",
+  "name": "@turbowarp-realtime-motion-capture-app/app-shell",
   "version": "0.0.0",
   "private": true,
   "type": "module",

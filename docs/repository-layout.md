@@ -87,9 +87,9 @@ pnpm check
 個別にも検証・ビルドできます。
 
 ```bash
-pnpm --filter @multiview-pose/app-shell check
-pnpm --filter @multiview-pose/camera-app check
-pnpm --filter @multiview-pose/camera-app build
+pnpm --filter @turbowarp-realtime-motion-capture-app/app-shell check
+pnpm --filter @turbowarp-realtime-motion-capture-app/camera-app check
+pnpm --filter @turbowarp-realtime-motion-capture-app/camera-app build
 ```
 
 ローカルではビルド後に`git status --short`と`git diff -- apps/*/release.json`を確認し、記録された
@@ -101,7 +101,7 @@ SHA-256の変化がソース変更に対応していることをreviewします�
 `packages/app-shell`はcamera app用とfusion app用の2つのTurboWarp拡張bundleをビルドします。
 
 ```bash
-pnpm --filter @multiview-pose/app-shell build
+pnpm --filter @turbowarp-realtime-motion-capture-app/app-shell build
 # packages/app-shell/dist/camera-app/camera-app-shell.js
 # packages/app-shell/dist/fusion-app/fusion-app-shell.js
 ```

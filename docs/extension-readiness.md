@@ -101,7 +101,7 @@ runtime API、resource ownership、非同期state、cleanupを一体で扱う必
 困難な操作だけを`turbowarp-realtime-motion-capture`の高位blockへ昇格する。
 
 再利用できる画面（タイトル、アプリメニュー、DSLファイル管理）は`turbowarp-title-menu`が所有する。
-このリポジトリが所有する`@multiview-pose/app-shell`拡張に残すのは、起動時のfeature flag注入と、
+このリポジトリが所有する`@turbowarp-realtime-motion-capture-app/app-shell`拡張に残すのは、起動時のfeature flag注入と、
 title-menuに相当するprimitiveが無い読み込み・エラーoverlayだけとする。
 
 ## artifact policy
