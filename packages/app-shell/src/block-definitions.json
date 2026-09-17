@@ -516,6 +516,72 @@
       "requires": "cameraGrid"
     },
     {
+      "opcode": "showGridPose",
+      "blockType": "COMMAND",
+      "text": "show pose [FRAME_JSON] on grid camera [CAMERA_ID]",
+      "description": "Draws a PoseFrame2D over the camera's tile, fitted to the frame as the video is. Text that is not a pose frame clears the drawing.",
+      "arguments": {
+        "FRAME_JSON": {
+          "type": "STRING",
+          "defaultValue": ""
+        },
+        "CAMERA_ID": {
+          "type": "STRING",
+          "defaultValue": "cam-1"
+        }
+      },
+      "requires": "cameraGrid"
+    },
+    {
+      "opcode": "recordPoseStatus",
+      "blockType": "COMMAND",
+      "text": "record pose status [STATUS_JSON] of camera [CAMERA_ID]",
+      "description": "Records a camera's pose status JSON after its turn, for the pose measurement.",
+      "arguments": {
+        "STATUS_JSON": {
+          "type": "STRING",
+          "defaultValue": ""
+        },
+        "CAMERA_ID": {
+          "type": "STRING",
+          "defaultValue": "cam-1"
+        }
+      },
+      "requires": "cameraGrid"
+    },
+    {
+      "opcode": "endPoseRound",
+      "blockType": "COMMAND",
+      "text": "end pose round",
+      "description": "Marks the end of a round in which every camera had its turn.",
+      "arguments": {},
+      "requires": "cameraGrid"
+    },
+    {
+      "opcode": "resetPoseMeasurement",
+      "blockType": "COMMAND",
+      "text": "reset pose measurement",
+      "description": "Forgets every recorded pose status and round.",
+      "arguments": {},
+      "requires": "cameraGrid"
+    },
+    {
+      "opcode": "poseMeasurementSummary",
+      "blockType": "REPORTER",
+      "text": "pose measurement summary",
+      "description": "Reports one readable line: round time, spread of the cameras' capture times, and per camera the inference time, inferences per second, capture-to-result delay and person count.",
+      "arguments": {},
+      "requires": "cameraGrid"
+    },
+    {
+      "opcode": "poseMeasurementJson",
+      "blockType": "REPORTER",
+      "text": "pose measurement JSON",
+      "description": "Reports the pose measurement as JSON.",
+      "arguments": {},
+      "requires": "cameraGrid"
+    },
+    {
       "opcode": "rememberSetting",
       "blockType": "COMMAND",
       "text": "remember setting [KEY] as [VALUE]",

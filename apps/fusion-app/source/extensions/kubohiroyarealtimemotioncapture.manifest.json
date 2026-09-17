@@ -3,6 +3,11 @@
   "id": "kubohiroyarealtimemotioncapture",
   "blocks": [
     {
+      "opcode": "acknowledgeFrameSyncFlashing",
+      "blockType": "COMMAND",
+      "arguments": []
+    },
+    {
       "opcode": "addCameraCalibrationSample",
       "blockType": "COMMAND",
       "arguments": []
@@ -313,6 +318,16 @@
       ]
     },
     {
+      "opcode": "inferPoseCameraAtFrameTime",
+      "blockType": "COMMAND",
+      "arguments": [
+        {
+          "id": "CAMERA_ID",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
       "opcode": "latestPoseFrame2D",
       "blockType": "REPORTER",
       "arguments": []
@@ -371,6 +386,26 @@
       "opcode": "poseBackend",
       "blockType": "REPORTER",
       "arguments": []
+    },
+    {
+      "opcode": "poseCameraFrame2D",
+      "blockType": "REPORTER",
+      "arguments": [
+        {
+          "id": "CAMERA_ID",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "opcode": "poseCameraStatusJson",
+      "blockType": "REPORTER",
+      "arguments": [
+        {
+          "id": "CAMERA_ID",
+          "type": "STRING"
+        }
+      ]
     },
     {
       "opcode": "poseError",
@@ -501,6 +536,16 @@
       "arguments": []
     },
     {
+      "opcode": "setFrameSyncDisplayRefresh",
+      "blockType": "COMMAND",
+      "arguments": [
+        {
+          "id": "REFRESH_US",
+          "type": "NUMBER"
+        }
+      ]
+    },
+    {
       "opcode": "setPerformerGlowStick",
       "blockType": "COMMAND",
       "arguments": [
@@ -584,6 +629,24 @@
       ]
     },
     {
+      "opcode": "startPoseCamera",
+      "blockType": "COMMAND",
+      "arguments": [
+        {
+          "id": "CALIBRATION_ID",
+          "type": "STRING"
+        },
+        {
+          "id": "CAMERA_ID",
+          "type": "STRING"
+        },
+        {
+          "id": "PEER_ID",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
       "opcode": "startPoseFusion",
       "blockType": "COMMAND",
       "arguments": [
@@ -620,9 +683,24 @@
       ]
     },
     {
+      "opcode": "stopAllPoseCameras",
+      "blockType": "COMMAND",
+      "arguments": []
+    },
+    {
       "opcode": "stopFrameSyncDecoder",
       "blockType": "COMMAND",
       "arguments": []
+    },
+    {
+      "opcode": "stopPoseCamera",
+      "blockType": "COMMAND",
+      "arguments": [
+        {
+          "id": "CAMERA_ID",
+          "type": "STRING"
+        }
+      ]
     },
     {
       "opcode": "stopPoseFusion",

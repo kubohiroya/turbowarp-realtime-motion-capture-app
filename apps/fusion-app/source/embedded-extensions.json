@@ -37,9 +37,9 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-camera-source",
-        "version": "0.12.0",
+        "version": "0.13.0",
         "artifact": "dist/camera-source.js",
-        "integrity": "sha256-vnT6C91eTFvINm7mLYEZO1vZPVFS7ifq4c8iPKTDulM=",
+        "integrity": "sha256-zG0rTxHcNDC46BvGEvetSKbCGFv5oJmjn8p08Qv4RmU=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyacamerasource.manifest.json",
@@ -157,14 +157,14 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-realtime-motion-capture",
-        "version": "0.2.1",
+        "version": "0.3.0",
         "artifact": "dist/turbowarp-realtime-motion-capture.js",
-        "integrity": "sha256-g4tyZOijxViIBtH1FqWubhUXweaxmaErXiOiDEpZMRA=",
+        "integrity": "sha256-kLz2I+OedC1p6fWreK/P9wspgyv1Pg6zCXgivVcK1wk=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyarealtimemotioncapture.manifest.json",
           "formatVersion": 1,
-          "integrity": "sha256-YE4G6GLSEFTwW51PPdKgal09Ml4Eov24wgfys6KFFZM="
+          "integrity": "sha256-OcQwa1B0ALxw7ZY6cPMWLSe+g695Eg9KkAE/KQQueuQ="
         }
       }
     },

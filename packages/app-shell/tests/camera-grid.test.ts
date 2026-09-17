@@ -161,4 +161,29 @@ describe('createSettingsStore', () => {
     expect(() => settings.set('cameras', '{}')).not.toThrow();
     expect(settings.get('cameras')).toBe('');
   });
+
+  it('keeps the latest pose frame per running camera and clears it for text that is not one', async () => {
+    const {source} = fakeSource();
+    const cameras = grid(source);
+    await cameras.start(request('cam-1', 'usb-a'));
+    const frame = {
+      frameWidth: 1280,
+      frameHeight: 720,
+      persons: [{keypoints: [{id: 'nose', x: 10, y: 20, score: 0.9}, {id: 'broken', x: 'left', y: 1}]}]
+    };
+
+    cameras.showPose('cam-1', JSON.stringify(frame));
+    expect(cameras.poseShown('cam-1')).toEqual({
+      frameWidth: 1280,
+      frameHeight: 720,
+      persons: [{keypoints: [{id: 'nose', x: 10, y: 20, score: 0.9}]}]
+    });
+
+    cameras.showPose('cam-1', '');
+    expect(cameras.poseShown('cam-1')).toBeUndefined();
+    cameras.showPose('cam-1', JSON.stringify({...frame, frameWidth: 0}));
+    expect(cameras.poseShown('cam-1')).toBeUndefined();
+    cameras.showPose('cam-9', JSON.stringify(frame));
+    expect(cameras.poseShown('cam-9')).toBeUndefined();
+  });
 });

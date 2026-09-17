@@ -73,7 +73,46 @@ interface GridCamera {
   measuredFps: number;
   cancelFrames: (() => void) | undefined;
   tile: HTMLVideoElement | undefined;
+  poseCanvas: HTMLCanvasElement | undefined;
+  pose: GridPose | undefined;
 }
+
+interface GridPoseKeypoint {
+  readonly id: string;
+  readonly x: number;
+  readonly y: number;
+  readonly score: number;
+}
+
+/** The part of a PoseFrame2D the grid draws. */
+export interface GridPose {
+  readonly frameWidth: number;
+  readonly frameHeight: number;
+  readonly persons: ReadonlyArray<{readonly keypoints: readonly GridPoseKeypoint[]}>;
+}
+
+/** COCO-17 limbs. */
+const SKELETON: ReadonlyArray<readonly [string, string]> = [
+  ['left_shoulder', 'right_shoulder'],
+  ['left_shoulder', 'left_elbow'],
+  ['left_elbow', 'left_wrist'],
+  ['right_shoulder', 'right_elbow'],
+  ['right_elbow', 'right_wrist'],
+  ['left_shoulder', 'left_hip'],
+  ['right_shoulder', 'right_hip'],
+  ['left_hip', 'right_hip'],
+  ['left_hip', 'left_knee'],
+  ['left_knee', 'left_ankle'],
+  ['right_hip', 'right_knee'],
+  ['right_knee', 'right_ankle'],
+  ['nose', 'left_eye'],
+  ['nose', 'right_eye'],
+  ['left_eye', 'left_ear'],
+  ['right_eye', 'right_ear']
+];
+const PERSON_COLORS = ['#ffd400', '#00e0ff', '#ff5ad1', '#7dff5a', '#ff8a3d', '#b28dff'];
+/** Keypoints below this score are left out of the drawing, as MoveNet's own demos do. */
+const MINIMUM_KEYPOINT_SCORE = 0.3;
 
 const OWNER = 'local-app-camera-grid';
 /** Long enough that one late frame does not move the figure, short enough to follow a change. */
@@ -119,7 +158,9 @@ export class CameraGrid {
       windowStartMs: this.host.nowMs(),
       measuredFps: 0,
       cancelFrames: undefined,
-      tile: undefined
+      tile: undefined,
+      poseCanvas: undefined,
+      pose: undefined
     };
     this.cameras.set(request.cameraId, camera);
     if (holder) return this.fail(camera, `device-in-use: ${holder.request.cameraId} already uses this device.`);
@@ -185,8 +226,26 @@ export class CameraGrid {
     this.render();
   }
 
+  /**
+   * Draws a camera's latest PoseFrame2D over its tile. Text that is not a pose frame clears the
+   * drawing, so a stopped estimator does not leave its last skeleton standing.
+   */
+  public showPose(cameraId: string, frameJson: string): void {
+    const camera = this.cameras.get(cameraId);
+    if (!camera) return;
+    camera.pose = parsePose(frameJson);
+    this.drawPose(camera);
+  }
+
+  public poseShown(cameraId: string): GridPose | undefined {
+    return this.cameras.get(cameraId)?.pose;
+  }
+
   public hide(): void {
-    for (const camera of this.cameras.values()) camera.tile = undefined;
+    for (const camera of this.cameras.values()) {
+      camera.tile = undefined;
+      camera.poseCanvas = undefined;
+    }
     this.overlay?.remove();
     this.overlay = undefined;
   }
@@ -251,6 +310,7 @@ export class CameraGrid {
     camera.cancelFrames = undefined;
     camera.tile?.parentElement?.remove();
     camera.tile = undefined;
+    camera.poseCanvas = undefined;
   }
 
   /** A track that ended — unplugged, or taken by the OS — reads as ended without a block call. */
@@ -302,13 +362,63 @@ export class CameraGrid {
         font: '14px system-ui, sans-serif',
         borderRadius: '4px'
       });
+      // Sized in frame pixels and fitted like the video, so keypoints land where the frame shows them.
+      const poseCanvas = document.createElement('canvas');
+      Object.assign(poseCanvas.style, {
+        position: 'absolute',
+        inset: '0',
+        width: '100%',
+        height: '100%',
+        objectFit: 'contain'
+      });
       cell.appendChild(video);
       cell.appendChild(caption);
+      cell.appendChild(poseCanvas);
       overlay.appendChild(cell);
       camera.tile = video;
+      camera.poseCanvas = poseCanvas;
+      this.drawPose(camera);
       this.caption(camera);
       void video.play?.()?.catch?.(() => undefined);
     }
+  }
+
+  private drawPose(camera: GridCamera): void {
+    const canvas = camera.poseCanvas;
+    const context = canvas?.getContext?.('2d');
+    if (!canvas || !context) return;
+    const pose = camera.pose;
+    if (!pose) {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      return;
+    }
+    canvas.width = pose.frameWidth;
+    canvas.height = pose.frameHeight;
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    const scale = Math.max(pose.frameWidth, pose.frameHeight) / 640;
+    context.lineWidth = 4 * scale;
+    pose.persons.forEach((person, index) => {
+      const color = PERSON_COLORS[index % PERSON_COLORS.length] ?? '#ffffff';
+      const points = new Map(
+        person.keypoints.filter((keypoint) => keypoint.score >= MINIMUM_KEYPOINT_SCORE).map((keypoint) => [keypoint.id, keypoint])
+      );
+      context.strokeStyle = color;
+      context.fillStyle = color;
+      for (const [from, to] of SKELETON) {
+        const a = points.get(from);
+        const b = points.get(to);
+        if (!a || !b) continue;
+        context.beginPath();
+        context.moveTo(a.x, a.y);
+        context.lineTo(b.x, b.y);
+        context.stroke();
+      }
+      for (const point of points.values()) {
+        context.beginPath();
+        context.arc(point.x, point.y, 5 * scale, 0, Math.PI * 2);
+        context.fill();
+      }
+    });
   }
 
   private caption(camera: GridCamera): void {
@@ -318,6 +428,40 @@ export class CameraGrid {
     if (!report) return;
     caption.textContent = `${report.cameraId} ${report.settings.width}x${report.settings.height} 設定${report.settings.frameRate}fps / 実測${report.measuredFps}fps`;
   }
+}
+
+function parsePose(text: string): GridPose | undefined {
+  if (text.trim() === '') return undefined;
+  let value: unknown;
+  try {
+    value = JSON.parse(text);
+  } catch {
+    return undefined;
+  }
+  const frame = value as Partial<GridPose> | null;
+  if (
+    typeof frame !== 'object' ||
+    frame === null ||
+    !(Number(frame.frameWidth) > 0) ||
+    !(Number(frame.frameHeight) > 0) ||
+    !Array.isArray(frame.persons)
+  ) {
+    return undefined;
+  }
+  return {
+    frameWidth: Number(frame.frameWidth),
+    frameHeight: Number(frame.frameHeight),
+    persons: (frame.persons as ReadonlyArray<{keypoints?: unknown}>)
+      .filter((person): person is {keypoints: Array<Partial<GridPoseKeypoint>>} => Array.isArray(person?.keypoints))
+      .map((person) => ({
+        keypoints: person.keypoints
+          .filter(
+            (keypoint): keypoint is GridPoseKeypoint =>
+              typeof keypoint?.id === 'string' && Number.isFinite(keypoint.x) && Number.isFinite(keypoint.y)
+          )
+          .map((keypoint) => ({id: keypoint.id, x: keypoint.x, y: keypoint.y, score: Number(keypoint.score) || 0}))
+      }))
+  };
 }
 
 /** Asks for the size as ideal, not exact: a camera that cannot meet it still starts, and says so. */

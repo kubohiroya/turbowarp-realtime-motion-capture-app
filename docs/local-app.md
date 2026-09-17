@@ -5,13 +5,14 @@
 つなぐモードより先に、1台で通しの動作試験を成立させるために作ります。
 
 段階1では、アプリの土台と、複数のUSBカメラの起動・同時表示・実測を実装しています。段階2では、カメラごとの
-レンズ校正を実装しています。
+レンズ校正を実装しています。段階3では、全カメラの2D姿勢推定と、その計測を実装しています。
 
 ## 構成
 
 - `apps/local-app`：SB3（展開済みソース、リリース記録）。camera app・fusion appと同じ検査、決定的ビルド、
   リリース記録の対象です。
-- 埋め込む拡張：app shell（`realtimemotioncapturelocalshell`）、Title Menu、Camera Source（0.12.0以上）、Diagnostic Overlay。
+- 埋め込む拡張：app shell（`realtimemotioncapturelocalshell`）、Title Menu、Camera Source（0.13.0以上）、
+  Realtime Motion Capture（0.3.0以上、`webgpuMoveNetMultiPose`のみ有効）、Diagnostic Overlay。
 - `scripts/app-scripts/local-app.ts`：scriptの正本。
 - ローカルホストのポート：49713（`config/local-host.json`）。レンズ校正アプリは同じoriginの`/lens-calibration`で
   配信します。SB3は`apps/local-app/local/lens-calibration.sb3`に手で置きます（camera appと同じ扱いで、
@@ -44,6 +45,32 @@
 最新のものを自動で使います。「動作状況を見る」と、カメラが変わった後の表示に、カメラごとのレンズの状態
 （校正済み／合わない／未校正／保存領域が使えない）を出します。
 
+## 段階3の操作（姿勢推定と計測）
+
+| メニュー | 動作 |
+|---|---|
+| 姿勢推定を始める | 動いているカメラごとにMoveNet MultiPose（WebGPU）を用意し、カメラを順に推論し続ける。各タイルに骨格を重ね、1秒ごとに計測値を表示する |
+| 姿勢推定を止める | 全カメラの推論を止め、最後の計測値を表示する |
+
+カメラの追加・再開・解像度の切り替え・停止・レンズ校正を選ぶと、先に姿勢推定を止めます。推論は
+カメラごとにCamera Sourceのleaseを持つので、止めずに解像度を変えると古いstreamのまま残るためです。
+変更が済んだら、もう一度「姿勢推定を始める」を選びます。
+
+計測値の読み方：
+
+| 表示 | 意味 |
+|---|---|
+| 1周 | 全カメラが1回ずつ順番を終えるまでの時間（1秒間の平均） |
+| 撮影時刻のばらつき | 1周の中で、各カメラが最後に推論したフレームの撮影時刻の最大と最小の差 |
+| 推論 ms | そのカメラの直近1回の推論時間 |
+| 推論 fps | そのカメラが1秒間に推論されたフレーム数 |
+| 撮影→結果 | 推論したフレームの撮影時刻から、結果を読んだ時刻まで |
+| 人 | 直近のフレームで検出した人数（最大6） |
+| （撮影時刻なし・表示時刻で代用） | ブラウザが`captureTime`を報告せず、`presentationTime`を使っている |
+
+「推論 fps」がカメラの実測fpsより小さいときはGPUが追いついていません。台数を減らすか解像度を下げたときの
+変化で、上限を決めます。
+
 ## 仕組み
 
 - カメラはapp shellの`start camera ... at W x H FPS fps`で、Camera Sourceの`acquireCamera`を通して開始します。
@@ -65,6 +92,20 @@
   別のカメラの校正ウィンドウが開いている間は、進行中の校正を捨てないよう、次のカメラの校正を断ります。
 - ファイルの校正には、それを解いたブラウザのdevice IDが入っています。操作者がカメラを指定して読んだときだけ、
   `bind camera profile ... to its current device`でそのカメラのデバイスに結び付けてから保存します。
+- 姿勢推定は、Realtime Motion Capture 0.3.0のカメラごとのブロック（`start pose estimation on camera`、
+  `infer pose on camera ... at its frame time`）で行います。MoveNetの追跡が視点をまたいで人物IDを取り違えない
+  よう、検出器はカメラごとに持ち、WebGPUは共有します。GPUは1つなので、カメラは順番に推論されます。同じ
+  フレームしかないカメラは推論せずに順番を譲ります。
+- 各フレームの`captureTimestampUs`は、Camera Source 0.13.0がframe sourceに載せる撮影時刻（`frameTime`）
+  です。`requestVideoFrameCallback`の`captureTime`（無ければ`presentationTime`）を、ページの時計でUnix epoch
+  からのマイクロ秒にした値で、同じページの全カメラで比べられます。Realtime Motion Captureは時計を持たない
+  方針なので、時刻は外部（Camera Source）から受け取ります。ほかのPCとは同期していないので、WebRTCモードでは
+  このまま比べられません。
+- `captureTime`はブラウザがOSからフレームを受け取った時刻で、カメラ内部の露光や転送の遅れは含みません。
+  カメラごとの一定のずれは、段階4の空間と時刻の校正で扱います。
+- 推論に使う校正IDは、そのカメラのデバイスで解いた、今の設定に合う校正の`profileId`です。無ければ
+  `uncalibrated`で、3Dの段階はこれを受け付けません。
+- 計測はapp shellの`record pose status`・`end pose round`で集計し、`pose measurement summary`で表示します。
 - カメラIDとデバイスの対応は`localStorage`（`twrmc.realtimemotioncapturelocalshell:camera-bindings`）に
   保存します。保存領域が使えない場合は記憶しないだけで、動作は続けます。
 
@@ -107,3 +148,21 @@ local-appを前面に表示した状態で読みます。
   - 校正アプリを同じURLパラメータで開き、撮影を始めると、`getUserMedia`が`deviceId: {exact: "device-b"}`、
     1280x720・30fpsの`ideal`で呼ばれる
 - 未確認：実際のUSBカメラ（同じ型番の2台）での校正と、device IDがブラウザの再起動後も保たれること。
+
+## 検証の状況（段階3）
+
+- 自動：`pnpm check`（check:extensionsを除く。Camera Source 0.13.0とRealtime Motion Capture 0.3.0の公開後に
+  確認する）。app shellのテストに、計測（1秒窓の推論fps、1周の時間、撮影時刻のばらつき、撮影→結果、
+  エラー表示）と、骨格表示用のPoseFrame2Dの読み取りを追加した。Camera Sourceと拡張にもテストを追加した。
+- ブラウザ：ローカルホストでlocal-appを配信し、`getUserMedia`を合成カメラ2台（canvasの`captureStream`）に
+  置き換えて、実際のWebGPU上のMoveNet MultiPoseで次を確認した。
+  - 2台それぞれにパイプラインが立ち上がり、推論時間は14〜24ms、1周は約80ms
+  - ペインが非表示でフレームが約1fpsしか届かないため、新しいフレームが無い番は飛ばされ、推論fpsは約1
+  - canvasのstreamには`captureTime`が無いので、`presentation`と表示される
+  - 姿勢推定中に解像度を切り替えると、先に推論を止めてから1920x1080で再開し、もう一度始められる
+  - 「姿勢推定を止める」で全パイプラインが止まり、最後の計測値が表示される
+- 未確認：
+  - 人物が写った映像での骨格表示と人数
+  - 実際のUSBカメラでの`captureTime`
+  - 台数ごとの推論fpsと、GPUが追いつかなくなる台数
+

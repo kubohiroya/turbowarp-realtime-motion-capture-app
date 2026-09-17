@@ -6,6 +6,7 @@ import {askNumbersWithDialog, confirmWithDialog, type DialogHost} from './dialog
 import {jsonValueOf, readJsonPath, withJsonField} from './json-fields.js';
 import type {NetworkRouter} from './network-router.js';
 import type {CameraGrid} from './camera-grid.js';
+import type {PoseMeter} from './pose-meter.js';
 import type {SettingsStore} from './settings.js';
 import {parseButtonLabels, type QrPanel} from './qr-panel.js';
 import type {MultiviewPoseShell} from './shell.js';
@@ -53,6 +54,7 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
   private readonly dialogs: DialogHost;
   private readonly network: NetworkRouter | null;
   private readonly cameraGrid: CameraGrid | null;
+  private readonly poseMeter: PoseMeter | null;
   private readonly settings: SettingsStore | null;
   private confirmed = false;
   private numbers = '';
@@ -67,6 +69,7 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
       dialogs?: DialogHost;
       network?: NetworkRouter;
       cameraGrid?: CameraGrid;
+      poseMeter?: PoseMeter;
       settings?: SettingsStore;
     } = {}
   ) {
@@ -78,6 +81,7 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
     this.dialogs = parts.dialogs ?? {document: null};
     this.network = parts.network ?? null;
     this.cameraGrid = parts.cameraGrid ?? null;
+    this.poseMeter = parts.poseMeter ?? null;
     this.settings = parts.settings ?? null;
   }
 
@@ -351,6 +355,30 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
           : `${report.cameraId}: ${report.state} ${report.error}`
       )
       .join(' / ');
+  }
+
+  public showGridPose(args: {CAMERA_ID: unknown; FRAME_JSON: unknown}): void {
+    this.cameraGrid?.showPose(Scratch.Cast.toString(args.CAMERA_ID).trim(), Scratch.Cast.toString(args.FRAME_JSON));
+  }
+
+  public recordPoseStatus(args: {CAMERA_ID: unknown; STATUS_JSON: unknown}): void {
+    this.poseMeter?.record(Scratch.Cast.toString(args.CAMERA_ID).trim(), Scratch.Cast.toString(args.STATUS_JSON));
+  }
+
+  public endPoseRound(): void {
+    this.poseMeter?.endCycle();
+  }
+
+  public resetPoseMeasurement(): void {
+    this.poseMeter?.reset();
+  }
+
+  public poseMeasurementSummary(): string {
+    return this.poseMeter?.summary() ?? '';
+  }
+
+  public poseMeasurementJson(): string {
+    return this.poseMeter ? JSON.stringify(this.poseMeter.measurement()) : '';
   }
 
   public rememberSetting(args: {KEY: unknown; VALUE: unknown}): void {
