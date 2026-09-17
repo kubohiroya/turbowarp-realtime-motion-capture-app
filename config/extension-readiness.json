@@ -140,11 +140,11 @@
       "role": "camera-source",
       "repository": "kubohiroya/turbowarp-camera-source",
       "package": "@kubohiroya/turbowarp-camera-source",
-      "version": "0.12.0",
+      "version": "0.13.0",
       "extensionId": "kubohiroyacamerasource",
-      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.12.0/dist/camera-source.js",
-      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.12.0/dist/extension-manifest.json",
-      "sha256": "be74fa0bdd5e4c5bc8366ee62d81193b5bd93d5152ee27eae1cf223ca4c3ba53",
+      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.13.0/dist/camera-source.js",
+      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.13.0/dist/extension-manifest.json",
+      "sha256": "cc6d2b4f11dc3430b8e81bc612f7ad48a6c2185bf9a099a39fca74f10bf84665",
       "status": "ready",
       "embeddedIn": [
         "camera-app",
@@ -1595,15 +1595,16 @@
       "role": "multiview-high-level-blocks",
       "repository": "kubohiroya/turbowarp-realtime-motion-capture",
       "package": "@kubohiroya/turbowarp-realtime-motion-capture",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "extensionId": "kubohiroyarealtimemotioncapture",
-      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-realtime-motion-capture@0.2.1/dist/turbowarp-realtime-motion-capture.js",
-      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-realtime-motion-capture@0.2.1/dist/extension-manifest.json",
-      "sha256": "838b7264e8a3c5588806d1f516a5ae6e1517c1e6b199a12b5e23a20c4a593110",
+      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-realtime-motion-capture@0.3.0/dist/turbowarp-realtime-motion-capture.js",
+      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-realtime-motion-capture@0.3.0/dist/extension-manifest.json",
+      "sha256": "90bcf623e39e742d69e9f5ab78afcff70b29832bf53e0eb3097822bd570ad709",
       "status": "ready",
       "embeddedIn": [
         "camera-app",
-        "fusion-app"
+        "fusion-app",
+        "local-app"
       ],
       "requiredOperations": [
         {
@@ -1634,6 +1635,31 @@
         {
           "capability": "latest PoseFrame2D",
           "opcode": "latestPoseFrame2D",
+          "availability": "ready"
+        },
+        {
+          "capability": "start pose estimation per camera",
+          "opcode": "startPoseCamera",
+          "availability": "ready"
+        },
+        {
+          "capability": "infer pose at the camera's frame time",
+          "opcode": "inferPoseCameraAtFrameTime",
+          "availability": "ready"
+        },
+        {
+          "capability": "latest PoseFrame2D per camera",
+          "opcode": "poseCameraFrame2D",
+          "availability": "ready"
+        },
+        {
+          "capability": "pose status per camera",
+          "opcode": "poseCameraStatusJson",
+          "availability": "ready"
+        },
+        {
+          "capability": "stop pose estimation on all cameras",
+          "opcode": "stopAllPoseCameras",
           "availability": "ready"
         },
         {
@@ -1745,6 +1771,36 @@
         },
         "latestPoseFrame2D": {
           "blockType": "reporter",
+          "arguments": {}
+        },
+        "startPoseCamera": {
+          "blockType": "command",
+          "arguments": {
+            "CALIBRATION_ID": "string",
+            "CAMERA_ID": "string",
+            "PEER_ID": "string"
+          }
+        },
+        "inferPoseCameraAtFrameTime": {
+          "blockType": "command",
+          "arguments": {
+            "CAMERA_ID": "string"
+          }
+        },
+        "poseCameraFrame2D": {
+          "blockType": "reporter",
+          "arguments": {
+            "CAMERA_ID": "string"
+          }
+        },
+        "poseCameraStatusJson": {
+          "blockType": "reporter",
+          "arguments": {
+            "CAMERA_ID": "string"
+          }
+        },
+        "stopAllPoseCameras": {
+          "blockType": "command",
           "arguments": {}
         },
         "protocolJsonValid": {

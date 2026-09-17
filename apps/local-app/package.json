@@ -7,8 +7,9 @@
     "check": "node ../../scripts/ensure-source-directories.ts local-app && sb3-toolchain check source"
   },
   "devDependencies": {
-    "@kubohiroya/turbowarp-camera-source": "0.12.0",
+    "@kubohiroya/turbowarp-camera-source": "0.13.0",
     "@kubohiroya/turbowarp-diagnostic-overlay": "0.4.0",
+    "@kubohiroya/turbowarp-realtime-motion-capture": "0.3.0",
     "@kubohiroya/turbowarp-title-menu": "0.2.2"
   }
 }

@@ -203,6 +203,13 @@
           "apiManifest": "dist/extension-manifest.json"
         },
         {
+          "id": "kubohiroyarealtimemotioncapture",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-realtime-motion-capture",
+          "artifact": "dist/turbowarp-realtime-motion-capture.js",
+          "apiManifest": "dist/extension-manifest.json"
+        },
+        {
           "id": "kubohiroyadiagnosticoverlay",
           "provider": "npm",
           "package": "@kubohiroya/turbowarp-diagnostic-overlay",

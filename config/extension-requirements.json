@@ -684,6 +684,26 @@
           "opcode": "latestPoseFrame2D"
         },
         {
+          "capability": "start pose estimation per camera",
+          "opcode": "startPoseCamera"
+        },
+        {
+          "capability": "infer pose at the camera's frame time",
+          "opcode": "inferPoseCameraAtFrameTime"
+        },
+        {
+          "capability": "latest PoseFrame2D per camera",
+          "opcode": "poseCameraFrame2D"
+        },
+        {
+          "capability": "pose status per camera",
+          "opcode": "poseCameraStatusJson"
+        },
+        {
+          "capability": "stop pose estimation on all cameras",
+          "opcode": "stopAllPoseCameras"
+        },
+        {
           "capability": "validate contract payload",
           "opcode": "protocolJsonValid"
         },

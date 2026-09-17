@@ -8,6 +8,7 @@ import {CameraGrid, createScratchCameraGridHost} from './camera-grid.js';
 import {browserStorage, createSettingsStore} from './settings.js';
 import {createMultiviewPoseShell} from './shell.js';
 import {MultiviewPoseAppShellExtension} from './extension.js';
+import {PoseMeter, createBrowserPoseMeterHost} from './pose-meter.js';
 
 /**
  * Applies the contract feature flags and registers the app shell extension.
@@ -34,7 +35,9 @@ export function registerAppShell(config: AppShellAppConfig): void {
       dialogs: {document: typeof document === 'undefined' ? null : document},
       network: new NetworkRouter(createScratchNetworkRouterHost()),
       settings: createSettingsStore(`twrmc.${config.id}`, browserStorage),
-      ...(config.cameraGrid === true ? {cameraGrid: createCameraGrid()} : {}),
+      ...(config.cameraGrid === true
+        ? {cameraGrid: createCameraGrid(), poseMeter: new PoseMeter(createBrowserPoseMeterHost())}
+        : {}),
       ...(config.lensCalibration === true
         ? {lensCalibration: new LensCalibrationLauncher(createBrowserLensCalibrationHost(shell.locale))}
         : {})

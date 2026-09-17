@@ -25,6 +25,7 @@ import {
   not,
   or,
   repeat,
+  repeatUntil,
   setVariable,
   waitUntil,
   whenBroadcastReceived,
@@ -42,11 +43,20 @@ import {
  * Stage 2: every camera has its own lens calibration. Two cameras of the same model report the same
  * label and conditions, so a saved calibration is only ever restored from those solved on the device
  * the camera runs on, and the calibration app is opened for that device at the size the camera runs.
+ *
+ * Stage 3: every running camera's 2D pose is estimated in one page. Each camera has its own MoveNet
+ * pipeline and they take turns on the one GPU; a camera with no new frame gives its turn away. Each
+ * frame carries the capture time Camera Source reports, and the app shows what a turn costs: the
+ * inference time and rate per camera, the delay from capture to result, the spread of the cameras'
+ * capture times, and how long a round of every camera takes.
  */
 
 const shell = 'realtimemotioncapturelocalshell';
 const titleMenu = 'kubohiroyaturbowarptitlemenu';
 const cameraSource = 'kubohiroyacamerasource';
+const motionCapture = 'kubohiroyarealtimemotioncapture';
+/** Frames estimated here are not sent anywhere; the peer names this page. */
+const localPeerId = 'local';
 
 /** Stage 1 offers at most this many cameras. The measured limit is what stage 1 is for. */
 export const maximumCameras = 4;
@@ -65,7 +75,9 @@ const action = {
   restoreCameras: 'restoreCameras',
   cycleResolution: 'cycleResolution',
   stopCameras: 'stopCameras',
-  diagnostics: 'diagnostics'
+  diagnostics: 'diagnostics',
+  startPose: 'startPose',
+  stopPose: 'stopPose'
 } as const;
 const deviceAction = (index: number) => `addDevice${index}`;
 const calibrateLensAction = (index: number) => `calibrateLens${index}`;
@@ -83,6 +95,12 @@ const requestFps = namedReference('requested fps', 'variable:requested-fps');
 const lensSummary = namedReference('lens summary', 'variable:lens-summary');
 const lensRejection = namedReference('lens rejection', 'variable:lens-rejection');
 /** The stored-profile generation when a calibration window opened; a larger one means it saved. */
+/** `true` while the pose loop runs; setting it `false` asks the loop to stop. */
+const poseRunning = namedReference('pose running', 'variable:pose-running');
+/** `true` once the loop has stopped and released every pipeline. */
+const poseStopped = namedReference('pose stopped', 'variable:pose-stopped');
+const poseCalibration = namedReference('pose calibration ID', 'variable:pose-calibration-id');
+const poseWindowStart = namedReference('pose window start', 'variable:pose-window-start');
 const profilesGenerationBefore = namedReference(
   'stored profiles generation before',
   'variable:stored-profiles-generation-before'
@@ -103,7 +121,11 @@ export const localAppStageData = {
     [requestFps.id]: [requestFps.name, presets[1].frameRate],
     [lensSummary.id]: [lensSummary.name, ''],
     [lensRejection.id]: [lensRejection.name, ''],
-    [profilesGenerationBefore.id]: [profilesGenerationBefore.name, 0]
+    [profilesGenerationBefore.id]: [profilesGenerationBefore.name, 0],
+    [poseRunning.id]: [poseRunning.name, 'false'],
+    [poseStopped.id]: [poseStopped.name, 'true'],
+    [poseCalibration.id]: [poseCalibration.name, ''],
+    [poseWindowStart.id]: [poseWindowStart.name, 0]
   },
   broadcasts: {
     [menuActionsRequested.id]: menuActionsRequested.name,
@@ -230,8 +252,45 @@ const baseMenu = (): BlockNode[] => [
   addMenu(action.restoreCameras, text('前回のカメラ構成で始める')),
   addMenu(action.cycleResolution, concatenate(text('解像度を切り替える（今: '), presetLabel(), text('）'))),
   addMenu(action.stopCameras, text('すべてのカメラを止める')),
-  addMenu(action.diagnostics, text('動作状況を見る'))
+  addMenu(action.diagnostics, text('動作状況を見る')),
+  addMenu(action.startPose, text('姿勢推定を始める')),
+  addMenu(action.stopPose, text('姿勢推定を止める'))
 ];
+
+const poseValue = (opcode: string): InputValue => reporter(block(`${motionCapture}_${opcode}`, {CAMERA_ID: slotId()}));
+
+/**
+ * Stops the pose loop and waits until it has released every pipeline.
+ *
+ * Everything that restarts or releases a camera goes through this first. A pose pipeline holds its own
+ * Camera Source lease, so a camera restarted at another size under it would keep the stream it had.
+ */
+const stopPoseAndWait = (): BlockNode[] => [
+  ifThen(equals(variable(poseRunning), text('true')), [
+    setVariable(poseRunning, text('false')),
+    waitUntil(equals(variable(poseStopped), text('true'))),
+    notice(text('カメラを変更するため、姿勢推定を止めました。変更が済んだら「姿勢推定を始める」を選んでください。'))
+  ])
+];
+
+/**
+ * The calibration a camera's frames are estimated against: the registered profile when it fits the
+ * camera as it runs and was solved on its device, otherwise `uncalibrated`, which the 3D stage refuses.
+ */
+const setPoseCalibration = (): BlockNode =>
+  ifElse(
+    and(
+      equals(slotValue('cameraProfileCompatibility'), text('compatible')),
+      sourceBlock('cameraProfileOnDevice', {CAMERA_ID: slotId()})
+    ),
+    [
+      setVariable(
+        poseCalibration,
+        shellValue('jsonValueAt', {JSON: slotValue('cameraProfileJson'), PATH: text('profileId')})
+      )
+    ],
+    [setVariable(poseCalibration, text('uncalibrated'))]
+  );
 
 /** Calibration entries for the cameras that are running; a stopped camera has no device to calibrate. */
 const lensMenu = (): BlockNode[] =>
@@ -300,6 +359,7 @@ export const localAppScripts: readonly Script[] = [
   ...Array.from({length: maximumMenuDevices}, (_, offset) => offset + 1).map((index) =>
     script({x: 520, y: 48 + (index - 1) * 420}, [
       block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: deviceAction(index)}),
+      ...stopPoseAndWait(),
       ifElse(
         greaterThan(variable(cameraCount), number(maximumCameras - 1)),
         [error(text(`カメラは${maximumCameras}台までです。`), 'CAMERA_LIMIT')],
@@ -335,6 +395,7 @@ export const localAppScripts: readonly Script[] = [
 
   script({x: 1000, y: 48}, [
     block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.restoreCameras}),
+    ...stopPoseAndWait(),
     setVariable(cameraBindings, shellValue('rememberedSetting', {KEY: text('camera-bindings')})),
     ifElse(
       equals(variable(cameraBindings), text('')),
@@ -369,6 +430,7 @@ export const localAppScripts: readonly Script[] = [
   /** Every running camera is restarted at the next preset, so all of them are measured alike. */
   script({x: 1000, y: 900}, [
     block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.cycleResolution}),
+    ...stopPoseAndWait(),
     setVariable(preset, reporter(add(reporter(modulo(variable(preset), number(presets.length))), number(1)))),
     ...applyPreset(),
     setVariable(failures, text('')),
@@ -386,6 +448,7 @@ export const localAppScripts: readonly Script[] = [
 
   script({x: 1000, y: 1500}, [
     block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.stopCameras}),
+    ...stopPoseAndWait(),
     shellBlock('stopAllGridCameras'),
     setVariable(cameraCount, number(0)),
     notice(text('すべてのカメラを止めました。カメラ構成はこのブラウザに残っています。')),
@@ -409,6 +472,110 @@ export const localAppScripts: readonly Script[] = [
   ...Array.from({length: maximumCameras}, (_, offset) => offset + 1).flatMap((index) => [
     calibrateLensScript(index),
     loadLensFileScript(index)
+  ]),
+
+  /**
+   * Starts a pipeline for every running camera, then gives each one a turn until asked to stop.
+   *
+   * The model is loaded once per camera, which takes a while on the first start. After each turn the
+   * camera's frame is drawn over its tile and its status goes to the measurement; the summary is shown
+   * once a second.
+   */
+  script({x: 2600, y: 48}, [
+    block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.startPose}),
+    ifElse(
+      equals(variable(poseRunning), text('true')),
+      [notice(text('姿勢推定はすでに動いています。'))],
+      [
+        ifElse(
+          equals(shellValue('gridCamerasSummary'), text('')),
+          [error(text('動いているカメラがありません。先にカメラを開始してください。'), 'POSE_NO_CAMERA')],
+          [
+            shellBlock('showAppLoading', {LABEL: text('姿勢推定を準備しています（カメラごとにモデルを読み込みます）')}),
+            setVariable(failures, text('')),
+            ...forEachBoundSlot([
+              ifThen(slotRunning(), [
+                setPoseCalibration(),
+                block(`${motionCapture}_startPoseCamera`, {
+                  CAMERA_ID: slotId(),
+                  PEER_ID: text(localPeerId),
+                  CALIBRATION_ID: variable(poseCalibration)
+                }),
+                ifThen(
+                  not(equals(shellValue('jsonValueAt', {JSON: poseValue('poseCameraStatusJson'), PATH: text('state')}), text('ready'))),
+                  [
+                    setVariable(
+                      failures,
+                      concatenate(
+                        variable(failures),
+                        slotId(),
+                        text(': '),
+                        shellValue('jsonValueAt', {JSON: poseValue('poseCameraStatusJson'), PATH: text('error')}),
+                        text(' / ')
+                      )
+                    )
+                  ]
+                )
+              ])
+            ]),
+            shellBlock('hideAppLoading'),
+            ifElse(
+              not(equals(variable(failures), text(''))),
+              [
+                block(`${motionCapture}_stopAllPoseCameras`),
+                error(concatenate(text('姿勢推定を開始できませんでした: '), variable(failures)), 'POSE_START_FAILED')
+              ],
+              [
+                shellBlock('resetPoseMeasurement'),
+                setVariable(poseStopped, text('false')),
+                setVariable(poseRunning, text('true')),
+                notice(text('姿勢推定を始めました。1秒ごとに計測値を表示します。')),
+                block(`${titleMenu}_showMenu`),
+                setVariable(poseWindowStart, reporter(block('sensing_timer'))),
+                repeatUntil(not(equals(variable(poseRunning), text('true'))), [
+                  ...forEachBoundSlot([
+                    ifThen(and(slotRunning(), not(equals(poseValue('poseCameraStatusJson'), text('')))), [
+                      block(`${motionCapture}_inferPoseCameraAtFrameTime`, {CAMERA_ID: slotId()}),
+                      shellBlock('showGridPose', {FRAME_JSON: poseValue('poseCameraFrame2D'), CAMERA_ID: slotId()}),
+                      shellBlock('recordPoseStatus', {STATUS_JSON: poseValue('poseCameraStatusJson'), CAMERA_ID: slotId()})
+                    ])
+                  ]),
+                  shellBlock('endPoseRound'),
+                  ifThen(
+                    greaterThan(
+                      reporter(block('operator_subtract', {NUM1: reporter(block('sensing_timer')), NUM2: variable(poseWindowStart)})),
+                      number(1)
+                    ),
+                    [
+                      notice(concatenate(text('姿勢推定 — '), shellValue('poseMeasurementSummary'))),
+                      setVariable(poseWindowStart, reporter(block('sensing_timer')))
+                    ]
+                  )
+                ]),
+                block(`${motionCapture}_stopAllPoseCameras`),
+                ...forEachBoundSlot([shellBlock('showGridPose', {FRAME_JSON: text(''), CAMERA_ID: slotId()})]),
+                setVariable(poseStopped, text('true'))
+              ]
+            )
+          ]
+        )
+      ]
+    ),
+    block(`${titleMenu}_showMenu`)
+  ]),
+
+  script({x: 2600, y: 3000}, [
+    block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.stopPose}),
+    ifElse(
+      equals(variable(poseRunning), text('true')),
+      [
+        setVariable(poseRunning, text('false')),
+        waitUntil(equals(variable(poseStopped), text('true'))),
+        notice(concatenate(text('姿勢推定を止めました。最後の計測: '), shellValue('poseMeasurementSummary')))
+      ],
+      [notice(text('姿勢推定は動いていません。'))]
+    ),
+    block(`${titleMenu}_showMenu`)
   ])
 ];
 
@@ -428,6 +595,7 @@ function calibrateLensScript(index: number): Script {
   ];
   return script({x: 2000, y: 48 + (index - 1) * 1400}, [
     block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: calibrateLensAction(index)}),
+    ...stopPoseAndWait(),
     setVariable(slot, number(index)),
     setVariable(failures, text('')),
     ifElse(
