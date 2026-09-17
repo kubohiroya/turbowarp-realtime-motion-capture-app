@@ -166,6 +166,43 @@
           "apiManifest": "dist/extension-manifest.json"
         }
       ]
+    },
+    {
+      "app": "local-app",
+      "bundle": {
+        "id": "realtimemotioncapturelocalapp",
+        "name": "Realtime Motion Capture Local App"
+      },
+      "extensions": [
+        {
+          "id": "realtimemotioncapturelocalshell",
+          "provider": "workspace",
+          "package": "@turbowarp-realtime-motion-capture-app/app-shell",
+          "directory": "packages/app-shell",
+          "artifact": "dist/local-app/local-app-shell.js"
+        },
+        {
+          "id": "kubohiroyaturbowarptitlemenu",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-title-menu",
+          "artifact": "dist/turbowarp-title-menu.js",
+          "apiManifest": "dist/extension-manifest.json"
+        },
+        {
+          "id": "kubohiroyacamerasource",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-camera-source",
+          "artifact": "dist/camera-source.js",
+          "apiManifest": "dist/extension-manifest.json"
+        },
+        {
+          "id": "kubohiroyadiagnosticoverlay",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-diagnostic-overlay",
+          "artifact": "dist/diagnostic-overlay.js",
+          "apiManifest": "dist/extension-manifest.json"
+        }
+      ]
     }
   ]
 }

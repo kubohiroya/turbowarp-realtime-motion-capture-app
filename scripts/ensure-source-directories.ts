@@ -2,7 +2,7 @@ import {mkdir} from 'node:fs/promises';
 
 import {repositoryRoot} from './repository-config.ts';
 
-const applications = ['camera-app', 'fusion-app'];
+const applications = ['camera-app', 'fusion-app', 'local-app'];
 const application = process.argv[2];
 if (application === undefined || !applications.includes(application)) {
   throw new Error(`Unknown application: ${application ?? ''}`);

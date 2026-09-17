@@ -1,0 +1,14 @@
+{
+  "name": "@turbowarp-realtime-motion-capture-app/local-app",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node ../../scripts/ensure-source-directories.ts local-app && sb3-toolchain build source --output dist/local-app.sb3 --yes",
+    "check": "node ../../scripts/ensure-source-directories.ts local-app && sb3-toolchain check source"
+  },
+  "devDependencies": {
+    "@kubohiroya/turbowarp-camera-source": "0.11.0",
+    "@kubohiroya/turbowarp-diagnostic-overlay": "0.4.0",
+    "@kubohiroya/turbowarp-title-menu": "0.2.2"
+  }
+}

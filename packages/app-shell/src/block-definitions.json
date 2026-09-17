@@ -381,6 +381,142 @@
           "defaultValue": "pose"
         }
       }
+    },
+    {
+      "opcode": "startGridCamera",
+      "blockType": "COMMAND",
+      "text": "start camera [CAMERA_ID] on device [DEVICE_ID] at [WIDTH] x [HEIGHT] [FPS] fps",
+      "description": "Starts a camera through Camera Source asking for the size and frame rate as ideal values, and waits for it. A device another camera ID already uses is refused.",
+      "arguments": {
+        "CAMERA_ID": {
+          "type": "STRING",
+          "defaultValue": "cam-1"
+        },
+        "DEVICE_ID": {
+          "type": "STRING",
+          "defaultValue": ""
+        },
+        "WIDTH": {
+          "type": "NUMBER",
+          "defaultValue": 1280
+        },
+        "HEIGHT": {
+          "type": "NUMBER",
+          "defaultValue": 720
+        },
+        "FPS": {
+          "type": "NUMBER",
+          "defaultValue": 30
+        }
+      },
+      "requires": "cameraGrid"
+    },
+    {
+      "opcode": "stopGridCamera",
+      "blockType": "COMMAND",
+      "text": "stop camera [CAMERA_ID]",
+      "description": "Releases the grid's lease on one camera.",
+      "arguments": {
+        "CAMERA_ID": {
+          "type": "STRING",
+          "defaultValue": "cam-1"
+        }
+      },
+      "requires": "cameraGrid"
+    },
+    {
+      "opcode": "stopAllGridCameras",
+      "blockType": "COMMAND",
+      "text": "stop all cameras",
+      "description": "Releases every grid camera and removes the grid.",
+      "arguments": {},
+      "requires": "cameraGrid"
+    },
+    {
+      "opcode": "showCameraGrid",
+      "blockType": "COMMAND",
+      "text": "show camera grid",
+      "description": "Shows every running camera side by side, captioned with its size and measured frame rate.",
+      "arguments": {},
+      "requires": "cameraGrid"
+    },
+    {
+      "opcode": "hideCameraGrid",
+      "blockType": "COMMAND",
+      "text": "hide camera grid",
+      "description": "Removes the camera grid. The cameras keep running.",
+      "arguments": {},
+      "requires": "cameraGrid"
+    },
+    {
+      "opcode": "gridCameraState",
+      "blockType": "REPORTER",
+      "text": "state of camera [CAMERA_ID]",
+      "description": "Reports starting, running, ended, error, or stopped.",
+      "arguments": {
+        "CAMERA_ID": {
+          "type": "STRING",
+          "defaultValue": "cam-1"
+        }
+      },
+      "requires": "cameraGrid"
+    },
+    {
+      "opcode": "gridCameraError",
+      "blockType": "REPORTER",
+      "text": "error of camera [CAMERA_ID]",
+      "description": "Reports why the camera failed or ended, or an empty string.",
+      "arguments": {
+        "CAMERA_ID": {
+          "type": "STRING",
+          "defaultValue": "cam-1"
+        }
+      },
+      "requires": "cameraGrid"
+    },
+    {
+      "opcode": "gridCamerasJson",
+      "blockType": "REPORTER",
+      "text": "cameras JSON",
+      "description": "Reports every grid camera with its request, track settings, measured frame rate, label and state as JSON.",
+      "arguments": {},
+      "requires": "cameraGrid"
+    },
+    {
+      "opcode": "gridCamerasSummary",
+      "blockType": "REPORTER",
+      "text": "cameras summary",
+      "description": "Reports one readable line per grid camera: settings, measured frame rate, request and label.",
+      "arguments": {},
+      "requires": "cameraGrid"
+    },
+    {
+      "opcode": "rememberSetting",
+      "blockType": "COMMAND",
+      "text": "remember setting [KEY] as [VALUE]",
+      "description": "Stores a setting in this browser for this application. Nothing is stored when storage is unavailable.",
+      "arguments": {
+        "KEY": {
+          "type": "STRING",
+          "defaultValue": "cameras"
+        },
+        "VALUE": {
+          "type": "STRING",
+          "defaultValue": "{}"
+        }
+      }
+    },
+    {
+      "opcode": "rememberedSetting",
+      "blockType": "REPORTER",
+      "text": "remembered setting [KEY]",
+      "description": "Reports a stored setting, or an empty string when there is none.",
+      "arguments": {
+        "KEY": {
+          "type": "STRING",
+          "defaultValue": "cameras"
+        }
+      }
     }
   ]
 }
