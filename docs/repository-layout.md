@@ -1,11 +1,12 @@
 # SB3開発ガイド
 
-この文書は、camera appとfusion appのソースを編集・検証する開発者向けガイドです。アプリ全体の
-目的と現在の状態は[README](../README.md)、実行時の責務は[システム構成](architecture.md)を参照して
-ください。
+この文書は、camera app、fusion app、local appのソースを編集・検証する開発者向けガイドです。アプリ
+全体の目的と現在の状態は[README](../README.md)、実行時の責務は[システム構成](architecture.md)、
+turbowarp-app-templateとの関係は[テンプレート](template.md)を参照してください。
 
-`turbowarp-realtime-motion-capture-app`は2つのTurboWarpアプリとアプリシェル拡張を含むpnpm monorepoです。展開済みSB3
-ソースを正本とし、生成した`.sb3`を決定的な配布artifactとして扱います。
+`turbowarp-realtime-motion-capture-app`は3つのTurboWarpアプリ、アプリシェル拡張、配布ページを含む
+pnpm monorepoです。展開済みSB3ソースを正本とし、生成した`.sb3`を決定的な配布artifactとして扱います。
+リポジトリ全体の骨格はturbowarp-app-templateに合わせています。
 
 ## ディレクトリ構成
 
@@ -24,18 +25,33 @@ apps/
     source/...
     release.json
     dist/fusion-app.sb3（ignore）
+  local-app/
+    source/...
+    release.json
+    dist/local-app.sb3（ignore）
 packages/
   app-shell/            アプリ所有のTurboWarp拡張（feature flagと画面）
   local-host/           ローカルホストの部品（[ローカルホスト](local-host.md)）
+  pose-3d-service/      3Dサービスのinterfaceとstub（[3Dサービス](pose-3d-service.md)）
   sb3-script/           SB3のblock列を組み立てる
 config/
+  app.json                   名前、モード、説明、実装予定（英語訳は`en`）
+  feature-flags.ts           配布ページの実験機能フラグ（起動時固定・既定OFF）
   app-extensions.json        各SB3へ埋め込む拡張の宣言
   local-host.json            ローカルホストの固定port（[ローカルホスト](local-host.md)）
   extension-requirements.json readinessの要求定義（手で編集する）
   extension-readiness.json    生成物（手で編集しない）
 docs/
+index.html                   配布ページのentry
+src/                         配布ページ（`@kubohiroya/turbowarp-app-shell`を使う）
+public/downloads/            配布ページが配るSB3と`release.json`（生成物・ignore）
+tests/                       ルート側のテスト（vitest）
 scripts/                     TypeScriptで書き、`node scripts/<name>.ts`で直接実行する
 ```
+
+`config/app.json`から`src`、`tests`、READMEが同じモード定義を読みます。アプリを増減するときは、
+`apps/`と`config/app-extensions.json`に加えてここも更新します。`tests/distribution-page.test.ts`が
+両者の食い違いを検出します。
 
 各`source/`内の役割:
 
@@ -59,7 +75,7 @@ block APIを`extensions/*.manifest.json`が記録し、どちらもcommitしま�
 
 `dist/`もcommitしません。生成物が1つ6 MBあり、ソースを1行変えるたびに同じ量が積まれるためです。
 代わりに`apps/<app>/release.json`が、展開済みソース全体のidentityと、そこから生成されるarchiveの
-SHA-256・サイズを記録し、これをcommitします。`pnpm test`はSB3を2回ビルドして、決定性、ソース
+SHA-256・サイズを記録し、これをcommitします。`pnpm run check:release`はSB3を2回ビルドして、決定性、ソース
 identityの一致、記録したSHA-256との一致を検証します。ソースを意図して変えたときは
 `pnpm run snapshot`で記録を更新します。
 
@@ -68,21 +84,30 @@ identityの一致、記録したSHA-256との一致を検証します。ソー�
 workspace rootでexact versionに固定した`@kubohiroya/sb3-toolchain`を使用します。
 
 ```bash
+corepack enable
 pnpm install --frozen-lockfile
 pnpm check
+pnpm dev
 ```
 
 `pnpm check`が実行する検査:
 
-1. repository構造とJSONの妥当性
-2. text fileの改行・末尾空白
+1. ESLint（`config`、`scripts`、`src`、`tests`、ビルド設定）
+2. Prettier（生成物を除く全ファイル）
 3. repository scriptとworkspace packageの型検査
-4. extension readiness inventoryの生成一致と整合性（拡張の再生成後に実行）
-5. `packages/`の検査（app shellのtypecheck、test、build）
-6. 埋め込み拡張の再生成と、commit済みの固定内容との一致
-7. 生成されたstatic bundleのmember評価順が宣言どおりで、feature flagが契約拡張より先に書かれること
-8. release snapshotの検証（2回ビルドしての決定性、ソースidentity、記録したSHA-256）
-9. 両アプリのSB3 build
+4. ルート側のテスト（`tests/`、vitest）
+5. repository構造とJSONの妥当性、text fileの改行・末尾空白
+6. `packages/`の検査（typecheck、test、build）
+7. 生成したblockスクリプトと`scripts/app-scripts`の一致
+8. 埋め込み拡張の再生成と、commit済みの固定内容との一致
+9. extension readiness inventoryの生成一致と整合性
+10. 各アプリのSB3ソース検査
+11. 生成されたstatic bundleのmember評価順が宣言どおりで、feature flagが契約拡張より先に書かれること
+12. release snapshotの検証（2回ビルドしての決定性、ソースidentity、記録したSHA-256）
+13. 3つのアプリのSB3 buildと、配布ページのbuild
+
+`pnpm dev`は配布ページの開発サーバーを起動します。ページはSB3を`public/downloads/`から配るため、
+先に`pnpm run build:sb3`を実行しておきます。
 
 個別にも検証・ビルドできます。
 
@@ -98,12 +123,13 @@ SHA-256の変化がソース変更に対応していることをreviewします�
 
 ## アプリシェル拡張
 
-`packages/app-shell`はcamera app用とfusion app用の2つのTurboWarp拡張bundleをビルドします。
+`packages/app-shell`はcamera app用、fusion app用、local app用の3つのTurboWarp拡張bundleをビルドします。
 
 ```bash
 pnpm --filter @turbowarp-realtime-motion-capture-app/app-shell build
 # packages/app-shell/dist/camera-app/camera-app-shell.js
 # packages/app-shell/dist/fusion-app/fusion-app-shell.js
+# packages/app-shell/dist/local-app/local-app-shell.js
 ```
 
 このシェルが持つのは、feature flagの注入と、読み込み・エラーのoverlayだけです。タイトル画面、
@@ -157,6 +183,22 @@ camera appは最初のcamera取得でbrowser permissionを要求し、許可後�
 登録します。選択したdeviceは`pose`というnamed cameraで保持し、previewと後続のMoveNet consumerが同じ
 streamを共有します。明示停止前のtrack終了は0.5秒間隔で検出し、permission拒否、device未検出、実行中の
 切断、WebGPU API未対応を別のdiagnostic codeとして表示します。
+
+## 配布ページ
+
+`index.html`と`src/`は、各アプリのSB3を配るページです。TurboWarpプレイヤーは内蔵せず、モードを選ぶと
+その役割とSB3のダウンロードを表示します。文言とモードの定義は`config/app.json`が正本で、ページ自身の
+実験機能フラグは`config/feature-flags.ts`にあります（起動時固定・既定OFF）。
+
+```bash
+pnpm run build:sb3   # 各アプリをビルドし、public/downloads/へ集めてrelease.jsonを書く
+pnpm dev             # 配布ページの開発サーバー
+pnpm build           # build:sb3のあとページをdist/へビルドする
+```
+
+`scripts/build-downloads.ts`は`apps/<app>/dist/<app>.sb3`をコピーするだけで、SB3を別に作り直しません。
+配るファイルはアプリがビルドしたものと同一で、`public/downloads/release.json`がそのSHA-256とサイズを
+記録します。
 
 ## 会場向けバイナリ
 
