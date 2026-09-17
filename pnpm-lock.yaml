@@ -35,6 +35,9 @@ importers:
       '@kubohiroya/turbowarp-realtime-motion-capture':
         specifier: 0.2.1
         version: 0.2.1(@kubohiroya/turbowarp-aframe@0.3.0)(@kubohiroya/turbowarp-camera-source@0.11.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.11.0))(@kubohiroya/turbowarp-webrtc@0.4.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))
+      '@kubohiroya/turbowarp-time-space-sync':
+        specifier: 0.2.0
+        version: 0.2.0
       '@kubohiroya/turbowarp-title-menu':
         specifier: 0.2.2
         version: 0.2.2
@@ -65,6 +68,9 @@ importers:
       '@kubohiroya/turbowarp-realtime-motion-capture':
         specifier: 0.2.1
         version: 0.2.1(@kubohiroya/turbowarp-aframe@0.3.0)(@kubohiroya/turbowarp-camera-source@0.11.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.11.0))(@kubohiroya/turbowarp-webrtc@0.4.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))
+      '@kubohiroya/turbowarp-time-space-sync':
+        specifier: 0.2.0
+        version: 0.2.0
       '@kubohiroya/turbowarp-title-menu':
         specifier: 0.2.2
         version: 0.2.2
@@ -175,6 +181,10 @@ packages:
     resolution: {integrity: sha512-bx91+Vy8109QwLAkM2yvLafrBUvH5C7FU74Ldn/msOL8eImC644g7/EwB9JPSSH4ZXafPKXFq1ADVMISXyCxuQ==}
     engines: {node: '>=22.18.0'}
 
+  '@kubohiroya/turbowarp-camera-source@0.7.0':
+    resolution: {integrity: sha512-XKCahVb/i90PT5UzW4SlE2gw3W5AIFlzL9DV7c7oDyUPGwVae+lSaTYq6JIJS2gfZ2qfMpI7IpuYZfgy7SAsFw==}
+    engines: {node: '>=22.18.0'}
+
   '@kubohiroya/turbowarp-diagnostic-overlay@0.4.0':
     resolution: {integrity: sha512-RjJyKPa6D4eeNd2LQZ/tivOpPdkg2t9cCC/7TeYx0FPhU4TdAn73P4h/qN3U18547NYrl/KlyLtPlVfedzkMSw==}
     engines: {node: '>=22.18.0'}
@@ -209,6 +219,10 @@ packages:
         optional: true
       '@kubohiroya/turbowarp-webrtc':
         optional: true
+
+  '@kubohiroya/turbowarp-time-space-sync@0.2.0':
+    resolution: {integrity: sha512-aahqgZwGxkFhVAbQh57sicQ0GyM9sX4EbmwW84HSNPYR7kBxytEmyQ9FNuSh28jfdAInSV+1dpXJRJOSXPjvwA==}
+    engines: {node: '>=22.18.0'}
 
   '@kubohiroya/turbowarp-title-menu@0.2.2':
     resolution: {integrity: sha512-pMGQb328eJFrMf6J8CodSk9v46j5Twx15sKSu/RUox07ep8ci7YRrRl+BIz0Q+wtskVT50LISx1SBnnCCSxiPw==}
@@ -1183,6 +1197,8 @@ snapshots:
 
   '@kubohiroya/turbowarp-camera-source@0.11.0': {}
 
+  '@kubohiroya/turbowarp-camera-source@0.7.0': {}
+
   '@kubohiroya/turbowarp-diagnostic-overlay@0.4.0': {}
 
   '@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.11.0)':
@@ -1213,6 +1229,10 @@ snapshots:
       - '@tensorflow/tfjs-backend-wasm'
       - '@tensorflow/tfjs-backend-webgl'
       - encoding
+
+  '@kubohiroya/turbowarp-time-space-sync@0.2.0':
+    dependencies:
+      '@kubohiroya/turbowarp-camera-source': 0.7.0
 
   '@kubohiroya/turbowarp-title-menu@0.2.2':
     dependencies:
