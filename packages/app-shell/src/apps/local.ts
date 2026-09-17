@@ -22,6 +22,8 @@ export const localAppConfig: AppShellAppConfig = {
   cameraGrid: true,
   lensCalibration: true,
   timeSpaceSync: true,
+  // The 3D service has only stub implementations (#34, stage 1); kept off, as in the fusion app.
+  appFlags: [],
   noticeLocales: {
     en: {title: 'Local app'},
     ja: {title: 'ローカルアプリからのお知らせ'}

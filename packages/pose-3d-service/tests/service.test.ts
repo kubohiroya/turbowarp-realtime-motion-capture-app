@@ -30,6 +30,17 @@ describe('Pose3dService (stub implementations)', () => {
     expect(answer.payload.persons[0]?.identitySource).toBe('stub');
   });
 
+  it('names the configured cameras, not the peers, when several cameras share one peer', () => {
+    // The local app estimates every camera in one page, so each frame's peer is the same.
+    const service = new Pose3dService();
+    service.handle(envelope(1, 'configure', configuration()));
+    service.handle(envelope(2, 'frame2d', {cameraId: 'camera-2', frame: frame('local', 'cal-2', 1)}));
+    service.handle(envelope(3, 'frame2d', {cameraId: 'camera-1', frame: frame('local', 'cal-1', 1)}));
+    const answer = service.handle(envelope(4, 'requestPose3d', {timestampUs: null}));
+    if (answer?.type !== 'pose3d' || !answer.payload) throw new Error('no frame');
+    expect(answer.payload.persons[0]?.joints[0]?.cameraIds).toEqual(['camera-1', 'camera-2']);
+  });
+
   it('never answers a 3D request as stub-timeout', () => {
     const service = new Pose3dService();
     service.handle(envelope(1, 'configure', configuration('stub-timeout')));

@@ -54,4 +54,12 @@ describe('PoseMeter', () => {
     m.reset();
     expect(m.measurement()).toEqual({cameras: [], cycleMs: 0, captureSpreadMs: 0});
   });
+
+  it('reports how old a frame is from its capture time, and -1 for anything else', () => {
+    const {clock, meter: m} = meter();
+    expect(m.frameAgeMs(JSON.stringify({captureTimestampUs: clock.pageTimeUs - 120_500}))).toBe(120.5);
+    expect(m.frameAgeMs('')).toBe(-1);
+    expect(m.frameAgeMs('{"captureTimestampUs":0}')).toBe(-1);
+    expect(m.frameAgeMs('not json')).toBe(-1);
+  });
 });

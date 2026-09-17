@@ -582,6 +582,19 @@
       "requires": "cameraGrid"
     },
     {
+      "opcode": "poseFrameAgeMs",
+      "blockType": "REPORTER",
+      "text": "age of pose frame [FRAME_JSON] in ms",
+      "description": "Reports how long ago the PoseFrame2D's frame was captured, in milliseconds on this page's clock, or -1 when the text is not a frame with a capture time.",
+      "arguments": {
+        "FRAME_JSON": {
+          "type": "STRING",
+          "defaultValue": ""
+        }
+      },
+      "requires": "cameraGrid"
+    },
+    {
       "opcode": "rememberSetting",
       "blockType": "COMMAND",
       "text": "remember setting [KEY] as [VALUE]",

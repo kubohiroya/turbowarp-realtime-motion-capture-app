@@ -135,6 +135,17 @@ export class PoseMeter {
     }
   }
 
+  /**
+   * How long ago a PoseFrame2D's frame was captured, in milliseconds on this page's clock, or -1 for
+   * text that is not a frame with a capture time. The 3D service refuses frames older than its limit.
+   */
+  public frameAgeMs(frameJson: string): number {
+    const frame = parseStatus(frameJson) as {captureTimestampUs?: unknown} | undefined;
+    const capture = Number(frame?.captureTimestampUs);
+    if (!(capture > 0)) return -1;
+    return round1((this.host.pageTimeUs() - capture) / 1000);
+  }
+
   public forget(cameraId: string): void {
     this.cameras.delete(cameraId);
     this.roundCaptures.delete(cameraId);

@@ -217,6 +217,13 @@
           "apiManifest": "dist/extension-manifest.json"
         },
         {
+          "id": "realtimemotioncapturepose3dservice",
+          "provider": "workspace",
+          "package": "@turbowarp-realtime-motion-capture-app/pose-3d-service",
+          "directory": "packages/pose-3d-service",
+          "artifact": "dist/pose-3d-service.js"
+        },
+        {
           "id": "kubohiroyadiagnosticoverlay",
           "provider": "npm",
           "package": "@kubohiroya/turbowarp-diagnostic-overlay",

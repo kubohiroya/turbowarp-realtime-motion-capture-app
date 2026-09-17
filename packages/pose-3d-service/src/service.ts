@@ -109,7 +109,7 @@ export class Pose3dService {
       timestampUs,
       referenceId: configuration.referenceId,
       implementation: configuration.implementation,
-      persons: stubPersons(frames)
+      persons: stubPersons(frames, [...this.latest.keys()])
     };
     if (configuration.implementation === 'stub-invalid') {
       return response(id, 'pose3d', {...frame, persons: frame.persons.map((person) => ({...person, joints: person.joints.slice(0, 3)}))});
@@ -124,11 +124,12 @@ export class Pose3dService {
  * Deliberately not derived from the 2D keypoints: a stub that looked like it followed the performers
  * would invite reading it as a result.
  */
-function stubPersons(frames: readonly PoseFrame2D[]): PoseFrame3DPerson[] {
+function stubPersons(frames: readonly PoseFrame2D[], configuredCameraIds: readonly string[]): PoseFrame3DPerson[] {
   // The second-largest per-camera count: the most persons that at least two cameras report.
   const counts = frames.map((frame) => frame.persons.length).sort((left, right) => right - left);
   const count = Math.min(LIMITS.maxPersons, counts[1] ?? 0);
-  const cameraIds = frames.map((frame) => frame.peerId).sort();
+  // The cameras as configured, not the frames' peers: every camera of one page shares a peer.
+  const cameraIds = [...configuredCameraIds].sort();
   return Array.from({length: count}, (_, index) => ({
     personId: `stub-${index + 1}`,
     confidence: 0.5,
