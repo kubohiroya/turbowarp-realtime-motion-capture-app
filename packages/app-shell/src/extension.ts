@@ -2,6 +2,7 @@ import definitions from './block-definitions.json';
 import {validateAppConfig, type AppShellAppConfig} from './app-config.js';
 import {featureFlagNames, type FeatureFlagApplication} from './feature-flags.js';
 import type {LensCalibrationLauncher} from './lens-calibration.js';
+import {parseButtonLabels, type QrPanel} from './qr-panel.js';
 import type {MultiviewPoseShell} from './shell.js';
 
 type BlockTypeName = 'COMMAND' | 'REPORTER' | 'BOOLEAN';
@@ -43,17 +44,19 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
   private readonly shell: MultiviewPoseShell;
   private readonly flags: FeatureFlagApplication;
   private readonly lensCalibration: LensCalibrationLauncher | null;
+  private readonly qrPanel: QrPanel | null;
 
   public constructor(
     config: AppShellAppConfig,
     shell: MultiviewPoseShell,
     flags: FeatureFlagApplication,
-    lensCalibration: LensCalibrationLauncher | null = null
+    parts: {lensCalibration?: LensCalibrationLauncher; qrPanel?: QrPanel} = {}
   ) {
     this.config = validateAppConfig(config);
     this.shell = shell;
     this.flags = flags;
-    this.lensCalibration = lensCalibration;
+    this.lensCalibration = parts.lensCalibration ?? null;
+    this.qrPanel = parts.qrPanel ?? null;
   }
 
   public getInfo(): Record<string, unknown> {
@@ -146,6 +149,26 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
 
   public chosenLensCalibrationFile(): string {
     return this.lensCalibration?.chosenFileText() ?? '';
+  }
+
+  public showQrImage(args: {IMAGE: unknown; CAPTION: unknown; BUTTONS: unknown}): void {
+    this.qrPanel?.show(
+      Scratch.Cast.toString(args.IMAGE),
+      Scratch.Cast.toString(args.CAPTION),
+      parseButtonLabels(Scratch.Cast.toString(args.BUTTONS))
+    );
+  }
+
+  public hideQrImage(): void {
+    this.qrPanel?.hide();
+  }
+
+  public qrImageButtonPresses(): number {
+    return this.qrPanel?.presses() ?? 0;
+  }
+
+  public lastQrImageButton(): string {
+    return this.qrPanel?.lastButton() ?? '';
   }
 
   private toScratchBlock(block: BlockDefinition): Record<string, unknown> {

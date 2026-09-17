@@ -78,6 +78,15 @@ export const setVariable = (
   value: InputValue
 ): BlockNode => block('data_setvariableto', {VALUE: value}, {VARIABLE: field(target)});
 
+export const add = (left: InputValue, right: InputValue): BlockNode =>
+  block('operator_add', {NUM1: left, NUM2: right});
+
+export const modulo = (left: InputValue, right: InputValue): BlockNode =>
+  block('operator_mod', {NUM1: left, NUM2: right});
+
+export const changeVariable = (target: NamedReference, value: number | InputValue): BlockNode =>
+  block('data_changevariableby', {VALUE: numericInput(value)}, {VARIABLE: field(target)});
+
 export const addToList = (value: InputValue, target: NamedReference): BlockNode =>
   block('data_addtolist', {ITEM: value}, {LIST: field(target)});
 

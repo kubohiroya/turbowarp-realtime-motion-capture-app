@@ -184,24 +184,15 @@
       "extensionId": "kubohiroyajsqr",
       "artifactPath": "dist/jsqr.js",
       "manifestPath": "dist/extension-manifest.json",
-      "status": "ready-with-dependency",
+      "status": "ready",
       "requiredOperations": [
         {
-          "capability": "wait for QR text",
+          "capability": "decode QR text through the runtime capability the pairing extension reads",
           "opcode": "waitForQrTextSetRuntimeVar"
-        },
-        {
-          "capability": "wait and broadcast",
-          "opcode": "waitForQrTextSetRuntimeVarAndBroadcast"
-        },
-        {
-          "capability": "last decoded text",
-          "opcode": "lastQrTextReporter"
         }
       ],
-      "gaps": [
-        "Asynchronous result delivery still goes through a runtime variable, so the pairing script depends on the Temporary Variables extension."
-      ]
+      "gaps": [],
+      "documentation": "The pairing extension reads QR codes through this extension's runtime capability and keeps its own camera lease for a session. The apps do not deliver QR results through runtime variables, so the Temporary Variables dependency of issue #19 does not apply to the pairing path. The operation is kept as the published block that proves the decoder is present."
     },
     {
       "role": "webrtc-transport",
@@ -291,9 +282,87 @@
         {
           "capability": "per-camera offset",
           "opcode": "frameSyncOffsetOfCamera"
+        },
+        {
+          "capability": "send a network message to one peer",
+          "opcode": "broadcastNetworkMessage"
+        },
+        {
+          "capability": "received message count",
+          "opcode": "messageCount"
+        },
+        {
+          "capability": "last received message",
+          "opcode": "lastMessage"
         }
       ],
       "gaps": []
+    },
+    {
+      "role": "qr-pairing",
+      "repository": "kubohiroya/turbowarp-webrtc-qrcode-pairing",
+      "package": "@kubohiroya/turbowarp-webrtc-qrcode-pairing",
+      "extensionId": "kubohiroyawebrtcqrcodepairing",
+      "artifactPath": "dist/webrtc-qrcode-pairing.js",
+      "manifestPath": "dist/extension-manifest.json",
+      "status": "ready",
+      "requiredOperations": [
+        {
+          "capability": "open an offer exchange",
+          "opcode": "startOfferPairing"
+        },
+        {
+          "capability": "open an answer exchange",
+          "opcode": "startAnswerPairing"
+        },
+        {
+          "capability": "read pairing QR parts from a camera",
+          "opcode": "scanPairingQrFromCamera"
+        },
+        {
+          "capability": "render a part as an image",
+          "opcode": "pairingQrPartDataUri"
+        },
+        {
+          "capability": "part count",
+          "opcode": "pairingQrPartCount"
+        },
+        {
+          "capability": "exchange phase",
+          "opcode": "pairingPhase"
+        },
+        {
+          "capability": "connection established",
+          "opcode": "isPairingConnected"
+        },
+        {
+          "capability": "error code",
+          "opcode": "pairingError"
+        },
+        {
+          "capability": "operator-facing error",
+          "opcode": "pairingErrorMessage"
+        },
+        {
+          "capability": "remote peer name",
+          "opcode": "pairingRemotePeer"
+        },
+        {
+          "capability": "expiry",
+          "opcode": "setPairingTimeout"
+        },
+        {
+          "capability": "cancel an exchange",
+          "opcode": "cancelPairing"
+        },
+        {
+          "capability": "release display state",
+          "opcode": "endPairingQrDisplay"
+        }
+      ],
+      "gaps": [
+        "Requires turbowarp-webrtc runtime capability v3 (0.4.0 or later)."
+      ]
     },
     {
       "role": "dsl-json-schema",
@@ -530,7 +599,7 @@
       "camera-source",
       "qr-reader",
       "webrtc-transport",
-      "multiview-high-level-blocks"
+      "qr-pairing"
     ],
     "poseStreaming": [
       "camera-source",

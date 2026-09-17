@@ -4,6 +4,7 @@ import {
   applyFeatureFlags,
   featureFlagGlobalKey,
   featureFlagNames,
+  pairingFlagGlobalKey,
   resolveFeatureFlags
 } from '../src/feature-flags.js';
 
@@ -26,6 +27,15 @@ describe('applyFeatureFlags', () => {
     const result = applyFeatureFlags(['protocolV1Codec'], {target});
     expect(result.state).toBe('applied');
     expect(target[featureFlagGlobalKey]).toBe(result.flags);
+  });
+
+  it('writes the QR pairing flag from qrCourierPairing, and writes it off as well as on', () => {
+    const on: Record<string, unknown> = {};
+    const off: Record<string, unknown> = {};
+    applyFeatureFlags(['qrCourierPairing'], {target: on});
+    applyFeatureFlags(['protocolV1Codec'], {target: off});
+    expect(on[pairingFlagGlobalKey]).toEqual({qrCodePairing: true});
+    expect(off[pairingFlagGlobalKey]).toEqual({qrCodePairing: false});
   });
 
   it('reports a replaced set so a second shell in one bundle is visible', () => {

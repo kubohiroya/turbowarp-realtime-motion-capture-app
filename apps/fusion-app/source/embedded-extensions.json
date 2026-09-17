@@ -29,6 +29,46 @@
       }
     },
     {
+      "id": "kubohiroyacamerasource",
+      "path": "extensions/kubohiroyacamerasource.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-camera-source",
+        "version": "0.10.0",
+        "artifact": "dist/camera-source.js",
+        "integrity": "sha256-C16VEkPk+l0mB857rjPvpO4+8hfncebvvugP1nrGTkU=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/kubohiroyacamerasource.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-PC5fCMb+0BGpwlMDBxiSbWDEv1xJFFUk/STa9zQoYJM="
+        }
+      }
+    },
+    {
+      "id": "kubohiroyajsqr",
+      "path": "extensions/kubohiroyajsqr.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-jsqr",
+        "version": "0.3.0",
+        "artifact": "dist/jsqr.js",
+        "integrity": "sha256-nevtga4QoYtQ4kvIvs7n8gDQdXhZvLmJua7d/Nie1AE=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/kubohiroyajsqr.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-oGecnsSQS5+IDxooDngN2S4V6SN+oB6dpcHBOzF+AZ8="
+        }
+      }
+    },
+    {
       "id": "kubohiroyawebrtc",
       "path": "extensions/kubohiroyawebrtc.js",
       "mediaType": "text/javascript",
@@ -37,14 +77,34 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-webrtc",
-        "version": "0.3.0",
+        "version": "0.4.0",
         "artifact": "dist/turbowarp-webrtc.js",
-        "integrity": "sha256-i49u0HFGINzecjy7l/BDVVT9rMWvdnp2NX+SgMQ4Xo0=",
+        "integrity": "sha256-+o4ZO5V0C6aZ1A/vzVqYEDOZFP9pVc16AAtviJQBPgI=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyawebrtc.manifest.json",
           "formatVersion": 1,
           "integrity": "sha256-72MpITJOBh+e+xy4ibJwdM2bn30bXzRvndgHc6GycKc="
+        }
+      }
+    },
+    {
+      "id": "kubohiroyawebrtcqrcodepairing",
+      "path": "extensions/kubohiroyawebrtcqrcodepairing.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-webrtc-qrcode-pairing",
+        "version": "0.1.0",
+        "artifact": "dist/webrtc-qrcode-pairing.js",
+        "integrity": "sha256-nGjTYCflVd95ZeOGNtaHJW2NY/RUCCiyY+RzBkHUX7g=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/kubohiroyawebrtcqrcodepairing.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-TZgP1QjIo8jcs8tA7+be0JKyTrx1SkeHzkOTEXHs1kQ="
         }
       }
     },
@@ -156,7 +216,10 @@
       "members": [
         "realtimemotioncapturefusionshell",
         "kubohiroyaturbowarptitlemenu",
+        "kubohiroyacamerasource",
+        "kubohiroyajsqr",
         "kubohiroyawebrtc",
+        "kubohiroyawebrtcqrcodepairing",
         "kubohiroyayamljson",
         "kubohiroyarealtimemotioncapture",
         "kubohiroyaassetmanager",

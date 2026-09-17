@@ -44,7 +44,9 @@ function createExtension() {
   });
   return {
     calls,
-    extension: new MultiviewPoseAppShellExtension(cameraAppConfig, recording, flags, launcher)
+    extension: new MultiviewPoseAppShellExtension(cameraAppConfig, recording, flags, {
+      lensCalibration: launcher
+    })
   };
 }
 
@@ -63,7 +65,7 @@ describe('getInfo', () => {
   it('leaves the title, menu, and DSL surface to turbowarp-title-menu', () => {
     const blocks = info['blocks'] as Array<Record<string, unknown>>;
     const opcodes = blocks.map((block) => block['opcode']);
-    expect(blocks).toHaveLength(16);
+    expect(blocks).toHaveLength(20);
     for (const absent of ['whenAppMenuActionSelected', 'setAppStatus', 'setAppMenuActionEnabled']) {
       expect(opcodes).not.toContain(absent);
     }
@@ -82,7 +84,7 @@ describe('getInfo', () => {
     const fusionOpcodes = (fusion.getInfo()['blocks'] as Array<Record<string, unknown>>).map(
       (block) => block['opcode']
     );
-    expect(fusionOpcodes).toHaveLength(11);
+    expect(fusionOpcodes).toHaveLength(15);
     expect(fusionOpcodes).not.toContain('openLensCalibrationApp');
 
     const cameraOpcodes = (info['blocks'] as Array<Record<string, unknown>>).map(

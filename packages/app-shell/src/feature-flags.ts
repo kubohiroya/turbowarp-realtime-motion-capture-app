@@ -23,6 +23,16 @@ export type FeatureFlagSet = Readonly<Record<FeatureFlagName, boolean>>;
 
 export const featureFlagGlobalKey = '__TWMP_FEATURE_FLAGS__';
 
+/**
+ * Startup flags read by `@kubohiroya/turbowarp-webrtc-qrcode-pairing`.
+ *
+ * That extension, like the contract extension, reads its flag once while its module body runs, so
+ * the shell writes it in the same place and for the same reason. Its one flag follows this app's
+ * `qrCourierPairing`: an application either pairs by QR or it does not, and two switches for one
+ * path would let them disagree.
+ */
+export const pairingFlagGlobalKey = '__TWQP_FEATURE_FLAGS__';
+
 /** The runtime key the contract extension registers itself under once it has read the flags. */
 export const contractRuntimeKey = 'ext_kubohiroyarealtimemotioncapture';
 
@@ -68,6 +78,7 @@ export function applyFeatureFlags(
   const target = options.target ?? (globalThis as unknown as Record<string, unknown>);
   const previous = target[featureFlagGlobalKey];
   target[featureFlagGlobalKey] = flags;
+  target[pairingFlagGlobalKey] = Object.freeze({qrCodePairing: flags.qrCourierPairing});
   if (options.contractLoaded?.() === true) return {flags, state: 'too-late'};
   return {flags, state: previous === undefined ? 'applied' : 'replaced'};
 }

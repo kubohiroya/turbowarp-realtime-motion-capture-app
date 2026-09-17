@@ -149,6 +149,47 @@
       "description": "Reports the text of the file chosen last, or an empty string when the choice was cancelled.",
       "arguments": {},
       "requires": "lensCalibration"
+    },
+    {
+      "opcode": "showQrImage",
+      "blockType": "COMMAND",
+      "text": "show QR image [IMAGE] caption [CAPTION] buttons [BUTTONS]",
+      "description": "Shows an image data URI full screen on white with a caption and buttons separated by |. Replaces the image in place when already shown. Anything but an image data URI is ignored.",
+      "arguments": {
+        "IMAGE": {
+          "type": "STRING",
+          "defaultValue": ""
+        },
+        "CAPTION": {
+          "type": "STRING",
+          "defaultValue": "1 / 1"
+        },
+        "BUTTONS": {
+          "type": "STRING",
+          "defaultValue": "Next|Cancel"
+        }
+      }
+    },
+    {
+      "opcode": "hideQrImage",
+      "blockType": "COMMAND",
+      "text": "hide QR image",
+      "description": "Removes the QR image panel.",
+      "arguments": {}
+    },
+    {
+      "opcode": "qrImageButtonPresses",
+      "blockType": "REPORTER",
+      "text": "QR image button presses",
+      "description": "Reports how many times any panel button has been pressed. Compare with a saved value to notice a new press.",
+      "arguments": {}
+    },
+    {
+      "opcode": "lastQrImageButton",
+      "blockType": "REPORTER",
+      "text": "last QR image button",
+      "description": "Reports the label of the button pressed last.",
+      "arguments": {}
     }
   ]
 }
