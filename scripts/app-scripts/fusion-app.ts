@@ -6,15 +6,22 @@ import {
   script,
   text,
   variable,
+  type InputValue,
   type Script,
 } from '../../packages/sb3-script/src/blocks.ts';
 import {
+  addToList,
   changeVariable,
+  deleteAllOfList,
   equals,
+  greaterThan,
   ifElse,
   ifThen,
   join,
+  lengthOfList,
   not,
+  or,
+  repeatUntil,
   setVariable,
 } from '../../packages/sb3-script/src/standard.ts';
 import {
@@ -22,12 +29,19 @@ import {
   networkReferences,
   networkVariables,
 } from './network.ts';
-import { fusionPoseChannelSetup, fusionPoseSummary } from './pose.ts';
 import {
+  fusionPoseChannelSetup,
+  fusionPoseSummary,
+  poseReplayFlag,
+} from './pose.ts';
+import {
+  configurePose3dServiceSteps,
   external3dServiceFlag,
   fusionPose3dReferences,
   fusionPose3dScripts,
   fusionPose3dVariables,
+  pose3dService,
+  pose3dStatusText,
 } from './pose-3d.ts';
 import {
   fusionSyncLists,
@@ -35,6 +49,7 @@ import {
   fusionSyncRoute,
   fusionSyncSteps,
   fusionSyncVariables,
+  spaceTimeSolveSteps,
 } from './space-time.ts';
 import {
   concatenate,
@@ -58,6 +73,9 @@ const action = {
   stop3d: 'stop3d',
   cancelPairing: 'cancelPairing',
   diagnostics: 'diagnostics',
+  chooseRecording: 'chooseRecording',
+  startReplay: 'startReplay',
+  stopReplay: 'stopReplay',
 } as const;
 
 /** The camera the answer is read with. Its own name, so it never shares a lease with anything else. */
@@ -79,12 +97,39 @@ const pairedCameraCount = namedReference(
   'variable:paired-camera-count',
 );
 
+const replayRunning = namedReference(
+  'replay running',
+  'variable:replay-running',
+);
+const replay3dEnabled = namedReference(
+  'replay 3D enabled',
+  'variable:replay-3d-enabled',
+);
+const replayIndex = namedReference('replay index', 'variable:replay-index');
+const replayCamera = namedReference('replay camera', 'variable:replay-camera');
+const replayFrame = namedReference('replay frame', 'variable:replay-frame');
+const replayPayload = namedReference(
+  'replay space-time payload',
+  'variable:replay-space-time-payload',
+);
+const replayWindowStart = namedReference(
+  'replay window start',
+  'variable:replay-window-start',
+);
+
 export const fusionAppStageData = {
   variables: {
     ...pairingVariables(pairingRefs, ''),
     ...networkVariables(networkRefs),
     ...fusionSyncVariables(syncRefs),
     ...fusionPose3dVariables(pose3dRefs),
+    [replayRunning.id]: [replayRunning.name, 'false'],
+    [replay3dEnabled.id]: [replay3dEnabled.name, 'false'],
+    [replayIndex.id]: [replayIndex.name, 0],
+    [replayCamera.id]: [replayCamera.name, ''],
+    [replayFrame.id]: [replayFrame.name, ''],
+    [replayPayload.id]: [replayPayload.name, ''],
+    [replayWindowStart.id]: [replayWindowStart.name, 0],
     [poseSummary.index.id]: [poseSummary.index.name, 0],
     [poseSummary.peer.id]: [poseSummary.peer.name, ''],
     [poseSummary.summary.id]: [poseSummary.summary.name, ''],
@@ -93,6 +138,20 @@ export const fusionAppStageData = {
   lists: fusionSyncLists(syncRefs),
   broadcasts: {},
 } as const;
+
+const shellBlock = (
+  opcode: string,
+  inputs: Readonly<Record<string, InputValue>> = {},
+) => block(`${shell}_${opcode}`, inputs);
+const shellValue = (opcode: string) => reporter(shellBlock(opcode));
+const shellValueWith = (
+  opcode: string,
+  inputs: Readonly<Record<string, InputValue>>,
+) => reporter(shellBlock(opcode, inputs));
+const serviceBlock = (
+  opcode: string,
+  inputs: Readonly<Record<string, InputValue>> = {},
+) => block(`${pose3dService}_${opcode}`, inputs);
 
 const joinLabel = (left: string, right: ReturnType<typeof block>) =>
   reporter(join(text(left), reporter(right)));
@@ -129,6 +188,23 @@ const menu = () => [
       block(`${titleMenu}_addAppMenuAction`, {
         ACTION: text(action.stop3d),
         LABEL: text('3D統合を止める'),
+      }),
+    ],
+  ),
+  ifThen(
+    block(`${shell}_appFeatureEnabled`, { FEATURE: text(poseReplayFlag) }),
+    [
+      block(`${titleMenu}_addAppMenuAction`, {
+        ACTION: text(action.chooseRecording),
+        LABEL: text('録画を読み込む'),
+      }),
+      block(`${titleMenu}_addAppMenuAction`, {
+        ACTION: text(action.startReplay),
+        LABEL: text('録画で校正して再生する（接続不要）'),
+      }),
+      block(`${titleMenu}_addAppMenuAction`, {
+        ACTION: text(action.stopReplay),
+        LABEL: text('再生を止める'),
       }),
     ],
   ),
@@ -369,6 +445,320 @@ export const fusionAppScripts: readonly Script[] = [
     ),
     ...stopAnswerPreview(),
     ...pairing.cancel(),
+    ...menu(),
+    block(`${titleMenu}_showMenu`),
+  ]),
+
+  /** DEBUG_POSE_REPLAY: choose a recording kept on this PC, or open a file. */
+  script({ x: 2600, y: 3600 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.chooseRecording },
+    ),
+    shellBlock('refreshRecordings'),
+    ifElse(
+      equals(shellValue('recordingCount'), number(0)),
+      [shellBlock('loadRecording', { NAME: text('') })],
+      [
+        shellBlock('showAppNotice', {
+          MESSAGE: concatenate(text('録画: '), shellValue('recordingsSummary')),
+        }),
+        shellBlock('askNumbers', {
+          TITLE: text(
+            '読み込む録画の番号を入力してください（表示した順に1から数えます）。',
+          ),
+          FIELDS: text('番号'),
+          DEFAULTS: text('1'),
+        }),
+        ifElse(
+          equals(shellValue('answeredNumbers'), text('')),
+          [
+            shellBlock('showAppNotice', {
+              MESSAGE: text('録画の読み込みをやめました。'),
+            }),
+          ],
+          [
+            shellBlock('loadRecording', {
+              NAME: shellValueWith('recordingNameAt', {
+                INDEX: shellValue('answeredNumbers'),
+              }),
+            }),
+          ],
+        ),
+      ],
+    ),
+    ifElse(
+      equals(shellValue('poseReplayError'), text('')),
+      [
+        shellBlock('showAppNotice', {
+          MESSAGE: concatenate(
+            text('読み込みました: '),
+            shellValue('replaySummary'),
+          ),
+        }),
+      ],
+      [
+        shellBlock('showAppError', {
+          MESSAGE: concatenate(
+            text('録画を読み込めませんでした: '),
+            shellValue('poseReplayError'),
+          ),
+          DETAILS: text(JSON.stringify({ code: 'RECORDING_LOAD_FAILED' })),
+        }),
+      ],
+    ),
+    ...menu(),
+    block(`${titleMenu}_showMenu`),
+  ]),
+
+  /**
+   * DEBUG_POSE_REPLAY: run the whole fusion side against a recording, with no camera app connected.
+   *
+   * The calibration is redone from what the recording carries, rather than assumed: a recording made
+   * by camera apps carries each camera's own measurement, so the placement is solved here exactly as
+   * it was on the day, corner measurements and all. A recording made by the local app already carries
+   * a solved configuration, and that is applied as it stands.
+   */
+  script({ x: 2600, y: 4800 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.startReplay },
+    ),
+    ifElse(
+      equals(shellValue('replaySummary'), text('録画を読み込んでいません。')),
+      [
+        shellBlock('showAppError', {
+          MESSAGE: text('先に「録画を読み込む」で録画を選んでください。'),
+          DETAILS: text(JSON.stringify({ code: 'REPLAY_NOT_LOADED' })),
+        }),
+      ],
+      [
+        setVariable(replayRunning, text('true')),
+        // The recording's own space-time measurements stand in for the camera apps' replies.
+        deleteAllOfList(syncRefs.results),
+        setVariable(syncRefs.expected, number(0)),
+        setVariable(replayIndex, number(0)),
+        repeatUntil(
+          equals(
+            shellValueWith('jsonValueAt', {
+              JSON: shellValue('replayCamerasJson'),
+              PATH: reporter(join(variable(replayIndex), text(''))),
+            }),
+            text(''),
+          ),
+          [
+            setVariable(
+              replayCamera,
+              shellValueWith('jsonValueAt', {
+                JSON: shellValue('replayCamerasJson'),
+                PATH: reporter(join(variable(replayIndex), text(''))),
+              }),
+            ),
+            setVariable(
+              replayPayload,
+              shellValueWith('replaySpaceTimePayload', {
+                CAMERA_ID: variable(replayCamera),
+              }),
+            ),
+            ifThen(not(equals(variable(replayPayload), text(''))), [
+              changeVariable(syncRefs.expected, 1),
+              addToList(
+                shellValueWith('jsonWithJsonField', {
+                  JSON: shellValueWith('jsonWithTextField', {
+                    JSON: text('{}'),
+                    KEY: text('peer'),
+                    VALUE: variable(replayCamera),
+                  }),
+                  KEY: text('payload'),
+                  VALUE: variable(replayPayload),
+                }),
+                syncRefs.results,
+              ),
+            ]),
+            changeVariable(replayIndex, 1),
+          ],
+        ),
+        ifThen(
+          greaterThan(reporter(lengthOfList(syncRefs.results)), number(0)),
+          [...spaceTimeSolveSteps(shell, syncRefs)],
+        ),
+        ifThen(
+          block(`${shell}_appFeatureEnabled`, {
+            FEATURE: text(external3dServiceFlag),
+          }),
+          [
+            shellBlock('showAppLoading', {
+              LABEL: text('録画の校正で3Dサービスを準備しています'),
+            }),
+            ifElse(
+              equals(variable(syncRefs.ready), text('true')),
+              configurePose3dServiceSteps({
+                shell,
+                spaceTimeResults: syncRefs.results,
+                index: syncRefs.index,
+                item: syncRefs.item,
+              }),
+              [
+                // A local-app recording carries the configuration it was estimated under.
+                serviceBlock('applyConfigurationJson', {
+                  CONFIGURATION_JSON: shellValue('replayConfigurationJson'),
+                }),
+              ],
+            ),
+            shellBlock('hideAppLoading'),
+            ifElse(
+              equals(reporter(serviceBlock('serviceState')), text('ready')),
+              [setVariable(replay3dEnabled, text('true'))],
+              [
+                setVariable(replay3dEnabled, text('false')),
+                shellBlock('showAppError', {
+                  MESSAGE: concatenate(
+                    text('録画の校正で3Dサービスを開始できませんでした: '),
+                    reporter(serviceBlock('serviceError')),
+                  ),
+                  DETAILS: text(
+                    JSON.stringify({ code: 'POSE_3D_CONFIGURE_FAILED' }),
+                  ),
+                }),
+              ],
+            ),
+          ],
+        ),
+        shellBlock('startPoseReplay'),
+        shellBlock('showAppNotice', {
+          MESSAGE: concatenate(
+            text('録画を再生しています: '),
+            shellValue('replaySummary'),
+          ),
+        }),
+        block(`${titleMenu}_showMenu`),
+        setVariable(replayWindowStart, reporter(block('sensing_timer'))),
+        repeatUntil(
+          or(
+            not(equals(variable(replayRunning), text('true'))),
+            not(equals(shellValue('replayState'), text('playing'))),
+          ),
+          [
+            setVariable(replayIndex, number(0)),
+            repeatUntil(
+              equals(
+                shellValueWith('jsonValueAt', {
+                  JSON: shellValue('replayCamerasJson'),
+                  PATH: reporter(join(variable(replayIndex), text(''))),
+                }),
+                text(''),
+              ),
+              [
+                setVariable(
+                  replayCamera,
+                  shellValueWith('jsonValueAt', {
+                    JSON: shellValue('replayCamerasJson'),
+                    PATH: reporter(join(variable(replayIndex), text(''))),
+                  }),
+                ),
+                setVariable(
+                  replayFrame,
+                  shellValueWith('replayPoseFrame', {
+                    CAMERA_ID: variable(replayCamera),
+                  }),
+                ),
+                ifThen(not(equals(variable(replayFrame), text(''))), [
+                  ifThen(equals(variable(replay3dEnabled), text('true')), [
+                    serviceBlock('sendPoseFrame', {
+                      FRAME_JSON: variable(replayFrame),
+                      CAMERA_ID: variable(replayCamera),
+                      AGE_MS: shellValueWith('poseFrameAgeMs', {
+                        FRAME_JSON: variable(replayFrame),
+                      }),
+                    }),
+                  ]),
+                ]),
+                changeVariable(replayIndex, 1),
+              ],
+            ),
+            ifThen(equals(variable(replay3dEnabled), text('true')), [
+              serviceBlock('requestPose3d'),
+            ]),
+            ifThen(
+              greaterThan(
+                reporter(
+                  block('operator_subtract', {
+                    NUM1: reporter(block('sensing_timer')),
+                    NUM2: variable(replayWindowStart),
+                  }),
+                ),
+                number(1),
+              ),
+              [
+                ifElse(
+                  equals(variable(replay3dEnabled), text('true')),
+                  [
+                    shellBlock('showAppNotice', {
+                      MESSAGE: concatenate(
+                        text('再生 '),
+                        shellValue('replayPositionMs'),
+                        text(' / '),
+                        shellValue('replayDurationMs'),
+                        text(' ms — '),
+                        pose3dStatusText(shell),
+                      ),
+                    }),
+                  ],
+                  [
+                    shellBlock('showAppNotice', {
+                      MESSAGE: concatenate(
+                        text('再生 '),
+                        shellValue('replayPositionMs'),
+                        text(' / '),
+                        shellValue('replayDurationMs'),
+                        text(' ms（3D統合は無効です）'),
+                      ),
+                    }),
+                  ],
+                ),
+                setVariable(
+                  replayWindowStart,
+                  reporter(block('sensing_timer')),
+                ),
+              ],
+            ),
+          ],
+        ),
+        setVariable(replayRunning, text('false')),
+        ifThen(equals(variable(replay3dEnabled), text('true')), [
+          setVariable(replay3dEnabled, text('false')),
+          serviceBlock('stopService'),
+        ]),
+        shellBlock('showAppNotice', {
+          MESSAGE: text('録画の再生が終わりました。'),
+        }),
+      ],
+    ),
+    ...menu(),
+    block(`${titleMenu}_showMenu`),
+  ]),
+
+  script({ x: 2600, y: 9600 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.stopReplay },
+    ),
+    ifElse(
+      equals(variable(replayRunning), text('true')),
+      [
+        setVariable(replayRunning, text('false')),
+        shellBlock('stopPoseReplay'),
+        shellBlock('showAppNotice', { MESSAGE: text('再生を止めました。') }),
+      ],
+      [
+        shellBlock('showAppNotice', {
+          MESSAGE: text('録画を再生していません。'),
+        }),
+      ],
+    ),
     ...menu(),
     block(`${titleMenu}_showMenu`),
   ]),
