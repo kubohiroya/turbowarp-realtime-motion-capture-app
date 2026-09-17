@@ -938,7 +938,8 @@
       "status": "ready",
       "embeddedIn": [
         "camera-app",
-        "fusion-app"
+        "fusion-app",
+        "local-app"
       ],
       "requiredOperations": [
         {

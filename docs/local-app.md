@@ -5,14 +5,15 @@
 つなぐモードより先に、1台で通しの動作試験を成立させるために作ります。
 
 段階1では、アプリの土台と、複数のUSBカメラの起動・同時表示・実測を実装しています。段階2では、カメラごとの
-レンズ校正を実装しています。段階3では、全カメラの2D姿勢推定と、その計測を実装しています。
+レンズ校正を実装しています。段階3では、全カメラの2D姿勢推定と、その計測を実装しています。段階4では、1ページ内での空間と時刻の校正を実装しています。
 
 ## 構成
 
 - `apps/local-app`：SB3（展開済みソース、リリース記録）。camera app・fusion appと同じ検査、決定的ビルド、
   リリース記録の対象です。
 - 埋め込む拡張：app shell（`realtimemotioncapturelocalshell`）、Title Menu、Camera Source（0.13.0以上）、
-  Realtime Motion Capture（0.3.0以上、`webgpuMoveNetMultiPose`のみ有効）、Diagnostic Overlay。
+  Time-Space Sync（0.2.0、`opticalTimeSyncV1`と`placementSolveV1`を有効）、Realtime Motion Capture（0.3.0以上、
+  `webgpuMoveNetMultiPose`のみ有効）、Diagnostic Overlay。
 - `scripts/app-scripts/local-app.ts`：scriptの正本。
 - ローカルホストのポート：49713（`config/local-host.json`）。レンズ校正アプリは同じoriginの`/lens-calibration`で
   配信します。SB3は`apps/local-app/local/lens-calibration.sb3`に手で置きます（camera appと同じ扱いで、
@@ -71,6 +72,20 @@
 「推論 fps」がカメラの実測fpsより小さいときはGPUが追いついていません。台数を減らすか解像度を下げたときの
 変化で、上限を決めます。
 
+## 段階4の操作（空間と時刻の校正）
+
+| 手順 | 動作 |
+|---|---|
+| メニュー「空間と時刻を校正する」 | 姿勢推定を止める。動いている全カメラに、そのデバイスで解いた今の設定に合うレンズ校正があるかを確かめ、無ければカメラを挙げて止める |
+| 明滅の警告に同意 | このページに`twtss.pattern.v2`の時刻パターンを全画面で表示する。カメラが見ているモニタかプロジェクタにこのページを出しておく |
+| 自動 | パターンを出したまま、カメラを1台ずつ測る（デコーダの校正、四隅の測定、時刻対応の推定）。1台あたり約10秒 |
+| 担当者 | 表示中に、パターンの外側の四隅を巻尺で測る |
+| 自動 | パターンを消し、四隅の実寸（m）の入力を求める。前回の値が既定値になる |
+| 自動 | 基準を定義し、各カメラのカメラモデルと観測で配置をsolveし、READYを判定する。READYなら、カメラごとに表示から撮影時刻までの遅れを示す |
+
+READYの条件は、camera app・fusion app（M-08）と同じ閾値です（[空間と時刻の校正](space-time-calibration.md)）。
+返信の待ち時間は無く、全カメラの測定結果がそろった時点で判定します。
+
 ## 仕組み
 
 - カメラはapp shellの`start camera ... at W x H FPS fps`で、Camera Sourceの`acquireCamera`を通して開始します。
@@ -106,6 +121,16 @@
 - 推論に使う校正IDは、そのカメラのデバイスで解いた、今の設定に合う校正の`profileId`です。無ければ
   `uncalibrated`で、3Dの段階はこれを受け付けません。
 - 計測はapp shellの`record pose status`・`end pose round`で集計し、`pose measurement summary`で表示します。
+- 空間と時刻の校正は、M-08と同じscript部品を使います。1台分の測定（`measureSpaceTimeSteps`）と、結果からの
+  solveとREADY判定（`spaceTimeSolveSteps`）は`scripts/app-scripts/space-time.ts`にあり、camera appは
+  fusion appの依頼で自分の1台を、local-appは自分のカメラを順に測ります。fusion appは返信を、local-appは
+  自分の測定を、同じ形（`{peer, payload}`）のリストにしてsolveへ渡します。
+- time-space-syncのデコーダは1度に1台なので、パターンを出したままカメラを順に測ります。時刻はページの
+  時計（`performance.timeOrigin + performance.now()`）と`captureTime`で、Camera Sourceの撮影時刻と同じ
+  時間軸です。WebRTCは使いません。
+- 時刻対応の`displayToTimestampDelayUs`は、パターンを描いてからそのフレームに撮影時刻が付くまでの遅れです。
+  表示側の遅れは全カメラで共通なので、カメラ間の差がカメラごとの一定のずれになります。この値を3D推定で
+  使うのは段階5です。
 - カメラIDとデバイスの対応は`localStorage`（`twrmc.realtimemotioncapturelocalshell:camera-bindings`）に
   保存します。保存領域が使えない場合は記憶しないだけで、動作は続けます。
 
@@ -165,4 +190,23 @@ local-appを前面に表示した状態で読みます。
   - 人物が写った映像での骨格表示と人数
   - 実際のUSBカメラでの`captureTime`
   - 台数ごとの推論fpsと、GPUが追いつかなくなる台数
+
+## 検証の状況（段階4）
+
+- 自動：`pnpm check`。M-08の部品を切り出した後も、camera app・fusion appの生成結果とリリース記録は変わらない
+  ことを確認した。
+- ブラウザ：ローカルホストでlocal-appを配信し、合成カメラ2台に同じデバイスで解いた1280x720のレンズ校正を
+  保存した。ペインではパターンの表示とカメラでの復号ができないため、time-space-syncのパターン表示・
+  デコーダ・四隅測定・時刻対応のblockを、既知の姿勢から射影した合成観測を返すものに置き換えた（基準の
+  定義、配置solve、READY判定は本物）。
+  - カメラが無いと`SPACE_TIME_NO_CAMERAS`で止まる
+  - パターンを出したまま、cam-1、cam-2の順にデコーダを起動・測定・停止し、最後にパターンを消す
+  - 四隅（0,0 / 1.6,0 / 1.6,0.9 / 0,0.9 m）からのsolveが合成時の位置（cam-1: -0.784, -0.442, 2.884 m、
+    cam-2: -0.776, -0.447, 3.088 m）を再現してREADYになり、遅れ（cam-1 50ms、cam-2 63ms）が表示される
+  - 四隅のばらつき0.9pxでは両カメラを挙げてREADYにならない
+  - cam-2の四隅が測れないと、cam-2の測定失敗を挙げてREADYにならない
+  - 四隅の入力をやめると、配置を校正しなかったと表示する
+  - 1920x1080に切り替えてレンズ校正が合わなくなると、パターンを出さずにカメラを挙げて止まる
+- 未確認：実際のモニタ／プロジェクタへのパターン表示、実カメラでの復号と四隅測定、実測寸法での配置誤差、
+  カメラごとの遅れの実測値。
 

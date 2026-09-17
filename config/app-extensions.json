@@ -203,6 +203,13 @@
           "apiManifest": "dist/extension-manifest.json"
         },
         {
+          "id": "kubohiroyatimespacesync",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-time-space-sync",
+          "artifact": "dist/time-space-sync.js",
+          "apiManifest": "dist/extension-manifest.json"
+        },
+        {
           "id": "kubohiroyarealtimemotioncapture",
           "provider": "npm",
           "package": "@kubohiroya/turbowarp-realtime-motion-capture",
