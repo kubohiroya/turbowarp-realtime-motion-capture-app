@@ -104,14 +104,17 @@ interface ChooserLabels {
   readonly cancel: string;
 }
 
+/** The files the chooser offers: camera_info YAML under the names it travels with, and JSON. */
+export const LENS_CALIBRATION_FILE_ACCEPT = '.yaml,.yml,.txt,.json,application/json,application/yaml,text/yaml,text/plain';
+
 const chooserLabels: Readonly<Record<ShellLocale, ChooserLabels>> = {
   en: {
-    title: 'Choose the lens calibration profile (JSON) for this camera.',
+    title: 'Choose the lens calibration file for this camera: the ROS camera_info YAML the lens calibration app exports (saved as profile.txt), or profile JSON.',
     choose: 'Choose file',
     cancel: 'Cancel'
   },
   ja: {
-    title: 'このカメラのレンズ校正プロファイル（JSON）を選んでください。',
+    title: 'このカメラのレンズ校正ファイルを選んでください。レンズ校正アプリが書き出すROSのcamera_info YAML（profile.txtとして保存されます）か、プロファイルのJSONです。',
     choose: 'ファイルを選ぶ',
     cancel: 'やめる'
   }
@@ -166,7 +169,10 @@ export function chooseTextFileWithDialog(options: FileChooserOptions): Promise<s
 
     const input = document.createElement('input');
     input.type = 'file';
-    input.setAttribute('accept', '.json,application/json');
+    // The lens calibration app exports a ROS camera_info YAML document, and TurboWarp saves a list
+    // export as `.txt`; an operator may have renamed it to `.yaml` for ROS tools. JSON is still read.
+    // Camera Source decides which it is from the text, so the filter only has to let each through.
+    input.setAttribute('accept', LENS_CALIBRATION_FILE_ACCEPT);
     input.hidden = true;
 
     const buttons = document.createElement('div');
