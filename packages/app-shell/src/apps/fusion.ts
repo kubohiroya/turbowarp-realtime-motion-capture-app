@@ -18,6 +18,9 @@ export const fusionAppConfig: AppShellAppConfig = {
     'glowStickMarkers'
   ],
   timeSpaceSync: true,
+  // The 3D service has only stub implementations so far (#34 stage 1). Listing this flag would put
+  // stub poses in the distributed app, so it stays off until a real implementation exists.
+  appFlags: [],
   noticeLocales: {
     en: {title: 'Fusion app'},
     ja: {title: '統合アプリからのお知らせ'}

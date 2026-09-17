@@ -143,6 +143,22 @@ describe('diagnostic reporters', () => {
     expect(extension.appFeatureFlagState()).toBe('applied');
   });
 
+  it('reports an application flag only when the application lists it', () => {
+    const {extension} = createExtension();
+    expect(extension.appFeatureEnabled({FEATURE: 'external3dServiceV1'})).toBe(false);
+    const flags = {flags: resolveFeatureFlags([]), state: 'applied'} as const;
+    const shell = createMultiviewPoseShell(cameraAppConfig, {
+      document: fakeDocument(),
+      resolveMount: () => fakeElement('div') as unknown as HTMLElement
+    });
+    const enabled = new MultiviewPoseAppShellExtension(
+      {...cameraAppConfig, appFlags: ['external3dServiceV1']},
+      shell,
+      flags
+    );
+    expect(enabled.appFeatureEnabled({FEATURE: 'external3dServiceV1'})).toBe(true);
+  });
+
   it('reports only the flags this application requested', () => {
     const {extension} = createExtension();
     expect(extension.appFeatureEnabled({FEATURE: 'cameraCalibrationV1'})).toBe(true);

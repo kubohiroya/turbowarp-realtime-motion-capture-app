@@ -1,5 +1,5 @@
 import definitions from './block-definitions.json';
-import {validateAppConfig, type AppShellAppConfig} from './app-config.js';
+import {appFlagNames, validateAppConfig, type AppShellAppConfig} from './app-config.js';
 import {featureFlagNames, type FeatureFlagApplication} from './feature-flags.js';
 import type {LensCalibrationLauncher} from './lens-calibration.js';
 import {askNumbersWithDialog, confirmWithDialog, type DialogHost} from './dialogs.js';
@@ -96,7 +96,7 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
         )
         .map((block) => this.toScratchBlock(block)),
       menus: {
-        featureFlags: {acceptReporters: false, items: [...featureFlagNames]}
+        featureFlags: {acceptReporters: false, items: [...featureFlagNames, ...appFlagNames]}
       }
     };
   }
@@ -155,6 +155,7 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
 
   public appFeatureEnabled(args: {FEATURE: unknown}): boolean {
     const name = Scratch.Cast.toString(args.FEATURE);
+    if ((this.config.appFlags ?? []).some((flag) => flag === name)) return true;
     return Object.entries(this.flags.flags).some(([flag, value]) => flag === name && value);
   }
 

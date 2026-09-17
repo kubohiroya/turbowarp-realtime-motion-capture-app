@@ -209,6 +209,13 @@
       }
     },
     {
+      "id": "realtimemotioncapturepose3dservice",
+      "path": "extensions/realtimemotioncapturepose3dservice.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64"
+    },
+    {
       "id": "kubohiroyadiagnosticoverlay",
       "path": "extensions/kubohiroyadiagnosticoverlay.js",
       "mediaType": "text/javascript",
@@ -245,6 +252,7 @@
         "kubohiroyarealtimemotioncapture",
         "kubohiroyaassetmanager",
         "turbowarpaframe",
+        "realtimemotioncapturepose3dservice",
         "kubohiroyadiagnosticoverlay"
       ]
     }

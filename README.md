@@ -56,7 +56,8 @@ See [System architecture](docs/architecture.md) (Japanese) for the detailed resp
 | MoveNet pose estimation and streaming (the camera app estimates 2D poses with WebGPU MoveNet and sends `PoseFrame2D` to the fusion app over a latest-data channel) | Available (not yet verified on real hardware; see [pose streaming](docs/pose-stream.md)) |
 | local-app (standalone: several USB cameras on one PC through to 3D avatars), stage 1: start several cameras, show them side by side, measure delivered fps, remember the arrangement | Available (not yet verified on real hardware; see [local-app](docs/local-app.md), #36) |
 | Space-time calibration (the fusion app projects the time pattern, each camera app measures time correspondence and the pattern corners, the fusion app solves placement and gates READY) | Available (not yet verified on real hardware; see [space-time calibration](docs/space-time-calibration.md)) |
-| Block scripts for 3D fusion and avatar performance | Not implemented |
+| 3D pose service, stage 1 (interface v1, stub service, and the fusion app's forwarding, validation and status; flag `external3dServiceV1` off by default) | Available (stub only; see [3D pose service](docs/pose-3d-service.md), #34) |
+| 3D estimation itself and avatar performance | Not implemented |
 | Persistence of settings and performance DSL | Decided, not implemented ([Persistence design](docs/persistence.md)) |
 | Local-host distribution as a single binary | In design ([Local host](docs/local-host.md)) |
 | End-to-end verification on venue hardware and the v0.1.0 release | Not started |

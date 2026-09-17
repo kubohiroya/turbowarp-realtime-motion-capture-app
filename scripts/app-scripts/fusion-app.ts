@@ -20,6 +20,12 @@ import {
 import {messageDispatcher, networkReferences, networkVariables} from './network.ts';
 import {fusionPoseChannelSetup, fusionPoseSummary} from './pose.ts';
 import {
+  external3dServiceFlag,
+  fusionPose3dReferences,
+  fusionPose3dScripts,
+  fusionPose3dVariables
+} from './pose-3d.ts';
+import {
   fusionSyncLists,
   fusionSyncReferences,
   fusionSyncRoute,
@@ -44,6 +50,8 @@ const action = {
   dslFiles: 'dslFiles',
   pairCameraApp: 'pairCameraApp',
   spaceTimeCalibration: 'spaceTimeCalibration',
+  start3d: 'start3d',
+  stop3d: 'stop3d',
   cancelPairing: 'cancelPairing',
   diagnostics: 'diagnostics'
 } as const;
@@ -54,6 +62,7 @@ const answerCameraId = 'pairing';
 const pairingRefs = pairingReferences();
 const networkRefs = networkReferences();
 const syncRefs = fusionSyncReferences();
+const pose3dRefs = fusionPose3dReferences();
 const poseSummary = {
   index: namedReference('pose summary index', 'variable:pose-summary-index'),
   peer: namedReference('pose summary peer', 'variable:pose-summary-peer'),
@@ -68,6 +77,7 @@ export const fusionAppStageData = {
     ...pairingVariables(pairingRefs, ''),
     ...networkVariables(networkRefs),
     ...fusionSyncVariables(syncRefs),
+    ...fusionPose3dVariables(pose3dRefs),
     [poseSummary.index.id]: [poseSummary.index.name, 0],
     [poseSummary.peer.id]: [poseSummary.peer.name, ''],
     [poseSummary.summary.id]: [poseSummary.summary.name, ''],
@@ -100,6 +110,16 @@ const menu = () => [
       LABEL: text('空間と時刻を校正する')
     })
   ]),
+  ifThen(block(`${shell}_appFeatureEnabled`, {FEATURE: text(external3dServiceFlag)}), [
+    block(`${titleMenu}_addAppMenuAction`, {
+      ACTION: text(action.start3d),
+      LABEL: text('3D統合を開始する')
+    }),
+    block(`${titleMenu}_addAppMenuAction`, {
+      ACTION: text(action.stop3d),
+      LABEL: text('3D統合を止める')
+    })
+  ]),
   block(`${titleMenu}_addAppMenuAction`, {
     ACTION: text(action.diagnostics),
     LABEL: text('動作状況を見る')
@@ -130,6 +150,18 @@ export const fusionAppScripts: readonly Script[] = [
     ],
     {x: 1200, y: 48}
   ),
+
+  /** M-10 (#34 stage 1): forward 2D poses to the 3D pose service and show its state. */
+  ...fusionPose3dScripts({
+    shell,
+    titleMenu,
+    references: pose3dRefs,
+    spaceTimeReady: syncRefs.ready,
+    spaceTimeResults: syncRefs.results,
+    startAction: action.start3d,
+    stopAction: action.stop3d,
+    position: {x: 1800, y: 48}
+  }),
 
   /** M-08, fusion side: project the pattern, collect every camera's result, solve, and gate READY. */
   script({x: 1200, y: 700}, [
