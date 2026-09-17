@@ -29,6 +29,7 @@ import {
   whenFlagClicked
 } from '../../packages/sb3-script/src/standard.ts';
 import {messageDispatcher, networkReferences, networkVariables} from './network.ts';
+import {cameraPoseReferences, cameraPoseScripts, cameraPoseVariables} from './pose.ts';
 import {
   cameraSyncBroadcasts,
   cameraSyncReferences,
@@ -53,6 +54,8 @@ const action = {
   openLensCalibration: 'openLensCalibration',
   loadLensCalibrationFile: 'loadLensCalibrationFile',
   pairWithFusion: 'pairWithFusion',
+  startPose: 'startPose',
+  stopPose: 'stopPose',
   cancelPairing: 'cancelPairing',
   stopCamera: 'stopCamera',
   diagnostics: 'diagnostics'
@@ -61,6 +64,7 @@ const action = {
 const pairingRefs = pairingReferences();
 const networkRefs = networkReferences();
 const syncRefs = cameraSyncReferences();
+const poseRefs = cameraPoseReferences();
 
 const cameraId = 'pose';
 const cameraShouldBeRunning = namedReference(
@@ -119,7 +123,8 @@ export const cameraAppStageData = {
     [lensProfileRejection.id]: [lensProfileRejection.name, ''],
     ...pairingVariables(pairingRefs, 'fusion-link'),
     ...networkVariables(networkRefs),
-    ...cameraSyncVariables(syncRefs)
+    ...cameraSyncVariables(syncRefs),
+    ...cameraPoseVariables(poseRefs)
   },
   broadcasts: {
     ...cameraSyncBroadcasts(syncRefs),
@@ -165,6 +170,16 @@ const baseMenuActions = (chooseCameraLabel: string): BlockNode[] => [
     block(`${titleMenu}_addAppMenuAction`, {
       ACTION: text(action.cancelPairing),
       LABEL: text('接続をやめる')
+    })
+  ]),
+  ifThen(block(`${shell}_appFeatureEnabled`, {FEATURE: text('webgpuMoveNetMultiPose')}), [
+    block(`${titleMenu}_addAppMenuAction`, {
+      ACTION: text(action.startPose),
+      LABEL: text('姿勢推定を開始する')
+    }),
+    block(`${titleMenu}_addAppMenuAction`, {
+      ACTION: text(action.stopPose),
+      LABEL: text('姿勢推定を止める')
     })
   ]),
   block(`${titleMenu}_addAppMenuAction`, {
@@ -299,6 +314,21 @@ export const cameraAppScripts: readonly Script[] = [
     {x: 2600, y: 48}
   ),
 
+  /** M-09: estimate 2D poses and stream them to the fusion app. */
+  ...cameraPoseScripts({
+    shell,
+    titleMenu,
+    cameraId,
+    references: poseRefs,
+    lensCalibrationReady,
+    pairingSession: 'fusion-link',
+    pairingExtension: 'kubohiroyawebrtcqrcodepairing',
+    startAction: action.startPose,
+    stopAction: action.stopPose,
+    menuActionsRequested,
+    position: {x: 3200, y: 48}
+  }),
+
   /** M-08, camera side: measure time and corners when the fusion app starts a calibration. */
   script({x: 2600, y: 700}, [
     whenBroadcastReceived(syncRefs.requested),
@@ -326,6 +356,7 @@ export const cameraAppScripts: readonly Script[] = [
       wait(0.5),
       ifThen(equals(variable(cameraShouldBeRunning), text('true')), [
         ifThen(not(cameraBlock('isCameraRunning', {CAMERA_ID: text(cameraId)})), [
+          setVariable(poseRefs.running, text('false')),
           setVariable(cameraShouldBeRunning, text('false')),
           cameraBlock('hideCameraPreview', {CAMERA_ID: text(cameraId)}),
           cameraBlock('stopSharedCamera', {CAMERA_ID: text(cameraId)}),
@@ -683,6 +714,7 @@ export const cameraAppScripts: readonly Script[] = [
     block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.stopCamera}),
     block(`${titleMenu}_clearAppMenuActions`),
     broadcastMessageAndWait(menuActionsRequested),
+    setVariable(poseRefs.running, text('false')),
     setVariable(cameraShouldBeRunning, text('false')),
     cameraBlock('hideCameraPreview', {CAMERA_ID: text(cameraId)}),
     cameraBlock('stopSharedCamera', {CAMERA_ID: text(cameraId)}),

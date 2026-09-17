@@ -2,6 +2,7 @@ import type {AppShellAppConfig} from './app-config.js';
 import {applyFeatureFlags, contractAlreadyLoaded} from './feature-flags.js';
 import {createBrowserLensCalibrationHost, createScratchShellHost} from './host.js';
 import {LensCalibrationLauncher} from './lens-calibration.js';
+import {createScratchNetworkRouterHost, NetworkRouter} from './network-router.js';
 import {createQrPanel} from './qr-panel.js';
 import {createMultiviewPoseShell} from './shell.js';
 import {MultiviewPoseAppShellExtension} from './extension.js';
@@ -29,6 +30,7 @@ export function registerAppShell(config: AppShellAppConfig): void {
     new MultiviewPoseAppShellExtension(config, shell, flags, {
       qrPanel,
       dialogs: {document: typeof document === 'undefined' ? null : document},
+      network: new NetworkRouter(createScratchNetworkRouterHost()),
       ...(config.lensCalibration === true
         ? {lensCalibration: new LensCalibrationLauncher(createBrowserLensCalibrationHost(shell.locale))}
         : {})

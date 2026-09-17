@@ -4,6 +4,7 @@ import {featureFlagNames, type FeatureFlagApplication} from './feature-flags.js'
 import type {LensCalibrationLauncher} from './lens-calibration.js';
 import {askNumbersWithDialog, confirmWithDialog, type DialogHost} from './dialogs.js';
 import {jsonValueOf, readJsonPath, withJsonField} from './json-fields.js';
+import type {NetworkRouter} from './network-router.js';
 import {parseButtonLabels, type QrPanel} from './qr-panel.js';
 import type {MultiviewPoseShell} from './shell.js';
 
@@ -48,6 +49,7 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
   private readonly lensCalibration: LensCalibrationLauncher | null;
   private readonly qrPanel: QrPanel | null;
   private readonly dialogs: DialogHost;
+  private readonly network: NetworkRouter | null;
   private confirmed = false;
   private numbers = '';
 
@@ -55,7 +57,12 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
     config: AppShellAppConfig,
     shell: MultiviewPoseShell,
     flags: FeatureFlagApplication,
-    parts: {lensCalibration?: LensCalibrationLauncher; qrPanel?: QrPanel; dialogs?: DialogHost} = {}
+    parts: {
+      lensCalibration?: LensCalibrationLauncher;
+      qrPanel?: QrPanel;
+      dialogs?: DialogHost;
+      network?: NetworkRouter;
+    } = {}
   ) {
     this.config = validateAppConfig(config);
     this.shell = shell;
@@ -63,6 +70,7 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
     this.lensCalibration = parts.lensCalibration ?? null;
     this.qrPanel = parts.qrPanel ?? null;
     this.dialogs = parts.dialogs ?? {document: null};
+    this.network = parts.network ?? null;
   }
 
   public getInfo(): Record<string, unknown> {
@@ -226,6 +234,34 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
 
   public answeredNumbers(): string {
     return this.numbers;
+  }
+
+  public sortNetworkMessages(): void {
+    this.network?.pump();
+  }
+
+  public sortedMessageCount(): number {
+    return this.network?.queuedCount() ?? 0;
+  }
+
+  public nextSortedMessage(): string {
+    return this.network?.next() ?? '';
+  }
+
+  public latestDataPayload(args: {CHANNEL: unknown; PEER: unknown}): string {
+    return this.network?.latestPayload(Scratch.Cast.toString(args.CHANNEL), Scratch.Cast.toString(args.PEER)) ?? '';
+  }
+
+  public latestDataReceivedCount(args: {CHANNEL: unknown; PEER: unknown}): number {
+    return this.network?.latestCount(Scratch.Cast.toString(args.CHANNEL), Scratch.Cast.toString(args.PEER)) ?? 0;
+  }
+
+  public latestDataAgeMs(args: {CHANNEL: unknown; PEER: unknown}): number {
+    return this.network?.latestAgeMs(Scratch.Cast.toString(args.CHANNEL), Scratch.Cast.toString(args.PEER)) ?? -1;
+  }
+
+  public latestDataPeers(args: {CHANNEL: unknown}): string {
+    return JSON.stringify(this.network?.latestPeers(Scratch.Cast.toString(args.CHANNEL)) ?? []);
   }
 
   private toScratchBlock(block: BlockDefinition): Record<string, unknown> {

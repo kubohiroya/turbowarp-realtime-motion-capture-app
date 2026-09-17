@@ -18,6 +18,7 @@ import {
   setVariable
 } from '../../packages/sb3-script/src/standard.ts';
 import {messageDispatcher, networkReferences, networkVariables} from './network.ts';
+import {fusionPoseChannelSetup, fusionPoseSummary} from './pose.ts';
 import {
   fusionSyncLists,
   fusionSyncReferences,
@@ -53,6 +54,11 @@ const answerCameraId = 'pairing';
 const pairingRefs = pairingReferences();
 const networkRefs = networkReferences();
 const syncRefs = fusionSyncReferences();
+const poseSummary = {
+  index: namedReference('pose summary index', 'variable:pose-summary-index'),
+  peer: namedReference('pose summary peer', 'variable:pose-summary-peer'),
+  summary: namedReference('pose summary', 'variable:pose-summary')
+};
 const pairing = new PairingSteps(shell, pairingRefs);
 /** Numbers the camera apps in the order they were paired: camera-1, camera-2, ... */
 const pairedCameraCount = namedReference('paired camera count', 'variable:paired-camera-count');
@@ -62,6 +68,9 @@ export const fusionAppStageData = {
     ...pairingVariables(pairingRefs, ''),
     ...networkVariables(networkRefs),
     ...fusionSyncVariables(syncRefs),
+    [poseSummary.index.id]: [poseSummary.index.name, 0],
+    [poseSummary.peer.id]: [poseSummary.peer.name, ''],
+    [poseSummary.summary.id]: [poseSummary.summary.name, ''],
     [pairedCameraCount.id]: [pairedCameraCount.name, 0]
   },
   lists: fusionSyncLists(syncRefs),
@@ -156,8 +165,24 @@ export const fusionAppScripts: readonly Script[] = [
 
   script({x: 48, y: 660}, [
     block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.diagnostics}),
+    ...fusionPoseSummary({shell, ...poseSummary}),
     block(`${shell}_showAppNotice`, {
-      MESSAGE: joinLabel('起動時の機能設定: ', block(`${shell}_appFeatureFlagState`))
+      MESSAGE: reporter(
+        join(
+          joinLabel('起動時の機能設定: ', block(`${shell}_appFeatureFlagState`)),
+          reporter(
+            join(
+              text(' / 姿勢フレーム: '),
+              reporter(
+                block('operator_join', {
+                  STRING1: variable(poseSummary.summary),
+                  STRING2: text('')
+                })
+              )
+            )
+          )
+        )
+      )
     })
   ]),
 
@@ -178,6 +203,8 @@ export const fusionAppScripts: readonly Script[] = [
         setVariable(pairingRefs.session, reporter(join(text('camera-'), variable(pairedCameraCount)))),
         block(`${shell}_showAppLoading`, {LABEL: text('Offerを作っています')}),
         pairing.resetLinkTest(),
+        // The offer carries the channels it was created with, so the pose channel exists first.
+        ...fusionPoseChannelSetup(variable(pairingRefs.session)),
         pairing.pairing('startOfferPairing', {
           LOCAL_PEER: text('fusion'),
           REMOTE_PEER: variable(pairingRefs.session)

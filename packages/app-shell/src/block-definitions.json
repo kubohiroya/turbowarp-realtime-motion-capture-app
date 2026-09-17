@@ -300,6 +300,87 @@
       "text": "answered numbers",
       "description": "Reports the last answer with the same , and ; separators as FIELDS, or an empty string when cancelled.",
       "arguments": {}
+    },
+    {
+      "opcode": "sortNetworkMessages",
+      "blockType": "COMMAND",
+      "text": "sort network messages",
+      "description": "Drains the WebRTC receive queue. Latest-data envelopes replace the previous one for their peer and channel; every other message keeps its order in the sorted queue.",
+      "arguments": {}
+    },
+    {
+      "opcode": "sortedMessageCount",
+      "blockType": "REPORTER",
+      "text": "sorted message count",
+      "description": "Reports how many sorted control messages are waiting.",
+      "arguments": {}
+    },
+    {
+      "opcode": "nextSortedMessage",
+      "blockType": "REPORTER",
+      "text": "next sorted message",
+      "description": "Removes and reports the oldest sorted control message as its JSON envelope, or an empty string.",
+      "arguments": {}
+    },
+    {
+      "opcode": "latestDataPayload",
+      "blockType": "REPORTER",
+      "text": "latest data on [CHANNEL] from [PEER]",
+      "description": "Reports the payload of the newest latest-data message on a channel from a peer, as JSON.",
+      "arguments": {
+        "CHANNEL": {
+          "type": "STRING",
+          "defaultValue": "pose"
+        },
+        "PEER": {
+          "type": "STRING",
+          "defaultValue": "camera-1"
+        }
+      }
+    },
+    {
+      "opcode": "latestDataReceivedCount",
+      "blockType": "REPORTER",
+      "text": "latest data count on [CHANNEL] from [PEER]",
+      "description": "Reports how many latest-data messages have arrived on a channel from a peer.",
+      "arguments": {
+        "CHANNEL": {
+          "type": "STRING",
+          "defaultValue": "pose"
+        },
+        "PEER": {
+          "type": "STRING",
+          "defaultValue": "camera-1"
+        }
+      }
+    },
+    {
+      "opcode": "latestDataAgeMs",
+      "blockType": "REPORTER",
+      "text": "latest data age ms on [CHANNEL] from [PEER]",
+      "description": "Reports milliseconds since the newest latest-data message arrived, or -1 when none has.",
+      "arguments": {
+        "CHANNEL": {
+          "type": "STRING",
+          "defaultValue": "pose"
+        },
+        "PEER": {
+          "type": "STRING",
+          "defaultValue": "camera-1"
+        }
+      }
+    },
+    {
+      "opcode": "latestDataPeers",
+      "blockType": "REPORTER",
+      "text": "peers sending latest data on [CHANNEL]",
+      "description": "Reports a JSON array of the peers that have sent latest data on a channel, sorted by name.",
+      "arguments": {
+        "CHANNEL": {
+          "type": "STRING",
+          "defaultValue": "pose"
+        }
+      }
     }
   ]
 }
