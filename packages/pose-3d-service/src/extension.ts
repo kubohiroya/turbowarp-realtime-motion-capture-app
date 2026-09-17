@@ -1,6 +1,6 @@
 import definitions from './block-definitions.json';
-import {Pose3dServiceClient, type ClientClock, type ServicePort} from './client.js';
-import {toPoseFrame3DV1, type ServiceCamera} from './contracts.js';
+import {Pose3dServiceClient, type ClientClock, type ServicePort} from './client.ts';
+import {toPoseFrame3DV1, type ServiceCamera} from './contracts.ts';
 
 type BlockTypeName = 'COMMAND' | 'REPORTER';
 type ArgumentTypeName = 'STRING' | 'NUMBER';
