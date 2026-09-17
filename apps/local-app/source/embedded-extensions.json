@@ -1,0 +1,84 @@
+{
+  "formatVersion": 1,
+  "extensions": [
+    {
+      "id": "realtimemotioncapturelocalshell",
+      "path": "extensions/realtimemotioncapturelocalshell.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64"
+    },
+    {
+      "id": "kubohiroyaturbowarptitlemenu",
+      "path": "extensions/kubohiroyaturbowarptitlemenu.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-title-menu",
+        "version": "0.2.2",
+        "artifact": "dist/turbowarp-title-menu.js",
+        "integrity": "sha256-w+O2wIYfhVFCAurHPfaF2y3080gQ/IpXfW26FyJCGng=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/kubohiroyaturbowarptitlemenu.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-JdY5jdmedo38O02l7996DrQCpsf3yA8CBHJYGd3e2lo="
+        }
+      }
+    },
+    {
+      "id": "kubohiroyacamerasource",
+      "path": "extensions/kubohiroyacamerasource.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-camera-source",
+        "version": "0.11.0",
+        "artifact": "dist/camera-source.js",
+        "integrity": "sha256-iBB4aYm69rX8tatdmUhZCOcHAmmXrN/CC3kfDrbK8Cs=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/kubohiroyacamerasource.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-e0SOHu0ozzEbUou69Jmy4Y0RPWi9bPyD3H3+jTyUV+k="
+        }
+      }
+    },
+    {
+      "id": "kubohiroyadiagnosticoverlay",
+      "path": "extensions/kubohiroyadiagnosticoverlay.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-diagnostic-overlay",
+        "version": "0.4.0",
+        "artifact": "dist/diagnostic-overlay.js",
+        "integrity": "sha256-HfY7EQ6gzX1yrl4u+qQJc0IwcrEkSBBBTFxyk7zd6r4=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/kubohiroyadiagnosticoverlay.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-2uxmqzjKXCmPadwqvPT1zveL2yi5RStLOv3Ba9SuO2U="
+        }
+      }
+    }
+  ],
+  "extensionBundles": [
+    {
+      "id": "realtimemotioncapturelocalapp",
+      "name": "Realtime Motion Capture Local App",
+      "members": [
+        "realtimemotioncapturelocalshell",
+        "kubohiroyaturbowarptitlemenu",
+        "kubohiroyacamerasource",
+        "kubohiroyadiagnosticoverlay"
+      ]
+    }
+  ]
+}

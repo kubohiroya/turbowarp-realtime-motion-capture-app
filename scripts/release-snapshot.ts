@@ -16,7 +16,7 @@ interface ReleaseSnapshot {
 }
 
 const writeMode = process.argv.includes('--write');
-const applications = ['camera-app', 'fusion-app'];
+const applications = ['camera-app', 'fusion-app', 'local-app'];
 
 /**
  * Records what a release SB3 is, without keeping the SB3 in Git.

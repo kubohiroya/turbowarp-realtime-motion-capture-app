@@ -5,6 +5,7 @@ const files = await repositoryFiles();
 const required = [
   'apps/camera-app/source/project.source.json',
   'apps/fusion-app/source/project.source.json',
+  'apps/local-app/source/project.source.json',
   'config/extension-readiness.json'
 ];
 for (const file of required) {

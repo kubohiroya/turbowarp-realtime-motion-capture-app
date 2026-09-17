@@ -3,9 +3,10 @@ import {describe, expect, it} from 'vitest';
 import {validateAppConfig, type AppShellAppConfig} from '../src/app-config.js';
 import {cameraAppConfig} from '../src/apps/camera.js';
 import {fusionAppConfig} from '../src/apps/fusion.js';
+import {localAppConfig} from '../src/apps/local.js';
 import {featureFlagNames, resolveFeatureFlags} from '../src/feature-flags.js';
 
-const shippedConfigs: readonly AppShellAppConfig[] = [cameraAppConfig, fusionAppConfig];
+const shippedConfigs: readonly AppShellAppConfig[] = [cameraAppConfig, fusionAppConfig, localAppConfig];
 
 describe('shipped application configurations', () => {
   it('use valid extension IDs', () => {

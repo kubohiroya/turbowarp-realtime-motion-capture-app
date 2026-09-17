@@ -13,6 +13,10 @@
     "fusion-app": {
       "port": 49712,
       "title": "Multiview Pose Fusion App"
+    },
+    "local-app": {
+      "port": 49713,
+      "title": "Realtime Motion Capture Local App"
     }
   }
 }

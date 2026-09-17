@@ -38,6 +38,11 @@ export interface AppShellAppConfig {
    * placement. The shell writes that extension's startup flags from this, before it is evaluated.
    */
   readonly timeSpaceSync?: boolean;
+  /**
+   * Whether this application runs several cameras itself: starting them at a requested size, showing
+   * them side by side, and measuring the frames each one actually delivers.
+   */
+  readonly cameraGrid?: boolean;
 }
 
 const idPattern = /^[a-z0-9]+$/;

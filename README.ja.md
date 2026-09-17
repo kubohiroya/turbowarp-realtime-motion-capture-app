@@ -50,6 +50,7 @@ frame alignment、人物対応付け、triangulation、3D solveは高位拡張`t
 | レンズ校正の入口（保存済み校正の復元、同じoriginのレンズ校正アプリを別ウィンドウで開く、校正ファイルの読込み） | 利用可能（実機確認前。[永続化設計](docs/persistence.md)） |
 | QRペアリング（fusion appがOfferを投影、camera appがAnswerを表示、接続後にテストメッセージを送受信） | 利用可能（実機確認前。[QRペアリング](docs/qr-pairing.md)） |
 | MoveNet姿勢推定と送信（camera appがWebGPU MoveNetで2D姿勢を推定し、`PoseFrame2D`をlatest-data channelでfusion appへ送る） | 利用可能（実機確認前。[姿勢推定と送信](docs/pose-stream.md)） |
+| local-app（1台のPCで複数USBカメラから3Dアバターまで通すスタンドアロン版）の段階1：複数カメラの起動・同時表示・実測fps・構成の保存 | 利用可能（実機確認前。[local-app](docs/local-app.md)、#36） |
 | 空間と時刻の校正（fusion appが時刻パターンを投影し、各camera appが時刻対応と四隅を測定、fusion appが配置をsolveしてREADYを判定） | 利用可能（実機確認前。[空間と時刻の校正](docs/space-time-calibration.md)） |
 | 3D統合、アバター演出のblockスクリプト | 未実装 |
 | 設定・演出DSLの永続化 | 方針確定・未実装（[永続化設計](docs/persistence.md)） |
