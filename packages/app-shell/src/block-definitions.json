@@ -327,6 +327,18 @@
       "arguments": {}
     },
     {
+      "opcode": "answeredNumberAt",
+      "blockType": "REPORTER",
+      "text": "answered number at [INDEX]",
+      "description": "One field of the last answer, counting from one, or an empty string. The answer comes back in the layout the fields were asked in.",
+      "arguments": {
+        "INDEX": {
+          "type": "NUMBER",
+          "defaultValue": 1
+        }
+      }
+    },
+    {
       "opcode": "sortNetworkMessages",
       "blockType": "COMMAND",
       "text": "sort network messages",
@@ -597,12 +609,20 @@
     {
       "opcode": "startPoseRecording",
       "blockType": "COMMAND",
-      "text": "start pose recording with configuration [CONFIGURATION_JSON]",
-      "description": "Starts recording every pose frame handed to it, under the configuration the poses were estimated with. Without that configuration the recording could be read but not replayed.",
+      "text": "start pose recording with configuration [CONFIGURATION_JSON] for [SECONDS] s at [FPS] fps",
+      "description": "Starts recording every pose frame handed to it, under the configuration the poses were estimated with. Seconds stops the recording once that much movement has been recorded, and fps keeps at most that many frames a second per camera; zero means no limit. Both are judged on the frames' own capture times.",
       "arguments": {
         "CONFIGURATION_JSON": {
           "type": "STRING",
           "defaultValue": ""
+        },
+        "SECONDS": {
+          "type": "NUMBER",
+          "defaultValue": 0
+        },
+        "FPS": {
+          "type": "NUMBER",
+          "defaultValue": 0
         }
       },
       "requires": "poseReplay"

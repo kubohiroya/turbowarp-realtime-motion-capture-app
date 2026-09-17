@@ -73,7 +73,7 @@ describe('getInfo', () => {
   it('leaves the title, menu, and DSL surface to turbowarp-title-menu', () => {
     const blocks = info['blocks'] as Array<Record<string, unknown>>;
     const opcodes = blocks.map((block) => block['opcode']);
-    expect(blocks).toHaveLength(37);
+    expect(blocks).toHaveLength(38);
     for (const absent of [
       'whenAppMenuActionSelected',
       'setAppStatus',
@@ -102,7 +102,7 @@ describe('getInfo', () => {
     const fusionOpcodes = (
       fusion.getInfo()['blocks'] as Array<Record<string, unknown>>
     ).map((block) => block['opcode']);
-    expect(fusionOpcodes).toHaveLength(31);
+    expect(fusionOpcodes).toHaveLength(32);
     expect(fusionOpcodes).not.toContain('openLensCalibrationApp');
 
     const cameraOpcodes = (

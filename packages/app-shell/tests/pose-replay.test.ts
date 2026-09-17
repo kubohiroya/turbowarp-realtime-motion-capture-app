@@ -113,6 +113,82 @@ describe('recording', () => {
   });
 });
 
+describe('recording limits', () => {
+  it('keeps at most the asked frames a second, per camera', () => {
+    const { replay } = setup();
+    replay.startRecording(JSON.stringify(configuration), { fps: 10 });
+    // 30 fps arriving, 10 fps asked for: one in three is kept, per camera.
+    for (let index = 0; index < 30; index += 1) {
+      const capture = 1_000_000_000 + index * 33_333;
+      replay.recordFrame('cam-1', frame('cam-1', capture, index));
+      replay.recordFrame('cam-2', frame('cam-2', capture, index));
+    }
+    const session = JSON.parse(replay.recordingJson());
+    const perCamera = (cameraId: string) =>
+      session.events.filter(
+        (event: { cameraId: string }) => event.cameraId === cameraId,
+      ).length;
+    expect(perCamera('cam-1')).toBe(10);
+    expect(perCamera('cam-2')).toBe(10);
+    expect(replay.recordingSummary()).toContain('10fpsまで');
+    expect(replay.recordingSummary()).toContain('間引き');
+  });
+
+  it('stops itself once the asked length has been recorded', () => {
+    const { replay } = setup();
+    replay.startRecording(JSON.stringify(configuration), { maxSeconds: 2 });
+    for (let index = 0; index < 120; index += 1) {
+      replay.recordFrame(
+        'cam-1',
+        frame('cam-1', 1_000_000_000 + index * 33_333, index),
+      );
+    }
+    expect(replay.recordingStateName()).toBe('recorded');
+    const session = JSON.parse(replay.recordingJson());
+    expect(session.events).toHaveLength(61);
+    const captures = session.events.map(
+      (event: { frame: { captureTimestampUs: number } }) =>
+        event.frame.captureTimestampUs,
+    );
+    expect(captures[captures.length - 1] - captures[0]).toBeLessThan(2_000_000);
+    expect(replay.recordingSummary()).toContain('2秒まで');
+  });
+
+  it('records everything when no limit is asked for', () => {
+    const { replay } = setup();
+    replay.startRecording(JSON.stringify(configuration), {
+      maxSeconds: 0,
+      fps: -1,
+    });
+    for (let index = 0; index < 20; index += 1) {
+      replay.recordFrame(
+        'cam-1',
+        frame('cam-1', 1_000_000_000 + index * 33_333, index),
+      );
+    }
+    expect(JSON.parse(replay.recordingJson()).events).toHaveLength(20);
+    expect(replay.recordingSummary()).not.toContain('指定');
+  });
+
+  it('judges the limits on the frames, not on the page clock', () => {
+    const { replay, clock } = setup();
+    replay.startRecording(JSON.stringify(configuration), {
+      maxSeconds: 1,
+      fps: 5,
+    });
+    // The page stalls between frames; what counts is when the frames were captured.
+    for (let index = 0; index < 15; index += 1) {
+      clock.us += 5_000_000;
+      replay.recordFrame(
+        'cam-1',
+        frame('cam-1', 1_000_000_000 + index * 100_000, index),
+      );
+    }
+    expect(replay.recordingStateName()).toBe('recorded');
+    expect(JSON.parse(replay.recordingJson()).events).toHaveLength(5);
+  });
+});
+
 describe('keeping and loading recordings', () => {
   it('writes to the venue host when one serves this page', async () => {
     const { replay, files } = setup();

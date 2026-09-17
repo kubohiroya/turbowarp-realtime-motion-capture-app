@@ -17135,15 +17135,29 @@
           "y": 48
         },
         "s24b2": {
-          "opcode": "realtimemotioncapturecamerashell_startPoseRecording",
+          "opcode": "realtimemotioncapturecamerashell_askNumbers",
           "next": "s24b3",
           "parent": "s24b1",
           "inputs": {
-            "CONFIGURATION_JSON": [
+            "TITLE": [
               1,
               [
                 10,
-                "{\"implementation\":\"fusion-v0\",\"referenceId\":\"venue-projection\",\"cameras\":[]}"
+                "録画の長さ（秒）と、1秒あたりに記録するフレーム数（fps）を入力してください。0を入れると、その制限をかけません。"
+              ]
+            ],
+            "FIELDS": [
+              1,
+              [
+                10,
+                "長さ (秒),fps"
+              ]
+            ],
+            "DEFAULTS": [
+              1,
+              [
+                10,
+                "0,0"
               ]
             ]
           },
@@ -17152,35 +17166,102 @@
           "topLevel": false
         },
         "s24b3": {
-          "opcode": "control_if_else",
+          "opcode": "realtimemotioncapturecamerashell_startPoseRecording",
           "next": "s24b4",
           "parent": "s24b2",
           "inputs": {
-            "CONDITION": [
-              2,
-              "s24b5"
+            "CONFIGURATION_JSON": [
+              1,
+              [
+                10,
+                "{\"implementation\":\"fusion-v0\",\"referenceId\":\"venue-projection\",\"cameras\":[]}"
+              ]
             ],
-            "SUBSTACK": [
-              2,
-              "s24b7"
+            "SECONDS": [
+              3,
+              "s24b6",
+              [
+                10,
+                ""
+              ]
             ],
-            "SUBSTACK2": [
-              2,
-              "s24b8"
+            "FPS": [
+              3,
+              "s24b7",
+              [
+                10,
+                ""
+              ]
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s24b5": {
-          "opcode": "operator_equals",
+        "s24b6": {
+          "opcode": "realtimemotioncapturecamerashell_answeredNumberAt",
           "next": null,
           "parent": "s24b3",
           "inputs": {
+            "INDEX": [
+              1,
+              [
+                4,
+                "1"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s24b7": {
+          "opcode": "realtimemotioncapturecamerashell_answeredNumberAt",
+          "next": null,
+          "parent": "s24b3",
+          "inputs": {
+            "INDEX": [
+              1,
+              [
+                4,
+                "2"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s24b4": {
+          "opcode": "control_if_else",
+          "next": "s24b5",
+          "parent": "s24b3",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s24b8"
+            ],
+            "SUBSTACK": [
+              2,
+              "s24b10"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s24b11"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s24b8": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s24b4",
+          "inputs": {
             "OPERAND1": [
               3,
-              "s24b6",
+              "s24b9",
               [
                 10,
                 ""
@@ -17198,19 +17279,19 @@
           "shadow": false,
           "topLevel": false
         },
-        "s24b6": {
+        "s24b9": {
           "opcode": "realtimemotioncapturecamerashell_poseRecordingState",
           "next": null,
-          "parent": "s24b5",
+          "parent": "s24b8",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s24b7": {
+        "s24b10": {
           "opcode": "realtimemotioncapturecamerashell_showAppNotice",
           "next": null,
-          "parent": "s24b3",
+          "parent": "s24b4",
           "inputs": {
             "MESSAGE": [
               1,
@@ -17224,14 +17305,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s24b8": {
+        "s24b11": {
           "opcode": "realtimemotioncapturecamerashell_showAppError",
           "next": null,
-          "parent": "s24b3",
+          "parent": "s24b4",
           "inputs": {
             "MESSAGE": [
               3,
-              "s24b9",
+              "s24b12",
               [
                 10,
                 ""
@@ -17249,10 +17330,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s24b9": {
+        "s24b12": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s24b8",
+          "parent": "s24b11",
           "inputs": {
             "STRING1": [
               1,
@@ -17263,7 +17344,7 @@
             ],
             "STRING2": [
               3,
-              "s24b10",
+              "s24b13",
               [
                 10,
                 ""
@@ -17274,19 +17355,19 @@
           "shadow": false,
           "topLevel": false
         },
-        "s24b10": {
+        "s24b13": {
           "opcode": "realtimemotioncapturecamerashell_poseReplayError",
           "next": null,
-          "parent": "s24b9",
+          "parent": "s24b12",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s24b4": {
+        "s24b5": {
           "opcode": "kubohiroyaturbowarptitlemenu_showMenu",
           "next": null,
-          "parent": "s24b3",
+          "parent": "s24b4",
           "inputs": {},
           "fields": {},
           "shadow": false,

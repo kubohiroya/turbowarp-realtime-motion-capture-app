@@ -77,6 +77,11 @@ export class PoseReplay {
   private recordedFrames = 0;
 
   private spaceTime = new Map<string, Record<string, unknown>>();
+  private maxSeconds = 0;
+  private fps = 0;
+  private lastCaptureUs = new Map<string, number>();
+  private firstCaptureUs = 0;
+  private thinned = 0;
   private session:
     | {
         configuration: Record<string, unknown>;
@@ -104,7 +109,10 @@ export class PoseReplay {
    * The configuration is what makes a recording replayable rather than merely readable: without the
    * cameras' models and placement, the 2D poses in it cannot be turned back into 3D.
    */
-  public startRecording(configurationJson: string): void {
+  public startRecording(
+    configurationJson: string,
+    options: { maxSeconds?: number; fps?: number } = {},
+  ): void {
     const configuration = parseObject(configurationJson);
     if (!configuration) {
       this.error = '録画には、ポーズを推定したときの設定が要ります。';
@@ -114,18 +122,55 @@ export class PoseReplay {
     this.events = [];
     this.spaceTime = new Map();
     this.dropped = 0;
+    this.thinned = 0;
     this.recordedFrames = 0;
+    this.lastCaptureUs = new Map();
+    this.firstCaptureUs = 0;
+    this.maxSeconds = positive(options.maxSeconds);
+    this.fps = positive(options.fps);
     this.recordingState = 'recording';
     this.error = '';
   }
 
-  /** Records one camera's pose frame, as it was, with the time it was recorded at. */
+  /**
+   * Records one camera's pose frame, as it was, with the time it was recorded at.
+   *
+   * The two limits are the operator's, and both are judged on the frames' own capture times rather
+   * than on the wall clock: a take is as long as the movement in it, whatever the page was doing.
+   *
+   * - A frame rate keeps at most that many frames a second per camera, dropping the ones in between.
+   *   A recording is replayed at the rate it was taken at, so this is how a long take is made small
+   *   enough to keep and to replay on a slower machine.
+   * - A length stops the recording once that much movement has been recorded, so a take can be
+   *   started and left to finish itself.
+   */
   public recordFrame(cameraId: string, frameJson: string): void {
     if (this.recordingState !== 'recording') return;
     const frame = parseObject(frameJson);
     if (!frame) return;
     const capture = Number(frame['captureTimestampUs']);
     if (!(capture > 0)) return;
+    if (this.firstCaptureUs === 0) this.firstCaptureUs = capture;
+    if (
+      this.maxSeconds > 0 &&
+      capture - this.firstCaptureUs >= this.maxSeconds * 1_000_000
+    ) {
+      this.stopRecording();
+      return;
+    }
+    if (this.fps > 0) {
+      const previous = this.lastCaptureUs.get(cameraId);
+      // A tenth of a period of slack, so a camera delivering exactly at the asked rate is not halved
+      // by a frame that arrives a fraction early, while a faster camera is still thinned to the rate.
+      if (
+        previous !== undefined &&
+        capture - previous < (1_000_000 / this.fps) * 0.9
+      ) {
+        this.thinned += 1;
+        return;
+      }
+    }
+    this.lastCaptureUs.set(cameraId, capture);
     const last = this.events[this.events.length - 1];
     if (
       last?.cameraId === cameraId &&
@@ -192,9 +237,15 @@ export class PoseReplay {
     const seconds = Math.round(this.spanUs() / 100_000) / 10;
     const cameras = new Set(this.events.map((event) => event.cameraId)).size;
     const state = this.recordingState === 'recording' ? '録画中' : '録画済み';
+    const asked = [
+      this.maxSeconds > 0 ? `${this.maxSeconds}秒まで` : '',
+      this.fps > 0 ? `${this.fps}fpsまで` : '',
+    ].filter((part) => part !== '');
+    const limits = asked.length === 0 ? '' : `（指定: ${asked.join(' / ')}）`;
+    const thinned = this.thinned === 0 ? '' : `（間引き${this.thinned}件）`;
     const dropped =
       this.dropped === 0 ? '' : `（古い${this.dropped}件を捨てました）`;
-    return `${state}: ${cameras}台 / ${this.recordedFrames}フレーム / ${seconds}秒${dropped}`;
+    return `${state}: ${cameras}台 / ${this.recordedFrames}フレーム / ${seconds}秒${limits}${thinned}${dropped}`;
   }
 
   // Files -------------------------------------------------------------------
@@ -485,6 +536,13 @@ export function recordingFileName(name: string): string {
     .replace(/^[^A-Za-z0-9]+/u, '')
     .slice(0, 59);
   return `${safe === '' ? 'recording' : safe}.json`;
+}
+
+/** A limit the operator left out, or typed as zero or nonsense, is no limit. */
+function positive(value: number | undefined): number {
+  return typeof value === 'number' && Number.isFinite(value) && value > 0
+    ? value
+    : 0;
 }
 
 function parseObject(text: string): Record<string, unknown> | undefined {
