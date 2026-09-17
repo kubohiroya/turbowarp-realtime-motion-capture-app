@@ -1,3 +1,4 @@
+import { FusionEstimator } from './fusion/estimator.ts';
 import {
   COCO_17_KEYPOINT_IDS,
   LIMITS,
@@ -20,9 +21,9 @@ import {
 /**
  * The service side of interface v1: takes requests, answers them, and owns every piece of state.
  *
- * Stage 1 of #34 ships only stub implementations. They exist so the fusion app's transport,
- * validation, timeout handling and display can be built and tested against the real contract before
- * any 3D estimation exists:
+ * `fusion-v0` (stage 3) aligns the cameras in time, associates the people they report and
+ * triangulates their joints. The stubs remain, because the transport, timeouts and refusals still
+ * have to be testable without an estimator:
  *
  * - `stub-normal` answers with a well-formed frame whose persons stand in a fixed row, one per person
  *   seen by at least two cameras. It marks every joint with the implementation that made it, so the
@@ -33,6 +34,7 @@ import {
 export class Pose3dService {
   private configuration: ServiceConfiguration | undefined;
   private readonly latest = new Map<string, PoseFrame2D>();
+  private readonly fusion = new FusionEstimator();
   private sequence = 0;
 
   /** Returns null when the request is deliberately left unanswered. */
@@ -81,6 +83,17 @@ export class Pose3dService {
     this.configuration = checked.value;
     this.latest.clear();
     this.sequence = 0;
+    if (checked.value.implementation === 'fusion-v0') {
+      try {
+        this.fusion.configure(checked.value);
+      } catch (error) {
+        this.configuration = undefined;
+        return response(id, 'error', {
+          code: 'invalid-payload',
+          message: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
     return response(id, 'configured', {
       cameraIds: checked.value.cameras.map((camera) => camera.cameraId),
     });
@@ -123,6 +136,8 @@ export class Pose3dService {
       });
     }
     this.latest.set(camera.cameraId, frame.value);
+    if (configuration.implementation === 'fusion-v0')
+      this.fusion.accept(frame.value);
     return response(id, 'accepted', {
       cameraId: camera.cameraId,
       sequence: frame.value.sequence,
@@ -136,6 +151,9 @@ export class Pose3dService {
         code: 'not-configured',
         message: 'Configure the service first.',
       });
+    if (configuration.implementation === 'fusion-v0') {
+      return response(id, 'pose3d', this.fusion.estimate(null));
+    }
     if (configuration.implementation === 'stub-timeout') return null;
     if (this.latest.size === 0) return response(id, 'pose3d', null);
     const frames = [...this.latest.values()];

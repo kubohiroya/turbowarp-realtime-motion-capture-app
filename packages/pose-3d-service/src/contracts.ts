@@ -76,8 +76,14 @@ export type ServiceErrorCode =
   | 'invalid-response'
   | 'worker-failed';
 
-export type ImplementationId = 'stub-normal' | 'stub-timeout' | 'stub-invalid';
+/**
+ * `fusion-v0` estimates; the stubs do not. Every 3D frame names the one that made it, so a figure
+ * from a stub can never be read as a measurement.
+ */
+export type ImplementationId =
+  'fusion-v0' | 'stub-normal' | 'stub-timeout' | 'stub-invalid';
 export const IMPLEMENTATIONS: readonly ImplementationId[] = [
+  'fusion-v0',
   'stub-normal',
   'stub-timeout',
   'stub-invalid',
