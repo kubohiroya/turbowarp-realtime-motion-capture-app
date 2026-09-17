@@ -1,12 +1,21 @@
-import {describe, expect, it} from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-import {jsonValueOf, readJsonPath, withJsonField} from '../src/json-fields.js';
+import {
+  jsonValueOf,
+  readJsonPath,
+  withJsonField,
+} from '../src/json-fields.js';
 
 describe('readJsonPath', () => {
   const message = JSON.stringify({
     type: 'twrmc-sync-result',
     peer: 'camera-1',
-    payload: {spreadPx: 0.21, ok: true, points: [{id: 'tl', u: 1.5}], none: null}
+    payload: {
+      spreadPx: 0.21,
+      ok: true,
+      points: [{ id: 'tl', u: 1.5 }],
+      none: null,
+    },
   });
 
   it('reads text as itself and other values as JSON', () => {
@@ -14,7 +23,9 @@ describe('readJsonPath', () => {
     expect(readJsonPath(message, 'payload.spreadPx')).toBe('0.21');
     expect(readJsonPath(message, 'payload.ok')).toBe('true');
     expect(readJsonPath(message, 'payload.none')).toBe('null');
-    expect(readJsonPath(message, 'payload.points.0')).toBe('{"id":"tl","u":1.5}');
+    expect(readJsonPath(message, 'payload.points.0')).toBe(
+      '{"id":"tl","u":1.5}',
+    );
   });
 
   it('indexes arrays and reports their length', () => {
@@ -43,12 +54,17 @@ describe('withJsonField', () => {
   it('builds an object field by field from an empty start', () => {
     const first = withJsonField('', 'cameraId', 'camera-1');
     const second = withJsonField(first, 'observation', jsonValueOf('{"u":1}'));
-    expect(JSON.parse(second)).toEqual({cameraId: 'camera-1', observation: {u: 1}});
+    expect(JSON.parse(second)).toEqual({
+      cameraId: 'camera-1',
+      observation: { u: 1 },
+    });
   });
 
   it('replaces an existing field', () => {
-    expect(JSON.parse(withJsonField('{"cameraId":"pose"}', 'cameraId', 'camera-2'))).toEqual({
-      cameraId: 'camera-2'
+    expect(
+      JSON.parse(withJsonField('{"cameraId":"pose"}', 'cameraId', 'camera-2')),
+    ).toEqual({
+      cameraId: 'camera-2',
     });
   });
 

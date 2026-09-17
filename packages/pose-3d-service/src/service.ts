@@ -14,7 +14,7 @@ import {
   type PoseFrame3DPerson,
   type PoseFrame3DV2,
   type ServiceConfiguration,
-  type ServiceResponse
+  type ServiceResponse,
 } from './contracts.js';
 
 /**
@@ -39,15 +39,21 @@ export class Pose3dService {
   public handle(message: unknown): ServiceResponse | null {
     const id = readId(message);
     if (serializedBytes(message) > LIMITS.maxMessageBytes) {
-      return response(id, 'error', {code: 'payload-too-large', message: 'The request exceeds the message size limit.'});
+      return response(id, 'error', {
+        code: 'payload-too-large',
+        message: 'The request exceeds the message size limit.',
+      });
     }
     if (!isRecord(message) || message['interface'] !== SERVICE_INTERFACE) {
-      return response(id, 'error', {code: 'unsupported-interface', message: 'The request does not name this interface.'});
+      return response(id, 'error', {
+        code: 'unsupported-interface',
+        message: 'The request does not name this interface.',
+      });
     }
     if (message['version'] !== SERVICE_INTERFACE_VERSION) {
       return response(id, 'error', {
         code: 'unsupported-version',
-        message: `Interface version ${String(message['version'])} is not supported.`
+        message: `Interface version ${String(message['version'])} is not supported.`,
       });
     }
     switch (message['type']) {
@@ -58,50 +64,84 @@ export class Pose3dService {
       case 'requestPose3d':
         return this.pose3d(id);
       default:
-        return response(id, 'error', {code: 'invalid-payload', message: `Unknown request type ${String(message['type'])}.`});
+        return response(id, 'error', {
+          code: 'invalid-payload',
+          message: `Unknown request type ${String(message['type'])}.`,
+        });
     }
   }
 
   private configure(id: number, payload: unknown): ServiceResponse {
     const checked = validateConfiguration(payload);
-    if (!checked.ok) return response(id, 'error', {code: checked.code, message: checked.message});
+    if (!checked.ok)
+      return response(id, 'error', {
+        code: checked.code,
+        message: checked.message,
+      });
     this.configuration = checked.value;
     this.latest.clear();
     this.sequence = 0;
-    return response(id, 'configured', {cameraIds: checked.value.cameras.map((camera) => camera.cameraId)});
+    return response(id, 'configured', {
+      cameraIds: checked.value.cameras.map((camera) => camera.cameraId),
+    });
   }
 
   private acceptFrame(id: number, payload: unknown): ServiceResponse {
     const configuration = this.configuration;
-    if (!configuration) return response(id, 'error', {code: 'not-configured', message: 'Configure the service first.'});
+    if (!configuration)
+      return response(id, 'error', {
+        code: 'not-configured',
+        message: 'Configure the service first.',
+      });
     if (!isRecord(payload) || typeof payload['cameraId'] !== 'string') {
-      return response(id, 'error', {code: 'invalid-payload', message: 'A frame message needs a cameraId.'});
+      return response(id, 'error', {
+        code: 'invalid-payload',
+        message: 'A frame message needs a cameraId.',
+      });
     }
-    const camera = configuration.cameras.find((candidate) => candidate.cameraId === payload['cameraId']);
+    const camera = configuration.cameras.find(
+      (candidate) => candidate.cameraId === payload['cameraId'],
+    );
     if (!camera) {
-      return response(id, 'error', {code: 'unknown-camera', message: `Camera ${payload['cameraId']} is not configured.`});
+      return response(id, 'error', {
+        code: 'unknown-camera',
+        message: `Camera ${payload['cameraId']} is not configured.`,
+      });
     }
     const frame = validatePoseFrame2D(payload['frame']);
-    if (!frame.ok) return response(id, 'error', {code: frame.code, message: frame.message});
+    if (!frame.ok)
+      return response(id, 'error', {
+        code: frame.code,
+        message: frame.message,
+      });
     // The profile a frame was estimated under has to be the one its camera was placed with, or its
     // pixels mean something else.
     if (frame.value.calibrationId !== camera.model.intrinsicProfileId) {
       return response(id, 'error', {
         code: 'calibration-mismatch',
-        message: `Frame calibration ${frame.value.calibrationId} is not ${camera.model.intrinsicProfileId}.`
+        message: `Frame calibration ${frame.value.calibrationId} is not ${camera.model.intrinsicProfileId}.`,
       });
     }
     this.latest.set(camera.cameraId, frame.value);
-    return response(id, 'accepted', {cameraId: camera.cameraId, sequence: frame.value.sequence});
+    return response(id, 'accepted', {
+      cameraId: camera.cameraId,
+      sequence: frame.value.sequence,
+    });
   }
 
   private pose3d(id: number): ServiceResponse | null {
     const configuration = this.configuration;
-    if (!configuration) return response(id, 'error', {code: 'not-configured', message: 'Configure the service first.'});
+    if (!configuration)
+      return response(id, 'error', {
+        code: 'not-configured',
+        message: 'Configure the service first.',
+      });
     if (configuration.implementation === 'stub-timeout') return null;
     if (this.latest.size === 0) return response(id, 'pose3d', null);
     const frames = [...this.latest.values()];
-    const timestampUs = Math.max(...frames.map((frame) => frame.captureTimestampUs));
+    const timestampUs = Math.max(
+      ...frames.map((frame) => frame.captureTimestampUs),
+    );
     const frame: PoseFrame3DV2 = {
       schema: POSE_FRAME_3D_SCHEMA,
       version: POSE_FRAME_3D_VERSION,
@@ -109,10 +149,16 @@ export class Pose3dService {
       timestampUs,
       referenceId: configuration.referenceId,
       implementation: configuration.implementation,
-      persons: stubPersons(frames, [...this.latest.keys()])
+      persons: stubPersons(frames, [...this.latest.keys()]),
     };
     if (configuration.implementation === 'stub-invalid') {
-      return response(id, 'pose3d', {...frame, persons: frame.persons.map((person) => ({...person, joints: person.joints.slice(0, 3)}))});
+      return response(id, 'pose3d', {
+        ...frame,
+        persons: frame.persons.map((person) => ({
+          ...person,
+          joints: person.joints.slice(0, 3),
+        })),
+      });
     }
     return response(id, 'pose3d', frame);
   }
@@ -124,13 +170,18 @@ export class Pose3dService {
  * Deliberately not derived from the 2D keypoints: a stub that looked like it followed the performers
  * would invite reading it as a result.
  */
-function stubPersons(frames: readonly PoseFrame2D[], configuredCameraIds: readonly string[]): PoseFrame3DPerson[] {
+function stubPersons(
+  frames: readonly PoseFrame2D[],
+  configuredCameraIds: readonly string[],
+): PoseFrame3DPerson[] {
   // The second-largest per-camera count: the most persons that at least two cameras report.
-  const counts = frames.map((frame) => frame.persons.length).sort((left, right) => right - left);
+  const counts = frames
+    .map((frame) => frame.persons.length)
+    .sort((left, right) => right - left);
   const count = Math.min(LIMITS.maxPersons, counts[1] ?? 0);
   // The cameras as configured, not the frames' peers: every camera of one page shares a peer.
   const cameraIds = [...configuredCameraIds].sort();
-  return Array.from({length: count}, (_, index) => ({
+  return Array.from({ length: count }, (_, index) => ({
     personId: `stub-${index + 1}`,
     confidence: 0.5,
     identitySource: 'stub' as const,
@@ -142,13 +193,15 @@ function stubPersons(frames: readonly PoseFrame2D[], configuredCameraIds: readon
       z: 0,
       sigma: 0.05,
       state: 'measured',
-      cameraIds
-    }))
+      cameraIds,
+    })),
   }));
 }
 
 function readId(message: unknown): number {
-  return isRecord(message) && Number.isSafeInteger(message['id']) ? (message['id'] as number) : -1;
+  return isRecord(message) && Number.isSafeInteger(message['id'])
+    ? (message['id'] as number)
+    : -1;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

@@ -39,13 +39,13 @@ scripts/                     TypeScriptで書き、`node scripts/<name>.ts`で�
 
 各`source/`内の役割:
 
-| path | 内容 |
-|---|---|
-| `project.source.json` | TurboWarp projectの展開済み正本。`blocks`、`extensions`、`extensionURLs`は生成される |
-| `sb3-source.json` | SB3へ収録するproject、asset、entryの指定 |
-| `embedded-extensions.json` | 埋め込む拡張、その固定元、static bundleの構成。生成される |
-| `assets/` | costume、soundなどのproject asset |
-| `extensions/` | 固定した拡張bundleとAPI manifest。生成される |
+| path                       | 内容                                                                                 |
+| -------------------------- | ------------------------------------------------------------------------------------ |
+| `project.source.json`      | TurboWarp projectの展開済み正本。`blocks`、`extensions`、`extensionURLs`は生成される |
+| `sb3-source.json`          | SB3へ収録するproject、asset、entryの指定                                             |
+| `embedded-extensions.json` | 埋め込む拡張、その固定元、static bundleの構成。生成される                            |
+| `assets/`                  | costume、soundなどのproject asset                                                    |
+| `extensions/`              | 固定した拡張bundleとAPI manifest。生成される                                         |
 
 `extensions/*.js`はcommitしません。`node_modules`の固定versionと`packages/app-shell`のビルド出力から
 再生成でき、合計27 MBに達するためです。代わりに、その`.js`のSHA-256を`embedded-extensions.json`が、
@@ -129,12 +129,14 @@ SB3のblock列は`scripts/app-scripts/`のTypeScriptを正本とし、`pnpm run 
 `project.source.json`の`blocks`へ生成します。
 
 ```ts
-script({x: 48, y: 48}, [
+script({ x: 48, y: 48 }, [
   block('event_whenflagclicked'),
-  block(`${shell}_showAppLoading`, {LABEL: text('カメラアプリを起動しています')}),
+  block(`${shell}_showAppLoading`, {
+    LABEL: text('カメラアプリを起動しています'),
+  }),
   block(`${cameraSource}_refreshCameraDevices`),
   block(`${shell}_hideAppLoading`),
-  block(`${titleMenu}_showTitle`)
+  block(`${titleMenu}_showTitle`),
 ]);
 ```
 

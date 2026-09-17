@@ -770,9 +770,7 @@
     }
   ],
   "readinessGates": {
-    "cameraShell": [
-      "camera-source"
-    ],
+    "cameraShell": ["camera-source"],
     "qrPairing": [
       "camera-source",
       "qr-reader",
@@ -784,10 +782,7 @@
       "webrtc-transport",
       "multiview-high-level-blocks"
     ],
-    "clockSync": [
-      "webrtc-transport",
-      "multiview-high-level-blocks"
-    ],
+    "clockSync": ["webrtc-transport", "multiview-high-level-blocks"],
     "fusionDemo": [
       "app-ui",
       "webrtc-transport",

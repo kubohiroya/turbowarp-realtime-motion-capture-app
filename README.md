@@ -18,10 +18,10 @@ sources, pinned extension information, build and verification scripts, and desig
 
 ## App structure
 
-| App | Where it runs | Role |
-|---|---|---|
+| App        | Where it runs                               | Role                                                                                |
+| ---------- | ------------------------------------------- | ----------------------------------------------------------------------------------- |
 | camera app | A PC connected to a camera (one per camera) | Estimates the 2D pose of up to 6 people from the video and sends only `PoseFrame2D` |
-| fusion app | The fusion PC | Aggregates the 2D poses into a 3D pose and drives the avatar and the performance |
+| fusion app | The fusion PC                               | Aggregates the 2D poses into a 3D pose and drives the avatar and the performance    |
 
 The camera video itself is never sent over the ordinary communication path; it is processed inside each
 camera app. The plan is to connect cameras to the fusion app via QR codes as the standard path, with
@@ -42,25 +42,25 @@ See [System architecture](docs/architecture.md) (Japanese) for the detailed resp
 
 ## Current implementation status
 
-| Item | Status |
-|---|---|
-| Unpacked SB3 sources for the camera app and fusion app | Available |
-| Deterministic SB3 builds and CI verification | Available |
-| Exact-version pinning of external TurboWarp extensions and embedding into the SB3 | Available |
-| App shell (feature flag setup, loading display, error display, diagnostic reporter) | Available |
-| Title screen, app menu, DSL file management (Title Menu extension) | Available |
-| Startup block scripts (generated from TypeScript) | Available |
-| Block scripts for camera selection, GPU preview, stop, and disconnect monitoring | Available (not yet verified on real hardware) |
-| Lens calibration entry (restore a saved profile, open the lens calibration app on the same origin in its own window, load a profile file) | Available (not yet verified on real hardware; see [persistence](docs/persistence.md)) |
-| QR pairing (the fusion app projects the offer, the camera app shows the answer, a test message is exchanged once connected) | Available (not yet verified on real hardware; see [QR pairing](docs/qr-pairing.md)) |
-| MoveNet pose estimation and streaming (the camera app estimates 2D poses with WebGPU MoveNet and sends `PoseFrame2D` to the fusion app over a latest-data channel) | Available (not yet verified on real hardware; see [pose streaming](docs/pose-stream.md)) |
-| local-app (standalone: several USB cameras on one PC through to 3D avatars), stage 1: start several cameras, show them side by side, measure delivered fps, remember the arrangement | Available (not yet verified on real hardware; see [local-app](docs/local-app.md), #36) |
+| Item                                                                                                                                                                                     | Status                                                                                                      |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Unpacked SB3 sources for the camera app and fusion app                                                                                                                                   | Available                                                                                                   |
+| Deterministic SB3 builds and CI verification                                                                                                                                             | Available                                                                                                   |
+| Exact-version pinning of external TurboWarp extensions and embedding into the SB3                                                                                                        | Available                                                                                                   |
+| App shell (feature flag setup, loading display, error display, diagnostic reporter)                                                                                                      | Available                                                                                                   |
+| Title screen, app menu, DSL file management (Title Menu extension)                                                                                                                       | Available                                                                                                   |
+| Startup block scripts (generated from TypeScript)                                                                                                                                        | Available                                                                                                   |
+| Block scripts for camera selection, GPU preview, stop, and disconnect monitoring                                                                                                         | Available (not yet verified on real hardware)                                                               |
+| Lens calibration entry (restore a saved profile, open the lens calibration app on the same origin in its own window, load a profile file)                                                | Available (not yet verified on real hardware; see [persistence](docs/persistence.md))                       |
+| QR pairing (the fusion app projects the offer, the camera app shows the answer, a test message is exchanged once connected)                                                              | Available (not yet verified on real hardware; see [QR pairing](docs/qr-pairing.md))                         |
+| MoveNet pose estimation and streaming (the camera app estimates 2D poses with WebGPU MoveNet and sends `PoseFrame2D` to the fusion app over a latest-data channel)                       | Available (not yet verified on real hardware; see [pose streaming](docs/pose-stream.md))                    |
+| local-app (standalone: several USB cameras on one PC through to 3D avatars), stage 1: start several cameras, show them side by side, measure delivered fps, remember the arrangement     | Available (not yet verified on real hardware; see [local-app](docs/local-app.md), #36)                      |
 | Space-time calibration (the fusion app projects the time pattern, each camera app measures time correspondence and the pattern corners, the fusion app solves placement and gates READY) | Available (not yet verified on real hardware; see [space-time calibration](docs/space-time-calibration.md)) |
-| 3D pose service, stage 1 (interface v1, stub service, and the fusion app's forwarding, validation and status; flag `external3dServiceV1` off by default) | Available (stub only; see [3D pose service](docs/pose-3d-service.md), #34) |
-| 3D estimation itself and avatar performance | Not implemented |
-| Persistence of settings and performance DSL | Decided, not implemented ([Persistence design](docs/persistence.md)) |
-| Local-host distribution as a single binary | In design ([Local host](docs/local-host.md)) |
-| End-to-end verification on venue hardware and the v0.1.0 release | Not started |
+| 3D pose service, stage 1 (interface v1, stub service, and the fusion app's forwarding, validation and status; flag `external3dServiceV1` off by default)                                 | Available (stub only; see [3D pose service](docs/pose-3d-service.md), #34)                                  |
+| 3D estimation itself and avatar performance                                                                                                                                              | Not implemented                                                                                             |
+| Persistence of settings and performance DSL                                                                                                                                              | Decided, not implemented ([Persistence design](docs/persistence.md))                                        |
+| Local-host distribution as a single binary                                                                                                                                               | In design ([Local host](docs/local-host.md))                                                                |
+| End-to-end verification on venue hardware and the v0.1.0 release                                                                                                                         | Not started                                                                                                 |
 
 [GitHub Issues](https://github.com/kubohiroya/turbowarp-realtime-motion-capture-app/issues) are the source
 of truth for progress. Per-extension readiness is recorded in
@@ -71,9 +71,9 @@ of truth for progress. Per-extension readiness is recorded in
 Each SB3 embeds every extension it needs as a single static bundle. TurboWarp asks for extension
 permission only once per app.
 
-| App | Embedded extensions (in bundle member order) |
-|---|---|
-| camera app | app shell, Title Menu, Camera Source, jsQR, WebRTC, Realtime Motion Capture, Diagnostic Overlay |
+| App        | Embedded extensions (in bundle member order)                                                                  |
+| ---------- | ------------------------------------------------------------------------------------------------------------- |
+| camera app | app shell, Title Menu, Camera Source, jsQR, WebRTC, Realtime Motion Capture, Diagnostic Overlay               |
 | fusion app | app shell, Title Menu, WebRTC, YAML/JSON, Realtime Motion Capture, Asset Manager, A-Frame, Diagnostic Overlay |
 
 The app shell comes first deliberately. The Realtime Motion Capture extension fixes its feature flags at

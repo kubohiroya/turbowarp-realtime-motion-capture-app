@@ -1,4 +1,4 @@
-import {Pose3dService} from './service.js';
+import { Pose3dService } from './service.js';
 
 /**
  * The Worker side of interface v1. Everything it knows arrives as a message, so the same service

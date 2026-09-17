@@ -1,15 +1,26 @@
 import definitions from './block-definitions.json';
-import {appFlagNames, validateAppConfig, type AppShellAppConfig} from './app-config.js';
-import {featureFlagNames, type FeatureFlagApplication} from './feature-flags.js';
-import type {LensCalibrationLauncher} from './lens-calibration.js';
-import {askNumbersWithDialog, confirmWithDialog, type DialogHost} from './dialogs.js';
-import {jsonValueOf, readJsonPath, withJsonField} from './json-fields.js';
-import type {NetworkRouter} from './network-router.js';
-import type {CameraGrid} from './camera-grid.js';
-import type {PoseMeter} from './pose-meter.js';
-import type {SettingsStore} from './settings.js';
-import {parseButtonLabels, type QrPanel} from './qr-panel.js';
-import type {MultiviewPoseShell} from './shell.js';
+import {
+  appFlagNames,
+  validateAppConfig,
+  type AppShellAppConfig,
+} from './app-config.js';
+import {
+  featureFlagNames,
+  type FeatureFlagApplication,
+} from './feature-flags.js';
+import type { LensCalibrationLauncher } from './lens-calibration.js';
+import {
+  askNumbersWithDialog,
+  confirmWithDialog,
+  type DialogHost,
+} from './dialogs.js';
+import { jsonValueOf, readJsonPath, withJsonField } from './json-fields.js';
+import type { NetworkRouter } from './network-router.js';
+import type { CameraGrid } from './camera-grid.js';
+import type { PoseMeter } from './pose-meter.js';
+import type { SettingsStore } from './settings.js';
+import { parseButtonLabels, type QrPanel } from './qr-panel.js';
+import type { MultiviewPoseShell } from './shell.js';
 
 type BlockTypeName = 'COMMAND' | 'REPORTER' | 'BOOLEAN';
 type ArgumentTypeName = 'STRING' | 'NUMBER' | 'BOOLEAN';
@@ -38,7 +49,8 @@ function toDetails(value: unknown): Record<string, unknown> {
   if (text.length === 0) return {};
   try {
     const parsed: unknown = JSON.parse(text);
-    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return {};
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed))
+      return {};
     return parsed as Record<string, unknown>;
   } catch {
     return {};
@@ -71,14 +83,14 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
       cameraGrid?: CameraGrid;
       poseMeter?: PoseMeter;
       settings?: SettingsStore;
-    } = {}
+    } = {},
   ) {
     this.config = validateAppConfig(config);
     this.shell = shell;
     this.flags = flags;
     this.lensCalibration = parts.lensCalibration ?? null;
     this.qrPanel = parts.qrPanel ?? null;
-    this.dialogs = parts.dialogs ?? {document: null};
+    this.dialogs = parts.dialogs ?? { document: null };
     this.network = parts.network ?? null;
     this.cameraGrid = parts.cameraGrid ?? null;
     this.poseMeter = parts.poseMeter ?? null;
@@ -95,23 +107,32 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
         .filter(
           (block) =>
             block.requires === undefined ||
-            (block.requires === 'lensCalibration' && this.lensCalibration !== null) ||
-            (block.requires === 'cameraGrid' && this.cameraGrid !== null)
+            (block.requires === 'lensCalibration' &&
+              this.lensCalibration !== null) ||
+            (block.requires === 'cameraGrid' && this.cameraGrid !== null),
         )
         .map((block) => this.toScratchBlock(block)),
       menus: {
-        featureFlags: {acceptReporters: false, items: [...featureFlagNames, ...appFlagNames]}
-      }
+        featureFlags: {
+          acceptReporters: false,
+          items: [...featureFlagNames, ...appFlagNames],
+        },
+      },
     };
   }
 
-  public showAppLoading(args: {LABEL: unknown}): void {
+  public showAppLoading(args: { LABEL: unknown }): void {
     this.shell.showLoading(Scratch.Cast.toString(args.LABEL), null);
   }
 
-  public showAppLoadingProgress(args: {LABEL: unknown; PERCENT: unknown}): void {
+  public showAppLoadingProgress(args: {
+    LABEL: unknown;
+    PERCENT: unknown;
+  }): void {
     const percent = Scratch.Cast.toNumber(args.PERCENT);
-    const bounded = Number.isFinite(percent) ? Math.min(100, Math.max(0, percent)) : 0;
+    const bounded = Number.isFinite(percent)
+      ? Math.min(100, Math.max(0, percent))
+      : 0;
     this.shell.showLoading(Scratch.Cast.toString(args.LABEL), bounded / 100);
   }
 
@@ -119,12 +140,15 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
     this.shell.hideLoading();
   }
 
-  public showAppNotice(args: {MESSAGE: unknown}): void {
+  public showAppNotice(args: { MESSAGE: unknown }): void {
     this.shell.showNotice(Scratch.Cast.toString(args.MESSAGE));
   }
 
-  public showAppError(args: {MESSAGE: unknown; DETAILS: unknown}): void {
-    this.shell.showError(Scratch.Cast.toString(args.MESSAGE), toDetails(args.DETAILS));
+  public showAppError(args: { MESSAGE: unknown; DETAILS: unknown }): void {
+    this.shell.showError(
+      Scratch.Cast.toString(args.MESSAGE),
+      toDetails(args.DETAILS),
+    );
   }
 
   public hideAppMessage(): void {
@@ -141,10 +165,12 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
 
   public async webGpuAvailable(): Promise<boolean> {
     const navigatorValue: unknown = globalThis.navigator;
-    if (typeof navigatorValue !== 'object' || navigatorValue === null) return false;
-    const gpu: unknown = (navigatorValue as {gpu?: unknown}).gpu;
+    if (typeof navigatorValue !== 'object' || navigatorValue === null)
+      return false;
+    const gpu: unknown = (navigatorValue as { gpu?: unknown }).gpu;
     if (typeof gpu !== 'object' || gpu === null) return false;
-    const requestAdapter: unknown = (gpu as {requestAdapter?: unknown}).requestAdapter;
+    const requestAdapter: unknown = (gpu as { requestAdapter?: unknown })
+      .requestAdapter;
     if (typeof requestAdapter !== 'function') return false;
     try {
       return (await requestAdapter.call(gpu)) !== null;
@@ -157,10 +183,12 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
     return this.flags.state;
   }
 
-  public appFeatureEnabled(args: {FEATURE: unknown}): boolean {
+  public appFeatureEnabled(args: { FEATURE: unknown }): boolean {
     const name = Scratch.Cast.toString(args.FEATURE);
     if ((this.config.appFlags ?? []).some((flag) => flag === name)) return true;
-    return Object.entries(this.flags.flags).some(([flag, value]) => flag === name && value);
+    return Object.entries(this.flags.flags).some(
+      ([flag, value]) => flag === name && value,
+    );
   }
 
   public async openLensCalibrationApp(): Promise<void> {
@@ -182,7 +210,7 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
       deviceId,
       width: Number(args.WIDTH),
       height: Number(args.HEIGHT),
-      frameRate: Number(args.FPS)
+      frameRate: Number(args.FPS),
     });
   }
 
@@ -202,11 +230,15 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
     return this.lensCalibration?.chosenFileText() ?? '';
   }
 
-  public showQrImage(args: {IMAGE: unknown; CAPTION: unknown; BUTTONS: unknown}): void {
+  public showQrImage(args: {
+    IMAGE: unknown;
+    CAPTION: unknown;
+    BUTTONS: unknown;
+  }): void {
     this.qrPanel?.show(
       Scratch.Cast.toString(args.IMAGE),
       Scratch.Cast.toString(args.CAPTION),
-      parseButtonLabels(Scratch.Cast.toString(args.BUTTONS))
+      parseButtonLabels(Scratch.Cast.toString(args.BUTTONS)),
     );
   }
 
@@ -222,33 +254,48 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
     return this.qrPanel?.lastButton() ?? '';
   }
 
-  public jsonValueAt(args: {JSON: unknown; PATH: unknown}): string {
-    return readJsonPath(Scratch.Cast.toString(args.JSON), Scratch.Cast.toString(args.PATH));
-  }
-
-  public jsonWithJsonField(args: {JSON: unknown; KEY: unknown; VALUE: unknown}): string {
-    return withJsonField(
+  public jsonValueAt(args: { JSON: unknown; PATH: unknown }): string {
+    return readJsonPath(
       Scratch.Cast.toString(args.JSON),
-      Scratch.Cast.toString(args.KEY),
-      jsonValueOf(Scratch.Cast.toString(args.VALUE))
+      Scratch.Cast.toString(args.PATH),
     );
   }
 
-  public jsonWithTextField(args: {JSON: unknown; KEY: unknown; VALUE: unknown}): string {
+  public jsonWithJsonField(args: {
+    JSON: unknown;
+    KEY: unknown;
+    VALUE: unknown;
+  }): string {
     return withJsonField(
       Scratch.Cast.toString(args.JSON),
       Scratch.Cast.toString(args.KEY),
-      Scratch.Cast.toString(args.VALUE)
+      jsonValueOf(Scratch.Cast.toString(args.VALUE)),
     );
   }
 
-  public async askConfirmation(args: {MESSAGE: unknown; CONFIRM: unknown; CANCEL: unknown}): Promise<void> {
+  public jsonWithTextField(args: {
+    JSON: unknown;
+    KEY: unknown;
+    VALUE: unknown;
+  }): string {
+    return withJsonField(
+      Scratch.Cast.toString(args.JSON),
+      Scratch.Cast.toString(args.KEY),
+      Scratch.Cast.toString(args.VALUE),
+    );
+  }
+
+  public async askConfirmation(args: {
+    MESSAGE: unknown;
+    CONFIRM: unknown;
+    CANCEL: unknown;
+  }): Promise<void> {
     this.confirmed = false;
     this.confirmed = await confirmWithDialog(
       this.dialogs,
       Scratch.Cast.toString(args.MESSAGE),
       Scratch.Cast.toString(args.CONFIRM),
-      Scratch.Cast.toString(args.CANCEL)
+      Scratch.Cast.toString(args.CANCEL),
     );
   }
 
@@ -256,7 +303,11 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
     return this.confirmed;
   }
 
-  public async askNumbers(args: {TITLE: unknown; FIELDS: unknown; DEFAULTS: unknown}): Promise<void> {
+  public async askNumbers(args: {
+    TITLE: unknown;
+    FIELDS: unknown;
+    DEFAULTS: unknown;
+  }): Promise<void> {
     this.numbers = '';
     const ja = this.shell.locale === 'ja';
     const answer = await askNumbersWithDialog(
@@ -264,7 +315,7 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
       Scratch.Cast.toString(args.TITLE),
       Scratch.Cast.toString(args.FIELDS),
       Scratch.Cast.toString(args.DEFAULTS),
-      {accept: ja ? '決定' : 'OK', cancel: ja ? 'やめる' : 'Cancel'}
+      { accept: ja ? '決定' : 'OK', cancel: ja ? 'やめる' : 'Cancel' },
     );
     this.numbers = answer ?? '';
   }
@@ -285,20 +336,40 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
     return this.network?.next() ?? '';
   }
 
-  public latestDataPayload(args: {CHANNEL: unknown; PEER: unknown}): string {
-    return this.network?.latestPayload(Scratch.Cast.toString(args.CHANNEL), Scratch.Cast.toString(args.PEER)) ?? '';
+  public latestDataPayload(args: { CHANNEL: unknown; PEER: unknown }): string {
+    return (
+      this.network?.latestPayload(
+        Scratch.Cast.toString(args.CHANNEL),
+        Scratch.Cast.toString(args.PEER),
+      ) ?? ''
+    );
   }
 
-  public latestDataReceivedCount(args: {CHANNEL: unknown; PEER: unknown}): number {
-    return this.network?.latestCount(Scratch.Cast.toString(args.CHANNEL), Scratch.Cast.toString(args.PEER)) ?? 0;
+  public latestDataReceivedCount(args: {
+    CHANNEL: unknown;
+    PEER: unknown;
+  }): number {
+    return (
+      this.network?.latestCount(
+        Scratch.Cast.toString(args.CHANNEL),
+        Scratch.Cast.toString(args.PEER),
+      ) ?? 0
+    );
   }
 
-  public latestDataAgeMs(args: {CHANNEL: unknown; PEER: unknown}): number {
-    return this.network?.latestAgeMs(Scratch.Cast.toString(args.CHANNEL), Scratch.Cast.toString(args.PEER)) ?? -1;
+  public latestDataAgeMs(args: { CHANNEL: unknown; PEER: unknown }): number {
+    return (
+      this.network?.latestAgeMs(
+        Scratch.Cast.toString(args.CHANNEL),
+        Scratch.Cast.toString(args.PEER),
+      ) ?? -1
+    );
   }
 
-  public latestDataPeers(args: {CHANNEL: unknown}): string {
-    return JSON.stringify(this.network?.latestPeers(Scratch.Cast.toString(args.CHANNEL)) ?? []);
+  public latestDataPeers(args: { CHANNEL: unknown }): string {
+    return JSON.stringify(
+      this.network?.latestPeers(Scratch.Cast.toString(args.CHANNEL)) ?? [],
+    );
   }
 
   public async startGridCamera(args: {
@@ -313,11 +384,11 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
       deviceId: Scratch.Cast.toString(args.DEVICE_ID).trim(),
       width: Scratch.Cast.toNumber(args.WIDTH),
       height: Scratch.Cast.toNumber(args.HEIGHT),
-      frameRate: Scratch.Cast.toNumber(args.FPS)
+      frameRate: Scratch.Cast.toNumber(args.FPS),
     });
   }
 
-  public async stopGridCamera(args: {CAMERA_ID: unknown}): Promise<void> {
+  public async stopGridCamera(args: { CAMERA_ID: unknown }): Promise<void> {
     await this.cameraGrid?.stop(Scratch.Cast.toString(args.CAMERA_ID).trim());
   }
 
@@ -333,12 +404,18 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
     this.cameraGrid?.hide();
   }
 
-  public gridCameraState(args: {CAMERA_ID: unknown}): string {
-    return this.cameraGrid?.report(Scratch.Cast.toString(args.CAMERA_ID).trim())?.state ?? 'stopped';
+  public gridCameraState(args: { CAMERA_ID: unknown }): string {
+    return (
+      this.cameraGrid?.report(Scratch.Cast.toString(args.CAMERA_ID).trim())
+        ?.state ?? 'stopped'
+    );
   }
 
-  public gridCameraError(args: {CAMERA_ID: unknown}): string {
-    return this.cameraGrid?.report(Scratch.Cast.toString(args.CAMERA_ID).trim())?.error ?? '';
+  public gridCameraError(args: { CAMERA_ID: unknown }): string {
+    return (
+      this.cameraGrid?.report(Scratch.Cast.toString(args.CAMERA_ID).trim())
+        ?.error ?? ''
+    );
   }
 
   public gridCamerasJson(): string {
@@ -352,17 +429,26 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
       .map((report) =>
         report.state === 'running'
           ? `${report.cameraId}: ${report.settings.width}x${report.settings.height} 設定${report.settings.frameRate}fps 実測${report.measuredFps}fps（要求${report.requested.width}x${report.requested.height} ${report.requested.frameRate}fps）${report.label ? ` ${report.label}` : ''}`
-          : `${report.cameraId}: ${report.state} ${report.error}`
+          : `${report.cameraId}: ${report.state} ${report.error}`,
       )
       .join(' / ');
   }
 
-  public showGridPose(args: {CAMERA_ID: unknown; FRAME_JSON: unknown}): void {
-    this.cameraGrid?.showPose(Scratch.Cast.toString(args.CAMERA_ID).trim(), Scratch.Cast.toString(args.FRAME_JSON));
+  public showGridPose(args: { CAMERA_ID: unknown; FRAME_JSON: unknown }): void {
+    this.cameraGrid?.showPose(
+      Scratch.Cast.toString(args.CAMERA_ID).trim(),
+      Scratch.Cast.toString(args.FRAME_JSON),
+    );
   }
 
-  public recordPoseStatus(args: {CAMERA_ID: unknown; STATUS_JSON: unknown}): void {
-    this.poseMeter?.record(Scratch.Cast.toString(args.CAMERA_ID).trim(), Scratch.Cast.toString(args.STATUS_JSON));
+  public recordPoseStatus(args: {
+    CAMERA_ID: unknown;
+    STATUS_JSON: unknown;
+  }): void {
+    this.poseMeter?.record(
+      Scratch.Cast.toString(args.CAMERA_ID).trim(),
+      Scratch.Cast.toString(args.STATUS_JSON),
+    );
   }
 
   public endPoseRound(): void {
@@ -377,19 +463,24 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
     return this.poseMeter?.summary() ?? '';
   }
 
-  public poseFrameAgeMs(args: {FRAME_JSON: unknown}): number {
-    return this.poseMeter?.frameAgeMs(Scratch.Cast.toString(args.FRAME_JSON)) ?? -1;
+  public poseFrameAgeMs(args: { FRAME_JSON: unknown }): number {
+    return (
+      this.poseMeter?.frameAgeMs(Scratch.Cast.toString(args.FRAME_JSON)) ?? -1
+    );
   }
 
   public poseMeasurementJson(): string {
     return this.poseMeter ? JSON.stringify(this.poseMeter.measurement()) : '';
   }
 
-  public rememberSetting(args: {KEY: unknown; VALUE: unknown}): void {
-    this.settings?.set(Scratch.Cast.toString(args.KEY), Scratch.Cast.toString(args.VALUE));
+  public rememberSetting(args: { KEY: unknown; VALUE: unknown }): void {
+    this.settings?.set(
+      Scratch.Cast.toString(args.KEY),
+      Scratch.Cast.toString(args.VALUE),
+    );
   }
 
-  public rememberedSetting(args: {KEY: unknown}): string {
+  public rememberedSetting(args: { KEY: unknown }): string {
     return this.settings?.get(Scratch.Cast.toString(args.KEY)) ?? '';
   }
 
@@ -403,11 +494,13 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
           name,
           {
             type: Scratch.ArgumentType[argument.type],
-            ...(argument.defaultValue === undefined ? {} : {defaultValue: argument.defaultValue}),
-            ...(argument.menu === undefined ? {} : {menu: argument.menu})
-          }
-        ])
-      )
+            ...(argument.defaultValue === undefined
+              ? {}
+              : { defaultValue: argument.defaultValue }),
+            ...(argument.menu === undefined ? {} : { menu: argument.menu }),
+          },
+        ]),
+      ),
     };
     return scratchBlock;
   }

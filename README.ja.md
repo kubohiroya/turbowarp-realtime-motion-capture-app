@@ -16,10 +16,10 @@ npm package `turbowarp-realtime-motion-capture-app`は、これらのアプリ�
 
 ## アプリの構成
 
-| アプリ | 実行場所 | 役割 |
-|---|---|---|
+| アプリ     | 実行場所                               | 役割                                                         |
+| ---------- | -------------------------------------- | ------------------------------------------------------------ |
 | camera app | カメラに接続したPC（1カメラにつき1台） | 映像から最大6人の2D姿勢を推定し、`PoseFrame2D`だけを送信する |
-| fusion app | 統合PC | 2D姿勢を集約して3D姿勢へ統合し、アバターと演出を制御する |
+| fusion app | 統合PC                                 | 2D姿勢を集約して3D姿勢へ統合し、アバターと演出を制御する     |
 
 カメラ映像そのものは通常の通信経路へ流さず、各camera app内で処理します。カメラとfusion appの接続は
 QRコードを標準経路、手動入力を復旧経路とする計画です。会場内でインターネット接続なしに運用できる
@@ -38,25 +38,25 @@ frame alignment、人物対応付け、triangulation、3D solveは高位拡張`t
 
 ## 現在の実装状況
 
-| 項目 | 状態 |
-|---|---|
-| camera app／fusion appの展開済みSB3ソース | 利用可能 |
-| 決定的なSB3ビルドとCI検証 | 利用可能 |
-| 外部TurboWarp拡張のexact version固定とSB3への埋め込み | 利用可能 |
-| アプリシェル（feature flag設定、読み込み表示、エラー表示、診断reporter） | 利用可能 |
-| タイトル画面、アプリメニュー、DSLファイル管理（Title Menu拡張） | 利用可能 |
-| アプリ起動時のblockスクリプト（TypeScriptから生成） | 利用可能 |
-| カメラ選択、GPU preview、停止、切断監視のblockスクリプト | 利用可能（実機確認前） |
-| レンズ校正の入口（保存済み校正の復元、同じoriginのレンズ校正アプリを別ウィンドウで開く、校正ファイルの読込み） | 利用可能（実機確認前。[永続化設計](docs/persistence.md)） |
-| QRペアリング（fusion appがOfferを投影、camera appがAnswerを表示、接続後にテストメッセージを送受信） | 利用可能（実機確認前。[QRペアリング](docs/qr-pairing.md)） |
-| MoveNet姿勢推定と送信（camera appがWebGPU MoveNetで2D姿勢を推定し、`PoseFrame2D`をlatest-data channelでfusion appへ送る） | 利用可能（実機確認前。[姿勢推定と送信](docs/pose-stream.md)） |
-| local-app（1台のPCで複数USBカメラから3Dアバターまで通すスタンドアロン版）の段階1：複数カメラの起動・同時表示・実測fps・構成の保存 | 利用可能（実機確認前。[local-app](docs/local-app.md)、#36） |
-| 空間と時刻の校正（fusion appが時刻パターンを投影し、各camera appが時刻対応と四隅を測定、fusion appが配置をsolveしてREADYを判定） | 利用可能（実機確認前。[空間と時刻の校正](docs/space-time-calibration.md)） |
-| 3Dサービス連携の段階1（interface v1、stubサービス、fusion appの転送・検証・状況表示。フラグ`external3dServiceV1`は既定OFF） | 利用可能（stubのみ。[3Dサービス](docs/pose-3d-service.md)、#34） |
-| 3D推定の本体、アバター演出のblockスクリプト | 未実装 |
-| 設定・演出DSLの永続化 | 方針確定・未実装（[永続化設計](docs/persistence.md)） |
-| 単体バイナリでのローカルホスト配布 | 設計中（[ローカルホスト](docs/local-host.md)） |
-| 会場機材でのE2E検証とv0.1.0配布 | 未実施 |
+| 項目                                                                                                                              | 状態                                                                       |
+| --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| camera app／fusion appの展開済みSB3ソース                                                                                         | 利用可能                                                                   |
+| 決定的なSB3ビルドとCI検証                                                                                                         | 利用可能                                                                   |
+| 外部TurboWarp拡張のexact version固定とSB3への埋め込み                                                                             | 利用可能                                                                   |
+| アプリシェル（feature flag設定、読み込み表示、エラー表示、診断reporter）                                                          | 利用可能                                                                   |
+| タイトル画面、アプリメニュー、DSLファイル管理（Title Menu拡張）                                                                   | 利用可能                                                                   |
+| アプリ起動時のblockスクリプト（TypeScriptから生成）                                                                               | 利用可能                                                                   |
+| カメラ選択、GPU preview、停止、切断監視のblockスクリプト                                                                          | 利用可能（実機確認前）                                                     |
+| レンズ校正の入口（保存済み校正の復元、同じoriginのレンズ校正アプリを別ウィンドウで開く、校正ファイルの読込み）                    | 利用可能（実機確認前。[永続化設計](docs/persistence.md)）                  |
+| QRペアリング（fusion appがOfferを投影、camera appがAnswerを表示、接続後にテストメッセージを送受信）                               | 利用可能（実機確認前。[QRペアリング](docs/qr-pairing.md)）                 |
+| MoveNet姿勢推定と送信（camera appがWebGPU MoveNetで2D姿勢を推定し、`PoseFrame2D`をlatest-data channelでfusion appへ送る）         | 利用可能（実機確認前。[姿勢推定と送信](docs/pose-stream.md)）              |
+| local-app（1台のPCで複数USBカメラから3Dアバターまで通すスタンドアロン版）の段階1：複数カメラの起動・同時表示・実測fps・構成の保存 | 利用可能（実機確認前。[local-app](docs/local-app.md)、#36）                |
+| 空間と時刻の校正（fusion appが時刻パターンを投影し、各camera appが時刻対応と四隅を測定、fusion appが配置をsolveしてREADYを判定）  | 利用可能（実機確認前。[空間と時刻の校正](docs/space-time-calibration.md)） |
+| 3Dサービス連携の段階1（interface v1、stubサービス、fusion appの転送・検証・状況表示。フラグ`external3dServiceV1`は既定OFF）       | 利用可能（stubのみ。[3Dサービス](docs/pose-3d-service.md)、#34）           |
+| 3D推定の本体、アバター演出のblockスクリプト                                                                                       | 未実装                                                                     |
+| 設定・演出DSLの永続化                                                                                                             | 方針確定・未実装（[永続化設計](docs/persistence.md)）                      |
+| 単体バイナリでのローカルホスト配布                                                                                                | 設計中（[ローカルホスト](docs/local-host.md)）                             |
+| 会場機材でのE2E検証とv0.1.0配布                                                                                                   | 未実施                                                                     |
 
 進捗の正本は[GitHub Issues](https://github.com/kubohiroya/turbowarp-realtime-motion-capture-app/issues)です。拡張ごとの
 準備状況は[TurboWarp拡張 readiness](docs/extension-readiness.md)に記録しています。
@@ -66,9 +66,9 @@ frame alignment、人物対応付け、triangulation、3D solveは高位拡張`t
 各SB3は、必要な拡張をすべて1つのstatic bundleとして埋め込みます。TurboWarpでの拡張許可プロンプトは
 アプリごとに1回だけです。
 
-| アプリ | 埋め込む拡張（bundle member順） |
-|---|---|
-| camera app | app shell、Title Menu、Camera Source、jsQR、WebRTC、Realtime Motion Capture、Diagnostic Overlay |
+| アプリ     | 埋め込む拡張（bundle member順）                                                                               |
+| ---------- | ------------------------------------------------------------------------------------------------------------- |
+| camera app | app shell、Title Menu、Camera Source、jsQR、WebRTC、Realtime Motion Capture、Diagnostic Overlay               |
 | fusion app | app shell、Title Menu、WebRTC、YAML/JSON、Realtime Motion Capture、Asset Manager、A-Frame、Diagnostic Overlay |
 
 app shellが先頭なのは意図的です。Realtime Motion Capture拡張は評価時にfeature flagを固定するため、それより

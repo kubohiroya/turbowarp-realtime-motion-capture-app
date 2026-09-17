@@ -14,7 +14,7 @@ export const featureFlagNames = [
   'avatarRetargetV1',
   'frameSyncPatternV1',
   'poseFusion3D',
-  'glowStickMarkers'
+  'glowStickMarkers',
 ] as const;
 
 export type FeatureFlagName = (typeof featureFlagNames)[number];
@@ -54,14 +54,20 @@ export interface FeatureFlagApplication {
 const knownNames: ReadonlySet<string> = new Set(featureFlagNames);
 
 /** Builds the complete flag set. Every name the app does not request stays explicitly `false`. */
-export function resolveFeatureFlags(enabled: readonly string[]): FeatureFlagSet {
+export function resolveFeatureFlags(
+  enabled: readonly string[],
+): FeatureFlagSet {
   const unknown = enabled.filter((name) => !knownNames.has(name));
   if (unknown.length > 0) {
-    throw new TypeError(`Unknown realtime motion capture app feature flags: ${unknown.join(', ')}`);
+    throw new TypeError(
+      `Unknown realtime motion capture app feature flags: ${unknown.join(', ')}`,
+    );
   }
   const requested = new Set(enabled);
   return Object.freeze(
-    Object.fromEntries(featureFlagNames.map((name) => [name, requested.has(name)]))
+    Object.fromEntries(
+      featureFlagNames.map((name) => [name, requested.has(name)]),
+    ),
   ) as FeatureFlagSet;
 }
 
@@ -82,25 +88,29 @@ export interface ApplyFeatureFlagsOptions {
  */
 export function applyFeatureFlags(
   enabled: readonly string[],
-  options: ApplyFeatureFlagsOptions = {}
+  options: ApplyFeatureFlagsOptions = {},
 ): FeatureFlagApplication {
   const flags = resolveFeatureFlags(enabled);
-  const target = options.target ?? (globalThis as unknown as Record<string, unknown>);
+  const target =
+    options.target ?? (globalThis as unknown as Record<string, unknown>);
   const previous = target[featureFlagGlobalKey];
   target[featureFlagGlobalKey] = flags;
-  target[pairingFlagGlobalKey] = Object.freeze({qrCodePairing: flags.qrCourierPairing});
+  target[pairingFlagGlobalKey] = Object.freeze({
+    qrCodePairing: flags.qrCourierPairing,
+  });
   const timeSpaceSync = options.timeSpaceSync === true;
   target[timeSpaceSyncFlagGlobalKey] = Object.freeze({
     opticalTimeSyncV1: timeSpaceSync,
-    placementSolveV1: timeSpaceSync
+    placementSolveV1: timeSpaceSync,
   });
-  if (options.contractLoaded?.() === true) return {flags, state: 'too-late'};
-  return {flags, state: previous === undefined ? 'applied' : 'replaced'};
+  if (options.contractLoaded?.() === true) return { flags, state: 'too-late' };
+  return { flags, state: previous === undefined ? 'applied' : 'replaced' };
 }
 
 /** Default probe: the contract extension stores itself on the VM runtime when it registers. */
 export function contractAlreadyLoaded(): boolean {
-  const runtime = (globalThis as {Scratch?: {vm?: {runtime?: Record<string, unknown>}}}).Scratch?.vm
-    ?.runtime;
+  const runtime = (
+    globalThis as { Scratch?: { vm?: { runtime?: Record<string, unknown> } } }
+  ).Scratch?.vm?.runtime;
   return runtime !== undefined && runtime[contractRuntimeKey] !== undefined;
 }

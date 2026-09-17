@@ -1,18 +1,18 @@
-import {readdir, readFile, writeFile} from 'node:fs/promises';
+import { readdir, readFile, writeFile } from 'node:fs/promises';
 
 import {
   createDeterministicSb3,
   createSb3ReleaseSnapshot,
-  verifySb3ReleaseSnapshot
+  verifySb3ReleaseSnapshot,
 } from '@kubohiroya/sb3-toolchain';
 
-import {formatJson, readJson, repositoryRoot} from './repository-config.ts';
+import { formatJson, readJson, repositoryRoot } from './repository-config.ts';
 
 interface ReleaseSnapshot {
   formatVersion: number;
   state: string;
   sourceIdentity: string;
-  artifact: {filename: string; sha256: string; size: number};
+  artifact: { filename: string; sha256: string; size: number };
 }
 
 const writeMode = process.argv.includes('--write');
@@ -26,37 +26,53 @@ const applications = ['camera-app', 'fusion-app', 'local-app'];
  * actually need: the identity of every expanded source file, and the SHA-256 and size of the archive
  * those files produce. Verification rebuilds twice, so a non-deterministic build still fails here.
  */
-async function readSourceFiles(directory: URL, prefix = ''): Promise<Map<string, Buffer>> {
+async function readSourceFiles(
+  directory: URL,
+  prefix = '',
+): Promise<Map<string, Buffer>> {
   const files = new Map<string, Buffer>();
-  for (const entry of await readdir(directory, {withFileTypes: true})) {
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
     const name = `${prefix}${entry.name}`;
     if (entry.isDirectory()) {
-      const nested = await readSourceFiles(new URL(`${entry.name}/`, directory), `${name}/`);
+      const nested = await readSourceFiles(
+        new URL(`${entry.name}/`, directory),
+        `${name}/`,
+      );
       for (const [path, contents] of nested) files.set(path, contents);
       continue;
     }
     files.set(name, await readFile(new URL(entry.name, directory)));
   }
-  return new Map([...files].sort(([left], [right]) => left.localeCompare(right)));
+  return new Map(
+    [...files].sort(([left], [right]) => left.localeCompare(right)),
+  );
 }
 
 const failures: string[] = [];
 
 for (const application of applications) {
-  const sourceDirectory = new URL(`apps/${application}/source/`, repositoryRoot);
-  const snapshotUrl = new URL(`apps/${application}/release.json`, repositoryRoot);
+  const sourceDirectory = new URL(
+    `apps/${application}/source/`,
+    repositoryRoot,
+  );
+  const snapshotUrl = new URL(
+    `apps/${application}/release.json`,
+    repositoryRoot,
+  );
   const sourceFiles = await readSourceFiles(sourceDirectory);
   const createSb3 = () => createDeterministicSb3(sourceDirectory.pathname);
   const filename = `${application}.sb3`;
 
   if (writeMode) {
-    const {metadata} = await createSb3ReleaseSnapshot({
-      artifact: {filename},
+    const { metadata } = await createSb3ReleaseSnapshot({
+      artifact: { filename },
       createSb3,
-      sourceFiles
+      sourceFiles,
     });
     await writeFile(snapshotUrl, formatJson(metadata));
-    console.log(`${application}: recorded sha256-${(metadata as ReleaseSnapshot).artifact.sha256}`);
+    console.log(
+      `${application}: recorded sha256-${(metadata as ReleaseSnapshot).artifact.sha256}`,
+    );
     continue;
   }
 
@@ -65,13 +81,15 @@ for (const application of applications) {
     const verified = (await verifySb3ReleaseSnapshot({
       createSb3,
       metadata,
-      sourceFiles
+      sourceFiles,
     })) as ReleaseSnapshot;
     console.log(
-      `${application}: sha256-${verified.artifact.sha256} (${verified.artifact.size} bytes)`
+      `${application}: sha256-${verified.artifact.sha256} (${verified.artifact.size} bytes)`,
     );
   } catch (error) {
-    failures.push(`${application}: ${error instanceof Error ? error.message : String(error)}`);
+    failures.push(
+      `${application}: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 }
 

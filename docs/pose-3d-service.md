@@ -10,24 +10,24 @@
 TurboWarp拡張`realtimemotioncapturepose3dservice`として埋め込まれ、サービスはその拡張が起動する専用Web Worker
 （ビルド時にインライン化）で動きます。
 
-| ファイル | 内容 |
-|---|---|
-| `src/contracts.ts` | interface v1（`twrmc/pose-3d-service` v1）、`twrmc/pose-frame-3d` v2、上限、エラーコード、検証、v1への変換 |
-| `src/service.ts` | サービス側。stub実装`stub-normal`／`stub-timeout`／`stub-invalid` |
-| `src/worker.ts` | Workerの入口 |
-| `src/client.ts` | fusion app側。送る前の検証、重複・古いフレームの除外、timeout、応答の検証、状態 |
-| `src/extension.ts`、`src/entry.ts` | TurboWarp拡張とWorkerの起動 |
+| ファイル                           | 内容                                                                                                       |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `src/contracts.ts`                 | interface v1（`twrmc/pose-3d-service` v1）、`twrmc/pose-frame-3d` v2、上限、エラーコード、検証、v1への変換 |
+| `src/service.ts`                   | サービス側。stub実装`stub-normal`／`stub-timeout`／`stub-invalid`                                          |
+| `src/worker.ts`                    | Workerの入口                                                                                               |
+| `src/client.ts`                    | fusion app側。送る前の検証、重複・古いフレームの除外、timeout、応答の検証、状態                            |
+| `src/extension.ts`、`src/entry.ts` | TurboWarp拡張とWorkerの起動                                                                                |
 
 ## interface v1
 
 すべてのメッセージが`interface: twrmc/pose-3d-service`、`version: 1`、`id`、`type`、`payload`を持ちます。
 
-| 方向 | type | payload |
-|---|---|---|
-| app → service | `configure` | `implementation`、`referenceId`、`cameras[]`（`cameraId`＝ペアリングのpeer名、歪みを含むcamera model、`cameraFromReference`、時刻対応） |
-| app → service | `frame2d` | `cameraId`と、受信した`twrmc/pose-frame-2d`（変更しない） |
-| app → service | `requestPose3d` | `timestampUs`（v1では`null`＝最新） |
-| service → app | `configured`／`accepted`／`pose3d`／`error` | 設定したカメラ、受理したsequence、`twrmc/pose-frame-3d` v2または`null`、エラーコードと理由 |
+| 方向          | type                                        | payload                                                                                                                                 |
+| ------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| app → service | `configure`                                 | `implementation`、`referenceId`、`cameras[]`（`cameraId`＝ペアリングのpeer名、歪みを含むcamera model、`cameraFromReference`、時刻対応） |
+| app → service | `frame2d`                                   | `cameraId`と、受信した`twrmc/pose-frame-2d`（変更しない）                                                                               |
+| app → service | `requestPose3d`                             | `timestampUs`（v1では`null`＝最新）                                                                                                     |
+| service → app | `configured`／`accepted`／`pose3d`／`error` | 設定したカメラ、受理したsequence、`twrmc/pose-frame-3d` v2または`null`、エラーコードと理由                                              |
 
 固定値：人数6、カメラ2〜8台、1メッセージ65,536バイト、configure timeout 2,000 ms、3D request timeout 100 ms、
 転送するフレームの経過時間500 ms。

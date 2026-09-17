@@ -1,14 +1,18 @@
-import {extensionId, Pose3dServiceExtension} from './extension.js';
+import { extensionId, Pose3dServiceExtension } from './extension.js';
 import ServiceWorker from './worker.ts?worker&inline';
-import type {ServicePort} from './client.js';
+import type { ServicePort } from './client.js';
 
 function createWorkerPort(): ServicePort {
   const worker = new ServiceWorker();
   return {
     post: (message) => worker.postMessage(message),
-    onMessage: (listener) => worker.addEventListener('message', (event) => listener(event.data)),
-    onFailure: (listener) => worker.addEventListener('error', (event) => listener(event.message || 'The service worker failed.')),
-    close: () => worker.terminate()
+    onMessage: (listener) =>
+      worker.addEventListener('message', (event) => listener(event.data)),
+    onFailure: (listener) =>
+      worker.addEventListener('error', (event) =>
+        listener(event.message || 'The service worker failed.'),
+      ),
+    close: () => worker.terminate(),
   };
 }
 

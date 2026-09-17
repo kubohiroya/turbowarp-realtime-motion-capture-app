@@ -9,7 +9,7 @@ import {
   type ServiceConfiguration,
   type ServiceErrorCode,
   type ServiceRequest,
-  type ServiceResponse
+  type ServiceResponse,
 } from './contracts.js';
 
 /** How the client reaches a service: a Worker in the page, or anything else that carries messages. */
@@ -34,7 +34,8 @@ export interface ClientClock {
  *   withheld until a valid answer arrives again.
  * - `error`: configuration failed or the service stopped. Nothing is sent until it is configured again.
  */
-export type ClientState = 'idle' | 'configuring' | 'ready' | 'degraded' | 'error';
+export type ClientState =
+  'idle' | 'configuring' | 'ready' | 'degraded' | 'error';
 
 export interface ClientStatus {
   readonly state: ClientState;
@@ -107,9 +108,14 @@ export class Pose3dServiceClient {
     this.state = 'configuring';
     this.latest = undefined;
     this.lastSequence.clear();
-    const answer = await this.send('configure', checked.value, LIMITS.configureTimeoutMs);
+    const answer = await this.send(
+      'configure',
+      checked.value,
+      LIMITS.configureTimeoutMs,
+    );
     if (answer === undefined) {
-      if (this.state === 'configuring') this.fail('timeout', 'The service did not answer the configuration.');
+      if (this.state === 'configuring')
+        this.fail('timeout', 'The service did not answer the configuration.');
       return;
     }
     if (answer.type === 'error') {
@@ -117,7 +123,10 @@ export class Pose3dServiceClient {
       return;
     }
     if (answer.type !== 'configured') {
-      this.fail('invalid-response', `Expected configured, received ${answer.type}.`);
+      this.fail(
+        'invalid-response',
+        `Expected configured, received ${answer.type}.`,
+      );
       return;
     }
     this.configuration = checked.value;
@@ -131,9 +140,19 @@ export class Pose3dServiceClient {
    * calibration other than the one the camera was placed with. The capture timestamp travels as it
    * arrived.
    */
-  public sendFrame(cameraId: string, frameJson: string, receivedAgoMs: number): void {
+  public sendFrame(
+    cameraId: string,
+    frameJson: string,
+    receivedAgoMs: number,
+  ): void {
     const configuration = this.configuration;
-    if (!configuration || this.state === 'error' || this.state === 'configuring' || this.state === 'idle') return;
+    if (
+      !configuration ||
+      this.state === 'error' ||
+      this.state === 'configuring' ||
+      this.state === 'idle'
+    )
+      return;
     if (frameJson === '') return;
     let parsed: unknown;
     try {
@@ -147,8 +166,13 @@ export class Pose3dServiceClient {
       this.framesInvalid += 1;
       return;
     }
-    const camera = configuration.cameras.find((candidate) => candidate.cameraId === cameraId);
-    if (!camera || frame.value.calibrationId !== camera.model.intrinsicProfileId) {
+    const camera = configuration.cameras.find(
+      (candidate) => candidate.cameraId === cameraId,
+    );
+    if (
+      !camera ||
+      frame.value.calibrationId !== camera.model.intrinsicProfileId
+    ) {
       this.framesInvalid += 1;
       return;
     }
@@ -159,7 +183,11 @@ export class Pose3dServiceClient {
       return;
     }
     this.framesSent += 1;
-    void this.send('frame2d', {cameraId, frame: frame.value}, LIMITS.requestTimeoutMs).then((answer) => {
+    void this.send(
+      'frame2d',
+      { cameraId, frame: frame.value },
+      LIMITS.requestTimeoutMs,
+    ).then((answer) => {
       if (answer?.type === 'error') this.framesRejected += 1;
     });
   }
@@ -175,14 +203,27 @@ export class Pose3dServiceClient {
   }
 
   private async runRequest(): Promise<void> {
-    if (!this.configuration || this.state === 'error' || this.state === 'configuring' || this.state === 'idle') return;
+    if (
+      !this.configuration ||
+      this.state === 'error' ||
+      this.state === 'configuring' ||
+      this.state === 'idle'
+    )
+      return;
     const started = this.clock.nowMs();
-    const answer = await this.send('requestPose3d', {timestampUs: null}, LIMITS.requestTimeoutMs);
+    const answer = await this.send(
+      'requestPose3d',
+      { timestampUs: null },
+      LIMITS.requestTimeoutMs,
+    );
     // The service may have failed or been reconfigured while this request was out.
     if ((this.state as ClientState) === 'error') return;
     if (answer === undefined) {
       this.consecutiveTimeouts += 1;
-      this.withhold('timeout', 'The service did not answer the 3D request in time.');
+      this.withhold(
+        'timeout',
+        'The service did not answer the 3D request in time.',
+      );
       return;
     }
     if (answer.type === 'error') {
@@ -190,7 +231,10 @@ export class Pose3dServiceClient {
       return;
     }
     if (answer.type !== 'pose3d') {
-      this.withhold('invalid-response', `Expected pose3d, received ${answer.type}.`);
+      this.withhold(
+        'invalid-response',
+        `Expected pose3d, received ${answer.type}.`,
+      );
       return;
     }
     this.consecutiveTimeouts = 0;
@@ -213,13 +257,16 @@ export class Pose3dServiceClient {
       errorCode: this.errorCode,
       errorMessage: this.errorMessage,
       rttMs: Math.round(this.rttMs),
-      poseAgeMs: this.latest === undefined ? -1 : Math.round(this.clock.nowMs() - this.latestAtMs),
+      poseAgeMs:
+        this.latest === undefined
+          ? -1
+          : Math.round(this.clock.nowMs() - this.latestAtMs),
       persons: this.latest?.persons.length ?? 0,
       framesSent: this.framesSent,
       framesRejected: this.framesRejected,
       framesStale: this.framesStale,
       framesInvalid: this.framesInvalid,
-      consecutiveTimeouts: this.consecutiveTimeouts
+      consecutiveTimeouts: this.consecutiveTimeouts,
     };
   }
 
@@ -237,8 +284,8 @@ export class Pose3dServiceClient {
 
   private send<Type extends ServiceRequest['type']>(
     type: Type,
-    payload: Extract<ServiceRequest, {type: Type}>['payload'],
-    timeoutMs: number
+    payload: Extract<ServiceRequest, { type: Type }>['payload'],
+    timeoutMs: number,
   ): Promise<ServiceResponse | undefined> {
     const id = this.nextId++;
     const message = request(id, type, payload as never);
@@ -251,21 +298,30 @@ export class Pose3dServiceClient {
         this.pending.delete(id);
         resolve(undefined);
       }, timeoutMs);
-      this.pending.set(id, {resolve, timer});
+      this.pending.set(id, { resolve, timer });
       this.port.post(message);
     });
   }
 
   private receive(message: unknown): void {
     const checked = validateResponse(message);
-    const id = typeof message === 'object' && message !== null ? (message as {id?: unknown}).id : undefined;
+    const id =
+      typeof message === 'object' && message !== null
+        ? (message as { id?: unknown }).id
+        : undefined;
     const pending = typeof id === 'number' ? this.pending.get(id) : undefined;
     if (!pending) return;
     this.pending.delete(id as number);
     this.clock.clearTimeout(pending.timer);
     if (!checked.ok) {
       this.withhold(checked.code, checked.message);
-      pending.resolve({interface: 'twrmc/pose-3d-service', version: 1, id: id as number, type: 'error', payload: {code: checked.code, message: checked.message}});
+      pending.resolve({
+        interface: 'twrmc/pose-3d-service',
+        version: 1,
+        id: id as number,
+        type: 'error',
+        payload: { code: checked.code, message: checked.message },
+      });
       return;
     }
     pending.resolve(checked.value);

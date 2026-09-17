@@ -7,7 +7,7 @@ import {
   variable,
   type BlockNode,
   type InputValue,
-  type NamedReference
+  type NamedReference,
 } from '../../packages/sb3-script/src/blocks.ts';
 import {
   add,
@@ -23,7 +23,7 @@ import {
   repeatUntil,
   setVariable,
   wait,
-  waitUntil
+  waitUntil,
 } from '../../packages/sb3-script/src/standard.ts';
 
 /**
@@ -47,7 +47,7 @@ export const pairingFeatureFlag = 'qrCourierPairing';
 export const pairingButtons = {
   next: '次のQR',
   readAnswer: 'Answerを読み取る',
-  cancel: 'やめる'
+  cancel: 'やめる',
 } as const;
 
 /** The message both sides send once connected, so a connection is shown to carry data, not only to exist. */
@@ -65,23 +65,35 @@ export interface PairingReferences {
 
 export const pairingReferences = (): PairingReferences => ({
   session: namedReference('pairing session', 'variable:pairing-session'),
-  partIndex: namedReference('pairing QR part index', 'variable:pairing-qr-part-index'),
-  pressesSeen: namedReference('pairing button presses seen', 'variable:pairing-button-presses-seen'),
+  partIndex: namedReference(
+    'pairing QR part index',
+    'variable:pairing-qr-part-index',
+  ),
+  pressesSeen: namedReference(
+    'pairing button presses seen',
+    'variable:pairing-button-presses-seen',
+  ),
   step: namedReference('pairing step', 'variable:pairing-step'),
   waited: namedReference('pairing test wait', 'variable:pairing-test-wait'),
-  linkTest: namedReference('link test message', 'variable:link-test-message')
+  linkTest: namedReference('link test message', 'variable:link-test-message'),
 });
 
-export const pairingVariables = (references: PairingReferences, session: string) => ({
+export const pairingVariables = (
+  references: PairingReferences,
+  session: string,
+) => ({
   [references.session.id]: [references.session.name, session],
   [references.partIndex.id]: [references.partIndex.name, 1],
   [references.pressesSeen.id]: [references.pressesSeen.name, 0],
   [references.step.id]: [references.step.name, ''],
   [references.waited.id]: [references.waited.name, 0],
-  [references.linkTest.id]: [references.linkTest.name, '']
+  [references.linkTest.id]: [references.linkTest.name, ''],
 });
 
-export const concatenate = (first: InputValue, ...rest: readonly InputValue[]): InputValue =>
+export const concatenate = (
+  first: InputValue,
+  ...rest: readonly InputValue[]
+): InputValue =>
   rest.reduce((left, right) => reporter(join(left, right)), first);
 
 export class PairingSteps {
@@ -93,11 +105,20 @@ export class PairingSteps {
     this.references = references;
   }
 
-  public pairing(opcode: string, inputs: Readonly<Record<string, InputValue>> = {}): BlockNode {
-    return block(`${pairingExtension}_${opcode}`, {SESSION: this.session(), ...inputs});
+  public pairing(
+    opcode: string,
+    inputs: Readonly<Record<string, InputValue>> = {},
+  ): BlockNode {
+    return block(`${pairingExtension}_${opcode}`, {
+      SESSION: this.session(),
+      ...inputs,
+    });
   }
 
-  public pairingValue(opcode: string, inputs: Readonly<Record<string, InputValue>> = {}): InputValue {
+  public pairingValue(
+    opcode: string,
+    inputs: Readonly<Record<string, InputValue>> = {},
+  ): InputValue {
     return reporter(this.pairing(opcode, inputs));
   }
 
@@ -111,21 +132,26 @@ export class PairingSteps {
 
   /** Cancelled, expired or failed: the exchange is over and will not connect. */
   public ended(): BlockNode {
-    return or(this.phaseIs('cancelled'), or(this.phaseIs('expired'), this.phaseIs('failed')));
+    return or(
+      this.phaseIs('cancelled'),
+      or(this.phaseIs('expired'), this.phaseIs('failed')),
+    );
   }
 
   public featureEnabled(): BlockNode {
-    return block(`${this.shell}_appFeatureEnabled`, {FEATURE: text(pairingFeatureFlag)});
+    return block(`${this.shell}_appFeatureEnabled`, {
+      FEATURE: text(pairingFeatureFlag),
+    });
   }
 
   public notice(message: InputValue): BlockNode {
-    return block(`${this.shell}_showAppNotice`, {MESSAGE: message});
+    return block(`${this.shell}_showAppNotice`, { MESSAGE: message });
   }
 
   public error(message: InputValue, code: string): BlockNode {
     return block(`${this.shell}_showAppError`, {
       MESSAGE: message,
-      DETAILS: text(JSON.stringify({code}))
+      DETAILS: text(JSON.stringify({ code })),
     });
   }
 
@@ -141,26 +167,32 @@ export class PairingSteps {
             this.pairingValue('pairingErrorMessage'),
             text('（'),
             this.pairingValue('pairingError'),
-            text('）')
+            text('）'),
           ),
-          'PAIRING_FAILED'
-        )
-      ]
+          'PAIRING_FAILED',
+        ),
+      ],
     );
   }
 
-  private showPart(kind: string | InputValue, instruction: string, buttons: readonly string[]): BlockNode {
+  private showPart(
+    kind: string | InputValue,
+    instruction: string,
+    buttons: readonly string[],
+  ): BlockNode {
     return block(`${this.shell}_showQrImage`, {
-      IMAGE: this.pairingValue('pairingQrPartDataUri', {INDEX: variable(this.references.partIndex)}),
+      IMAGE: this.pairingValue('pairingQrPartDataUri', {
+        INDEX: variable(this.references.partIndex),
+      }),
       CAPTION: concatenate(
         typeof kind === 'string' ? text(kind) : kind,
         text(' '),
         variable(this.references.partIndex),
         text(' / '),
         this.pairingValue('pairingQrPartCount'),
-        text(` — ${instruction}`)
+        text(` — ${instruction}`),
       ),
-      BUTTONS: text(buttons.join('|'))
+      BUTTONS: text(buttons.join('|')),
     });
   }
 
@@ -175,45 +207,66 @@ export class PairingSteps {
     kind: string | InputValue,
     instruction: string,
     buttons: readonly string[],
-    stopOn: BlockNode
+    stopOn: BlockNode,
   ): BlockNode[] {
-    const {partIndex, pressesSeen, step} = this.references;
+    const { partIndex, pressesSeen, step } = this.references;
     const pressed = (label: string) =>
       equals(reporter(block(`${this.shell}_lastQrImageButton`)), text(label));
     return [
       setVariable(partIndex, number(1)),
       setVariable(step, text('')),
-      setVariable(pressesSeen, reporter(block(`${this.shell}_qrImageButtonPresses`))),
+      setVariable(
+        pressesSeen,
+        reporter(block(`${this.shell}_qrImageButtonPresses`)),
+      ),
       this.showPart(kind, instruction, buttons),
-      repeatUntil(or(stopOn, or(this.ended(), not(equals(variable(step), text(''))))), [
-        ifThen(
-          greaterThan(reporter(block(`${this.shell}_qrImageButtonPresses`)), variable(pressesSeen)),
-          [
-            setVariable(pressesSeen, reporter(block(`${this.shell}_qrImageButtonPresses`))),
-            ifElse(
-              pressed(pairingButtons.next),
-              [
-                setVariable(
-                  partIndex,
-                  reporter(
-                    add(
-                      reporter(modulo(variable(partIndex), this.pairingValue('pairingQrPartCount'))),
-                      number(1)
-                    )
-                  )
-                ),
-                this.showPart(kind, instruction, buttons)
-              ],
-              [
-                ifThen(pressed(pairingButtons.readAnswer), [setVariable(step, text('read-answer'))]),
-                ifThen(pressed(pairingButtons.cancel), [setVariable(step, text('cancel'))])
-              ]
-            )
-          ]
-        ),
-        wait(0.1)
-      ]),
-      block(`${this.shell}_hideQrImage`)
+      repeatUntil(
+        or(stopOn, or(this.ended(), not(equals(variable(step), text(''))))),
+        [
+          ifThen(
+            greaterThan(
+              reporter(block(`${this.shell}_qrImageButtonPresses`)),
+              variable(pressesSeen),
+            ),
+            [
+              setVariable(
+                pressesSeen,
+                reporter(block(`${this.shell}_qrImageButtonPresses`)),
+              ),
+              ifElse(
+                pressed(pairingButtons.next),
+                [
+                  setVariable(
+                    partIndex,
+                    reporter(
+                      add(
+                        reporter(
+                          modulo(
+                            variable(partIndex),
+                            this.pairingValue('pairingQrPartCount'),
+                          ),
+                        ),
+                        number(1),
+                      ),
+                    ),
+                  ),
+                  this.showPart(kind, instruction, buttons),
+                ],
+                [
+                  ifThen(pressed(pairingButtons.readAnswer), [
+                    setVariable(step, text('read-answer')),
+                  ]),
+                  ifThen(pressed(pairingButtons.cancel), [
+                    setVariable(step, text('cancel')),
+                  ]),
+                ],
+              ),
+            ],
+          ),
+          wait(0.1),
+        ],
+      ),
+      block(`${this.shell}_hideQrImage`),
     ];
   }
 
@@ -224,26 +277,26 @@ export class PairingSteps {
    * other side's message may already be waiting; clearing would throw away the proof.
    */
   public exchangeTestMessage(from: string): BlockNode[] {
-    const {waited, linkTest} = this.references;
+    const { waited, linkTest } = this.references;
     const received = not(equals(variable(linkTest), text('')));
     return [
       this.notice(
         concatenate(
           text('接続しました（相手: '),
           this.pairingValue('pairingRemotePeer'),
-          text('）。テストメッセージを送受信しています。')
-        )
+          text('）。テストメッセージを送受信しています。'),
+        ),
       ),
       block(`${webrtc}_broadcastNetworkMessage`, {
         MESSAGE: text(linkTestMessage),
-        PAYLOAD: text(JSON.stringify({from})),
+        PAYLOAD: text(JSON.stringify({ from })),
         CHANNEL: text('default'),
-        PEER: this.pairingValue('pairingRemotePeer')
+        PEER: this.pairingValue('pairingRemotePeer'),
       }),
       setVariable(waited, number(0)),
       repeatUntil(or(received, greaterThan(variable(waited), number(100))), [
         wait(0.1),
-        changeVariable(waited, 1)
+        changeVariable(waited, 1),
       ]),
       ifElse(
         received,
@@ -253,19 +306,19 @@ export class PairingSteps {
               text('接続しました（相手: '),
               this.pairingValue('pairingRemotePeer'),
               text('）。テストメッセージを送受信できました: '),
-              variable(linkTest)
-            )
-          )
+              variable(linkTest),
+            ),
+          ),
         ],
         [
           this.error(
             text(
-              '接続は成立しましたが、10秒以内に相手からテストメッセージが届きませんでした。相手側の画面を確認してください。'
+              '接続は成立しましたが、10秒以内に相手からテストメッセージが届きませんでした。相手側の画面を確認してください。',
             ),
-            'PAIRING_TEST_MESSAGE_MISSING'
-          )
-        ]
-      )
+            'PAIRING_TEST_MESSAGE_MISSING',
+          ),
+        ],
+      ),
     ];
   }
 
@@ -288,7 +341,7 @@ export class PairingSteps {
     return [
       this.pairing('cancelPairing'),
       block(`${this.shell}_hideQrImage`),
-      this.notice(text('ペアリングをやめました。'))
+      this.notice(text('ペアリングをやめました。')),
     ];
   }
 }

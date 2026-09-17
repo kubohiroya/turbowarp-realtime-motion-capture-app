@@ -1,8 +1,8 @@
-import {createServer, type Server} from 'node:net';
+import { createServer, type Server } from 'node:net';
 
-import {afterEach, describe, expect, it} from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
-import {defaultIsPortBound, defaultIsProcessAlive} from '../src/run-lock.ts';
+import { defaultIsPortBound, defaultIsProcessAlive } from '../src/run-lock.ts';
 
 /**
  * The other suite injects both probes, so these cover the real ones.
@@ -31,7 +31,9 @@ function listen(port = 0): Promise<number> {
 
 afterEach(async () => {
   await Promise.all(
-    servers.map((server) => new Promise<void>((resolve) => server.close(() => resolve())))
+    servers.map(
+      (server) => new Promise<void>((resolve) => server.close(() => resolve())),
+    ),
   );
   servers = [];
 });

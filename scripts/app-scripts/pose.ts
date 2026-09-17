@@ -9,7 +9,7 @@ import {
   type BlockNode,
   type InputValue,
   type NamedReference,
-  type Script
+  type Script,
 } from '../../packages/sb3-script/src/blocks.ts';
 import {
   add,
@@ -23,7 +23,7 @@ import {
   not,
   or,
   repeatUntil,
-  setVariable
+  setVariable,
 } from '../../packages/sb3-script/src/standard.ts';
 
 /**
@@ -52,25 +52,34 @@ export const poseHighWaterMarkBytes = 16_384;
 /** Flag names from the contract extension, as the app shell reports them. */
 export const poseFeatureFlag = 'webgpuMoveNetMultiPose';
 
-const mc = (opcode: string, inputs: Readonly<Record<string, InputValue>> = {}) =>
-  block(`${motionCapture}_${opcode}`, inputs);
-const mcValue = (opcode: string, inputs: Readonly<Record<string, InputValue>> = {}) =>
-  reporter(mc(opcode, inputs));
+const mc = (
+  opcode: string,
+  inputs: Readonly<Record<string, InputValue>> = {},
+) => block(`${motionCapture}_${opcode}`, inputs);
+const mcValue = (
+  opcode: string,
+  inputs: Readonly<Record<string, InputValue>> = {},
+) => reporter(mc(opcode, inputs));
 
-const concatenate = (first: InputValue, ...rest: readonly InputValue[]): InputValue =>
+const concatenate = (
+  first: InputValue,
+  ...rest: readonly InputValue[]
+): InputValue =>
   rest.reduce((left, right) => reporter(join(left, right)), first);
 
 const timer = (): InputValue => reporter(block('sensing_timer'));
-const round = (value: InputValue): InputValue => reporter(block('operator_round', {NUM: value}));
+const round = (value: InputValue): InputValue =>
+  reporter(block('operator_round', { NUM: value }));
 const subtract = (left: InputValue, right: InputValue): InputValue =>
-  reporter(block('operator_subtract', {NUM1: left, NUM2: right}));
+  reporter(block('operator_subtract', { NUM1: left, NUM2: right }));
 const multiply = (left: InputValue, right: InputValue): InputValue =>
-  reporter(block('operator_multiply', {NUM1: left, NUM2: right}));
+  reporter(block('operator_multiply', { NUM1: left, NUM2: right }));
 const divide = (left: InputValue, right: InputValue): InputValue =>
-  reporter(block('operator_divide', {NUM1: left, NUM2: right}));
+  reporter(block('operator_divide', { NUM1: left, NUM2: right }));
 const lengthOf = (value: InputValue): InputValue =>
-  reporter(block('operator_length', {STRING: value}));
-const sum = (left: InputValue, right: InputValue): InputValue => reporter(add(left, right));
+  reporter(block('operator_length', { STRING: value }));
+const sum = (left: InputValue, right: InputValue): InputValue =>
+  reporter(add(left, right));
 
 export const cameraPoseReferences = () => ({
   running: namedReference('pose running', 'variable:pose-running'),
@@ -81,25 +90,43 @@ export const cameraPoseReferences = () => ({
   frames: namedReference('pose window frames', 'variable:pose-window-frames'),
   inferenceSeconds: namedReference(
     'pose window inference seconds',
-    'variable:pose-window-inference-seconds'
+    'variable:pose-window-inference-seconds',
   ),
   bytes: namedReference('pose window bytes', 'variable:pose-window-bytes'),
-  windowStart: namedReference('pose window start', 'variable:pose-window-start'),
-  inferenceStart: namedReference('pose inference start', 'variable:pose-inference-start'),
+  windowStart: namedReference(
+    'pose window start',
+    'variable:pose-window-start',
+  ),
+  inferenceStart: namedReference(
+    'pose inference start',
+    'variable:pose-inference-start',
+  ),
   sentBefore: namedReference('pose sent before', 'variable:pose-sent-before'),
-  droppedBefore: namedReference('pose dropped before', 'variable:pose-dropped-before')
+  droppedBefore: namedReference(
+    'pose dropped before',
+    'variable:pose-dropped-before',
+  ),
 });
 
 export type CameraPoseReferences = ReturnType<typeof cameraPoseReferences>;
 
-const textVariables = new Set(['running', 'stopReason', 'peer', 'localPeer', 'frame']);
+const textVariables = new Set([
+  'running',
+  'stopReason',
+  'peer',
+  'localPeer',
+  'frame',
+]);
 
 export const cameraPoseVariables = (r: CameraPoseReferences) =>
   Object.fromEntries(
     Object.entries(r).map(([key, reference]) => [
       reference.id,
-      [reference.name, key === 'running' ? 'false' : textVariables.has(key) ? '' : 0]
-    ])
+      [
+        reference.name,
+        key === 'running' ? 'false' : textVariables.has(key) ? '' : 0,
+      ],
+    ]),
   );
 
 export function cameraPoseScripts(options: {
@@ -113,23 +140,39 @@ export function cameraPoseScripts(options: {
   readonly startAction: string;
   readonly stopAction: string;
   readonly menuActionsRequested: NamedReference;
-  readonly position: {x: number; y: number};
+  readonly position: { x: number; y: number };
 }): Script[] {
-  const {shell, titleMenu, cameraId, references: r} = options;
-  const notice = (message: InputValue) => block(`${shell}_showAppNotice`, {MESSAGE: message});
+  const { shell, titleMenu, cameraId, references: r } = options;
+  const notice = (message: InputValue) =>
+    block(`${shell}_showAppNotice`, { MESSAGE: message });
   const error = (message: InputValue, code: string) =>
-    block(`${shell}_showAppError`, {MESSAGE: message, DETAILS: text(JSON.stringify({code}))});
+    block(`${shell}_showAppError`, {
+      MESSAGE: message,
+      DETAILS: text(JSON.stringify({ code })),
+    });
   const pairingValue = (opcode: string) =>
-    reporter(block(`${options.pairingExtension}_${opcode}`, {SESSION: text(options.pairingSession)}));
+    reporter(
+      block(`${options.pairingExtension}_${opcode}`, {
+        SESSION: text(options.pairingSession),
+      }),
+    );
   const connected = () =>
-    equals(reporter(block(`${webrtc}_connectionState`, {PEER: variable(r.peer)})), text('connected'));
-  const channelArgs = () => ({CHANNEL: text(poseChannel), PEER: variable(r.peer)});
-  const sentCount = () => reporter(block(`${webrtc}_latestDataSentCount`, channelArgs()));
-  const droppedCount = () => reporter(block(`${webrtc}_latestDataDroppedCount`, channelArgs()));
+    equals(
+      reporter(block(`${webrtc}_connectionState`, { PEER: variable(r.peer) })),
+      text('connected'),
+    );
+  const channelArgs = () => ({
+    CHANNEL: text(poseChannel),
+    PEER: variable(r.peer),
+  });
+  const sentCount = () =>
+    reporter(block(`${webrtc}_latestDataSentCount`, channelArgs()));
+  const droppedCount = () =>
+    reporter(block(`${webrtc}_latestDataDroppedCount`, channelArgs()));
   const json = (value: InputValue, path: string) =>
-    reporter(block(`${shell}_jsonValueAt`, {JSON: value, PATH: text(path)}));
+    reporter(block(`${shell}_jsonValueAt`, { JSON: value, PATH: text(path) }));
   const menu = (action: string) =>
-    block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action});
+    block(`${titleMenu}_whenAppMenuActionSelected`, {}, { ACTION: action });
   const elapsed = () => subtract(timer(), variable(r.windowStart));
 
   const resetWindow = (): BlockNode[] => [
@@ -138,7 +181,7 @@ export function cameraPoseScripts(options: {
     setVariable(r.inferenceSeconds, number(0)),
     setVariable(r.bytes, number(0)),
     setVariable(r.sentBefore, sentCount()),
-    setVariable(r.droppedBefore, droppedCount())
+    setVariable(r.droppedBefore, droppedCount()),
   ];
 
   /**
@@ -155,7 +198,12 @@ export function cameraPoseScripts(options: {
         // Measured across the awaited block, so it includes waiting for the next VM frame as well
         // as the inference itself. Named for what it is, not for the part of it that is inference.
         text(' / 推論1回（フレーム待ちを含む）: '),
-        round(multiply(divide(variable(r.inferenceSeconds), variable(r.frames)), number(1000))),
+        round(
+          multiply(
+            divide(variable(r.inferenceSeconds), variable(r.frames)),
+            number(1000),
+          ),
+        ),
         text(' ms / 送信: '),
         subtract(sentCount(), variable(r.sentBefore)),
         text(' 件 / 破棄: '),
@@ -163,8 +211,8 @@ export function cameraPoseScripts(options: {
         text(' 件 / 送信量: '),
         round(divide(divide(variable(r.bytes), number(1024)), elapsed())),
         text(' KB/s / seq: '),
-        json(variable(r.frame), 'sequence')
-      )
+        json(variable(r.frame), 'sequence'),
+      ),
     );
 
   const start = script(options.position, [
@@ -174,7 +222,9 @@ export function cameraPoseScripts(options: {
     setVariable(r.peer, pairingValue('pairingRemotePeer')),
     setVariable(r.localPeer, pairingValue('pairingLocalPeer')),
     ifElse(
-      not(block(`${shell}_appFeatureEnabled`, {FEATURE: text(poseFeatureFlag)})),
+      not(
+        block(`${shell}_appFeatureEnabled`, { FEATURE: text(poseFeatureFlag) }),
+      ),
       [error(text('この配布物では姿勢推定が無効です。'), 'POSE_DISABLED')],
       [
         ifElse(
@@ -182,51 +232,75 @@ export function cameraPoseScripts(options: {
           [notice(text('姿勢推定はすでに動いています。'))],
           [
             ifElse(
-              not(block(`${cameraSource}_isCameraRunning`, {CAMERA_ID: text(cameraId)})),
-              [error(text('先に「カメラを選ぶ」でカメラを選んでください。'), 'CAMERA_NOT_RUNNING')],
+              not(
+                block(`${cameraSource}_isCameraRunning`, {
+                  CAMERA_ID: text(cameraId),
+                }),
+              ),
+              [
+                error(
+                  text('先に「カメラを選ぶ」でカメラを選んでください。'),
+                  'CAMERA_NOT_RUNNING',
+                ),
+              ],
               [
                 ifElse(
-                  not(equals(variable(options.lensCalibrationReady), text('true'))),
+                  not(
+                    equals(
+                      variable(options.lensCalibrationReady),
+                      text('true'),
+                    ),
+                  ),
                   [
                     error(
-                      text('レンズ校正が適用されていないため、姿勢推定を始められません。先にレンズ校正を済ませてください。'),
-                      'LENS_UNCALIBRATED'
-                    )
+                      text(
+                        'レンズ校正が適用されていないため、姿勢推定を始められません。先にレンズ校正を済ませてください。',
+                      ),
+                      'LENS_UNCALIBRATED',
+                    ),
                   ],
                   [
                     ifElse(
                       or(equals(variable(r.peer), text('')), not(connected())),
                       [
                         error(
-                          text('統合アプリと接続していないため、姿勢推定を始めません。先に「統合アプリと接続する」を選んでください。'),
-                          'POSE_NOT_CONNECTED'
-                        )
+                          text(
+                            '統合アプリと接続していないため、姿勢推定を始めません。先に「統合アプリと接続する」を選んでください。',
+                          ),
+                          'POSE_NOT_CONNECTED',
+                        ),
                       ],
-                      runPipeline()
-                    )
-                  ]
-                )
-              ]
-            )
-          ]
-        )
-      ]
+                      runPipeline(),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
     ),
-    block(`${titleMenu}_showMenu`)
+    block(`${titleMenu}_showMenu`),
   ]);
 
   function runPipeline(): BlockNode[] {
     return [
       setVariable(r.running, text('true')),
       setVariable(r.stopReason, text('')),
-      block(`${shell}_showAppLoading`, {LABEL: text('MoveNetを読み込んでいます')}),
+      block(`${shell}_showAppLoading`, {
+        LABEL: text('MoveNetを読み込んでいます'),
+      }),
       mc('startWebGpuMoveNetMultiPose', {
         CALIBRATION_ID: json(
-          reporter(block(`${cameraSource}_cameraProfileJson`, {CAMERA_ID: text(cameraId)})),
-          'profileId'
+          reporter(
+            block(`${cameraSource}_cameraProfileJson`, {
+              CAMERA_ID: text(cameraId),
+            }),
+          ),
+          'profileId',
         ),
         CAMERA_ID: text(cameraId),
-        PEER_ID: variable(r.localPeer)
+        PEER_ID: variable(r.localPeer),
       }),
       block(`${shell}_hideAppLoading`),
       ifElse(
@@ -238,10 +312,10 @@ export function cameraPoseScripts(options: {
               text('姿勢推定を開始できませんでした（'),
               mcValue('poseErrorCode'),
               text('）: '),
-              mcValue('poseError')
+              mcValue('poseError'),
             ),
-            'POSE_START_FAILED'
-          )
+            'POSE_START_FAILED',
+          ),
         ],
         [
           notice(text('姿勢推定を開始しました。統合アプリへ送信しています。')),
@@ -250,19 +324,30 @@ export function cameraPoseScripts(options: {
           repeatUntil(not(equals(variable(r.running), text('true'))), [
             ifElse(
               not(connected()),
-              [setVariable(r.running, text('false')), setVariable(r.stopReason, text('disconnected'))],
+              [
+                setVariable(r.running, text('false')),
+                setVariable(r.stopReason, text('disconnected')),
+              ],
               [
                 setVariable(r.inferenceStart, timer()),
                 mc('inferNextPoseFrame', {
-                  CAPTURE_TIMESTAMP_US: round(reporter(block(`${webrtc}_localTime`)))
+                  CAPTURE_TIMESTAMP_US: round(
+                    reporter(block(`${webrtc}_localTime`)),
+                  ),
                 }),
                 ifElse(
                   equals(mcValue('posePipelineState'), text('error')),
-                  [setVariable(r.running, text('false')), setVariable(r.stopReason, text('error'))],
+                  [
+                    setVariable(r.running, text('false')),
+                    setVariable(r.stopReason, text('error')),
+                  ],
                   [
                     setVariable(
                       r.inferenceSeconds,
-                      sum(variable(r.inferenceSeconds), subtract(timer(), variable(r.inferenceStart)))
+                      sum(
+                        variable(r.inferenceSeconds),
+                        subtract(timer(), variable(r.inferenceStart)),
+                      ),
                     ),
                     changeVariable(r.frames, 1),
                     setVariable(r.frame, mcValue('latestPoseFrame2D')),
@@ -270,20 +355,31 @@ export function cameraPoseScripts(options: {
                       block(`${webrtc}_sendLatestData`, {
                         PAYLOAD: variable(r.frame),
                         CHANNEL: text(poseChannel),
-                        PEER: variable(r.peer)
+                        PEER: variable(r.peer),
                       }),
-                      setVariable(r.bytes, sum(variable(r.bytes), lengthOf(variable(r.frame))))
+                      setVariable(
+                        r.bytes,
+                        sum(variable(r.bytes), lengthOf(variable(r.frame))),
+                      ),
                     ]),
-                    ifThen(greaterThan(elapsed(), number(1)), [reportWindow(), ...resetWindow()])
-                  ]
-                )
-              ]
-            )
+                    ifThen(greaterThan(elapsed(), number(1)), [
+                      reportWindow(),
+                      ...resetWindow(),
+                    ]),
+                  ],
+                ),
+              ],
+            ),
           ]),
           mc('stopWebGpuMoveNetMultiPose'),
           ifElse(
             equals(variable(r.stopReason), text('disconnected')),
-            [error(text('統合アプリとの接続が切れたため、姿勢推定を止めました。'), 'POSE_DISCONNECTED')],
+            [
+              error(
+                text('統合アプリとの接続が切れたため、姿勢推定を止めました。'),
+                'POSE_DISCONNECTED',
+              ),
+            ],
             [
               ifElse(
                 equals(variable(r.stopReason), text('error')),
@@ -293,30 +389,30 @@ export function cameraPoseScripts(options: {
                       text('姿勢推定が止まりました（'),
                       mcValue('poseErrorCode'),
                       text('）: '),
-                      mcValue('poseError')
+                      mcValue('poseError'),
                     ),
-                    'POSE_FAILED'
-                  )
+                    'POSE_FAILED',
+                  ),
                 ],
-                [notice(text('姿勢推定を止めました。'))]
-              )
-            ]
-          )
-        ]
-      )
+                [notice(text('姿勢推定を止めました。'))],
+              ),
+            ],
+          ),
+        ],
+      ),
     ];
   }
 
-  const stop = script({x: options.position.x, y: options.position.y + 2400}, [
+  const stop = script({ x: options.position.x, y: options.position.y + 2400 }, [
     menu(options.stopAction),
     block(`${titleMenu}_clearAppMenuActions`),
     broadcastMessageAndWait(options.menuActionsRequested),
     ifElse(
       equals(variable(r.running), text('true')),
       [setVariable(r.running, text('false'))],
-      [notice(text('姿勢推定は動いていません。'))]
+      [notice(text('姿勢推定は動いていません。'))],
     ),
-    block(`${titleMenu}_showMenu`)
+    block(`${titleMenu}_showMenu`),
   ]);
 
   return [start, stop];
@@ -327,12 +423,12 @@ export function cameraPoseScripts(options: {
 /** Readies the pose channel for one camera app before its offer is created. */
 export function fusionPoseChannelSetup(peer: InputValue): BlockNode[] {
   return [
-    block(`${webrtc}_setLatestDataEnabled`, {ENABLED: text('true')}),
+    block(`${webrtc}_setLatestDataEnabled`, { ENABLED: text('true') }),
     block(`${webrtc}_configureLatestDataChannel`, {
       CHANNEL: text(poseChannel),
       HIGH_WATER_MARK: number(poseHighWaterMarkBytes),
-      PEER: peer
-    })
+      PEER: peer,
+    }),
   ];
 }
 
@@ -346,12 +442,19 @@ export function fusionPoseSummary(options: {
   readonly peer: NamedReference;
   readonly summary: NamedReference;
 }): BlockNode[] {
-  const {shell} = options;
-  const peers = reporter(block(`${shell}_latestDataPeers`, {CHANNEL: text(poseChannel)}));
+  const { shell } = options;
+  const peers = reporter(
+    block(`${shell}_latestDataPeers`, { CHANNEL: text(poseChannel) }),
+  );
   const at = (json: InputValue, path: InputValue) =>
-    reporter(block(`${shell}_jsonValueAt`, {JSON: json, PATH: path}));
+    reporter(block(`${shell}_jsonValueAt`, { JSON: json, PATH: path }));
   const payload = () =>
-    reporter(block(`${shell}_latestDataPayload`, {CHANNEL: text(poseChannel), PEER: variable(options.peer)}));
+    reporter(
+      block(`${shell}_latestDataPayload`, {
+        CHANNEL: text(poseChannel),
+        PEER: variable(options.peer),
+      }),
+    );
   const indexText = () => reporter(join(variable(options.index), text('')));
   return [
     setVariable(options.summary, text('')),
@@ -364,19 +467,29 @@ export function fusionPoseSummary(options: {
           variable(options.summary),
           variable(options.peer),
           text(': '),
-          reporter(block(`${shell}_latestDataReceivedCount`, {CHANNEL: text(poseChannel), PEER: variable(options.peer)})),
+          reporter(
+            block(`${shell}_latestDataReceivedCount`, {
+              CHANNEL: text(poseChannel),
+              PEER: variable(options.peer),
+            }),
+          ),
           text('件 / 最新 '),
-          reporter(block(`${shell}_latestDataAgeMs`, {CHANNEL: text(poseChannel), PEER: variable(options.peer)})),
+          reporter(
+            block(`${shell}_latestDataAgeMs`, {
+              CHANNEL: text(poseChannel),
+              PEER: variable(options.peer),
+            }),
+          ),
           text(' ms前 / seq '),
           at(payload(), text('sequence')),
           text(' / 人数 '),
           at(payload(), text('persons.length')),
           text(' / calibration '),
           at(payload(), text('calibrationId')),
-          text('。 ')
-        )
+          text('。 '),
+        ),
       ),
-      changeVariable(options.index, 1)
-    ])
+      changeVariable(options.index, 1),
+    ]),
   ];
 }

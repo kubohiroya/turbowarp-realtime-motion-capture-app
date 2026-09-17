@@ -22,13 +22,13 @@ camera appのメニュー「姿勢推定を開始する」「姿勢推定を止�
 
 `startWebGpuMoveNetMultiPose`に次を渡し、拡張がフレームに入れます。
 
-| フィールド | 値 |
-|---|---|
-| `cameraId` | `pose` |
-| `peerId` | 統合アプリから見たこのカメラの名前（ペアリングのlocal peer、`camera-1`など） |
-| `calibrationId` | Camera Sourceに登録されたレンズ校正profileの`profileId` |
-| `captureTimestampUs` | 推論直前の`turbowarp-webrtc`の`local time`（整数µs）。#11の方針どおり、WebRTCの時刻サービスの値を変えずに使う |
-| `sequence`、`frameWidth`、`frameHeight`、`persons`（最大6人、17 keypoint、confidence、`trackingId`） | 拡張が生成 |
+| フィールド                                                                                           | 値                                                                                                            |
+| ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `cameraId`                                                                                           | `pose`                                                                                                        |
+| `peerId`                                                                                             | 統合アプリから見たこのカメラの名前（ペアリングのlocal peer、`camera-1`など）                                  |
+| `calibrationId`                                                                                      | Camera Sourceに登録されたレンズ校正profileの`profileId`                                                       |
+| `captureTimestampUs`                                                                                 | 推論直前の`turbowarp-webrtc`の`local time`（整数µs）。#11の方針どおり、WebRTCの時刻サービスの値を変えずに使う |
+| `sequence`、`frameWidth`、`frameHeight`、`persons`（最大6人、17 keypoint、confidence、`trackingId`） | 拡張が生成                                                                                                    |
 
 `captureTimestampUs`はフレームの撮影時刻ではなく、推論を依頼した時刻です。撮影時刻との差はM-08の時刻対応
 （`displayToTimestampDelayUs`）とは別に残ります。

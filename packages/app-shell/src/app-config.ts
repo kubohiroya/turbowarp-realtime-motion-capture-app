@@ -1,6 +1,6 @@
-import type {AppShellMessageLocales} from '@kubohiroya/turbowarp-app-shell';
+import type { AppShellMessageLocales } from '@kubohiroya/turbowarp-app-shell';
 
-import type {FeatureFlagName} from './feature-flags.js';
+import type { FeatureFlagName } from './feature-flags.js';
 
 export type ShellLocale = 'en' | 'ja';
 
@@ -56,9 +56,13 @@ export type AppFlagName = (typeof appFlagNames)[number];
 const idPattern = /^[a-z0-9]+$/;
 
 /** Validates one application configuration before a build or a registration uses it. */
-export function validateAppConfig(config: AppShellAppConfig): AppShellAppConfig {
+export function validateAppConfig(
+  config: AppShellAppConfig,
+): AppShellAppConfig {
   if (!idPattern.test(config.id)) {
-    throw new TypeError(`Extension ID must match ${String(idPattern)}: ${config.id}`);
+    throw new TypeError(
+      `Extension ID must match ${String(idPattern)}: ${config.id}`,
+    );
   }
   return config;
 }

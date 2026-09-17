@@ -1,0 +1,10 @@
+node_modules/
+dist/
+public/downloads/
+pnpm-lock.yaml
+
+# Generated, and pinned by SHA-256 in embedded-extensions.json and apps/<app>/release.json.
+apps/*/source/
+packages/*/dist/
+config/extension-readiness.json
+apps/*/release.json

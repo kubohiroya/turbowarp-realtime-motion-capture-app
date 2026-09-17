@@ -9,7 +9,7 @@ import {
   variable,
   type BlockNode,
   type InputValue,
-  type NamedReference
+  type NamedReference,
 } from '../../packages/sb3-script/src/blocks.ts';
 import {
   addToList,
@@ -28,7 +28,7 @@ import {
   repeat,
   repeatUntil,
   setVariable,
-  wait
+  wait,
 } from '../../packages/sb3-script/src/standard.ts';
 
 /**
@@ -67,7 +67,7 @@ export const thresholds = {
   maximumTimeUncertaintyUs: 10_000,
   /** The extension refuses a wider spread itself; kept here so READY states the same limit. */
   maximumCornerSpreadPx: 0.5,
-  maximumReprojectionRmsPx: 2
+  maximumReprojectionRmsPx: 2,
 } as const;
 
 /** How long a camera measures the corners, beyond the decoder's own calibration. */
@@ -77,12 +77,19 @@ export const replyTimeoutSeconds = 60;
 /** Tape measurement, per corner. Recorded with the reference, not used to tighten anything. */
 export const cornerSigmaMeters = 0.003;
 
-const tss = (opcode: string, inputs: Readonly<Record<string, InputValue>> = {}) =>
-  block(`${timeSpaceSync}_${opcode}`, inputs);
-const tssValue = (opcode: string, inputs: Readonly<Record<string, InputValue>> = {}) =>
-  reporter(tss(opcode, inputs));
+const tss = (
+  opcode: string,
+  inputs: Readonly<Record<string, InputValue>> = {},
+) => block(`${timeSpaceSync}_${opcode}`, inputs);
+const tssValue = (
+  opcode: string,
+  inputs: Readonly<Record<string, InputValue>> = {},
+) => reporter(tss(opcode, inputs));
 
-const concatenate = (first: InputValue, ...rest: readonly InputValue[]): InputValue =>
+const concatenate = (
+  first: InputValue,
+  ...rest: readonly InputValue[]
+): InputValue =>
   rest.reduce((left, right) => reporter(join(left, right)), first);
 
 class Json {
@@ -96,51 +103,82 @@ class Json {
     return reporter(
       block(`${this.shell}_jsonValueAt`, {
         JSON: json,
-        PATH: typeof path === 'string' ? text(path) : path
-      })
+        PATH: typeof path === 'string' ? text(path) : path,
+      }),
     );
   }
 
-  public withJson(json: InputValue, key: string, value: InputValue): InputValue {
-    return reporter(block(`${this.shell}_jsonWithJsonField`, {JSON: json, KEY: text(key), VALUE: value}));
+  public withJson(
+    json: InputValue,
+    key: string,
+    value: InputValue,
+  ): InputValue {
+    return reporter(
+      block(`${this.shell}_jsonWithJsonField`, {
+        JSON: json,
+        KEY: text(key),
+        VALUE: value,
+      }),
+    );
   }
 
-  public withText(json: InputValue, key: string, value: InputValue): InputValue {
-    return reporter(block(`${this.shell}_jsonWithTextField`, {JSON: json, KEY: text(key), VALUE: value}));
+  public withText(
+    json: InputValue,
+    key: string,
+    value: InputValue,
+  ): InputValue {
+    return reporter(
+      block(`${this.shell}_jsonWithTextField`, {
+        JSON: json,
+        KEY: text(key),
+        VALUE: value,
+      }),
+    );
   }
 }
 
 const notice = (shell: string, message: InputValue) =>
-  block(`${shell}_showAppNotice`, {MESSAGE: message});
+  block(`${shell}_showAppNotice`, { MESSAGE: message });
 const error = (shell: string, message: InputValue, code: string) =>
-  block(`${shell}_showAppError`, {MESSAGE: message, DETAILS: text(JSON.stringify({code}))});
+  block(`${shell}_showAppError`, {
+    MESSAGE: message,
+    DETAILS: text(JSON.stringify({ code })),
+  });
 
 // Camera app ---------------------------------------------------------------
 
 export const cameraSyncReferences = () => ({
   request: namedReference('space-time request', 'variable:space-time-request'),
   result: namedReference('space-time result', 'variable:space-time-result'),
-  requested: namedReference('space-time requested', 'broadcast:space-time-requested')
+  requested: namedReference(
+    'space-time requested',
+    'broadcast:space-time-requested',
+  ),
 });
 
 export type CameraSyncReferences = ReturnType<typeof cameraSyncReferences>;
 
 export const cameraSyncVariables = (references: CameraSyncReferences) => ({
   [references.request.id]: [references.request.name, ''],
-  [references.result.id]: [references.result.name, '']
+  [references.result.id]: [references.result.name, ''],
 });
 
 export const cameraSyncBroadcasts = (references: CameraSyncReferences) => ({
-  [references.requested.id]: references.requested.name
+  [references.requested.id]: references.requested.name,
 });
 
 /** What the camera app's message dispatcher does with a start request. */
-export const cameraSyncRoute = (references: CameraSyncReferences, message: NamedReference) => ({
+export const cameraSyncRoute = (
+  references: CameraSyncReferences,
+  message: NamedReference,
+) => ({
   type: syncStartMessage,
   handle: [
     setVariable(references.request, variable(message)),
-    block('event_broadcast', {BROADCAST_INPUT: broadcast(references.requested)})
-  ]
+    block('event_broadcast', {
+      BROADCAST_INPUT: broadcast(references.requested),
+    }),
+  ],
 });
 
 /**
@@ -165,68 +203,108 @@ export function measureSpaceTimeSteps(options: {
   const failWith = (code: InputValue): BlockNode =>
     setVariable(
       options.result,
-      json.withText(json.withText(text('{}'), 'status', text('failed')), 'error', code)
+      json.withText(
+        json.withText(text('{}'), 'status', text('failed')),
+        'error',
+        code,
+      ),
     );
   return [
     tss('stopOpticalTimeDecoder'),
-    tss('setTimePatternProfile', {PROFILE_ID: text(patternProfileId)}),
+    tss('setTimePatternProfile', { PROFILE_ID: text(patternProfileId) }),
     tss('startOpticalTimeDecoder', {
       CAMERA_ID: options.cameraId,
       REFERENCE_ID: options.referenceId,
       SECONDS: reporter(
         block('operator_add', {
           NUM1: tssValue('opticalTimeMinimumCalibrationSeconds'),
-          NUM2: number(1)
-        })
+          NUM2: number(1),
+        }),
       ),
-      REFRESH_US: options.refreshUs
+      REFRESH_US: options.refreshUs,
     }),
     ifElse(
       not(equals(tssValue('opticalTimeDecoderState'), text('ready'))),
-      [failWith(concatenate(text('decoder:'), tssValue('opticalTimeDecoderError')))],
       [
-        tss('measurePatternCorners', {SECONDS: options.measureSeconds}),
+        failWith(
+          concatenate(text('decoder:'), tssValue('opticalTimeDecoderError')),
+        ),
+      ],
+      [
+        tss('measurePatternCorners', { SECONDS: options.measureSeconds }),
         tss('estimateTimeCorrespondence'),
         ifElse(
           not(equals(tssValue('patternCornerError'), text(''))),
-          [failWith(concatenate(text('corners:'), tssValue('patternCornerError')))],
+          [
+            failWith(
+              concatenate(text('corners:'), tssValue('patternCornerError')),
+            ),
+          ],
           [
             ifElse(
               not(equals(tssValue('timeCorrespondenceError'), text(''))),
-              [failWith(concatenate(text('time:'), tssValue('timeCorrespondenceError')))],
               [
-                setVariable(options.result, json.withText(text('{}'), 'status', text('measured'))),
+                failWith(
+                  concatenate(
+                    text('time:'),
+                    tssValue('timeCorrespondenceError'),
+                  ),
+                ),
+              ],
+              [
                 setVariable(
                   options.result,
-                  json.withJson(result, 'correspondence', tssValue('timeCorrespondenceJson'))
+                  json.withText(text('{}'), 'status', text('measured')),
                 ),
                 setVariable(
                   options.result,
-                  json.withJson(result, 'observation', tssValue('patternCornerObservationJson'))
+                  json.withJson(
+                    result,
+                    'correspondence',
+                    tssValue('timeCorrespondenceJson'),
+                  ),
                 ),
                 setVariable(
                   options.result,
-                  json.withJson(result, 'cornerSpreadPx', tssValue('patternCornerSpreadPx'))
+                  json.withJson(
+                    result,
+                    'observation',
+                    tssValue('patternCornerObservationJson'),
+                  ),
+                ),
+                setVariable(
+                  options.result,
+                  json.withJson(
+                    result,
+                    'cornerSpreadPx',
+                    tssValue('patternCornerSpreadPx'),
+                  ),
                 ),
                 setVariable(
                   options.result,
                   json.withJson(
                     result,
                     'cameraModel',
-                    tssValue('cameraModelJson', {CAMERA_ID: options.cameraId})
-                  )
+                    tssValue('cameraModelJson', {
+                      CAMERA_ID: options.cameraId,
+                    }),
+                  ),
                 ),
                 setVariable(
                   options.result,
-                  json.withJson(result, 'decodeRate', tssValue('opticalTimeDecodeRate'))
-                )
-              ]
-            )
-          ]
-        )
-      ]
+                  json.withJson(
+                    result,
+                    'decodeRate',
+                    tssValue('opticalTimeDecodeRate'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
     ),
-    tss('stopOpticalTimeDecoder')
+    tss('stopOpticalTimeDecoder'),
   ];
 }
 
@@ -242,14 +320,18 @@ export function cameraSyncSteps(options: {
   readonly references: CameraSyncReferences;
   readonly lensCalibrationReady: NamedReference;
 }): BlockNode[] {
-  const {shell, cameraId, references} = options;
+  const { shell, cameraId, references } = options;
   const json = new Json(shell);
   const request = variable(references.request);
   const result = variable(references.result);
   const failWith = (code: InputValue): BlockNode =>
     setVariable(
       references.result,
-      json.withText(json.withText(text('{}'), 'status', text('failed')), 'error', code)
+      json.withText(
+        json.withText(text('{}'), 'status', text('failed')),
+        'error',
+        code,
+      ),
     );
   return [
     ifElse(
@@ -258,7 +340,9 @@ export function cameraSyncSteps(options: {
       [
         notice(
           shell,
-          text('統合アプリの投影パターンで、時刻と配置を校正しています。カメラを動かさないでください。')
+          text(
+            '統合アプリの投影パターンで、時刻と配置を校正しています。カメラを動かさないでください。',
+          ),
         ),
         ...measureSpaceTimeSteps({
           shell,
@@ -266,15 +350,15 @@ export function cameraSyncSteps(options: {
           referenceId: json.at(request, 'payload.referenceId'),
           refreshUs: json.at(request, 'payload.refreshUs'),
           measureSeconds: json.at(request, 'payload.measureSeconds'),
-          result: references.result
-        })
-      ]
+          result: references.result,
+        }),
+      ],
     ),
     block(`${webrtc}_broadcastNetworkMessage`, {
       MESSAGE: text(syncResultMessage),
       PAYLOAD: result,
       CHANNEL: text('default'),
-      PEER: text('*')
+      PEER: text('*'),
     }),
     ifElse(
       equals(json.at(result, 'status'), text('measured')),
@@ -286,9 +370,9 @@ export function cameraSyncSteps(options: {
             json.at(result, 'correspondence.uncertaintyUs'),
             text(' µs / 四隅のばらつき: '),
             json.at(result, 'cornerSpreadPx'),
-            text(' px')
-          )
-        )
+            text(' px'),
+          ),
+        ),
       ],
       [
         error(
@@ -296,12 +380,14 @@ export function cameraSyncSteps(options: {
           concatenate(
             text('校正の測定に失敗し、その理由を統合アプリへ送りました: '),
             json.at(result, 'error'),
-            text('。レンズ校正が済んでいるか、投影パターン全体がカメラに写っているかを確認してください。')
+            text(
+              '。レンズ校正が済んでいるか、投影パターン全体がカメラに写っているかを確認してください。',
+            ),
           ),
-          'SPACE_TIME_MEASUREMENT_FAILED'
-        )
-      ]
-    )
+          'SPACE_TIME_MEASUREMENT_FAILED',
+        ),
+      ],
+    ),
   ];
 }
 
@@ -309,15 +395,27 @@ export function cameraSyncSteps(options: {
 
 export const fusionSyncReferences = () => ({
   results: namedReference('space-time results', 'list:space-time-results'),
-  expected: namedReference('space-time expected cameras', 'variable:space-time-expected-cameras'),
+  expected: namedReference(
+    'space-time expected cameras',
+    'variable:space-time-expected-cameras',
+  ),
   waited: namedReference('space-time wait', 'variable:space-time-wait'),
-  corners: namedReference('space-time measured corners', 'variable:space-time-measured-corners'),
-  referenceJson: namedReference('space-time reference', 'variable:space-time-reference'),
+  corners: namedReference(
+    'space-time measured corners',
+    'variable:space-time-measured-corners',
+  ),
+  referenceJson: namedReference(
+    'space-time reference',
+    'variable:space-time-reference',
+  ),
   index: namedReference('space-time index', 'variable:space-time-index'),
   item: namedReference('space-time item', 'variable:space-time-item'),
   peer: namedReference('space-time peer', 'variable:space-time-peer'),
-  failures: namedReference('space-time failures', 'variable:space-time-failures'),
-  ready: namedReference('space-time ready', 'variable:space-time-ready')
+  failures: namedReference(
+    'space-time failures',
+    'variable:space-time-failures',
+  ),
+  ready: namedReference('space-time ready', 'variable:space-time-ready'),
 });
 
 export type FusionSyncReferences = ReturnType<typeof fusionSyncReferences>;
@@ -331,17 +429,20 @@ export const fusionSyncVariables = (references: FusionSyncReferences) => ({
   [references.item.id]: [references.item.name, ''],
   [references.peer.id]: [references.peer.name, ''],
   [references.failures.id]: [references.failures.name, ''],
-  [references.ready.id]: [references.ready.name, 'false']
+  [references.ready.id]: [references.ready.name, 'false'],
 });
 
 export const fusionSyncLists = (references: FusionSyncReferences) => ({
-  [references.results.id]: [references.results.name, []]
+  [references.results.id]: [references.results.name, []],
 });
 
 /** What the fusion app's message dispatcher does with a camera's reply. */
-export const fusionSyncRoute = (references: FusionSyncReferences, message: NamedReference) => ({
+export const fusionSyncRoute = (
+  references: FusionSyncReferences,
+  message: NamedReference,
+) => ({
   type: syncResultMessage,
-  handle: [addToList(variable(message), references.results)]
+  handle: [addToList(variable(message), references.results)],
 });
 
 const cornerFields =
@@ -351,22 +452,28 @@ export function fusionSyncSteps(options: {
   readonly shell: string;
   readonly references: FusionSyncReferences;
 }): BlockNode[] {
-  const {shell, references: r} = options;
+  const { shell, references: r } = options;
   const json = new Json(shell);
   const item = variable(r.item);
   const peer = variable(r.peer);
   const payload = json.at(item, 'payload');
   const addFailure = (reason: InputValue): BlockNode =>
-    setVariable(r.failures, concatenate(variable(r.failures), peer, text(': '), reason, text(' / ')));
-  const connectedCount = json.at(reporter(block(`${webrtc}_connectedPeers`)), 'length');
+    setVariable(
+      r.failures,
+      concatenate(variable(r.failures), peer, text(': '), reason, text(' / ')),
+    );
+  const connectedCount = json.at(
+    reporter(block(`${webrtc}_connectedPeers`)),
+    'length',
+  );
   const forEachResult = (body: BlockNode[]): BlockNode[] => [
     setVariable(r.index, number(0)),
     repeat(reporter(lengthOfList(r.results)), [
       changeVariable(r.index, 1),
       setVariable(r.item, reporter(itemOfList(variable(r.index), r.results))),
       setVariable(r.peer, json.at(item, 'peer')),
-      ...body
-    ])
+      ...body,
+    ]),
   ];
 
   return [
@@ -376,30 +483,37 @@ export function fusionSyncSteps(options: {
       [
         error(
           shell,
-          text('接続中のカメラアプリがありません。先に「カメラアプリと接続する」で接続してください。'),
-          'SPACE_TIME_NO_CAMERAS'
-        )
+          text(
+            '接続中のカメラアプリがありません。先に「カメラアプリと接続する」で接続してください。',
+          ),
+          'SPACE_TIME_NO_CAMERAS',
+        ),
       ],
       [
         block(`${shell}_askConfirmation`, {
           MESSAGE: text(
-            'これから時刻パターンを全画面に投影します。パターンは毎秒何十回も明滅します。光過敏の方が投影を見ないよう、観客や作業者に知らせてから表示してください。表示中はEscキーで消せます。'
+            'これから時刻パターンを全画面に投影します。パターンは毎秒何十回も明滅します。光過敏の方が投影を見ないよう、観客や作業者に知らせてから表示してください。表示中はEscキーで消せます。',
           ),
           CONFIRM: text('投影する'),
-          CANCEL: text('やめる')
+          CANCEL: text('やめる'),
         }),
         ifElse(
           not(block(`${shell}_confirmationAccepted`)),
           [notice(shell, text('空間と時刻の校正をやめました。'))],
           [
             tss('acknowledgePatternFlashing'),
-            tss('setTimePatternProfile', {PROFILE_ID: text(patternProfileId)}),
+            tss('setTimePatternProfile', {
+              PROFILE_ID: text(patternProfileId),
+            }),
             tss('showTimePattern'),
             setVariable(r.waited, number(0)),
-            repeatUntil(or(tss('timePatternStable'), greaterThan(variable(r.waited), number(50))), [
-              wait(0.1),
-              changeVariable(r.waited, 1)
-            ]),
+            repeatUntil(
+              or(
+                tss('timePatternStable'),
+                greaterThan(variable(r.waited), number(50)),
+              ),
+              [wait(0.1), changeVariable(r.waited, 1)],
+            ),
             deleteAllOfList(r.results),
             setVariable(r.expected, connectedCount),
             block(`${webrtc}_broadcastNetworkMessage`, {
@@ -408,31 +522,45 @@ export function fusionSyncSteps(options: {
                 json.withJson(
                   json.withText(text('{}'), 'referenceId', text(referenceId)),
                   'refreshUs',
-                  tssValue('timePatternRefreshUs')
+                  tssValue('timePatternRefreshUs'),
                 ),
                 'measureSeconds',
-                text(String(measureSeconds))
+                text(String(measureSeconds)),
               ),
               CHANNEL: text('default'),
-              PEER: text('*')
+              PEER: text('*'),
             }),
             setVariable(r.waited, number(0)),
             repeatUntil(
               or(
-                not(lessThan(reporter(lengthOfList(r.results)), variable(r.expected))),
+                not(
+                  lessThan(
+                    reporter(lengthOfList(r.results)),
+                    variable(r.expected),
+                  ),
+                ),
                 or(
-                  greaterThan(variable(r.waited), number(replyTimeoutSeconds * 10)),
-                  not(tss('timePatternShown'))
-                )
+                  greaterThan(
+                    variable(r.waited),
+                    number(replyTimeoutSeconds * 10),
+                  ),
+                  not(tss('timePatternShown')),
+                ),
               ),
-              [wait(0.1), changeVariable(r.waited, 1)]
+              [wait(0.1), changeVariable(r.waited, 1)],
             ),
             tss('hideTimePattern'),
-            ...stepsAfterReplies(shell, r, json, {item, peer, payload, addFailure, forEachResult})
-          ]
-        )
-      ]
-    )
+            ...stepsAfterReplies(shell, r, json, {
+              item,
+              peer,
+              payload,
+              addFailure,
+              forEachResult,
+            }),
+          ],
+        ),
+      ],
+    ),
   ];
 }
 
@@ -443,23 +571,35 @@ export function fusionSyncSteps(options: {
  * camera named `peer`. `expected` holds how many items there should be. Shared by the fusion app,
  * whose items arrive from camera apps, and the local app, which measures its own cameras.
  */
-export function spaceTimeSolveSteps(shell: string, r: FusionSyncReferences): BlockNode[] {
+export function spaceTimeSolveSteps(
+  shell: string,
+  r: FusionSyncReferences,
+): BlockNode[] {
   const json = new Json(shell);
   const item = variable(r.item);
   const peer = variable(r.peer);
   const payload = json.at(item, 'payload');
   const addFailure = (reason: InputValue): BlockNode =>
-    setVariable(r.failures, concatenate(variable(r.failures), peer, text(': '), reason, text(' / ')));
+    setVariable(
+      r.failures,
+      concatenate(variable(r.failures), peer, text(': '), reason, text(' / ')),
+    );
   const forEachResult = (body: BlockNode[]): BlockNode[] => [
     setVariable(r.index, number(0)),
     repeat(reporter(lengthOfList(r.results)), [
       changeVariable(r.index, 1),
       setVariable(r.item, reporter(itemOfList(variable(r.index), r.results))),
       setVariable(r.peer, json.at(item, 'peer')),
-      ...body
-    ])
+      ...body,
+    ]),
   ];
-  return stepsAfterReplies(shell, r, json, {item, peer, payload, addFailure, forEachResult});
+  return stepsAfterReplies(shell, r, json, {
+    item,
+    peer,
+    payload,
+    addFailure,
+    forEachResult,
+  });
 }
 
 function stepsAfterReplies(
@@ -472,9 +612,9 @@ function stepsAfterReplies(
     payload: InputValue;
     addFailure: (reason: InputValue) => BlockNode;
     forEachResult: (body: BlockNode[]) => BlockNode[];
-  }
+  },
 ): BlockNode[] {
-  const {peer, payload, addFailure, forEachResult} = parts;
+  const { peer, payload, addFailure, forEachResult } = parts;
   const measured = equals(json.at(payload, 'status'), text('measured'));
   return [
     ifElse(
@@ -487,22 +627,29 @@ function stepsAfterReplies(
             reporter(lengthOfList(r.results)),
             text(' / '),
             variable(r.expected),
-            text('台）。投影を止めたか、接続が切れた可能性があります。もう一度校正してください。')
+            text(
+              '台）。投影を止めたか、接続が切れた可能性があります。もう一度校正してください。',
+            ),
           ),
-          'SPACE_TIME_REPLIES_MISSING'
-        )
+          'SPACE_TIME_REPLIES_MISSING',
+        ),
       ],
       [
         block(`${shell}_askNumbers`, {
           TITLE: text(
-            '投影したパターンの外側の四隅を、壁の上で巻尺などで測った位置を入力してください（メートル）。左上の角を原点とし、右向きをx、下向きをyにします。'
+            '投影したパターンの外側の四隅を、壁の上で巻尺などで測った位置を入力してください（メートル）。左上の角を原点とし、右向きをx、下向きをyにします。',
           ),
           FIELDS: text(cornerFields),
-          DEFAULTS: variable(r.corners)
+          DEFAULTS: variable(r.corners),
         }),
         ifElse(
           equals(reporter(block(`${shell}_answeredNumbers`)), text('')),
-          [notice(shell, text('四隅の入力をやめたため、配置は校正していません。'))],
+          [
+            notice(
+              shell,
+              text('四隅の入力をやめたため、配置は校正していません。'),
+            ),
+          ],
           [
             setVariable(r.corners, reporter(block(`${shell}_answeredNumbers`))),
             setVariable(
@@ -511,84 +658,129 @@ function stepsAfterReplies(
                 REFERENCE_ID: text(referenceId),
                 CORNERS: variable(r.corners),
                 SIGMA_METERS: number(cornerSigmaMeters),
-                MEASURED_BY: text('tape')
-              })
+                MEASURED_BY: text('tape'),
+              }),
             ),
             setVariable(r.failures, text('')),
             tss('clearPlacement'),
-            tss('defineReference', {REFERENCE_JSON: variable(r.referenceJson)}),
+            tss('defineReference', {
+              REFERENCE_JSON: variable(r.referenceJson),
+            }),
             ...forEachResult([
               ifElse(
                 not(measured),
-                [addFailure(concatenate(text('測定失敗 '), json.at(payload, 'error')))],
                 [
-                  tss('setCameraModel', {CAMERA_ID: peer, MODEL_JSON: json.at(payload, 'cameraModel')}),
+                  addFailure(
+                    concatenate(text('測定失敗 '), json.at(payload, 'error')),
+                  ),
+                ],
+                [
+                  tss('setCameraModel', {
+                    CAMERA_ID: peer,
+                    MODEL_JSON: json.at(payload, 'cameraModel'),
+                  }),
                   tss('addPlacementObservation', {
-                    OBSERVATION_JSON: json.withText(json.at(payload, 'observation'), 'cameraId', peer)
+                    OBSERVATION_JSON: json.withText(
+                      json.at(payload, 'observation'),
+                      'cameraId',
+                      peer,
+                    ),
                   }),
                   ifThen(
                     greaterThan(
                       json.at(payload, 'correspondence.uncertaintyUs'),
-                      number(thresholds.maximumTimeUncertaintyUs)
+                      number(thresholds.maximumTimeUncertaintyUs),
                     ),
                     [
                       addFailure(
                         concatenate(
                           text('時刻の不確かさ '),
                           json.at(payload, 'correspondence.uncertaintyUs'),
-                          text(' µs')
-                        )
-                      )
-                    ]
+                          text(' µs'),
+                        ),
+                      ),
+                    ],
                   ),
-                  ifThen(equals(json.at(payload, 'correspondence.degraded'), text('true')), [
-                    addFailure(text('時刻対応が劣化状態'))
-                  ]),
                   ifThen(
-                    greaterThan(json.at(payload, 'cornerSpreadPx'), number(thresholds.maximumCornerSpreadPx)),
+                    equals(
+                      json.at(payload, 'correspondence.degraded'),
+                      text('true'),
+                    ),
+                    [addFailure(text('時刻対応が劣化状態'))],
+                  ),
+                  ifThen(
+                    greaterThan(
+                      json.at(payload, 'cornerSpreadPx'),
+                      number(thresholds.maximumCornerSpreadPx),
+                    ),
                     [
                       addFailure(
-                        concatenate(text('四隅のばらつき '), json.at(payload, 'cornerSpreadPx'), text(' px'))
-                      )
-                    ]
-                  )
-                ]
-              )
+                        concatenate(
+                          text('四隅のばらつき '),
+                          json.at(payload, 'cornerSpreadPx'),
+                          text(' px'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ]),
-            tss('solvePlacement', {RIG_ID: text(rigId)}),
+            tss('solvePlacement', { RIG_ID: text(rigId) }),
             ifElse(
               not(equals(tssValue('placementError'), text(''))),
               [
                 setVariable(
                   r.failures,
-                  concatenate(variable(r.failures), text('配置: '), tssValue('placementError'), text(' / '))
-                )
+                  concatenate(
+                    variable(r.failures),
+                    text('配置: '),
+                    tssValue('placementError'),
+                    text(' / '),
+                  ),
+                ),
               ],
               [
-                ifThen(equals(json.at(tssValue('placementResultJson'), 'degraded'), text('true')), [
-                  setVariable(r.failures, concatenate(variable(r.failures), text('配置が劣化状態 / ')))
-                ]),
+                ifThen(
+                  equals(
+                    json.at(tssValue('placementResultJson'), 'degraded'),
+                    text('true'),
+                  ),
+                  [
+                    setVariable(
+                      r.failures,
+                      concatenate(
+                        variable(r.failures),
+                        text('配置が劣化状態 / '),
+                      ),
+                    ),
+                  ],
+                ),
                 ...forEachResult([
                   ifThen(
                     and(
                       measured,
                       greaterThan(
-                        tssValue('placementReprojectionRms', {CAMERA_ID: peer}),
-                        number(thresholds.maximumReprojectionRmsPx)
-                      )
+                        tssValue('placementReprojectionRms', {
+                          CAMERA_ID: peer,
+                        }),
+                        number(thresholds.maximumReprojectionRmsPx),
+                      ),
                     ),
                     [
                       addFailure(
                         concatenate(
                           text('再投影誤差 '),
-                          tssValue('placementReprojectionRms', {CAMERA_ID: peer}),
-                          text(' px')
-                        )
-                      )
-                    ]
-                  )
-                ])
-              ]
+                          tssValue('placementReprojectionRms', {
+                            CAMERA_ID: peer,
+                          }),
+                          text(' px'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ]),
+              ],
             ),
             ifElse(
               equals(variable(r.failures), text('')),
@@ -599,27 +791,32 @@ function stepsAfterReplies(
                   concatenate(
                     text('READY: 空間と時刻の校正が品質基準を満たしました（'),
                     reporter(lengthOfList(r.results)),
-                    text('台）。')
-                  )
-                )
+                    text('台）。'),
+                  ),
+                ),
               ],
               [
                 error(
                   shell,
                   concatenate(
-                    text('READYになりません。品質基準を満たさない項目があります: '),
-                    variable(r.failures)
+                    text(
+                      'READYになりません。品質基準を満たさない項目があります: ',
+                    ),
+                    variable(r.failures),
                   ),
-                  'SPACE_TIME_NOT_READY'
-                )
-              ]
-            )
-          ]
-        )
-      ]
-    )
+                  'SPACE_TIME_NOT_READY',
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    ),
   ];
 }
 
 const and = (left: BlockNode, right: BlockNode): BlockNode =>
-  block('operator_and', {OPERAND1: condition(left), OPERAND2: condition(right)});
+  block('operator_and', {
+    OPERAND1: condition(left),
+    OPERAND2: condition(right),
+  });
