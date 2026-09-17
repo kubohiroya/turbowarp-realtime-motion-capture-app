@@ -24,17 +24,17 @@ importers:
   apps/camera-app:
     devDependencies:
       '@kubohiroya/turbowarp-camera-source':
-        specifier: 0.11.0
-        version: 0.11.0
+        specifier: 0.12.0
+        version: 0.12.0
       '@kubohiroya/turbowarp-diagnostic-overlay':
         specifier: 0.4.0
         version: 0.4.0
       '@kubohiroya/turbowarp-jsqr':
         specifier: 0.3.0
-        version: 0.3.0(@kubohiroya/turbowarp-camera-source@0.11.0)
+        version: 0.3.0(@kubohiroya/turbowarp-camera-source@0.12.0)
       '@kubohiroya/turbowarp-realtime-motion-capture':
         specifier: 0.2.1
-        version: 0.2.1(@kubohiroya/turbowarp-aframe@0.3.0)(@kubohiroya/turbowarp-camera-source@0.11.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.11.0))(@kubohiroya/turbowarp-webrtc@0.4.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))
+        version: 0.2.1(@kubohiroya/turbowarp-aframe@0.3.0)(@kubohiroya/turbowarp-camera-source@0.12.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.12.0))(@kubohiroya/turbowarp-webrtc@0.4.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))
       '@kubohiroya/turbowarp-time-space-sync':
         specifier: 0.2.0
         version: 0.2.0
@@ -46,7 +46,7 @@ importers:
         version: 0.4.0
       '@kubohiroya/turbowarp-webrtc-qrcode-pairing':
         specifier: 0.1.0
-        version: 0.1.0(@kubohiroya/turbowarp-camera-source@0.11.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.11.0))(@kubohiroya/turbowarp-webrtc@0.4.0)
+        version: 0.1.0(@kubohiroya/turbowarp-camera-source@0.12.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.12.0))(@kubohiroya/turbowarp-webrtc@0.4.0)
 
   apps/fusion-app:
     devDependencies:
@@ -57,17 +57,17 @@ importers:
         specifier: 0.16.0
         version: 0.16.0
       '@kubohiroya/turbowarp-camera-source':
-        specifier: 0.11.0
-        version: 0.11.0
+        specifier: 0.12.0
+        version: 0.12.0
       '@kubohiroya/turbowarp-diagnostic-overlay':
         specifier: 0.4.0
         version: 0.4.0
       '@kubohiroya/turbowarp-jsqr':
         specifier: 0.3.0
-        version: 0.3.0(@kubohiroya/turbowarp-camera-source@0.11.0)
+        version: 0.3.0(@kubohiroya/turbowarp-camera-source@0.12.0)
       '@kubohiroya/turbowarp-realtime-motion-capture':
         specifier: 0.2.1
-        version: 0.2.1(@kubohiroya/turbowarp-aframe@0.3.0)(@kubohiroya/turbowarp-camera-source@0.11.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.11.0))(@kubohiroya/turbowarp-webrtc@0.4.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))
+        version: 0.2.1(@kubohiroya/turbowarp-aframe@0.3.0)(@kubohiroya/turbowarp-camera-source@0.12.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.12.0))(@kubohiroya/turbowarp-webrtc@0.4.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))
       '@kubohiroya/turbowarp-time-space-sync':
         specifier: 0.2.0
         version: 0.2.0
@@ -79,7 +79,7 @@ importers:
         version: 0.4.0
       '@kubohiroya/turbowarp-webrtc-qrcode-pairing':
         specifier: 0.1.0
-        version: 0.1.0(@kubohiroya/turbowarp-camera-source@0.11.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.11.0))(@kubohiroya/turbowarp-webrtc@0.4.0)
+        version: 0.1.0(@kubohiroya/turbowarp-camera-source@0.12.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.12.0))(@kubohiroya/turbowarp-webrtc@0.4.0)
       '@kubohiroya/turbowarp-yaml-json':
         specifier: 0.3.0
         version: 0.3.0
@@ -87,8 +87,8 @@ importers:
   apps/local-app:
     devDependencies:
       '@kubohiroya/turbowarp-camera-source':
-        specifier: 0.11.0
-        version: 0.11.0
+        specifier: 0.12.0
+        version: 0.12.0
       '@kubohiroya/turbowarp-diagnostic-overlay':
         specifier: 0.4.0
         version: 0.4.0
@@ -103,8 +103,8 @@ importers:
         version: 0.2.0
     devDependencies:
       '@kubohiroya/turbowarp-camera-source':
-        specifier: 0.11.0
-        version: 0.11.0
+        specifier: 0.12.0
+        version: 0.12.0
       '@kubohiroya/vite-plugin-turbowarp-extension':
         specifier: 0.5.0
         version: 0.5.0(vite@8.2.2(@types/node@24.13.3)(yaml@2.9.1))
@@ -207,8 +207,8 @@ packages:
     resolution: {integrity: sha512-8mNAi+eOVKKGz/i+aqxVPd3Wbg6s0VJvKiYqObsqmi5a6DDIYMOO7sUntZeSowNstL+YiKBC4qm9DXxxC3dhkg==}
     engines: {node: '>=22.18.0'}
 
-  '@kubohiroya/turbowarp-camera-source@0.11.0':
-    resolution: {integrity: sha512-bx91+Vy8109QwLAkM2yvLafrBUvH5C7FU74Ldn/msOL8eImC644g7/EwB9JPSSH4ZXafPKXFq1ADVMISXyCxuQ==}
+  '@kubohiroya/turbowarp-camera-source@0.12.0':
+    resolution: {integrity: sha512-l3feL1mh6UB9ZI+HZJWnFVRY4N/wJwEj4mfPAt3R/98zZ4psKDT0pAorwcbswdjef08pduIJmfoC3uMDryzqzA==}
     engines: {node: '>=22.18.0'}
 
   '@kubohiroya/turbowarp-camera-source@0.7.0':
@@ -1225,21 +1225,21 @@ snapshots:
 
   '@kubohiroya/turbowarp-asset-manager@0.16.0': {}
 
-  '@kubohiroya/turbowarp-camera-source@0.11.0': {}
+  '@kubohiroya/turbowarp-camera-source@0.12.0': {}
 
   '@kubohiroya/turbowarp-camera-source@0.7.0': {}
 
   '@kubohiroya/turbowarp-diagnostic-overlay@0.4.0': {}
 
-  '@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.11.0)':
+  '@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.12.0)':
     dependencies:
       jsqr: 1.4.0
     optionalDependencies:
-      '@kubohiroya/turbowarp-camera-source': 0.11.0
+      '@kubohiroya/turbowarp-camera-source': 0.12.0
 
   '@kubohiroya/turbowarp-local-preview@0.1.0': {}
 
-  '@kubohiroya/turbowarp-realtime-motion-capture@0.2.1(@kubohiroya/turbowarp-aframe@0.3.0)(@kubohiroya/turbowarp-camera-source@0.11.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.11.0))(@kubohiroya/turbowarp-webrtc@0.4.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))':
+  '@kubohiroya/turbowarp-realtime-motion-capture@0.2.1(@kubohiroya/turbowarp-aframe@0.3.0)(@kubohiroya/turbowarp-camera-source@0.12.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.12.0))(@kubohiroya/turbowarp-webrtc@0.4.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))':
     dependencies:
       '@sinclair/typebox': 0.34.52
       '@techstark/opencv-js': 4.12.0-release.1
@@ -1251,8 +1251,8 @@ snapshots:
       qrcode: 1.5.4
     optionalDependencies:
       '@kubohiroya/turbowarp-aframe': 0.3.0
-      '@kubohiroya/turbowarp-camera-source': 0.11.0
-      '@kubohiroya/turbowarp-jsqr': 0.3.0(@kubohiroya/turbowarp-camera-source@0.11.0)
+      '@kubohiroya/turbowarp-camera-source': 0.12.0
+      '@kubohiroya/turbowarp-jsqr': 0.3.0(@kubohiroya/turbowarp-camera-source@0.12.0)
       '@kubohiroya/turbowarp-webrtc': 0.4.0
     transitivePeerDependencies:
       - '@mediapipe/pose'
@@ -1268,12 +1268,12 @@ snapshots:
     dependencies:
       '@kubohiroya/turbowarp-app-shell': 0.2.0
 
-  '@kubohiroya/turbowarp-webrtc-qrcode-pairing@0.1.0(@kubohiroya/turbowarp-camera-source@0.11.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.11.0))(@kubohiroya/turbowarp-webrtc@0.4.0)':
+  '@kubohiroya/turbowarp-webrtc-qrcode-pairing@0.1.0(@kubohiroya/turbowarp-camera-source@0.12.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.12.0))(@kubohiroya/turbowarp-webrtc@0.4.0)':
     dependencies:
       qrcode: 1.5.4
     optionalDependencies:
-      '@kubohiroya/turbowarp-camera-source': 0.11.0
-      '@kubohiroya/turbowarp-jsqr': 0.3.0(@kubohiroya/turbowarp-camera-source@0.11.0)
+      '@kubohiroya/turbowarp-camera-source': 0.12.0
+      '@kubohiroya/turbowarp-jsqr': 0.3.0(@kubohiroya/turbowarp-camera-source@0.12.0)
       '@kubohiroya/turbowarp-webrtc': 0.4.0
 
   '@kubohiroya/turbowarp-webrtc@0.4.0': {}
