@@ -1,10 +1,13 @@
-import type { AppShellAppConfig } from './app-config.js';
+import type { AppShellAppConfig, ShellLocale } from './app-config.js';
 import { applyFeatureFlags, contractAlreadyLoaded } from './feature-flags.js';
 import {
   createBrowserLensCalibrationHost,
   createScratchShellHost,
 } from './host.js';
-import { LensCalibrationLauncher } from './lens-calibration.js';
+import {
+  chooseTextFileWithDialog,
+  LensCalibrationLauncher,
+} from './lens-calibration.js';
 import {
   createScratchNetworkRouterHost,
   NetworkRouter,
@@ -15,6 +18,11 @@ import { browserStorage, createSettingsStore } from './settings.js';
 import { createMultiviewPoseShell } from './shell.js';
 import { MultiviewPoseAppShellExtension } from './extension.js';
 import { PoseMeter, createBrowserPoseMeterHost } from './pose-meter.js';
+import {
+  PoseReplay,
+  createBrowserRecordingStore,
+  saveTextFileInBrowser,
+} from './pose-replay.js';
 
 /**
  * Applies the contract feature flags and registers the app shell extension.
@@ -49,6 +57,9 @@ export function registerAppShell(config: AppShellAppConfig): void {
             poseMeter: new PoseMeter(createBrowserPoseMeterHost()),
           }
         : {}),
+      ...((config.appFlags ?? []).includes('debugPoseReplayV1')
+        ? { poseReplay: new PoseReplay(createPoseReplayHost(shell.locale)) }
+        : {}),
       ...(config.lensCalibration === true
         ? {
             lensCalibration: new LensCalibrationLauncher(
@@ -61,6 +72,25 @@ export function registerAppShell(config: AppShellAppConfig): void {
 }
 
 /** The grid releases its cameras with the project, as Camera Source releases its own. */
+/**
+ * Recordings come from the venue host that serves this page, and fall back to the operator's own
+ * files: the same file dialog the lens calibration uses to read, and a download to write.
+ */
+function createPoseReplayHost(locale: ShellLocale) {
+  return {
+    pageTimeUs: () =>
+      typeof performance === 'undefined'
+        ? Date.now() * 1000
+        : Math.round((performance.timeOrigin + performance.now()) * 1000),
+    store: createBrowserRecordingStore(),
+    chooseFile: () =>
+      typeof document === 'undefined'
+        ? Promise.resolve(null)
+        : chooseTextFileWithDialog({ document, mount: document.body, locale }),
+    saveFile: saveTextFileInBrowser,
+  };
+}
+
 function createCameraGrid(): CameraGrid {
   const grid = new CameraGrid(createScratchCameraGridHost());
   Scratch.vm?.runtime?.on?.('PROJECT_STOP_ALL', () => void grid.stopAll());

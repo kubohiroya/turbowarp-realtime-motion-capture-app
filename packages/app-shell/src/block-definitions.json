@@ -595,6 +595,208 @@
       "requires": "cameraGrid"
     },
     {
+      "opcode": "startPoseRecording",
+      "blockType": "COMMAND",
+      "text": "start pose recording with configuration [CONFIGURATION_JSON]",
+      "description": "Starts recording every pose frame handed to it, under the configuration the poses were estimated with. Without that configuration the recording could be read but not replayed.",
+      "arguments": {
+        "CONFIGURATION_JSON": {
+          "type": "STRING",
+          "defaultValue": ""
+        }
+      },
+      "requires": "poseReplay"
+    },
+    {
+      "opcode": "recordPoseFrame",
+      "blockType": "COMMAND",
+      "text": "record pose frame [FRAME_JSON] of camera [CAMERA_ID]",
+      "description": "Records one camera's PoseFrame2D as it is. The same frame twice in a row is recorded once.",
+      "arguments": {
+        "FRAME_JSON": {
+          "type": "STRING",
+          "defaultValue": ""
+        },
+        "CAMERA_ID": {
+          "type": "STRING",
+          "defaultValue": "cam-1"
+        }
+      },
+      "requires": "poseReplay"
+    },
+    {
+      "opcode": "stopPoseRecording",
+      "blockType": "COMMAND",
+      "text": "stop pose recording",
+      "description": "Ends the recording. What was recorded stays until the next recording starts.",
+      "arguments": {},
+      "requires": "poseReplay"
+    },
+    {
+      "opcode": "poseRecordingState",
+      "blockType": "REPORTER",
+      "text": "pose recording state",
+      "description": "Reports idle, recording or recorded.",
+      "arguments": {},
+      "requires": "poseReplay"
+    },
+    {
+      "opcode": "poseRecordingSummary",
+      "blockType": "REPORTER",
+      "text": "pose recording summary",
+      "description": "Reports one readable line: state, cameras, frames and seconds.",
+      "arguments": {},
+      "requires": "poseReplay"
+    },
+    {
+      "opcode": "saveRecording",
+      "blockType": "COMMAND",
+      "text": "save pose recording as [NAME]",
+      "description": "Keeps the recording under that name on the venue host, where every application on this PC can replay it. A page served without a host hands the operator the file instead.",
+      "arguments": {
+        "NAME": {
+          "type": "STRING",
+          "defaultValue": "take-1"
+        }
+      },
+      "requires": "poseReplay"
+    },
+    {
+      "opcode": "refreshRecordings",
+      "blockType": "COMMAND",
+      "text": "refresh recordings",
+      "description": "Reads the list of recordings the venue host keeps.",
+      "arguments": {},
+      "requires": "poseReplay"
+    },
+    {
+      "opcode": "recordingCount",
+      "blockType": "REPORTER",
+      "text": "recording count",
+      "description": "How many recordings the last refresh found.",
+      "arguments": {},
+      "requires": "poseReplay"
+    },
+    {
+      "opcode": "recordingNameAt",
+      "blockType": "REPORTER",
+      "text": "recording name at [INDEX]",
+      "description": "The name of the recording at that position, counting from one.",
+      "arguments": {
+        "INDEX": {
+          "type": "NUMBER",
+          "defaultValue": 1
+        }
+      },
+      "requires": "poseReplay"
+    },
+    {
+      "opcode": "recordingsSummary",
+      "blockType": "REPORTER",
+      "text": "recordings summary",
+      "description": "One readable line per recording: name, size and when it was written.",
+      "arguments": {},
+      "requires": "poseReplay"
+    },
+    {
+      "opcode": "loadRecording",
+      "blockType": "COMMAND",
+      "text": "load pose recording [NAME]",
+      "description": "Loads a recording by name from the venue host. An empty name, or a page with no host, asks the operator for a file.",
+      "arguments": {
+        "NAME": {
+          "type": "STRING",
+          "defaultValue": ""
+        }
+      },
+      "requires": "poseReplay"
+    },
+    {
+      "opcode": "startPoseReplay",
+      "blockType": "COMMAND",
+      "text": "start pose replay",
+      "description": "Plays the loaded recording from the beginning. Frames are re-stamped onto this page's clock, keeping the spacing they were recorded with.",
+      "arguments": {},
+      "requires": "poseReplay"
+    },
+    {
+      "opcode": "stopPoseReplay",
+      "blockType": "COMMAND",
+      "text": "stop pose replay",
+      "description": "Stops the replay where it is.",
+      "arguments": {},
+      "requires": "poseReplay"
+    },
+    {
+      "opcode": "replayPoseFrame",
+      "blockType": "REPORTER",
+      "text": "replayed pose frame of camera [CAMERA_ID]",
+      "description": "The newest frame of that camera whose moment has come, or an empty string. A frame already handed out is not handed out again.",
+      "arguments": {
+        "CAMERA_ID": {
+          "type": "STRING",
+          "defaultValue": "cam-1"
+        }
+      },
+      "requires": "poseReplay"
+    },
+    {
+      "opcode": "replayState",
+      "blockType": "REPORTER",
+      "text": "pose replay state",
+      "description": "Reports idle, playing or ended.",
+      "arguments": {},
+      "requires": "poseReplay"
+    },
+    {
+      "opcode": "replayPositionMs",
+      "blockType": "REPORTER",
+      "text": "pose replay position in ms",
+      "description": "How far into the recording the replay is.",
+      "arguments": {},
+      "requires": "poseReplay"
+    },
+    {
+      "opcode": "replayDurationMs",
+      "blockType": "REPORTER",
+      "text": "pose replay duration in ms",
+      "description": "How long the loaded recording is.",
+      "arguments": {},
+      "requires": "poseReplay"
+    },
+    {
+      "opcode": "replayConfigurationJson",
+      "blockType": "REPORTER",
+      "text": "pose replay configuration JSON",
+      "description": "The configuration the loaded recording was made under, for configuring the 3D service the same way.",
+      "arguments": {},
+      "requires": "poseReplay"
+    },
+    {
+      "opcode": "replayCamerasJson",
+      "blockType": "REPORTER",
+      "text": "pose replay cameras JSON",
+      "description": "The camera IDs the loaded recording carries, as a JSON array.",
+      "arguments": {},
+      "requires": "poseReplay"
+    },
+    {
+      "opcode": "replaySummary",
+      "blockType": "REPORTER",
+      "text": "pose replay summary",
+      "description": "One readable line: which recording is loaded, its cameras, frames and seconds.",
+      "arguments": {},
+      "requires": "poseReplay"
+    },
+    {
+      "opcode": "poseReplayError",
+      "blockType": "REPORTER",
+      "text": "pose replay error",
+      "description": "Why the last recording or replay operation did not work, or an empty string.",
+      "arguments": {},
+      "requires": "poseReplay"
+    },
+    {
       "opcode": "rememberSetting",
       "blockType": "COMMAND",
       "text": "remember setting [KEY] as [VALUE]",

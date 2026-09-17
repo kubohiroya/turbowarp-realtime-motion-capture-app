@@ -20,6 +20,8 @@ export interface LocalHostCliOptions {
   readonly player: string;
   /** The packaged lens calibration app, embedded next to the player when the build carried one. */
   readonly lensCalibrationPlayer?: string;
+  /** Where pose recordings are kept. Shared by every application on this PC. */
+  readonly recordingsDirectory?: string;
   readonly argv?: readonly string[];
   readonly env?: Readonly<Record<string, string | undefined>>;
   readonly write?: (line: string) => void;
@@ -48,6 +50,23 @@ export function resolveLockDirectory(
     runtime !== undefined && runtime.length > 0 ? runtime : tmpdir(),
     'multiview-pose',
   );
+}
+
+/**
+ * Where pose recordings are kept on this PC.
+ *
+ * One directory for every application, because a recording made in the camera app is meant to be
+ * replayed in the fusion app, and each of them serves on its own port. `TWRMC_RECORDINGS` overrides
+ * it; the default sits beside the operator's own documents rather than in a temporary directory,
+ * because a recording is worth keeping.
+ */
+export function resolveRecordingsDirectory(
+  env: Readonly<Record<string, string | undefined>>,
+): string {
+  const configured = env['TWRMC_RECORDINGS'];
+  if (configured !== undefined && configured.length > 0) return configured;
+  const home = env['HOME'] ?? env['USERPROFILE'] ?? tmpdir();
+  return join(home, 'multiview-pose-recordings');
 }
 
 export function resolveLocale(
@@ -127,6 +146,8 @@ export async function runLocalHostCli(
     ...(options.lensCalibrationPlayer === undefined
       ? {}
       : { lensCalibrationPlayer: { html: options.lensCalibrationPlayer } }),
+    recordingsDirectory:
+      options.recordingsDirectory ?? resolveRecordingsDirectory(env),
   });
 
   if (!result.started) {

@@ -18,6 +18,7 @@ import { jsonValueOf, readJsonPath, withJsonField } from './json-fields.js';
 import type { NetworkRouter } from './network-router.js';
 import type { CameraGrid } from './camera-grid.js';
 import type { PoseMeter } from './pose-meter.js';
+import type { PoseReplay } from './pose-replay.js';
 import type { SettingsStore } from './settings.js';
 import { parseButtonLabels, type QrPanel } from './qr-panel.js';
 import type { MultiviewPoseShell } from './shell.js';
@@ -38,7 +39,7 @@ interface BlockDefinition {
   description: string;
   arguments: Record<string, DefinitionArgument>;
   /** Present on blocks only an application with that capability offers. */
-  requires?: 'lensCalibration' | 'cameraGrid';
+  requires?: 'lensCalibration' | 'cameraGrid' | 'poseReplay';
 }
 
 const blockDefinitions = definitions.blocks as readonly BlockDefinition[];
@@ -67,6 +68,12 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
   private readonly network: NetworkRouter | null;
   private readonly cameraGrid: CameraGrid | null;
   private readonly poseMeter: PoseMeter | null;
+  private readonly poseReplay: PoseReplay | null;
+  private recordings: ReadonlyArray<{
+    name: string;
+    bytes: number;
+    modifiedAt: string;
+  }> = [];
   private readonly settings: SettingsStore | null;
   private confirmed = false;
   private numbers = '';
@@ -82,6 +89,7 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
       network?: NetworkRouter;
       cameraGrid?: CameraGrid;
       poseMeter?: PoseMeter;
+      poseReplay?: PoseReplay;
       settings?: SettingsStore;
     } = {},
   ) {
@@ -94,6 +102,7 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
     this.network = parts.network ?? null;
     this.cameraGrid = parts.cameraGrid ?? null;
     this.poseMeter = parts.poseMeter ?? null;
+    this.poseReplay = parts.poseReplay ?? null;
     this.settings = parts.settings ?? null;
   }
 
@@ -109,7 +118,8 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
             block.requires === undefined ||
             (block.requires === 'lensCalibration' &&
               this.lensCalibration !== null) ||
-            (block.requires === 'cameraGrid' && this.cameraGrid !== null),
+            (block.requires === 'cameraGrid' && this.cameraGrid !== null) ||
+            (block.requires === 'poseReplay' && this.poseReplay !== null),
         )
         .map((block) => this.toScratchBlock(block)),
       menus: {
@@ -471,6 +481,110 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
 
   public poseMeasurementJson(): string {
     return this.poseMeter ? JSON.stringify(this.poseMeter.measurement()) : '';
+  }
+
+  public startPoseRecording(args: { CONFIGURATION_JSON: unknown }): void {
+    this.poseReplay?.startRecording(
+      Scratch.Cast.toString(args.CONFIGURATION_JSON),
+    );
+  }
+
+  public recordPoseFrame(args: {
+    FRAME_JSON: unknown;
+    CAMERA_ID: unknown;
+  }): void {
+    this.poseReplay?.recordFrame(
+      Scratch.Cast.toString(args.CAMERA_ID).trim(),
+      Scratch.Cast.toString(args.FRAME_JSON),
+    );
+  }
+
+  public stopPoseRecording(): void {
+    this.poseReplay?.stopRecording();
+  }
+
+  public poseRecordingState(): string {
+    return this.poseReplay?.recordingStateName() ?? 'idle';
+  }
+
+  public poseRecordingSummary(): string {
+    return this.poseReplay?.recordingSummary() ?? '';
+  }
+
+  public async saveRecording(args: { NAME: unknown }): Promise<void> {
+    await this.poseReplay?.save(Scratch.Cast.toString(args.NAME));
+  }
+
+  public async refreshRecordings(): Promise<void> {
+    this.recordings = (await this.poseReplay?.listRecordings()) ?? [];
+  }
+
+  public recordingCount(): number {
+    return this.recordings.length;
+  }
+
+  public recordingNameAt(args: { INDEX: unknown }): string {
+    return (
+      this.recordings[Math.round(Scratch.Cast.toNumber(args.INDEX)) - 1]
+        ?.name ?? ''
+    );
+  }
+
+  public recordingsSummary(): string {
+    if (this.recordings.length === 0) return '';
+    return this.recordings
+      .map(
+        (entry) =>
+          `${entry.name}（${Math.round(entry.bytes / 1024)} KB / ${entry.modifiedAt.slice(0, 16).replace('T', ' ')}）`,
+      )
+      .join(' / ');
+  }
+
+  public async loadRecording(args: { NAME: unknown }): Promise<void> {
+    await this.poseReplay?.load(Scratch.Cast.toString(args.NAME));
+  }
+
+  public startPoseReplay(): void {
+    this.poseReplay?.startReplay();
+  }
+
+  public stopPoseReplay(): void {
+    this.poseReplay?.stopReplay();
+  }
+
+  public replayPoseFrame(args: { CAMERA_ID: unknown }): string {
+    return (
+      this.poseReplay?.frameFor(Scratch.Cast.toString(args.CAMERA_ID).trim()) ??
+      ''
+    );
+  }
+
+  public replayState(): string {
+    return this.poseReplay?.replayStateName() ?? 'idle';
+  }
+
+  public replayPositionMs(): number {
+    return this.poseReplay?.replayPositionMs() ?? 0;
+  }
+
+  public replayDurationMs(): number {
+    return this.poseReplay?.replayDurationMs() ?? 0;
+  }
+
+  public replayConfigurationJson(): string {
+    return this.poseReplay?.loadedConfigurationJson() ?? '';
+  }
+
+  public replayCamerasJson(): string {
+    return this.poseReplay?.loadedCamerasJson() ?? '[]';
+  }
+
+  public replaySummary(): string {
+    return this.poseReplay?.loadedSummary() ?? '';
+  }
+
+  public poseReplayError(): string {
+    return this.poseReplay?.errorMessage() ?? '';
   }
 
   public rememberSetting(args: { KEY: unknown; VALUE: unknown }): void {

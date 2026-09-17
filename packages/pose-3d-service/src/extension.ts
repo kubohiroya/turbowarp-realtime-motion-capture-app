@@ -130,6 +130,31 @@ export class Pose3dServiceExtension implements TurboWarpExtension {
     });
   }
 
+  /**
+   * The configuration as built so far, as JSON.
+   *
+   * What a recording carries beside its pose frames: the cameras, their models and their placement,
+   * as they were when the poses were estimated. Read before applying, so a recording can be made
+   * whether or not the 3D service is running.
+   */
+  public configurationJson(): string {
+    return this.draft ? JSON.stringify(this.draft) : '';
+  }
+
+  /** Configures the service from a configuration in hand, such as the one a recording carries. */
+  public async applyConfigurationJson(args: {
+    CONFIGURATION_JSON: unknown;
+  }): Promise<void> {
+    const configuration = readJson(args.CONFIGURATION_JSON);
+    if (configuration === undefined) {
+      this.draftError = 'A configuration must be JSON.';
+      return;
+    }
+    this.draft = configuration as typeof this.draft;
+    this.draftError = '';
+    await this.applyConfiguration();
+  }
+
   public async applyConfiguration(): Promise<void> {
     const draft = this.draft;
     if (!draft) {

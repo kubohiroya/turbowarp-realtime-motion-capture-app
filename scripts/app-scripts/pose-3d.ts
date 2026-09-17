@@ -71,6 +71,8 @@ export function configurePose3dServiceSteps(options: {
   readonly spaceTimeResults: NamedReference;
   readonly index: NamedReference;
   readonly item: NamedReference;
+  /** `false` builds the configuration without starting the service, for recording it. */
+  readonly apply?: boolean;
 }): BlockNode[] {
   const json = (value: InputValue, path: string) =>
     reporter(
@@ -100,7 +102,7 @@ export function configurePose3dServiceSteps(options: {
         }),
       ]),
     ]),
-    service('applyConfiguration'),
+    ...(options.apply === false ? [] : [service('applyConfiguration')]),
   ];
 }
 
