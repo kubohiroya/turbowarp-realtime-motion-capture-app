@@ -119,10 +119,35 @@
       "requires": "lensCalibration"
     },
     {
+      "opcode": "openLensCalibrationAppForCamera",
+      "blockType": "COMMAND",
+      "text": "open lens calibration app for device [DEVICE_ID] at [WIDTH] x [HEIGHT] [FPS] fps",
+      "description": "Opens the lens calibration app for one of several cameras: it starts that device at that size, so the profile it saves fits the camera this app runs. An empty device ID opens it without a camera, like open lens calibration app. Reports busy when the window is already open for another camera, and leaves that window alone.",
+      "arguments": {
+        "DEVICE_ID": {
+          "type": "STRING",
+          "defaultValue": ""
+        },
+        "WIDTH": {
+          "type": "NUMBER",
+          "defaultValue": 1280
+        },
+        "HEIGHT": {
+          "type": "NUMBER",
+          "defaultValue": 720
+        },
+        "FPS": {
+          "type": "NUMBER",
+          "defaultValue": 30
+        }
+      },
+      "requires": "lensCalibration"
+    },
+    {
       "opcode": "lensCalibrationAppState",
       "blockType": "REPORTER",
       "text": "lens calibration app state",
-      "description": "Reports open, closed, unavailable (no calibration app on this origin), or blocked (the browser refused the window).",
+      "description": "Reports open, closed, unavailable (no calibration app on this origin), blocked (the browser refused the window), or busy (the window is open for another camera).",
       "arguments": {},
       "requires": "lensCalibration"
     },
@@ -130,7 +155,7 @@
       "opcode": "lensCalibrationAppOpen",
       "blockType": "BOOLEAN",
       "text": "lens calibration app is open?",
-      "description": "Reports whether the calibration window opened by this app is still open.",
+      "description": "Reports whether the calibration window opened by this app is still open, whichever camera it was opened for.",
       "arguments": {},
       "requires": "lensCalibration"
     },

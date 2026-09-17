@@ -16,7 +16,11 @@
     },
     "local-app": {
       "port": 49713,
-      "title": "Realtime Motion Capture Local App"
+      "title": "Realtime Motion Capture Local App",
+      "lensCalibration": {
+        "repository": "kubohiroya/turbowarp-camera-calibration-app",
+        "sb3": "apps/local-app/local/lens-calibration.sb3"
+      }
     }
   }
 }

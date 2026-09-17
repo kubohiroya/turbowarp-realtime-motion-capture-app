@@ -17,8 +17,44 @@ const windowName = 'lens-calibration';
  * - `closed`: it was opened and the operator has since closed it.
  * - `unavailable`: this page is not served beside a calibration app.
  * - `blocked`: the browser refused to open a window.
+ * - `busy`: the calibration window is open for another camera. It is left alone: opening it again
+ *   would throw away a calibration in progress.
  */
-export type LensCalibrationAppState = '' | 'open' | 'closed' | 'unavailable' | 'blocked';
+export type LensCalibrationAppState = '' | 'open' | 'closed' | 'unavailable' | 'blocked' | 'busy';
+
+/**
+ * The camera a calibration is for, when the app runs several.
+ *
+ * The calibration app starts exactly this device, at this size: a camera the browser picked could be
+ * another of the same model, and a profile solved at another size does not fit.
+ */
+export interface LensCalibrationRequest {
+  readonly deviceId: string;
+  readonly width: number;
+  readonly height: number;
+  readonly frameRate: number;
+}
+
+/**
+ * The query parameters Camera Source's `start shared camera ... requested by this page` reads.
+ *
+ * Only positive sizes are written, so a request with an unknown rate asks the calibration app for no
+ * particular rate rather than for zero.
+ */
+export function lensCalibrationRequestParameters(request: LensCalibrationRequest): [string, string][] {
+  const parameters: [string, string][] = [['cameraDeviceId', request.deviceId]];
+  const positive = (name: string, value: number) => {
+    if (Number.isFinite(value) && value > 0) parameters.push([name, String(value)]);
+  };
+  positive('cameraWidth', request.width);
+  positive('cameraHeight', request.height);
+  positive('cameraFrameRate', request.frameRate);
+  return parameters;
+}
+
+function requestKey(request: LensCalibrationRequest | undefined): string {
+  return request === undefined ? '' : JSON.stringify(lensCalibrationRequestParameters(request));
+}
 
 export interface LensCalibrationWindow {
   readonly closed: boolean;
@@ -27,8 +63,11 @@ export interface LensCalibrationWindow {
 
 /** Everything the launcher needs from the browser, so the decisions can be tested without one. */
 export interface LensCalibrationHost {
-  /** The calibration app's URL on this origin, or `null` when the page has no such origin. */
-  resolveUrl(): string | null;
+  /**
+   * The calibration app's URL on this origin, naming the camera when there is a request, or `null`
+   * when the page has no such origin.
+   */
+  resolveUrl(request?: LensCalibrationRequest): string | null;
   /** Whether the host actually serves it. A packaged build may carry no calibration app. */
   isServed(url: string): Promise<boolean>;
   openWindow(url: string, name: string): LensCalibrationWindow | null;
@@ -39,6 +78,7 @@ export interface LensCalibrationHost {
 export class LensCalibrationLauncher {
   private readonly host: LensCalibrationHost;
   private window: LensCalibrationWindow | null = null;
+  private windowRequest = '';
   private lastState: LensCalibrationAppState = '';
   private chosenText = '';
 
@@ -54,30 +94,35 @@ export class LensCalibrationLauncher {
    * no calibration app beside it, and saying `unavailable` there is what sends the operator to the
    * profile file instead of to a window that could never report back.
    */
-  public async open(): Promise<LensCalibrationAppState> {
+  public async open(request?: LensCalibrationRequest): Promise<LensCalibrationAppState> {
+    const key = requestKey(request);
     if (this.window !== null && !this.window.closed) {
+      if (key !== this.windowRequest) return this.settle('busy');
       this.window.focus?.();
       return this.settle('open');
     }
-    const url = this.host.resolveUrl();
+    const url = this.host.resolveUrl(request);
     if (url === null || !(await this.host.isServed(url).catch(() => false))) {
       return this.settle('unavailable');
     }
     const opened = this.host.openWindow(url, windowName);
     this.window = opened;
+    this.windowRequest = key;
     return this.settle(opened === null ? 'blocked' : 'open');
   }
 
   /** The state as of now. A window the operator closed reads `closed` without another block call. */
   public state(): LensCalibrationAppState {
-    if (this.lastState === 'open' && (this.window === null || this.window.closed)) {
+    if ((this.lastState === 'open' || this.lastState === 'busy') && (this.window === null || this.window.closed)) {
       this.lastState = 'closed';
     }
     return this.lastState;
   }
 
+  /** Whether the window this app opened is still open, whichever camera it was opened for. */
   public isOpen(): boolean {
-    return this.state() === 'open';
+    const state = this.state();
+    return state === 'open' || state === 'busy';
   }
 
   /** Asks the operator for a profile file. An abandoned choice leaves the text empty, not stale. */

@@ -4,15 +4,18 @@
 3Dアバターまでをそのページだけで行う、性能を限定した簡易版です（#36）。WebRTCでcamera appとfusion appを
 つなぐモードより先に、1台で通しの動作試験を成立させるために作ります。
 
-段階1では、アプリの土台と、複数のUSBカメラの起動・同時表示・実測を実装しています。
+段階1では、アプリの土台と、複数のUSBカメラの起動・同時表示・実測を実装しています。段階2では、カメラごとの
+レンズ校正を実装しています。
 
 ## 構成
 
 - `apps/local-app`：SB3（展開済みソース、リリース記録）。camera app・fusion appと同じ検査、決定的ビルド、
   リリース記録の対象です。
-- 埋め込む拡張：app shell（`realtimemotioncapturelocalshell`）、Title Menu、Camera Source、Diagnostic Overlay。
+- 埋め込む拡張：app shell（`realtimemotioncapturelocalshell`）、Title Menu、Camera Source（0.12.0以上）、Diagnostic Overlay。
 - `scripts/app-scripts/local-app.ts`：scriptの正本。
-- ローカルホストのポート：49713（`config/local-host.json`）。
+- ローカルホストのポート：49713（`config/local-host.json`）。レンズ校正アプリは同じoriginの`/lens-calibration`で
+  配信します。SB3は`apps/local-app/local/lens-calibration.sb3`に手で置きます（camera appと同じ扱いで、
+  kubohiroya/turbowarp-camera-calibration-appでビルドします）。
 
 ## 段階1の操作
 
@@ -28,6 +31,19 @@
 カメラを追加・再起動すると、動いているカメラを格子状に並べて表示し、各タイルに解像度・設定fps・実測fpsを
 重ねます。
 
+## 段階2の操作（カメラごとのレンズ校正）
+
+動いているカメラごとに、メニューに次の2つが出ます。
+
+| メニュー | 動作 |
+|---|---|
+| cam-n のレンズを校正する | そのカメラを止め、レンズ校正アプリを別ウィンドウで開く。校正アプリは、そのカメラのデバイスを、今の解像度とfpsで開く。校正が保存されるか、ウィンドウが閉じられると、カメラを同じデバイスで再開し、そのデバイスで保存された校正を使う |
+| cam-n のレンズ校正ファイルを読む | ファイルの校正がそのカメラの今の設定に合えば、そのカメラのデバイスに結び付けて保存する。合わなければ使わず、そのデバイスで保存された校正に戻す |
+
+カメラを追加・再開したときと、解像度を切り替えたときは、そのデバイスで保存された校正のうち、今の設定に合う
+最新のものを自動で使います。「動作状況を見る」と、カメラが変わった後の表示に、カメラごとのレンズの状態
+（校正済み／合わない／未校正／保存領域が使えない）を出します。
+
 ## 仕組み
 
 - カメラはapp shellの`start camera ... at W x H FPS fps`で、Camera Sourceの`acquireCamera`を通して開始します。
@@ -38,6 +54,17 @@
   表示はステージの入れ物の中に、メニューと通知の下に置きます。
 - 実測fpsは、Camera Sourceの動画要素で`requestVideoFrameCallback`が呼ばれた回数を1秒ごとに数えた値です。
   同じUSBコントローラに複数台をつないだときの帯域の制約は、設定値ではなくこの値に現れます。
+- 同じ型番のカメラは、同じデバイス名と同じ撮影条件を報告します。そのため、名前と条件だけで判定すると、
+  別のカメラの校正も「合う」になります。local-appは校正の復元に、Camera Source 0.12.0の
+  `restore stored camera profile calibrated on the device of`を使います。これは、校正に記録されたdevice IDが
+  カメラの今のデバイスと一致するものだけを候補にします。device IDはoriginとブラウザのプロファイルごとで、
+  保存領域（IndexedDB）の範囲と同じです。
+- 校正アプリへは、URLのクエリパラメータ`cameraDeviceId`・`cameraWidth`・`cameraHeight`・`cameraFrameRate`で
+  カメラを渡します。校正アプリはCamera Sourceの`start shared camera ... requested by this page`でそのとおりに
+  開くので、別のカメラを校正することも、使わない解像度で解くこと（解像度が違う校正は使えません）もありません。
+  別のカメラの校正ウィンドウが開いている間は、進行中の校正を捨てないよう、次のカメラの校正を断ります。
+- ファイルの校正には、それを解いたブラウザのdevice IDが入っています。操作者がカメラを指定して読んだときだけ、
+  `bind camera profile ... to its current device`でそのカメラのデバイスに結び付けてから保存します。
 - カメラIDとデバイスの対応は`localStorage`（`twrmc.realtimemotioncapturelocalshell:camera-bindings`）に
   保存します。保存領域が使えない場合は記憶しないだけで、動作は続けます。
 
@@ -47,7 +74,7 @@
 PCとブラウザを、#36に記録してください。ページが背面にあるとブラウザがフレームの配信を間引くため、実測fpsは
 local-appを前面に表示した状態で読みます。
 
-## 検証の状況
+## 検証の状況（段階1）
 
 - 自動：`pnpm check`（app shellのテストに、複数カメラの起動要求、実測fps、同じデバイスの拒否、再起動、
   開始失敗、切断、設定の保存を追加）。
@@ -60,3 +87,23 @@ local-appを前面に表示した状態で読みます。
   - 並べた表示の上にメニューと通知が出る（最初は`body`に置いたため隠れていた。ステージの入れ物の中へ移した）
   - ブラウザペインが非表示のため実測fpsは正しく測れなかった。実機での計測が必要
 - 未確認：実際のUSBカメラ、同じ型番のカメラの並び、USB帯域の上限。
+
+## 検証の状況（段階2）
+
+- 自動：`pnpm check`。app shellのテストに、カメラと解像度をURLで渡すこと、別のカメラのウィンドウが開いている
+  ときの`busy`を追加。Camera Sourceと校正アプリにもそれぞれテストを追加した。
+- ブラウザ：ローカルホストでlocal-appと校正アプリを配信した。`getUserMedia`と`enumerateDevices`を、同じ名前
+  「USB Camera」でdevice IDだけが違う2台の合成カメラ（canvasの`captureStream`）に置き換え、`window.open`と
+  ファイル選択を記録用に置き換えて、次を確認した。
+  - 保存済みの校正が、device-aの新しいものとdevice-bの古いものの2件あるとき、cam-2（device-b）には
+    device-bの古いほうが入る（デバイスで絞らない復元なら新しいdevice-aのものが入る）
+  - 「cam-2 のレンズを校正する」で、URLに`cameraDeviceId=device-b&cameraWidth=1280&cameraHeight=720&cameraFrameRate=30`
+    が付き、待つ間cam-2は止まる。校正が保存されると、cam-2はdevice-bで再開して新しい校正を使う
+  - cam-2のウィンドウが開いたままcam-1を選ぶと、`LENS_CALIBRATION_BUSY`で断り、cam-1は動き続ける。
+    ウィンドウを保存せずに閉じると、カメラは元の校正のまま再開する
+  - 別のブラウザのdevice IDを持つファイルをcam-1で読むと、device-aに結び付けて保存される。640x480のファイルは
+    理由を示して断り、device-aの保存済みの校正に戻る
+  - 1920x1080に切り替えると両カメラとも「合わない」、1280x720に戻すと「校正済み」
+  - 校正アプリを同じURLパラメータで開き、撮影を始めると、`getUserMedia`が`deviceId: {exact: "device-b"}`、
+    1280x720・30fpsの`ideal`で呼ばれる
+- 未確認：実際のUSBカメラ（同じ型番の2台）での校正と、device IDがブラウザの再起動後も保たれること。

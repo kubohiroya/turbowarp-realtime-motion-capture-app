@@ -163,6 +163,25 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
     await this.lensCalibration?.open();
   }
 
+  public async openLensCalibrationAppForCamera(args: {
+    DEVICE_ID?: unknown;
+    WIDTH?: unknown;
+    HEIGHT?: unknown;
+    FPS?: unknown;
+  }): Promise<void> {
+    const deviceId = String(args.DEVICE_ID ?? '').trim();
+    if (deviceId === '') {
+      await this.lensCalibration?.open();
+      return;
+    }
+    await this.lensCalibration?.open({
+      deviceId,
+      width: Number(args.WIDTH),
+      height: Number(args.HEIGHT),
+      frameRate: Number(args.FPS)
+    });
+  }
+
   public lensCalibrationAppState(): string {
     return this.lensCalibration?.state() ?? 'unavailable';
   }

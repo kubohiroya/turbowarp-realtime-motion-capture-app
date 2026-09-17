@@ -64,6 +64,9 @@ export const equals = (left: InputValue, right: InputValue): BlockNode =>
 export const greaterThan = (left: InputValue, right: InputValue): BlockNode =>
   block('operator_gt', {OPERAND1: left, OPERAND2: right});
 
+export const and = (left: BlockNode, right: BlockNode): BlockNode =>
+  block('operator_and', {OPERAND1: condition(left), OPERAND2: condition(right)});
+
 export const or = (left: BlockNode, right: BlockNode): BlockNode =>
   block('operator_or', {OPERAND1: condition(left), OPERAND2: condition(right)});
 
