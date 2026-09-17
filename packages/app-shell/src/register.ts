@@ -16,7 +16,10 @@ import {MultiviewPoseAppShellExtension} from './extension.js';
  * `@kubohiroya/turbowarp-title-menu`, which follows this extension in the same bundle.
  */
 export function registerAppShell(config: AppShellAppConfig): void {
-  const flags = applyFeatureFlags(config.featureFlags, {contractLoaded: contractAlreadyLoaded});
+  const flags = applyFeatureFlags(config.featureFlags, {
+    contractLoaded: contractAlreadyLoaded,
+    timeSpaceSync: config.timeSpaceSync === true
+  });
   const shell = createMultiviewPoseShell(config, createScratchShellHost());
   const qrPanel = createQrPanel({document: typeof document === 'undefined' ? null : document});
   // The stop sign ends every exchange the pairing extension owns, so nothing is left for a panel to
@@ -25,6 +28,7 @@ export function registerAppShell(config: AppShellAppConfig): void {
   Scratch.extensions.register(
     new MultiviewPoseAppShellExtension(config, shell, flags, {
       qrPanel,
+      dialogs: {document: typeof document === 'undefined' ? null : document},
       ...(config.lensCalibration === true
         ? {lensCalibration: new LensCalibrationLauncher(createBrowserLensCalibrationHost(shell.locale))}
         : {})

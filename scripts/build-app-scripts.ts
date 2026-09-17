@@ -16,6 +16,7 @@ interface StageTarget {
   isStage?: boolean;
   blocks: Record<string, unknown>;
   variables: Record<string, unknown>;
+  lists?: Record<string, unknown>;
   broadcasts: Record<string, unknown>;
 }
 
@@ -37,6 +38,7 @@ for (const {app, scripts, ...application} of applications) {
   if ('stageData' in application) {
     stage.variables = application.stageData.variables;
     stage.broadcasts = application.stageData.broadcasts;
+    if ('lists' in application.stageData) stage.lists = application.stageData.lists;
   }
   const contents = formatJson(project);
   const existing = await readFile(projectUrl, 'utf8').catch(() => null);

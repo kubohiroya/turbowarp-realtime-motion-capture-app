@@ -15,10 +15,10 @@ export const cameraAppConfig: AppShellAppConfig = {
     'webgpuMoveNetMultiPose',
     'protocolV1Codec',
     'cameraCalibrationV1',
-    'frameSyncPatternV1',
     'glowStickMarkers'
   ],
   lensCalibration: true,
+  timeSpaceSync: true,
   noticeLocales: {
     en: {title: 'Camera app'},
     ja: {title: 'カメラアプリからのお知らせ'}

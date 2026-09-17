@@ -33,6 +33,14 @@ export const featureFlagGlobalKey = '__TWMP_FEATURE_FLAGS__';
  */
 export const pairingFlagGlobalKey = '__TWQP_FEATURE_FLAGS__';
 
+/**
+ * Startup flags read by `@kubohiroya/turbowarp-time-space-sync`.
+ *
+ * Time correspondence and placement are one step in these apps — the same projected pattern serves
+ * both — so both flags follow the application's single `timeSpaceSync` setting.
+ */
+export const timeSpaceSyncFlagGlobalKey = '__TWTSS_FEATURE_FLAGS__';
+
 /** The runtime key the contract extension registers itself under once it has read the flags. */
 export const contractRuntimeKey = 'ext_kubohiroyarealtimemotioncapture';
 
@@ -59,6 +67,8 @@ export function resolveFeatureFlags(enabled: readonly string[]): FeatureFlagSet 
 
 export interface ApplyFeatureFlagsOptions {
   readonly target?: Record<string, unknown>;
+  /** Enables the time-space-sync extension's optical time and placement blocks. */
+  readonly timeSpaceSync?: boolean;
   /** Reports whether the contract extension has already been evaluated. */
   readonly contractLoaded?: () => boolean;
 }
@@ -79,6 +89,11 @@ export function applyFeatureFlags(
   const previous = target[featureFlagGlobalKey];
   target[featureFlagGlobalKey] = flags;
   target[pairingFlagGlobalKey] = Object.freeze({qrCodePairing: flags.qrCourierPairing});
+  const timeSpaceSync = options.timeSpaceSync === true;
+  target[timeSpaceSyncFlagGlobalKey] = Object.freeze({
+    opticalTimeSyncV1: timeSpaceSync,
+    placementSolveV1: timeSpaceSync
+  });
   if (options.contractLoaded?.() === true) return {flags, state: 'too-late'};
   return {flags, state: previous === undefined ? 'applied' : 'replaced'};
 }

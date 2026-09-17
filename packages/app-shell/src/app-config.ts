@@ -33,6 +33,11 @@ export interface AppShellAppConfig {
    * it and choosing a profile file. Only the camera app owns a camera to calibrate.
    */
   readonly lensCalibration?: boolean;
+  /**
+   * Whether this application uses `turbowarp-time-space-sync` for optical time correspondence and
+   * placement. The shell writes that extension's startup flags from this, before it is evaluated.
+   */
+  readonly timeSpaceSync?: boolean;
 }
 
 const idPattern = /^[a-z0-9]+$/;

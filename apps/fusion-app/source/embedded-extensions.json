@@ -109,6 +109,26 @@
       }
     },
     {
+      "id": "kubohiroyatimespacesync",
+      "path": "extensions/kubohiroyatimespacesync.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-time-space-sync",
+        "version": "0.2.0",
+        "artifact": "dist/time-space-sync.js",
+        "integrity": "sha256-j+QQhLB2CwPhjO01ajiumYcIXhN+sCrRxqyhv0RKVBc=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/kubohiroyatimespacesync.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-BVYIJ4CEIu3w1NYiIEilxBM0DDoL4QeeRIqhKIwSFAg="
+        }
+      }
+    },
+    {
       "id": "kubohiroyayamljson",
       "path": "extensions/kubohiroyayamljson.js",
       "mediaType": "text/javascript",
@@ -220,6 +240,7 @@
         "kubohiroyajsqr",
         "kubohiroyawebrtc",
         "kubohiroyawebrtcqrcodepairing",
+        "kubohiroyatimespacesync",
         "kubohiroyayamljson",
         "kubohiroyarealtimemotioncapture",
         "kubohiroyaassetmanager",

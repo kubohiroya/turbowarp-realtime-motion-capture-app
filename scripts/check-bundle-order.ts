@@ -49,12 +49,23 @@ for (const {app, bundle, extensions} of declaration.apps) {
     errors.push(`${app}: members are evaluated as ${ordered.map(([id]) => id).join(', ')}`);
   }
 
-  const flagOffset = source.indexOf('__TWMP_FEATURE_FLAGS__');
-  const contractOffset = source.indexOf('loadComponent("kubohiroyarealtimemotioncapture"');
-  if (flagOffset < 0) {
-    errors.push(`${app}: the bundle never writes the contract feature flags`);
-  } else if (contractOffset >= 0 && flagOffset > contractOffset) {
-    errors.push(`${app}: the feature flags are written after the contract extension is evaluated`);
+  /**
+   * Each flag-reading member freezes its flags while it is evaluated, so the shell's write of that
+   * global has to come first. The shell writes all of them in one place; each is checked on its own
+   * so a member added later without its global being written is caught by name.
+   */
+  const flagReaders: ReadonlyArray<readonly [string, string]> = [
+    ['__TWMP_FEATURE_FLAGS__', 'kubohiroyarealtimemotioncapture'],
+    ['__TWQP_FEATURE_FLAGS__', 'kubohiroyawebrtcqrcodepairing'],
+    ['__TWTSS_FEATURE_FLAGS__', 'kubohiroyatimespacesync']
+  ];
+  for (const [global, member] of flagReaders) {
+    const memberOffset = source.indexOf(`loadComponent("${member}"`);
+    if (memberOffset < 0) continue;
+    const flagOffset = source.indexOf(global);
+    if (flagOffset < 0 || flagOffset > memberOffset) {
+      errors.push(`${app}: ${global} is not written before ${member} is evaluated`);
+    }
   }
 }
 

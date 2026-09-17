@@ -17,8 +17,17 @@ import {
   not,
   setVariable
 } from '../../packages/sb3-script/src/standard.ts';
+import {messageDispatcher, networkReferences, networkVariables} from './network.ts';
+import {
+  fusionSyncLists,
+  fusionSyncReferences,
+  fusionSyncRoute,
+  fusionSyncSteps,
+  fusionSyncVariables
+} from './space-time.ts';
 import {
   concatenate,
+  linkTestMessage,
   pairingButtons,
   pairingReferences,
   PairingSteps,
@@ -33,6 +42,7 @@ const cameraSource = 'kubohiroyacamerasource';
 const action = {
   dslFiles: 'dslFiles',
   pairCameraApp: 'pairCameraApp',
+  spaceTimeCalibration: 'spaceTimeCalibration',
   cancelPairing: 'cancelPairing',
   diagnostics: 'diagnostics'
 } as const;
@@ -41,6 +51,8 @@ const action = {
 const answerCameraId = 'pairing';
 
 const pairingRefs = pairingReferences();
+const networkRefs = networkReferences();
+const syncRefs = fusionSyncReferences();
 const pairing = new PairingSteps(shell, pairingRefs);
 /** Numbers the camera apps in the order they were paired: camera-1, camera-2, ... */
 const pairedCameraCount = namedReference('paired camera count', 'variable:paired-camera-count');
@@ -48,8 +60,11 @@ const pairedCameraCount = namedReference('paired camera count', 'variable:paired
 export const fusionAppStageData = {
   variables: {
     ...pairingVariables(pairingRefs, ''),
+    ...networkVariables(networkRefs),
+    ...fusionSyncVariables(syncRefs),
     [pairedCameraCount.id]: [pairedCameraCount.name, 0]
   },
+  lists: fusionSyncLists(syncRefs),
   broadcasts: {}
 } as const;
 
@@ -70,6 +85,10 @@ const menu = () => [
     block(`${titleMenu}_addAppMenuAction`, {
       ACTION: text(action.cancelPairing),
       LABEL: text('接続をやめる')
+    }),
+    block(`${titleMenu}_addAppMenuAction`, {
+      ACTION: text(action.spaceTimeCalibration),
+      LABEL: text('空間と時刻を校正する')
     })
   ]),
   block(`${titleMenu}_addAppMenuAction`, {
@@ -90,6 +109,27 @@ const stopAnswerPreview = () => [
  * extension's built-in one, so every item an operator sees belongs to one vocabulary.
  */
 export const fusionAppScripts: readonly Script[] = [
+  messageDispatcher(
+    shell,
+    networkRefs,
+    [
+      {
+        type: linkTestMessage,
+        handle: [setVariable(pairingRefs.linkTest, variable(networkRefs.message))]
+      },
+      fusionSyncRoute(syncRefs, networkRefs.message)
+    ],
+    {x: 1200, y: 48}
+  ),
+
+  /** M-08, fusion side: project the pattern, collect every camera's result, solve, and gate READY. */
+  script({x: 1200, y: 700}, [
+    block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.spaceTimeCalibration}),
+    ...fusionSyncSteps({shell, references: syncRefs}),
+    ...menu(),
+    block(`${titleMenu}_showMenu`)
+  ]),
+
   script({x: 48, y: 48}, [
     block('event_whenflagclicked'),
     block(`${shell}_showAppLoading`, {LABEL: text('統合アプリを起動しています')}),
@@ -137,6 +177,7 @@ export const fusionAppScripts: readonly Script[] = [
         changeVariable(pairedCameraCount, 1),
         setVariable(pairingRefs.session, reporter(join(text('camera-'), variable(pairedCameraCount)))),
         block(`${shell}_showAppLoading`, {LABEL: text('Offerを作っています')}),
+        pairing.resetLinkTest(),
         pairing.pairing('startOfferPairing', {
           LOCAL_PEER: text('fusion'),
           REMOTE_PEER: variable(pairingRefs.session)

@@ -28,7 +28,16 @@ import {
   whenBroadcastReceived,
   whenFlagClicked
 } from '../../packages/sb3-script/src/standard.ts';
+import {messageDispatcher, networkReferences, networkVariables} from './network.ts';
 import {
+  cameraSyncBroadcasts,
+  cameraSyncReferences,
+  cameraSyncRoute,
+  cameraSyncSteps,
+  cameraSyncVariables
+} from './space-time.ts';
+import {
+  linkTestMessage,
   pairingButtons,
   pairingReferences,
   PairingSteps,
@@ -50,6 +59,8 @@ const action = {
 } as const;
 
 const pairingRefs = pairingReferences();
+const networkRefs = networkReferences();
+const syncRefs = cameraSyncReferences();
 
 const cameraId = 'pose';
 const cameraShouldBeRunning = namedReference(
@@ -106,9 +117,12 @@ export const cameraAppStageData = {
     [lensCalibrationDeviceId.id]: [lensCalibrationDeviceId.name, ''],
     [storedProfilesGenerationBefore.id]: [storedProfilesGenerationBefore.name, 0],
     [lensProfileRejection.id]: [lensProfileRejection.name, ''],
-    ...pairingVariables(pairingRefs, 'fusion-link')
+    ...pairingVariables(pairingRefs, 'fusion-link'),
+    ...networkVariables(networkRefs),
+    ...cameraSyncVariables(syncRefs)
   },
   broadcasts: {
+    ...cameraSyncBroadcasts(syncRefs),
     [lensCalibrationRequested.id]: lensCalibrationRequested.name,
     [cameraDeviceSelected.id]: cameraDeviceSelected.name,
     [menuActionsRequested.id]: menuActionsRequested.name
@@ -272,6 +286,25 @@ const resumeCameraAfterLensCalibration = (): BlockNode[] => [
 ];
 
 export const cameraAppScripts: readonly Script[] = [
+  messageDispatcher(
+    shell,
+    networkRefs,
+    [
+      {
+        type: linkTestMessage,
+        handle: [setVariable(pairingRefs.linkTest, variable(networkRefs.message))]
+      },
+      cameraSyncRoute(syncRefs, networkRefs.message)
+    ],
+    {x: 2600, y: 48}
+  ),
+
+  /** M-08, camera side: measure time and corners when the fusion app starts a calibration. */
+  script({x: 2600, y: 700}, [
+    whenBroadcastReceived(syncRefs.requested),
+    ...cameraSyncSteps({shell, cameraId, references: syncRefs, lensCalibrationReady})
+  ]),
+
   script({x: 48, y: 48}, [
     whenFlagClicked(),
     setVariable(cameraShouldBeRunning, text('false')),
@@ -595,6 +628,7 @@ export const cameraAppScripts: readonly Script[] = [
           ],
           [
             pairing.pairing('cancelPairing'),
+            pairing.resetLinkTest(),
             pairing.pairing('startAnswerPairing', {LOCAL_PEER: text('')}),
             pairing.pairing('setPairingTimeout', {SECONDS: number(600)}),
             pairing.notice(

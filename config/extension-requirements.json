@@ -365,6 +365,140 @@
       ]
     },
     {
+      "role": "time-space-sync",
+      "repository": "kubohiroya/turbowarp-time-space-sync",
+      "package": "@kubohiroya/turbowarp-time-space-sync",
+      "extensionId": "kubohiroyatimespacesync",
+      "artifactPath": "dist/time-space-sync.js",
+      "manifestPath": "dist/extension-manifest.json",
+      "status": "ready",
+      "requiredOperations": [
+        {
+          "capability": "acknowledge the flashing pattern",
+          "opcode": "acknowledgePatternFlashing"
+        },
+        {
+          "capability": "choose the pattern with corner cells",
+          "opcode": "setTimePatternProfile"
+        },
+        {
+          "capability": "project the time pattern",
+          "opcode": "showTimePattern"
+        },
+        {
+          "capability": "remove the time pattern",
+          "opcode": "hideTimePattern"
+        },
+        {
+          "capability": "pattern shown",
+          "opcode": "timePatternShown"
+        },
+        {
+          "capability": "pattern refresh settled",
+          "opcode": "timePatternStable"
+        },
+        {
+          "capability": "measured display refresh",
+          "opcode": "timePatternRefreshUs"
+        },
+        {
+          "capability": "start decoding a camera",
+          "opcode": "startOpticalTimeDecoder"
+        },
+        {
+          "capability": "stop decoding",
+          "opcode": "stopOpticalTimeDecoder"
+        },
+        {
+          "capability": "decoder state",
+          "opcode": "opticalTimeDecoderState"
+        },
+        {
+          "capability": "decoder error",
+          "opcode": "opticalTimeDecoderError"
+        },
+        {
+          "capability": "decode rate",
+          "opcode": "opticalTimeDecodeRate"
+        },
+        {
+          "capability": "minimum calibration time",
+          "opcode": "opticalTimeMinimumCalibrationSeconds"
+        },
+        {
+          "capability": "estimate the time correspondence",
+          "opcode": "estimateTimeCorrespondence"
+        },
+        {
+          "capability": "time correspondence document",
+          "opcode": "timeCorrespondenceJson"
+        },
+        {
+          "capability": "time correspondence error",
+          "opcode": "timeCorrespondenceError"
+        },
+        {
+          "capability": "measure the projected corners",
+          "opcode": "measurePatternCorners"
+        },
+        {
+          "capability": "placement observation from corners",
+          "opcode": "patternCornerObservationJson"
+        },
+        {
+          "capability": "corner measurement error",
+          "opcode": "patternCornerError"
+        },
+        {
+          "capability": "corner spread",
+          "opcode": "patternCornerSpreadPx"
+        },
+        {
+          "capability": "camera model with distortion",
+          "opcode": "cameraModelJson"
+        },
+        {
+          "capability": "reference from measured corners",
+          "opcode": "patternReferenceJson"
+        },
+        {
+          "capability": "clear placement",
+          "opcode": "clearPlacement"
+        },
+        {
+          "capability": "define the reference",
+          "opcode": "defineReference"
+        },
+        {
+          "capability": "set a camera model",
+          "opcode": "setCameraModel"
+        },
+        {
+          "capability": "add a placement observation",
+          "opcode": "addPlacementObservation"
+        },
+        {
+          "capability": "solve placement",
+          "opcode": "solvePlacement"
+        },
+        {
+          "capability": "placement result",
+          "opcode": "placementResultJson"
+        },
+        {
+          "capability": "placement error",
+          "opcode": "placementError"
+        },
+        {
+          "capability": "reprojection RMS",
+          "opcode": "placementReprojectionRms"
+        }
+      ],
+      "gaps": [
+        "Camera roll must stay within ±45° of the projection and the view must not be mirrored; otherwise the corner measurement refuses with orientation-unproven."
+      ]
+    },
+    {
       "role": "dsl-json-schema",
       "repository": "kubohiroya/turbowarp-yaml-json",
       "package": "@kubohiroya/turbowarp-yaml-json",
@@ -623,6 +757,11 @@
       "app-ui",
       "dsl-json-schema",
       "multiview-high-level-blocks"
+    ],
+    "spaceTimeCalibration": [
+      "camera-source",
+      "webrtc-transport",
+      "time-space-sync"
     ]
   }
 }
