@@ -1,15 +1,28 @@
-import type {AppShellAppConfig, ShellLocale} from './app-config.js';
-import {applyFeatureFlags, contractAlreadyLoaded} from './feature-flags.js';
-import {createBrowserLensCalibrationHost, createScratchShellHost} from './host.js';
-import {chooseTextFileWithDialog, LensCalibrationLauncher} from './lens-calibration.js';
-import {createScratchNetworkRouterHost, NetworkRouter} from './network-router.js';
-import {createQrPanel} from './qr-panel.js';
-import {CameraGrid, createScratchCameraGridHost} from './camera-grid.js';
-import {browserStorage, createSettingsStore} from './settings.js';
-import {createMultiviewPoseShell} from './shell.js';
-import {MultiviewPoseAppShellExtension} from './extension.js';
-import {PoseMeter, createBrowserPoseMeterHost} from './pose-meter.js';
-import {PoseReplay, createBrowserRecordingStore, saveTextFileInBrowser} from './pose-replay.js';
+import type { AppShellAppConfig, ShellLocale } from './app-config.js';
+import { applyFeatureFlags, contractAlreadyLoaded } from './feature-flags.js';
+import {
+  createBrowserLensCalibrationHost,
+  createScratchShellHost,
+} from './host.js';
+import {
+  chooseTextFileWithDialog,
+  LensCalibrationLauncher,
+} from './lens-calibration.js';
+import {
+  createScratchNetworkRouterHost,
+  NetworkRouter,
+} from './network-router.js';
+import { createQrPanel } from './qr-panel.js';
+import { CameraGrid, createScratchCameraGridHost } from './camera-grid.js';
+import { browserStorage, createSettingsStore } from './settings.js';
+import { createMultiviewPoseShell } from './shell.js';
+import { MultiviewPoseAppShellExtension } from './extension.js';
+import { PoseMeter, createBrowserPoseMeterHost } from './pose-meter.js';
+import {
+  PoseReplay,
+  createBrowserRecordingStore,
+  saveTextFileInBrowser,
+} from './pose-replay.js';
 
 /**
  * Applies the contract feature flags and registers the app shell extension.
@@ -23,29 +36,38 @@ import {PoseReplay, createBrowserRecordingStore, saveTextFileInBrowser} from './
 export function registerAppShell(config: AppShellAppConfig): void {
   const flags = applyFeatureFlags(config.featureFlags, {
     contractLoaded: contractAlreadyLoaded,
-    timeSpaceSync: config.timeSpaceSync === true
+    timeSpaceSync: config.timeSpaceSync === true,
   });
   const shell = createMultiviewPoseShell(config, createScratchShellHost());
-  const qrPanel = createQrPanel({document: typeof document === 'undefined' ? null : document});
+  const qrPanel = createQrPanel({
+    document: typeof document === 'undefined' ? null : document,
+  });
   // The stop sign ends every exchange the pairing extension owns, so nothing is left for a panel to
   // show; leaving it up would cover the stage with a code nobody can use.
   Scratch.vm?.runtime?.on?.('PROJECT_STOP_ALL', () => qrPanel.hide());
   Scratch.extensions.register(
     new MultiviewPoseAppShellExtension(config, shell, flags, {
       qrPanel,
-      dialogs: {document: typeof document === 'undefined' ? null : document},
+      dialogs: { document: typeof document === 'undefined' ? null : document },
       network: new NetworkRouter(createScratchNetworkRouterHost()),
       settings: createSettingsStore(`twrmc.${config.id}`, browserStorage),
       ...(config.cameraGrid === true
-        ? {cameraGrid: createCameraGrid(), poseMeter: new PoseMeter(createBrowserPoseMeterHost())}
+        ? {
+            cameraGrid: createCameraGrid(),
+            poseMeter: new PoseMeter(createBrowserPoseMeterHost()),
+          }
         : {}),
-      ...((config.appFlags ?? []).includes('debugCameraReplayV1')
-        ? {poseReplay: new PoseReplay(createPoseReplayHost(shell.locale))}
+      ...((config.appFlags ?? []).includes('debugPoseReplayV1')
+        ? { poseReplay: new PoseReplay(createPoseReplayHost(shell.locale)) }
         : {}),
       ...(config.lensCalibration === true
-        ? {lensCalibration: new LensCalibrationLauncher(createBrowserLensCalibrationHost(shell.locale))}
-        : {})
-    })
+        ? {
+            lensCalibration: new LensCalibrationLauncher(
+              createBrowserLensCalibrationHost(shell.locale),
+            ),
+          }
+        : {}),
+    }),
   );
 }
 
@@ -64,8 +86,8 @@ function createPoseReplayHost(locale: ShellLocale) {
     chooseFile: () =>
       typeof document === 'undefined'
         ? Promise.resolve(null)
-        : chooseTextFileWithDialog({document, mount: document.body, locale}),
-    saveFile: saveTextFileInBrowser
+        : chooseTextFileWithDialog({ document, mount: document.body, locale }),
+    saveFile: saveTextFileInBrowser,
   };
 }
 

@@ -1,5 +1,7 @@
 node_modules/
 coverage/
+dist/
+public/downloads/
 *.log
 .DS_Store
 *.local.json
@@ -14,3 +16,8 @@ apps/*/source/extensions/*.js
 # Release SB3s are 6 MB each. apps/<app>/release.json records the source identity, SHA-256, and
 # size instead, and scripts/release-snapshot.mjs rebuilds and verifies them.
 apps/*/dist/
+
+# Tool artifacts, ignored the same way turbowarp-app-template ignores them.
+.claude/
+.playwright-mcp/
+.serena/

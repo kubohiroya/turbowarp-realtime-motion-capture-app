@@ -1,6 +1,10 @@
 import definitions from './block-definitions.json';
-import {Pose3dServiceClient, type ClientClock, type ServicePort} from './client.ts';
-import {toPoseFrame3DV1, type ServiceCamera} from './contracts.ts';
+import {
+  Pose3dServiceClient,
+  type ClientClock,
+  type ServicePort,
+} from './client.ts';
+import { toPoseFrame3DV1, type ServiceCamera } from './contracts.ts';
 
 type BlockTypeName = 'COMMAND' | 'REPORTER';
 type ArgumentTypeName = 'STRING' | 'NUMBER';
@@ -10,7 +14,10 @@ interface BlockDefinition {
   blockType: BlockTypeName;
   text: string;
   description: string;
-  arguments: Record<string, {type: ArgumentTypeName; defaultValue: string | number}>;
+  arguments: Record<
+    string,
+    { type: ArgumentTypeName; defaultValue: string | number }
+  >;
 }
 
 export const extensionId = 'realtimemotioncapturepose3dservice';
@@ -19,9 +26,11 @@ export const extensionId = 'realtimemotioncapturepose3dservice';
 export type PortFactory = () => ServicePort;
 
 export const browserClock: ClientClock = {
-  nowMs: () => (typeof performance === 'undefined' ? Date.now() : performance.now()),
+  nowMs: () =>
+    typeof performance === 'undefined' ? Date.now() : performance.now(),
   setTimeout: (callback, ms) => setTimeout(callback, ms),
-  clearTimeout: (handle) => clearTimeout(handle as ReturnType<typeof setTimeout>)
+  clearTimeout: (handle) =>
+    clearTimeout(handle as ReturnType<typeof setTimeout>),
 };
 
 function readJson(value: unknown): unknown {
@@ -44,10 +53,15 @@ export class Pose3dServiceExtension implements TurboWarpExtension {
   private readonly createPort: PortFactory;
   private readonly clock: ClientClock;
   private client: Pose3dServiceClient | undefined;
-  private draft: {implementation: string; referenceId: string; cameras: ServiceCamera[]} | undefined;
+  private draft:
+    | { implementation: string; referenceId: string; cameras: ServiceCamera[] }
+    | undefined;
   private draftError = '';
 
-  public constructor(createPort: PortFactory, clock: ClientClock = browserClock) {
+  public constructor(
+    createPort: PortFactory,
+    clock: ClientClock = browserClock,
+  ) {
     this.createPort = createPort;
     this.clock = clock;
   }
@@ -63,36 +77,56 @@ export class Pose3dServiceExtension implements TurboWarpExtension {
         arguments: Object.fromEntries(
           Object.entries(block.arguments).map(([name, argument]) => [
             name,
-            {type: Scratch.ArgumentType[argument.type], defaultValue: argument.defaultValue}
-          ])
-        )
-      }))
+            {
+              type: Scratch.ArgumentType[argument.type],
+              defaultValue: argument.defaultValue,
+            },
+          ]),
+        ),
+      })),
     };
   }
 
-  public beginConfiguration(args: {IMPLEMENTATION: unknown; REFERENCE_ID: unknown}): void {
+  public beginConfiguration(args: {
+    IMPLEMENTATION: unknown;
+    REFERENCE_ID: unknown;
+  }): void {
     this.draft = {
       implementation: Scratch.Cast.toString(args.IMPLEMENTATION),
       referenceId: Scratch.Cast.toString(args.REFERENCE_ID),
-      cameras: []
+      cameras: [],
     };
     this.draftError = '';
   }
 
-  public addCamera(args: {CAMERA_ID: unknown; MODEL_JSON: unknown; PLACEMENT_JSON: unknown; TIME_JSON: unknown}): void {
+  public addCamera(args: {
+    CAMERA_ID: unknown;
+    MODEL_JSON: unknown;
+    PLACEMENT_JSON: unknown;
+    TIME_JSON: unknown;
+  }): void {
     const draft = this.draft;
     if (!draft) {
       this.draftError = 'Begin a configuration before adding cameras.';
       return;
     }
     const cameraId = Scratch.Cast.toString(args.CAMERA_ID);
-    const placement = readJson(args.PLACEMENT_JSON) as {cameras?: Array<{cameraId?: unknown; cameraFromReference?: unknown}>} | undefined;
-    const placed = placement?.cameras?.find((camera) => camera.cameraId === cameraId);
+    const placement = readJson(args.PLACEMENT_JSON) as
+      | {
+          cameras?: Array<{
+            cameraId?: unknown;
+            cameraFromReference?: unknown;
+          }>;
+        }
+      | undefined;
+    const placed = placement?.cameras?.find(
+      (camera) => camera.cameraId === cameraId,
+    );
     draft.cameras.push({
       cameraId,
       model: readJson(args.MODEL_JSON) as ServiceCamera['model'],
       cameraFromReference: (placed?.cameraFromReference ?? []) as number[],
-      timeCorrespondence: readJson(args.TIME_JSON) ?? null
+      timeCorrespondence: readJson(args.TIME_JSON) ?? null,
     });
   }
 
@@ -108,7 +142,9 @@ export class Pose3dServiceExtension implements TurboWarpExtension {
   }
 
   /** Configures the service from a configuration in hand, such as the one a recording carries. */
-  public async applyConfigurationJson(args: {CONFIGURATION_JSON: unknown}): Promise<void> {
+  public async applyConfigurationJson(args: {
+    CONFIGURATION_JSON: unknown;
+  }): Promise<void> {
     const configuration = readJson(args.CONFIGURATION_JSON);
     if (configuration === undefined) {
       this.draftError = 'A configuration must be JSON.';
@@ -130,11 +166,15 @@ export class Pose3dServiceExtension implements TurboWarpExtension {
     await this.client.configure(draft);
   }
 
-  public sendPoseFrame(args: {FRAME_JSON: unknown; CAMERA_ID: unknown; AGE_MS: unknown}): void {
+  public sendPoseFrame(args: {
+    FRAME_JSON: unknown;
+    CAMERA_ID: unknown;
+    AGE_MS: unknown;
+  }): void {
     this.client?.sendFrame(
       Scratch.Cast.toString(args.CAMERA_ID),
       Scratch.Cast.toString(args.FRAME_JSON),
-      Scratch.Cast.toNumber(args.AGE_MS)
+      Scratch.Cast.toNumber(args.AGE_MS),
     );
   }
 
@@ -159,11 +199,13 @@ export class Pose3dServiceExtension implements TurboWarpExtension {
   public serviceError(): string {
     if (this.draftError) return `invalid-payload: ${this.draftError}`;
     const status = this.client?.status();
-    return status && status.errorCode ? `${status.errorCode}: ${status.errorMessage}` : '';
+    return status && status.errorCode
+      ? `${status.errorCode}: ${status.errorMessage}`
+      : '';
   }
 
   public serviceStatusJson(): string {
-    return JSON.stringify(this.client?.status() ?? {state: 'idle'});
+    return JSON.stringify(this.client?.status() ?? { state: 'idle' });
   }
 
   public stopService(): void {

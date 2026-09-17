@@ -1,15 +1,15 @@
-import {describe, expect, it} from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-import {createQrPanel, parseButtonLabels} from '../src/qr-panel.js';
-import {fakeDocument, findByText} from './fake-dom.js';
-import type {FakeElement} from './fake-dom.js';
+import { createQrPanel, parseButtonLabels } from '../src/qr-panel.js';
+import { fakeDocument, findByText } from './fake-dom.js';
+import type { FakeElement } from './fake-dom.js';
 
 const svg = 'data:image/svg+xml;base64,PHN2Zy8+';
 
 function panel() {
   const document = fakeDocument();
   const body = document.body as unknown as FakeElement;
-  return {qr: createQrPanel({document}), body};
+  return { qr: createQrPanel({ document }), body };
 }
 
 describe('parseButtonLabels', () => {
@@ -21,7 +21,7 @@ describe('parseButtonLabels', () => {
 
 describe('createQrPanel', () => {
   it('shows an image data URI with its caption and buttons', () => {
-    const {qr, body} = panel();
+    const { qr, body } = panel();
 
     expect(qr.show(svg, 'Offer 1 / 2', ['次のQR', 'やめる'])).toBe(true);
 
@@ -32,7 +32,7 @@ describe('createQrPanel', () => {
   });
 
   it('refuses anything that is not an image data URI', () => {
-    const {qr, body} = panel();
+    const { qr, body } = panel();
 
     expect(qr.show('https://example.com/qr.svg', '', [])).toBe(false);
     expect(qr.show('javascript:alert(1)', '', [])).toBe(false);
@@ -40,7 +40,7 @@ describe('createQrPanel', () => {
   });
 
   it('replaces the image in place and keeps the same buttons', () => {
-    const {qr, body} = panel();
+    const { qr, body } = panel();
     qr.show(svg, 'Offer 1 / 2', ['次のQR']);
     const button = findByText(body, '次のQR')[0];
 
@@ -52,7 +52,7 @@ describe('createQrPanel', () => {
   });
 
   it('counts every press and keeps the label pressed last', () => {
-    const {qr, body} = panel();
+    const { qr, body } = panel();
     qr.show(svg, '', ['次のQR', 'やめる']);
 
     findByText(body, '次のQR')[0]?.click();
@@ -64,7 +64,7 @@ describe('createQrPanel', () => {
   });
 
   it('removes itself on hide and can be shown again', () => {
-    const {qr, body} = panel();
+    const { qr, body } = panel();
     qr.show(svg, '', ['やめる']);
 
     qr.hide();

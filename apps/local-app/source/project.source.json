@@ -1056,7 +1056,7 @@
               1,
               [
                 10,
-                "debugCameraReplayV1"
+                "debugPoseReplayV1"
               ]
             ]
           },
@@ -1736,7 +1736,7 @@
               1,
               [
                 10,
-                "debugCameraReplayV1"
+                "debugPoseReplayV1"
               ]
             ]
           },
@@ -43785,7 +43785,7 @@
               1,
               [
                 10,
-                "stub-normal"
+                "fusion-v0"
               ]
             ],
             "REFERENCE_ID": [
@@ -44702,7 +44702,7 @@
               1,
               [
                 10,
-                "debugCameraReplayV1"
+                "debugPoseReplayV1"
               ]
             ]
           },
@@ -44832,7 +44832,7 @@
               1,
               [
                 10,
-                "stub-normal"
+                "fusion-v0"
               ]
             ],
             "REFERENCE_ID": [

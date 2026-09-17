@@ -10,8 +10,15 @@
  * accepts names rather than paths, and nothing in a name can leave the directory.
  */
 
-import {mkdir, readFile, readdir, rm, stat, writeFile} from 'node:fs/promises';
-import {join} from 'node:path';
+import {
+  mkdir,
+  readFile,
+  readdir,
+  rm,
+  stat,
+  writeFile,
+} from 'node:fs/promises';
+import { join } from 'node:path';
 
 /** Path the recordings are served from, next to the application on the same origin. */
 export const recordingsPath = '/recordings';
@@ -32,13 +39,19 @@ export interface RecordingEntry {
  * file, whatever the caller sends.
  */
 export function isRecordingName(name: string): boolean {
-  return /^[A-Za-z0-9_-][A-Za-z0-9._-]{0,63}\.json$/u.test(name) && !name.includes('..');
+  return (
+    /^[A-Za-z0-9_-][A-Za-z0-9._-]{0,63}\.json$/u.test(name) &&
+    !name.includes('..')
+  );
 }
 
 function json(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: {'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store'}
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'no-store',
+    },
   });
 }
 
@@ -56,47 +69,60 @@ export interface RecordingStoreOptions {
  * never records leaves no directory behind.
  */
 export function createRecordingsRoute(options: RecordingStoreOptions) {
-  const {directory} = options;
+  const { directory } = options;
   return async (request: Request): Promise<Response> => {
     const url = new URL(request.url);
     const name = url.searchParams.get('name');
     if (name !== null && !isRecordingName(name)) {
-      return json(400, {error: 'invalid-name', message: 'A recording name is letters, digits, dot, dash or underscore, ending in .json.'});
+      return json(400, {
+        error: 'invalid-name',
+        message:
+          'A recording name is letters, digits, dot, dash or underscore, ending in .json.',
+      });
     }
 
     if (request.method === 'GET' && name === null) {
-      return json(200, {recordings: await list(directory)});
+      return json(200, { recordings: await list(directory) });
     }
     if (request.method === 'GET') {
-      const text = await readFile(join(directory, name as string), 'utf8').catch(() => null);
-      if (text === null) return json(404, {error: 'not-found', name});
+      const text = await readFile(
+        join(directory, name as string),
+        'utf8',
+      ).catch(() => null);
+      if (text === null) return json(404, { error: 'not-found', name });
       return new Response(text, {
-        headers: {'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store'}
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Cache-Control': 'no-store',
+        },
       });
     }
     if (request.method === 'PUT' || request.method === 'POST') {
-      if (name === null) return json(400, {error: 'name-required'});
+      if (name === null) return json(400, { error: 'name-required' });
       const body = await request.text();
       if (body.length > MAXIMUM_RECORDING_BYTES) {
-        return json(413, {error: 'too-large', maximumBytes: MAXIMUM_RECORDING_BYTES});
+        return json(413, {
+          error: 'too-large',
+          maximumBytes: MAXIMUM_RECORDING_BYTES,
+        });
       }
       // Refused rather than written: a file that is not JSON is not a recording, and finding that
       // out when it is replayed is finding out too late.
       try {
         JSON.parse(body);
       } catch {
-        return json(400, {error: 'not-json'});
+        return json(400, { error: 'not-json' });
       }
-      await mkdir(directory, {recursive: true});
+      await mkdir(directory, { recursive: true });
       await writeFile(join(directory, name), body);
-      return json(200, {name, bytes: body.length});
+      return json(200, { name, bytes: body.length });
     }
     if (request.method === 'DELETE') {
-      if (name === null) return json(400, {error: 'name-required'});
-      await rm(join(directory, name), {force: true});
-      return json(200, {name});
+      if (name === null) return json(400, { error: 'name-required' });
+      await rm(join(directory, name), { force: true });
+      return json(200, { name });
     }
-    return json(405, {error: 'method-not-allowed', method: request.method});
+    return json(405, { error: 'method-not-allowed', method: request.method });
   };
 }
 
@@ -106,7 +132,11 @@ async function list(directory: string): Promise<RecordingEntry[]> {
   for (const name of names.filter(isRecordingName).sort()) {
     const info = await stat(join(directory, name)).catch(() => null);
     if (!info?.isFile()) continue;
-    entries.push({name, bytes: info.size, modifiedAt: info.mtime.toISOString()});
+    entries.push({
+      name,
+      bytes: info.size,
+      modifiedAt: info.mtime.toISOString(),
+    });
   }
   return entries;
 }

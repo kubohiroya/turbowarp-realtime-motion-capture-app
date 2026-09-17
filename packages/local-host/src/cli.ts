@@ -1,9 +1,13 @@
-import {tmpdir} from 'node:os';
-import {join} from 'node:path';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
-import {openLoopbackPreviewBrowser} from '@kubohiroya/turbowarp-local-preview';
+import { openLoopbackPreviewBrowser } from '@kubohiroya/turbowarp-local-preview';
 
-import {startLocalHost, type LocalHostFailure, type StartedLocalHost} from './host.ts';
+import {
+  startLocalHost,
+  type LocalHostFailure,
+  type StartedLocalHost,
+} from './host.ts';
 
 export type CliLocale = 'en' | 'ja';
 
@@ -38,9 +42,14 @@ export interface CliOutcome {
  * `XDG_RUNTIME_DIR` is per user by definition. The temp directory is the fallback, and it is shared
  * on some systems, so the venue name is not put in the path and the records hold nothing secret.
  */
-export function resolveLockDirectory(env: Readonly<Record<string, string | undefined>>): string {
+export function resolveLockDirectory(
+  env: Readonly<Record<string, string | undefined>>,
+): string {
   const runtime = env['XDG_RUNTIME_DIR'];
-  return join(runtime !== undefined && runtime.length > 0 ? runtime : tmpdir(), 'multiview-pose');
+  return join(
+    runtime !== undefined && runtime.length > 0 ? runtime : tmpdir(),
+    'multiview-pose',
+  );
 }
 
 /**
@@ -51,14 +60,18 @@ export function resolveLockDirectory(env: Readonly<Record<string, string | undef
  * it; the default sits beside the operator's own documents rather than in a temporary directory,
  * because a recording is worth keeping.
  */
-export function resolveRecordingsDirectory(env: Readonly<Record<string, string | undefined>>): string {
+export function resolveRecordingsDirectory(
+  env: Readonly<Record<string, string | undefined>>,
+): string {
   const configured = env['TWRMC_RECORDINGS'];
   if (configured !== undefined && configured.length > 0) return configured;
   const home = env['HOME'] ?? env['USERPROFILE'] ?? tmpdir();
   return join(home, 'multiview-pose-recordings');
 }
 
-export function resolveLocale(env: Readonly<Record<string, string | undefined>>): CliLocale {
+export function resolveLocale(
+  env: Readonly<Record<string, string | undefined>>,
+): CliLocale {
   const language = env['LC_ALL'] ?? env['LC_MESSAGES'] ?? env['LANG'] ?? '';
   return /^ja(?:[._-]|$)/i.test(language) ? 'ja' : 'en';
 }
@@ -77,7 +90,10 @@ function formatTime(isoDate: string, locale: CliLocale): string {
  * Each message names what is wrong and what to do about it, and never attributes a port to one of
  * our applications without a run lock proving it.
  */
-export function describeFailure(failure: LocalHostFailure, locale: CliLocale): string {
+export function describeFailure(
+  failure: LocalHostFailure,
+  locale: CliLocale,
+): string {
   if (locale === 'ja') {
     switch (failure.reason) {
       case 'already-running':
@@ -108,11 +124,14 @@ export function describeFailure(failure: LocalHostFailure, locale: CliLocale): s
  * `--preflight` performs exactly the same startup and then stops without opening a browser, so a
  * check before the show answers the same questions the real start would.
  */
-export async function runLocalHostCli(options: LocalHostCliOptions): Promise<CliOutcome> {
+export async function runLocalHostCli(
+  options: LocalHostCliOptions,
+): Promise<CliOutcome> {
   const argv = options.argv ?? process.argv.slice(2);
   const env = options.env ?? process.env;
   const write = options.write ?? ((line: string) => console.log(line));
-  const writeError = options.writeError ?? ((line: string) => console.error(line));
+  const writeError =
+    options.writeError ?? ((line: string) => console.error(line));
   const locale = resolveLocale(env);
   const preflight = argv.includes('--preflight');
   /** For a PC where the operator already has the window open, and for scripted checks. */
@@ -123,39 +142,42 @@ export async function runLocalHostCli(options: LocalHostCliOptions): Promise<Cli
     title: options.title,
     port: options.port,
     lockDirectory: resolveLockDirectory(env),
-    player: {html: options.player},
+    player: { html: options.player },
     ...(options.lensCalibrationPlayer === undefined
       ? {}
-      : {lensCalibrationPlayer: {html: options.lensCalibrationPlayer}}),
-    recordingsDirectory: options.recordingsDirectory ?? resolveRecordingsDirectory(env)
+      : { lensCalibrationPlayer: { html: options.lensCalibrationPlayer } }),
+    recordingsDirectory:
+      options.recordingsDirectory ?? resolveRecordingsDirectory(env),
   });
 
   if (!result.started) {
     writeError(describeFailure(result, locale));
-    return {code: 1};
+    return { code: 1 };
   }
 
-  const {host} = result;
+  const { host } = result;
   write(
     locale === 'ja'
       ? `${options.title} を ${host.origin} で起動しました。`
-      : `${options.title} is serving at ${host.origin}.`
+      : `${options.title} is serving at ${host.origin}.`,
   );
   write(
     locale === 'ja'
       ? `保存済みの設定はこのアドレスに紐づきます。`
-      : `Saved settings belong to this address.`
+      : `Saved settings belong to this address.`,
   );
 
   if (preflight) {
     await host.stop();
-    write(locale === 'ja' ? '起動前チェックに合格しました。' : 'Preflight passed.');
-    return {code: 0};
+    write(
+      locale === 'ja' ? '起動前チェックに合格しました。' : 'Preflight passed.',
+    );
+    return { code: 0 };
   }
 
   if (!openWindow) {
     write(host.url);
-    return {code: 0, host: registerShutdown(host, options)};
+    return { code: 0, host: registerShutdown(host, options) };
   }
 
   const open = options.openBrowser ?? openLoopbackPreviewBrowser;
@@ -163,15 +185,18 @@ export async function runLocalHostCli(options: LocalHostCliOptions): Promise<Cli
     writeError(
       locale === 'ja'
         ? `ブラウザを開けませんでした。次のアドレスを手で開いてください: ${host.url}`
-        : `Could not open a browser. Open this address by hand: ${host.url}`
+        : `Could not open a browser. Open this address by hand: ${host.url}`,
     );
     writeError(String(error));
   });
 
-  return {code: 0, host: registerShutdown(host, options)};
+  return { code: 0, host: registerShutdown(host, options) };
 }
 
-function registerShutdown(host: StartedLocalHost, options: LocalHostCliOptions): StartedLocalHost {
+function registerShutdown(
+  host: StartedLocalHost,
+  options: LocalHostCliOptions,
+): StartedLocalHost {
   const onSignal = options.onSignal ?? defaultSignalHandler;
   onSignal(() => {
     void host.stop().then(() => process.exit(0));
@@ -180,5 +205,6 @@ function registerShutdown(host: StartedLocalHost, options: LocalHostCliOptions):
 }
 
 function defaultSignalHandler(handler: () => void): void {
-  for (const signal of ['SIGINT', 'SIGTERM'] as const) process.once(signal, handler);
+  for (const signal of ['SIGINT', 'SIGTERM'] as const)
+    process.once(signal, handler);
 }

@@ -8,7 +8,7 @@ import {
   variable,
   type BlockNode,
   type InputValue,
-  type Script
+  type Script,
 } from '../../packages/sb3-script/src/blocks.ts';
 import {
   broadcastMessage,
@@ -26,23 +26,31 @@ import {
   wait,
   waitUntil,
   whenBroadcastReceived,
-  whenFlagClicked
+  whenFlagClicked,
 } from '../../packages/sb3-script/src/standard.ts';
-import {messageDispatcher, networkReferences, networkVariables} from './network.ts';
-import {cameraPoseReferences, cameraPoseScripts, cameraPoseVariables} from './pose.ts';
+import {
+  messageDispatcher,
+  networkReferences,
+  networkVariables,
+} from './network.ts';
+import {
+  cameraPoseReferences,
+  cameraPoseScripts,
+  cameraPoseVariables,
+} from './pose.ts';
 import {
   cameraSyncBroadcasts,
   cameraSyncReferences,
   cameraSyncRoute,
   cameraSyncSteps,
-  cameraSyncVariables
+  cameraSyncVariables,
 } from './space-time.ts';
 import {
   linkTestMessage,
   pairingButtons,
   pairingReferences,
   PairingSteps,
-  pairingVariables
+  pairingVariables,
 } from './pairing.ts';
 
 const shell = 'realtimemotioncapturecamerashell';
@@ -58,7 +66,7 @@ const action = {
   stopPose: 'stopPose',
   cancelPairing: 'cancelPairing',
   stopCamera: 'stopCamera',
-  diagnostics: 'diagnostics'
+  diagnostics: 'diagnostics',
 } as const;
 
 const pairingRefs = pairingReferences();
@@ -69,46 +77,46 @@ const poseRefs = cameraPoseReferences();
 const cameraId = 'pose';
 const cameraShouldBeRunning = namedReference(
   'camera should be running',
-  'variable:camera-should-be-running'
+  'variable:camera-should-be-running',
 );
 const selectedDeviceIndex = namedReference(
   'selected device index',
-  'variable:selected-device-index'
+  'variable:selected-device-index',
 );
 const lastCameraStartErrorCode = namedReference(
   'last camera start error code',
-  'variable:last-camera-start-error-code'
+  'variable:last-camera-start-error-code',
 );
 /** `true` only while a lens profile that fits the running camera is registered for it. */
 const lensCalibrationReady = namedReference(
   'lens calibration ready',
-  'variable:lens-calibration-ready'
+  'variable:lens-calibration-ready',
 );
 /** The device to give the camera back to once the calibration window has let go of it. */
 const lensCalibrationDeviceId = namedReference(
   'lens calibration device ID',
-  'variable:lens-calibration-device-id'
+  'variable:lens-calibration-device-id',
 );
 /** The stored-profile generation when the calibration window opened; a larger one means it saved. */
 const storedProfilesGenerationBefore = namedReference(
   'stored profiles generation before',
-  'variable:stored-profiles-generation-before'
+  'variable:stored-profiles-generation-before',
 );
 const lensProfileRejection = namedReference(
   'lens profile rejection',
-  'variable:lens-profile-rejection'
+  'variable:lens-profile-rejection',
 );
 const lensCalibrationRequested = namedReference(
   'lens calibration requested',
-  'broadcast:lens-calibration-requested'
+  'broadcast:lens-calibration-requested',
 );
 const cameraDeviceSelected = namedReference(
   'camera device selected',
-  'broadcast:camera-device-selected'
+  'broadcast:camera-device-selected',
 );
 const menuActionsRequested = namedReference(
   'menu actions requested',
-  'broadcast:menu-actions-requested'
+  'broadcast:menu-actions-requested',
 );
 const maximumMenuDevices = 8;
 
@@ -119,32 +127,44 @@ export const cameraAppStageData = {
     [lastCameraStartErrorCode.id]: [lastCameraStartErrorCode.name, ''],
     [lensCalibrationReady.id]: [lensCalibrationReady.name, 'false'],
     [lensCalibrationDeviceId.id]: [lensCalibrationDeviceId.name, ''],
-    [storedProfilesGenerationBefore.id]: [storedProfilesGenerationBefore.name, 0],
+    [storedProfilesGenerationBefore.id]: [
+      storedProfilesGenerationBefore.name,
+      0,
+    ],
     [lensProfileRejection.id]: [lensProfileRejection.name, ''],
     ...pairingVariables(pairingRefs, 'fusion-link'),
     ...networkVariables(networkRefs),
     ...cameraSyncVariables(syncRefs),
-    ...cameraPoseVariables(poseRefs)
+    ...cameraPoseVariables(poseRefs),
   },
   broadcasts: {
     ...cameraSyncBroadcasts(syncRefs),
     [lensCalibrationRequested.id]: lensCalibrationRequested.name,
     [cameraDeviceSelected.id]: cameraDeviceSelected.name,
-    [menuActionsRequested.id]: menuActionsRequested.name
-  }
+    [menuActionsRequested.id]: menuActionsRequested.name,
+  },
 } as const;
 
 const cameraDeviceAction = (index: number) => `cameraDevice${index}`;
-const cameraBlock = (opcode: string, inputs: Readonly<Record<string, InputValue>> = {}) =>
-  block(`${cameraSource}_${opcode}`, inputs);
-const cameraValue = (opcode: string, inputs: Readonly<Record<string, InputValue>> = {}) =>
-  reporter(cameraBlock(opcode, inputs));
+const cameraBlock = (
+  opcode: string,
+  inputs: Readonly<Record<string, InputValue>> = {},
+) => block(`${cameraSource}_${opcode}`, inputs);
+const cameraValue = (
+  opcode: string,
+  inputs: Readonly<Record<string, InputValue>> = {},
+) => reporter(cameraBlock(opcode, inputs));
 
-const concatenate = (first: InputValue, ...rest: readonly InputValue[]): InputValue =>
+const concatenate = (
+  first: InputValue,
+  ...rest: readonly InputValue[]
+): InputValue =>
   rest.reduce((left, right) => reporter(join(left, right)), first);
 
-const shellBlock = (opcode: string, inputs: Readonly<Record<string, InputValue>> = {}) =>
-  block(`${shell}_${opcode}`, inputs);
+const shellBlock = (
+  opcode: string,
+  inputs: Readonly<Record<string, InputValue>> = {},
+) => block(`${shell}_${opcode}`, inputs);
 const shellValue = (opcode: string) => reporter(shellBlock(opcode));
 
 const pairing = new PairingSteps(shell, pairingRefs);
@@ -152,91 +172,107 @@ const pairing = new PairingSteps(shell, pairingRefs);
 const baseMenuActions = (chooseCameraLabel: string): BlockNode[] => [
   block(`${titleMenu}_addAppMenuAction`, {
     ACTION: text(action.chooseCamera),
-    LABEL: text(chooseCameraLabel)
+    LABEL: text(chooseCameraLabel),
   }),
   block(`${titleMenu}_addAppMenuAction`, {
     ACTION: text(action.openLensCalibration),
-    LABEL: text('レンズ校正アプリで校正する')
+    LABEL: text('レンズ校正アプリで校正する'),
   }),
   block(`${titleMenu}_addAppMenuAction`, {
     ACTION: text(action.loadLensCalibrationFile),
-    LABEL: text('レンズ校正ファイルを読む')
+    LABEL: text('レンズ校正ファイルを読む'),
   }),
   ifThen(pairing.featureEnabled(), [
     block(`${titleMenu}_addAppMenuAction`, {
       ACTION: text(action.pairWithFusion),
-      LABEL: text('統合アプリと接続する')
+      LABEL: text('統合アプリと接続する'),
     }),
     block(`${titleMenu}_addAppMenuAction`, {
       ACTION: text(action.cancelPairing),
-      LABEL: text('接続をやめる')
-    })
-  ]),
-  ifThen(block(`${shell}_appFeatureEnabled`, {FEATURE: text('webgpuMoveNetMultiPose')}), [
-    block(`${titleMenu}_addAppMenuAction`, {
-      ACTION: text(action.startPose),
-      LABEL: text('姿勢推定を開始する')
+      LABEL: text('接続をやめる'),
     }),
-    block(`${titleMenu}_addAppMenuAction`, {
-      ACTION: text(action.stopPose),
-      LABEL: text('姿勢推定を止める')
-    })
   ]),
+  ifThen(
+    block(`${shell}_appFeatureEnabled`, {
+      FEATURE: text('webgpuMoveNetMultiPose'),
+    }),
+    [
+      block(`${titleMenu}_addAppMenuAction`, {
+        ACTION: text(action.startPose),
+        LABEL: text('姿勢推定を開始する'),
+      }),
+      block(`${titleMenu}_addAppMenuAction`, {
+        ACTION: text(action.stopPose),
+        LABEL: text('姿勢推定を止める'),
+      }),
+    ],
+  ),
   block(`${titleMenu}_addAppMenuAction`, {
     ACTION: text(action.stopCamera),
-    LABEL: text('カメラを止める')
+    LABEL: text('カメラを止める'),
   }),
   block(`${titleMenu}_addAppMenuAction`, {
     ACTION: text(action.diagnostics),
-    LABEL: text('動作状況を見る')
-  })
+    LABEL: text('動作状況を見る'),
+  }),
 ];
 
 const cameraDeviceMenuActions = (): BlockNode[] =>
-  Array.from({length: maximumMenuDevices}, (_, offset) => offset + 1).map((index) =>
-    ifThen(greaterThan(cameraValue('cameraDeviceCount'), number(index - 1)), [
-      block(`${titleMenu}_addAppMenuAction`, {
-        ACTION: text(cameraDeviceAction(index)),
-        LABEL: label(`${index}: `, cameraBlock('cameraDeviceLabelAt', {INDEX: number(index)}))
-      })
-    ])
+  Array.from({ length: maximumMenuDevices }, (_, offset) => offset + 1).map(
+    (index) =>
+      ifThen(greaterThan(cameraValue('cameraDeviceCount'), number(index - 1)), [
+        block(`${titleMenu}_addAppMenuAction`, {
+          ACTION: text(cameraDeviceAction(index)),
+          LABEL: label(
+            `${index}: `,
+            cameraBlock('cameraDeviceLabelAt', { INDEX: number(index) }),
+          ),
+        }),
+      ]),
   );
 
 const activeCameraSummary = (): InputValue =>
   concatenate(
-    label('device: ', cameraBlock('cameraDeviceIdReporter', {CAMERA_ID: text(cameraId)})),
+    label(
+      'device: ',
+      cameraBlock('cameraDeviceIdReporter', { CAMERA_ID: text(cameraId) }),
+    ),
     text(' / resolution: '),
-    cameraValue('cameraFrameWidth', {CAMERA_ID: text(cameraId)}),
+    cameraValue('cameraFrameWidth', { CAMERA_ID: text(cameraId) }),
     text('x'),
-    cameraValue('cameraFrameHeight', {CAMERA_ID: text(cameraId)}),
+    cameraValue('cameraFrameHeight', { CAMERA_ID: text(cameraId) }),
     text(' / fps: '),
-    cameraValue('cameraFrameRate', {CAMERA_ID: text(cameraId)}),
+    cameraValue('cameraFrameRate', { CAMERA_ID: text(cameraId) }),
     text(' / lens: '),
-    cameraValue('cameraProfileCompatibility', {CAMERA_ID: text(cameraId)})
+    cameraValue('cameraProfileCompatibility', { CAMERA_ID: text(cameraId) }),
   );
 
 const showCameraNotFoundError = () =>
   block(`${shell}_showAppError`, {
     MESSAGE: text('カメラが見つかりません。接続を確認してください。'),
-    DETAILS: text('{"code":"CAMERA_NOT_FOUND","cameraId":"pose"}')
+    DETAILS: text('{"code":"CAMERA_NOT_FOUND","cameraId":"pose"}'),
   });
 
 const showCameraPermissionError = () =>
   block(`${shell}_showAppError`, {
-    MESSAGE: text('カメラを開始できませんでした。ブラウザのカメラ使用許可を確認してください。'),
-    DETAILS: text('{"code":"CAMERA_PERMISSION_DENIED","cameraId":"pose"}')
+    MESSAGE: text(
+      'カメラを開始できませんでした。ブラウザのカメラ使用許可を確認してください。',
+    ),
+    DETAILS: text('{"code":"CAMERA_PERMISSION_DENIED","cameraId":"pose"}'),
   });
 
 const showCameraUnavailableError = () =>
   block(`${shell}_showAppError`, {
-    MESSAGE: text('カメラを開始できませんでした。接続状態を確認して選び直してください。'),
-    DETAILS: text('{"code":"CAMERA_DEVICE_UNAVAILABLE","cameraId":"pose"}')
+    MESSAGE: text(
+      'カメラを開始できませんでした。接続状態を確認して選び直してください。',
+    ),
+    DETAILS: text('{"code":"CAMERA_DEVICE_UNAVAILABLE","cameraId":"pose"}'),
   });
 
 const showCameraStartError = (): BlockNode[] => [
   setVariable(
     lastCameraStartErrorCode,
-    cameraValue('cameraErrorCode', {CAMERA_ID: text(cameraId)})
+    cameraValue('cameraErrorCode', { CAMERA_ID: text(cameraId) }),
   ),
   ifElse(
     equals(variable(lastCameraStartErrorCode), text('NotFoundError')),
@@ -249,30 +285,33 @@ const showCameraStartError = (): BlockNode[] => [
           ifElse(
             equals(variable(lastCameraStartErrorCode), text('SecurityError')),
             [showCameraPermissionError()],
-            [showCameraUnavailableError()]
-          )
-        ]
-      )
-    ]
-  )
+            [showCameraUnavailableError()],
+          ),
+        ],
+      ),
+    ],
+  ),
 ];
 
 const showPreview = (): BlockNode[] => [
   setVariable(cameraShouldBeRunning, text('true')),
-  cameraBlock('showCameraPreview', {CAMERA_ID: text(cameraId), PREVIEW_FLIP: text('horizontal')}),
-  block(`${shell}_showAppNotice`, {MESSAGE: activeCameraSummary()}),
-  broadcastMessageAndWait(lensCalibrationRequested)
+  cameraBlock('showCameraPreview', {
+    CAMERA_ID: text(cameraId),
+    PREVIEW_FLIP: text('horizontal'),
+  }),
+  block(`${shell}_showAppNotice`, { MESSAGE: activeCameraSummary() }),
+  broadcastMessageAndWait(lensCalibrationRequested),
 ];
 
 const storedProfileResult = () =>
-  cameraValue('storedCameraProfileResult', {CAMERA_ID: text(cameraId)});
+  cameraValue('storedCameraProfileResult', { CAMERA_ID: text(cameraId) });
 const storedProfileDetail = () =>
-  cameraValue('storedCameraProfileDetail', {CAMERA_ID: text(cameraId)});
+  cameraValue('storedCameraProfileDetail', { CAMERA_ID: text(cameraId) });
 
 const showCameraNotRunningError = () =>
   shellBlock('showAppError', {
     MESSAGE: text('先に「カメラを選ぶ」で校正するカメラを選んでください。'),
-    DETAILS: text('{"code":"CAMERA_NOT_RUNNING","cameraId":"pose"}')
+    DETAILS: text('{"code":"CAMERA_NOT_RUNNING","cameraId":"pose"}'),
   });
 
 /**
@@ -284,20 +323,20 @@ const showCameraNotRunningError = () =>
 const resumeCameraAfterLensCalibration = (): BlockNode[] => [
   cameraBlock('startSharedCamera', {
     CAMERA_ID: text(cameraId),
-    DEVICE_ID: variable(lensCalibrationDeviceId)
+    DEVICE_ID: variable(lensCalibrationDeviceId),
   }),
   ifElse(
-    cameraBlock('isCameraRunning', {CAMERA_ID: text(cameraId)}),
+    cameraBlock('isCameraRunning', { CAMERA_ID: text(cameraId) }),
     [
       setVariable(cameraShouldBeRunning, text('true')),
       cameraBlock('showCameraPreview', {
         CAMERA_ID: text(cameraId),
-        PREVIEW_FLIP: text('horizontal')
+        PREVIEW_FLIP: text('horizontal'),
       }),
-      broadcastMessageAndWait(lensCalibrationRequested)
+      broadcastMessageAndWait(lensCalibrationRequested),
     ],
-    showCameraStartError()
-  )
+    showCameraStartError(),
+  ),
 ];
 
 export const cameraAppScripts: readonly Script[] = [
@@ -307,11 +346,13 @@ export const cameraAppScripts: readonly Script[] = [
     [
       {
         type: linkTestMessage,
-        handle: [setVariable(pairingRefs.linkTest, variable(networkRefs.message))]
+        handle: [
+          setVariable(pairingRefs.linkTest, variable(networkRefs.message)),
+        ],
       },
-      cameraSyncRoute(syncRefs, networkRefs.message)
+      cameraSyncRoute(syncRefs, networkRefs.message),
     ],
-    {x: 2600, y: 48}
+    { x: 2600, y: 48 },
   ),
 
   /** M-09: estimate 2D poses and stream them to the fusion app. */
@@ -326,19 +367,26 @@ export const cameraAppScripts: readonly Script[] = [
     startAction: action.startPose,
     stopAction: action.stopPose,
     menuActionsRequested,
-    position: {x: 3200, y: 48}
+    position: { x: 3200, y: 48 },
   }),
 
   /** M-08, camera side: measure time and corners when the fusion app starts a calibration. */
-  script({x: 2600, y: 700}, [
+  script({ x: 2600, y: 700 }, [
     whenBroadcastReceived(syncRefs.requested),
-    ...cameraSyncSteps({shell, cameraId, references: syncRefs, lensCalibrationReady})
+    ...cameraSyncSteps({
+      shell,
+      cameraId,
+      references: syncRefs,
+      lensCalibrationReady,
+    }),
   ]),
 
-  script({x: 48, y: 48}, [
+  script({ x: 48, y: 48 }, [
     whenFlagClicked(),
     setVariable(cameraShouldBeRunning, text('false')),
-    block(`${shell}_showAppLoading`, {LABEL: text('カメラアプリを起動しています')}),
+    block(`${shell}_showAppLoading`, {
+      LABEL: text('カメラアプリを起動しています'),
+    }),
     block(`${titleMenu}_clearAppMenuActions`),
     ...baseMenuActions('カメラを選ぶ'),
     block(`${shell}_hideAppLoading`),
@@ -346,81 +394,102 @@ export const cameraAppScripts: readonly Script[] = [
       not(block(`${shell}_webGpuAvailable`)),
       [
         block(`${shell}_showAppError`, {
-          MESSAGE: text('このブラウザではWebGPUを利用できないため、姿勢認識を開始できません。'),
-          DETAILS: text('{"code":"WEBGPU_UNAVAILABLE"}')
-        })
+          MESSAGE: text(
+            'このブラウザではWebGPUを利用できないため、姿勢認識を開始できません。',
+          ),
+          DETAILS: text('{"code":"WEBGPU_UNAVAILABLE"}'),
+        }),
       ],
-      [block(`${titleMenu}_showMenu`)]
+      [block(`${titleMenu}_showMenu`)],
     ),
     forever([
       wait(0.5),
       ifThen(equals(variable(cameraShouldBeRunning), text('true')), [
-        ifThen(not(cameraBlock('isCameraRunning', {CAMERA_ID: text(cameraId)})), [
-          setVariable(poseRefs.running, text('false')),
-          setVariable(cameraShouldBeRunning, text('false')),
-          cameraBlock('hideCameraPreview', {CAMERA_ID: text(cameraId)}),
-          cameraBlock('stopSharedCamera', {CAMERA_ID: text(cameraId)}),
-          block(`${shell}_showAppError`, {
-            MESSAGE: text('使用中のカメラが切断されました。再接続して選び直してください。'),
-            DETAILS: text('{"code":"CAMERA_TRACK_ENDED","cameraId":"pose"}')
-          })
-        ])
-      ])
-    ])
+        ifThen(
+          not(cameraBlock('isCameraRunning', { CAMERA_ID: text(cameraId) })),
+          [
+            setVariable(poseRefs.running, text('false')),
+            setVariable(cameraShouldBeRunning, text('false')),
+            cameraBlock('hideCameraPreview', { CAMERA_ID: text(cameraId) }),
+            cameraBlock('stopSharedCamera', { CAMERA_ID: text(cameraId) }),
+            block(`${shell}_showAppError`, {
+              MESSAGE: text(
+                '使用中のカメラが切断されました。再接続して選び直してください。',
+              ),
+              DETAILS: text('{"code":"CAMERA_TRACK_ENDED","cameraId":"pose"}'),
+            }),
+          ],
+        ),
+      ]),
+    ]),
   ]),
 
-  script({x: 48, y: 360}, [
-    block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.chooseCamera}),
+  script({ x: 48, y: 360 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.chooseCamera },
+    ),
     block(`${titleMenu}_clearAppMenuActions`),
     setVariable(cameraShouldBeRunning, text('false')),
-    cameraBlock('hideCameraPreview', {CAMERA_ID: text(cameraId)}),
-    cameraBlock('stopSharedCamera', {CAMERA_ID: text(cameraId)}),
-    cameraBlock('startSharedCamera', {CAMERA_ID: text(cameraId), DEVICE_ID: text('')}),
+    cameraBlock('hideCameraPreview', { CAMERA_ID: text(cameraId) }),
+    cameraBlock('stopSharedCamera', { CAMERA_ID: text(cameraId) }),
+    cameraBlock('startSharedCamera', {
+      CAMERA_ID: text(cameraId),
+      DEVICE_ID: text(''),
+    }),
     ifElse(
-      cameraBlock('isCameraRunning', {CAMERA_ID: text(cameraId)}),
+      cameraBlock('isCameraRunning', { CAMERA_ID: text(cameraId) }),
       [
         setVariable(cameraShouldBeRunning, text('true')),
         cameraBlock('showCameraPreview', {
           CAMERA_ID: text(cameraId),
-          PREVIEW_FLIP: text('horizontal')
+          PREVIEW_FLIP: text('horizontal'),
         }),
         cameraBlock('refreshCameraDevices'),
         broadcastMessageAndWait(menuActionsRequested),
         broadcastMessageAndWait(lensCalibrationRequested),
-        block(`${titleMenu}_showMenu`)
+        block(`${titleMenu}_showMenu`),
       ],
       [
         cameraBlock('refreshCameraDevices'),
         broadcastMessageAndWait(menuActionsRequested),
-        ...showCameraStartError()
-      ]
-    )
+        ...showCameraStartError(),
+      ],
+    ),
   ]),
 
-  ...Array.from({length: maximumMenuDevices}, (_, offset) => offset + 1).map((index) =>
-    script({x: 520, y: 48 + (index - 1) * 280}, [
-      block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: cameraDeviceAction(index)}),
-      block(`${titleMenu}_clearAppMenuActions`),
-      broadcastMessageAndWait(menuActionsRequested),
-      setVariable(selectedDeviceIndex, number(index)),
-      broadcastMessage(cameraDeviceSelected)
-    ])
+  ...Array.from({ length: maximumMenuDevices }, (_, offset) => offset + 1).map(
+    (index) =>
+      script({ x: 520, y: 48 + (index - 1) * 280 }, [
+        block(
+          `${titleMenu}_whenAppMenuActionSelected`,
+          {},
+          { ACTION: cameraDeviceAction(index) },
+        ),
+        block(`${titleMenu}_clearAppMenuActions`),
+        broadcastMessageAndWait(menuActionsRequested),
+        setVariable(selectedDeviceIndex, number(index)),
+        broadcastMessage(cameraDeviceSelected),
+      ]),
   ),
 
-  script({x: 900, y: 48}, [
+  script({ x: 900, y: 48 }, [
     whenBroadcastReceived(cameraDeviceSelected),
     setVariable(cameraShouldBeRunning, text('false')),
-    cameraBlock('hideCameraPreview', {CAMERA_ID: text(cameraId)}),
-    cameraBlock('stopSharedCamera', {CAMERA_ID: text(cameraId)}),
+    cameraBlock('hideCameraPreview', { CAMERA_ID: text(cameraId) }),
+    cameraBlock('stopSharedCamera', { CAMERA_ID: text(cameraId) }),
     cameraBlock('startSharedCamera', {
       CAMERA_ID: text(cameraId),
-      DEVICE_ID: cameraValue('cameraDeviceIdAt', {INDEX: variable(selectedDeviceIndex)})
+      DEVICE_ID: cameraValue('cameraDeviceIdAt', {
+        INDEX: variable(selectedDeviceIndex),
+      }),
     }),
     ifElse(
-      cameraBlock('isCameraRunning', {CAMERA_ID: text(cameraId)}),
+      cameraBlock('isCameraRunning', { CAMERA_ID: text(cameraId) }),
       showPreview(),
-      showCameraStartError()
-    )
+      showCameraStartError(),
+    ),
   ]),
 
   /**
@@ -431,17 +500,22 @@ export const cameraAppScripts: readonly Script[] = [
    * different resolution or zoom produces plausible but wrong geometry rather than a visible error,
    * so the operator is sent to calibrate or to a file instead.
    */
-  script({x: 1400, y: 48}, [
+  script({ x: 1400, y: 48 }, [
     whenBroadcastReceived(lensCalibrationRequested),
     setVariable(lensCalibrationReady, text('false')),
-    cameraBlock('restoreStoredCameraProfile', {CAMERA_ID: text(cameraId)}),
+    cameraBlock('restoreStoredCameraProfile', { CAMERA_ID: text(cameraId) }),
     ifElse(
       equals(storedProfileResult(), text('restored')),
       [
         setVariable(lensCalibrationReady, text('true')),
         shellBlock('showAppNotice', {
-          MESSAGE: label('このPCに保存済みのレンズ校正を使います。', cameraBlock('storedCameraProfileDetail', {CAMERA_ID: text(cameraId)}))
-        })
+          MESSAGE: label(
+            'このPCに保存済みのレンズ校正を使います。',
+            cameraBlock('storedCameraProfileDetail', {
+              CAMERA_ID: text(cameraId),
+            }),
+          ),
+        }),
       ],
       [
         ifElse(
@@ -451,9 +525,11 @@ export const cameraAppScripts: readonly Script[] = [
               MESSAGE: concatenate(
                 text('保存済みのレンズ校正は今のカメラの設定と合いません（'),
                 storedProfileDetail(),
-                text('）。メニューから校正するか、校正ファイルを読んでください。')
-              )
-            })
+                text(
+                  '）。メニューから校正するか、校正ファイルを読んでください。',
+                ),
+              ),
+            }),
           ],
           [
             ifElse(
@@ -461,22 +537,22 @@ export const cameraAppScripts: readonly Script[] = [
               [
                 shellBlock('showAppNotice', {
                   MESSAGE: text(
-                    'このブラウザでは校正の保存領域を使えません。メニューから校正するか、校正ファイルを読んでください。'
-                  )
-                })
+                    'このブラウザでは校正の保存領域を使えません。メニューから校正するか、校正ファイルを読んでください。',
+                  ),
+                }),
               ],
               [
                 shellBlock('showAppNotice', {
                   MESSAGE: text(
-                    'このカメラのレンズ校正がまだありません。メニューの「レンズ校正アプリで校正する」か「レンズ校正ファイルを読む」を選んでください。'
-                  )
-                })
-              ]
-            )
-          ]
-        )
-      ]
-    )
+                    'このカメラのレンズ校正がまだありません。メニューの「レンズ校正アプリで校正する」か「レンズ校正ファイルを読む」を選んでください。',
+                  ),
+                }),
+              ],
+            ),
+          ],
+        ),
+      ],
+    ),
   ]),
 
   /**
@@ -486,41 +562,48 @@ export const cameraAppScripts: readonly Script[] = [
    * when the calibration app saves a profile to browser storage — which every window on this origin
    * sees — or when the operator closes the window without one.
    */
-  script({x: 1400, y: 1000}, [
-    block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.openLensCalibration}),
+  script({ x: 1400, y: 1000 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.openLensCalibration },
+    ),
     block(`${titleMenu}_clearAppMenuActions`),
     broadcastMessageAndWait(menuActionsRequested),
     ifElse(
-      not(cameraBlock('isCameraRunning', {CAMERA_ID: text(cameraId)})),
+      not(cameraBlock('isCameraRunning', { CAMERA_ID: text(cameraId) })),
       [showCameraNotRunningError()],
       [
         setVariable(
           lensCalibrationDeviceId,
-          cameraValue('cameraDeviceIdReporter', {CAMERA_ID: text(cameraId)})
+          cameraValue('cameraDeviceIdReporter', { CAMERA_ID: text(cameraId) }),
         ),
-        setVariable(storedProfilesGenerationBefore, cameraValue('storedCameraProfilesGeneration')),
+        setVariable(
+          storedProfilesGenerationBefore,
+          cameraValue('storedCameraProfilesGeneration'),
+        ),
         setVariable(cameraShouldBeRunning, text('false')),
-        cameraBlock('hideCameraPreview', {CAMERA_ID: text(cameraId)}),
-        cameraBlock('stopSharedCamera', {CAMERA_ID: text(cameraId)}),
+        cameraBlock('hideCameraPreview', { CAMERA_ID: text(cameraId) }),
+        cameraBlock('stopSharedCamera', { CAMERA_ID: text(cameraId) }),
         shellBlock('openLensCalibrationApp'),
         ifElse(
           equals(shellValue('lensCalibrationAppState'), text('open')),
           [
             shellBlock('showAppNotice', {
               MESSAGE: text(
-                '別ウィンドウのレンズ校正アプリで校正してください。校正が保存されるか、そのウィンドウを閉じると、ここへ戻ります。'
-              )
+                '別ウィンドウのレンズ校正アプリで校正してください。校正が保存されるか、そのウィンドウを閉じると、ここへ戻ります。',
+              ),
             }),
             waitUntil(
               or(
                 greaterThan(
                   cameraValue('storedCameraProfilesGeneration'),
-                  variable(storedProfilesGenerationBefore)
+                  variable(storedProfilesGenerationBefore),
                 ),
-                not(shellBlock('lensCalibrationAppOpen'))
-              )
+                not(shellBlock('lensCalibrationAppOpen')),
+              ),
             ),
-            ...resumeCameraAfterLensCalibration()
+            ...resumeCameraAfterLensCalibration(),
           ],
           [
             ...resumeCameraAfterLensCalibration(),
@@ -529,25 +612,25 @@ export const cameraAppScripts: readonly Script[] = [
               [
                 shellBlock('showAppError', {
                   MESSAGE: text(
-                    'ブラウザがレンズ校正アプリのウィンドウを開けませんでした。このページのポップアップを許可して、もう一度選んでください。'
+                    'ブラウザがレンズ校正アプリのウィンドウを開けませんでした。このページのポップアップを許可して、もう一度選んでください。',
                   ),
-                  DETAILS: text('{"code":"LENS_CALIBRATION_WINDOW_BLOCKED"}')
-                })
+                  DETAILS: text('{"code":"LENS_CALIBRATION_WINDOW_BLOCKED"}'),
+                }),
               ],
               [
                 shellBlock('showAppError', {
                   MESSAGE: text(
-                    'この起動方法ではレンズ校正アプリを開けません。会場用アプリから起動するか、「レンズ校正ファイルを読む」を選んでください。'
+                    'この起動方法ではレンズ校正アプリを開けません。会場用アプリから起動するか、「レンズ校正ファイルを読む」を選んでください。',
                   ),
-                  DETAILS: text('{"code":"LENS_CALIBRATION_APP_UNAVAILABLE"}')
-                })
-              ]
-            )
-          ]
-        )
-      ]
+                  DETAILS: text('{"code":"LENS_CALIBRATION_APP_UNAVAILABLE"}'),
+                }),
+              ],
+            ),
+          ],
+        ),
+      ],
     ),
-    block(`${titleMenu}_showMenu`)
+    block(`${titleMenu}_showMenu`),
   ]),
 
   /**
@@ -557,81 +640,106 @@ export const cameraAppScripts: readonly Script[] = [
    * A file that fails validation leaves whatever profile was in force untouched. A file that is valid
    * but does not fit replaces it and is then withdrawn, so nothing that does not fit stays registered.
    */
-  script({x: 1400, y: 2200}, [
-    block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.loadLensCalibrationFile}),
+  script({ x: 1400, y: 2200 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.loadLensCalibrationFile },
+    ),
     block(`${titleMenu}_clearAppMenuActions`),
     broadcastMessageAndWait(menuActionsRequested),
     ifElse(
-      not(cameraBlock('isCameraRunning', {CAMERA_ID: text(cameraId)})),
+      not(cameraBlock('isCameraRunning', { CAMERA_ID: text(cameraId) })),
       [showCameraNotRunningError()],
       [
         shellBlock('chooseLensCalibrationFile'),
         ifElse(
           equals(shellValue('chosenLensCalibrationFile'), text('')),
-          [shellBlock('showAppNotice', {MESSAGE: text('レンズ校正ファイルの読込みをやめました。')})],
+          [
+            shellBlock('showAppNotice', {
+              MESSAGE: text('レンズ校正ファイルの読込みをやめました。'),
+            }),
+          ],
           [
             cameraBlock('registerCameraProfileAs', {
               PROFILE_JSON: shellValue('chosenLensCalibrationFile'),
-              CAMERA_ID: text(cameraId)
+              CAMERA_ID: text(cameraId),
             }),
             ifElse(
               not(equals(cameraValue('cameraProfileError'), text(''))),
               [
                 shellBlock('showAppError', {
-                  MESSAGE: label('レンズ校正ファイルを読めませんでした。', cameraBlock('cameraProfileErrorDetail')),
-                  DETAILS: text('{"code":"LENS_PROFILE_INVALID","cameraId":"pose"}')
-                })
+                  MESSAGE: label(
+                    'レンズ校正ファイルを読めませんでした。',
+                    cameraBlock('cameraProfileErrorDetail'),
+                  ),
+                  DETAILS: text(
+                    '{"code":"LENS_PROFILE_INVALID","cameraId":"pose"}',
+                  ),
+                }),
               ],
               [
                 ifElse(
                   equals(
-                    cameraValue('cameraProfileCompatibility', {CAMERA_ID: text(cameraId)}),
-                    text('compatible')
+                    cameraValue('cameraProfileCompatibility', {
+                      CAMERA_ID: text(cameraId),
+                    }),
+                    text('compatible'),
                   ),
                   [
                     setVariable(lensCalibrationReady, text('true')),
-                    cameraBlock('saveCameraProfile', {CAMERA_ID: text(cameraId)}),
+                    cameraBlock('saveCameraProfile', {
+                      CAMERA_ID: text(cameraId),
+                    }),
                     ifElse(
                       equals(storedProfileResult(), text('saved')),
                       [
                         shellBlock('showAppNotice', {
                           MESSAGE: text(
-                            'レンズ校正ファイルを使います。このPCに保存したので、次回からは読み込みを省けます。'
-                          )
-                        })
+                            'レンズ校正ファイルを使います。このPCに保存したので、次回からは読み込みを省けます。',
+                          ),
+                        }),
                       ],
                       [
                         shellBlock('showAppNotice', {
                           MESSAGE: text(
-                            'レンズ校正ファイルを使います。ブラウザに保存できなかったため、次回も読み込みが必要です。'
-                          )
-                        })
-                      ]
-                    )
+                            'レンズ校正ファイルを使います。ブラウザに保存できなかったため、次回も読み込みが必要です。',
+                          ),
+                        }),
+                      ],
+                    ),
                   ],
                   [
                     setVariable(lensCalibrationReady, text('false')),
                     setVariable(
                       lensProfileRejection,
-                      cameraValue('cameraProfileCompatibilityDetail', {CAMERA_ID: text(cameraId)})
+                      cameraValue('cameraProfileCompatibilityDetail', {
+                        CAMERA_ID: text(cameraId),
+                      }),
                     ),
-                    cameraBlock('forgetCameraProfile', {CAMERA_ID: text(cameraId)}),
+                    cameraBlock('forgetCameraProfile', {
+                      CAMERA_ID: text(cameraId),
+                    }),
                     shellBlock('showAppError', {
                       MESSAGE: concatenate(
-                        text('このレンズ校正ファイルは今のカメラの設定と合わないため使いません。'),
-                        variable(lensProfileRejection)
+                        text(
+                          'このレンズ校正ファイルは今のカメラの設定と合わないため使いません。',
+                        ),
+                        variable(lensProfileRejection),
                       ),
-                      DETAILS: text('{"code":"LENS_PROFILE_INCOMPATIBLE","cameraId":"pose"}')
-                    })
-                  ]
-                )
-              ]
-            )
-          ]
-        )
-      ]
+                      DETAILS: text(
+                        '{"code":"LENS_PROFILE_INCOMPATIBLE","cameraId":"pose"}',
+                      ),
+                    }),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
     ),
-    block(`${titleMenu}_showMenu`)
+    block(`${titleMenu}_showMenu`),
   ]),
 
   /**
@@ -641,36 +749,52 @@ export const cameraAppScripts: readonly Script[] = [
    * the operator aims it at the projection once. The answer is shown full screen until the fusion
    * app connects; the courier photographs each part with a phone and carries it there.
    */
-  script({x: 2000, y: 48}, [
-    block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.pairWithFusion}),
+  script({ x: 2000, y: 48 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.pairWithFusion },
+    ),
     block(`${titleMenu}_clearAppMenuActions`),
     broadcastMessageAndWait(menuActionsRequested),
     ifElse(
       not(pairing.featureEnabled()),
-      [pairing.error(text('この配布物ではQRペアリングが無効です。'), 'PAIRING_DISABLED')],
+      [
+        pairing.error(
+          text('この配布物ではQRペアリングが無効です。'),
+          'PAIRING_DISABLED',
+        ),
+      ],
       [
         ifElse(
-          not(cameraBlock('isCameraRunning', {CAMERA_ID: text(cameraId)})),
+          not(cameraBlock('isCameraRunning', { CAMERA_ID: text(cameraId) })),
           [
             pairing.error(
-              text('先に「カメラを選ぶ」で、統合アプリの投影を写すカメラを選んでください。'),
-              'CAMERA_NOT_RUNNING'
-            )
+              text(
+                '先に「カメラを選ぶ」で、統合アプリの投影を写すカメラを選んでください。',
+              ),
+              'CAMERA_NOT_RUNNING',
+            ),
           ],
           [
             pairing.pairing('cancelPairing'),
             pairing.resetLinkTest(),
-            pairing.pairing('startAnswerPairing', {LOCAL_PEER: text('')}),
-            pairing.pairing('setPairingTimeout', {SECONDS: number(600)}),
+            pairing.pairing('startAnswerPairing', { LOCAL_PEER: text('') }),
+            pairing.pairing('setPairingTimeout', { SECONDS: number(600) }),
             pairing.notice(
               text(
-                '統合アプリが投影しているOfferのQRコードを、このカメラに写してください。複数枚のときは全部を写します。'
-              )
+                '統合アプリが投影しているOfferのQRコードを、このカメラに写してください。複数枚のときは全部を写します。',
+              ),
             ),
             block(`${titleMenu}_showMenu`),
-            pairing.pairing('scanPairingQrFromCamera', {CAMERA_ID: text(cameraId)}),
+            pairing.pairing('scanPairingQrFromCamera', {
+              CAMERA_ID: text(cameraId),
+            }),
             waitUntil(
-              or(pairing.phaseIs('answer-ready'), or(pairing.ended(), pairing.pairing('isPairingConnected')))
+              or(
+                pairing.phaseIs('answer-ready'),
+                or(pairing.ended(), pairing.pairing('isPairingConnected')),
+              ),
             ),
             ifElse(
               pairing.ended(),
@@ -680,49 +804,64 @@ export const cameraAppScripts: readonly Script[] = [
                   'Answer',
                   'スマートフォンで撮影して、統合アプリへ運んでください',
                   [pairingButtons.next, pairingButtons.cancel],
-                  pairing.pairing('isPairingConnected')
+                  pairing.pairing('isPairingConnected'),
                 ),
                 ifElse(
                   pairing.pairing('isPairingConnected'),
-                  [pairing.pairing('endPairingQrDisplay'), ...pairing.exchangeTestMessage('camera-app')],
+                  [
+                    pairing.pairing('endPairingQrDisplay'),
+                    ...pairing.exchangeTestMessage('camera-app'),
+                  ],
                   [
                     ifElse(
                       equals(variable(pairingRefs.step), text('cancel')),
                       pairing.cancel(),
-                      [pairing.reportEnded()]
-                    )
-                  ]
-                )
-              ]
-            )
-          ]
-        )
-      ]
+                      [pairing.reportEnded()],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
     ),
-    block(`${titleMenu}_showMenu`)
+    block(`${titleMenu}_showMenu`),
   ]),
 
-  script({x: 2000, y: 1400}, [
-    block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.cancelPairing}),
+  script({ x: 2000, y: 1400 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.cancelPairing },
+    ),
     block(`${titleMenu}_clearAppMenuActions`),
     broadcastMessageAndWait(menuActionsRequested),
     ...pairing.cancel(),
-    block(`${titleMenu}_showMenu`)
+    block(`${titleMenu}_showMenu`),
   ]),
 
-  script({x: 48, y: 760}, [
-    block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.stopCamera}),
+  script({ x: 48, y: 760 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.stopCamera },
+    ),
     block(`${titleMenu}_clearAppMenuActions`),
     broadcastMessageAndWait(menuActionsRequested),
     setVariable(poseRefs.running, text('false')),
     setVariable(cameraShouldBeRunning, text('false')),
-    cameraBlock('hideCameraPreview', {CAMERA_ID: text(cameraId)}),
-    cameraBlock('stopSharedCamera', {CAMERA_ID: text(cameraId)}),
-    block(`${shell}_showAppNotice`, {MESSAGE: text('カメラを止めました。')})
+    cameraBlock('hideCameraPreview', { CAMERA_ID: text(cameraId) }),
+    cameraBlock('stopSharedCamera', { CAMERA_ID: text(cameraId) }),
+    block(`${shell}_showAppNotice`, { MESSAGE: text('カメラを止めました。') }),
   ]),
 
-  script({x: 48, y: 960}, [
-    block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.diagnostics}),
+  script({ x: 48, y: 960 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.diagnostics },
+    ),
     block(`${titleMenu}_clearAppMenuActions`),
     broadcastMessageAndWait(menuActionsRequested),
     ifElse(
@@ -730,22 +869,26 @@ export const cameraAppScripts: readonly Script[] = [
       [
         block(`${shell}_showAppError`, {
           MESSAGE: text('WebGPU: 利用不可'),
-          DETAILS: text('{"code":"WEBGPU_UNAVAILABLE"}')
-        })
+          DETAILS: text('{"code":"WEBGPU_UNAVAILABLE"}'),
+        }),
       ],
       [
         ifElse(
-          cameraBlock('isCameraRunning', {CAMERA_ID: text(cameraId)}),
-          [block(`${shell}_showAppNotice`, {MESSAGE: activeCameraSummary()})],
-          [block(`${shell}_showAppNotice`, {MESSAGE: text('WebGPU: 利用可能 / カメラ: 停止中')})]
-        )
-      ]
-    )
+          cameraBlock('isCameraRunning', { CAMERA_ID: text(cameraId) }),
+          [block(`${shell}_showAppNotice`, { MESSAGE: activeCameraSummary() })],
+          [
+            block(`${shell}_showAppNotice`, {
+              MESSAGE: text('WebGPU: 利用可能 / カメラ: 停止中'),
+            }),
+          ],
+        ),
+      ],
+    ),
   ]),
 
-  script({x: 520, y: 2360}, [
+  script({ x: 520, y: 2360 }, [
     whenBroadcastReceived(menuActionsRequested),
     ...cameraDeviceMenuActions(),
-    ...baseMenuActions('カメラを探し直す')
-  ])
+    ...baseMenuActions('カメラを探し直す'),
+  ]),
 ];

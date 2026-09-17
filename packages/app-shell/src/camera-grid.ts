@@ -1,4 +1,4 @@
-import {createScratchShellHost} from './host.js';
+import { createScratchShellHost } from './host.js';
 
 /**
  * Several cameras on one PC: start each at a requested size, show them side by side, and measure
@@ -15,7 +15,11 @@ import {createScratchShellHost} from './host.js';
  */
 
 export interface CameraLeasePort {
-  getFrameSource(): {readonly element: HTMLVideoElement; readonly width: number; readonly height: number};
+  getFrameSource(): {
+    readonly element: HTMLVideoElement;
+    readonly width: number;
+    readonly height: number;
+  };
   release(): Promise<void>;
 }
 
@@ -55,9 +59,17 @@ export interface GridCameraReport {
   readonly error: string;
   readonly deviceId: string;
   readonly label: string;
-  readonly requested: {readonly width: number; readonly height: number; readonly frameRate: number};
+  readonly requested: {
+    readonly width: number;
+    readonly height: number;
+    readonly frameRate: number;
+  };
   /** What the track says it was configured to, which is not what it delivers. */
-  readonly settings: {readonly width: number; readonly height: number; readonly frameRate: number};
+  readonly settings: {
+    readonly width: number;
+    readonly height: number;
+    readonly frameRate: number;
+  };
   /** Frames presented during the last complete measurement window, per second. */
   readonly measuredFps: number;
 }
@@ -88,7 +100,9 @@ interface GridPoseKeypoint {
 export interface GridPose {
   readonly frameWidth: number;
   readonly frameHeight: number;
-  readonly persons: ReadonlyArray<{readonly keypoints: readonly GridPoseKeypoint[]}>;
+  readonly persons: ReadonlyArray<{
+    readonly keypoints: readonly GridPoseKeypoint[];
+  }>;
 }
 
 /** COCO-17 limbs. */
@@ -108,9 +122,16 @@ const SKELETON: ReadonlyArray<readonly [string, string]> = [
   ['nose', 'left_eye'],
   ['nose', 'right_eye'],
   ['left_eye', 'left_ear'],
-  ['right_eye', 'right_ear']
+  ['right_eye', 'right_ear'],
 ];
-const PERSON_COLORS = ['#ffd400', '#00e0ff', '#ff5ad1', '#7dff5a', '#ff8a3d', '#b28dff'];
+const PERSON_COLORS = [
+  '#ffd400',
+  '#00e0ff',
+  '#ff5ad1',
+  '#7dff5a',
+  '#ff8a3d',
+  '#b28dff',
+];
 /** Keypoints below this score are left out of the drawing, as MoveNet's own demos do. */
 const MINIMUM_KEYPOINT_SCORE = 0.3;
 
@@ -145,7 +166,7 @@ export class CameraGrid {
         camera.request.cameraId !== request.cameraId &&
         request.deviceId !== '' &&
         camera.request.deviceId === request.deviceId &&
-        camera.state !== 'error'
+        camera.state !== 'error',
     );
     await this.stop(request.cameraId);
     const camera: GridCamera = {
@@ -160,17 +181,25 @@ export class CameraGrid {
       cancelFrames: undefined,
       tile: undefined,
       poseCanvas: undefined,
-      pose: undefined
+      pose: undefined,
     };
     this.cameras.set(request.cameraId, camera);
-    if (holder) return this.fail(camera, `device-in-use: ${holder.request.cameraId} already uses this device.`);
+    if (holder)
+      return this.fail(
+        camera,
+        `device-in-use: ${holder.request.cameraId} already uses this device.`,
+      );
     const source = this.host.cameraSource();
-    if (!source) return this.fail(camera, 'camera-source-missing: Camera Source is not loaded.');
+    if (!source)
+      return this.fail(
+        camera,
+        'camera-source-missing: Camera Source is not loaded.',
+      );
     try {
       const lease = await source.acquireCamera({
         owner: OWNER,
         cameraId: request.cameraId,
-        video: constraintsFor(request)
+        video: constraintsFor(request),
       });
       if (this.cameras.get(request.cameraId) !== camera) {
         await lease.release();
@@ -179,7 +208,9 @@ export class CameraGrid {
       camera.lease = lease;
       const element = lease.getFrameSource().element;
       // Read by shape rather than `instanceof MediaStream`, which does not exist outside a browser.
-      const stream = element.srcObject as {getVideoTracks?: () => MediaStreamTrack[]} | null;
+      const stream = element.srcObject as {
+        getVideoTracks?: () => MediaStreamTrack[];
+      } | null;
       camera.track = stream?.getVideoTracks?.()[0];
       camera.state = 'running';
       this.measure(camera, element as VideoFrameCallbackElement);
@@ -200,7 +231,9 @@ export class CameraGrid {
   }
 
   public async stopAll(): Promise<void> {
-    await Promise.all([...this.cameras.keys()].map((cameraId) => this.stop(cameraId)));
+    await Promise.all(
+      [...this.cameras.keys()].map((cameraId) => this.stop(cameraId)),
+    );
     this.hide();
   }
 
@@ -218,7 +251,7 @@ export class CameraGrid {
         gap: '4px',
         background: '#000000',
         zIndex: GRID_Z_INDEX,
-        pointerEvents: 'none'
+        pointerEvents: 'none',
       });
       mount.appendChild(overlay);
       this.overlay = overlay;
@@ -264,14 +297,14 @@ export class CameraGrid {
       requested: {
         width: camera.request.width,
         height: camera.request.height,
-        frameRate: camera.request.frameRate
+        frameRate: camera.request.frameRate,
       },
       settings: {
         width: settings.width ?? 0,
         height: settings.height ?? 0,
-        frameRate: settings.frameRate ?? 0
+        frameRate: settings.frameRate ?? 0,
       },
-      measuredFps: camera.measuredFps
+      measuredFps: camera.measuredFps,
     };
   }
 
@@ -283,7 +316,10 @@ export class CameraGrid {
   }
 
   /** Counts presented frames, and closes a window once a second has passed. */
-  private measure(camera: GridCamera, element: VideoFrameCallbackElement): void {
+  private measure(
+    camera: GridCamera,
+    element: VideoFrameCallbackElement,
+  ): void {
     if (typeof element.requestVideoFrameCallback !== 'function') return;
     let handle: number | undefined;
     const onFrame = () => {
@@ -292,7 +328,8 @@ export class CameraGrid {
       const now = this.host.nowMs();
       const elapsed = now - camera.windowStartMs;
       if (elapsed >= MEASUREMENT_WINDOW_MS) {
-        camera.measuredFps = Math.round((camera.frames * 10_000) / elapsed) / 10;
+        camera.measuredFps =
+          Math.round((camera.frames * 10_000) / elapsed) / 10;
         camera.frames = 0;
         camera.windowStartMs = now;
         this.caption(camera);
@@ -336,7 +373,9 @@ export class CameraGrid {
     if (!overlay || !document) return;
     const running = [...this.cameras.values()]
       .filter((camera) => camera.lease)
-      .sort((left, right) => left.request.cameraId.localeCompare(right.request.cameraId));
+      .sort((left, right) =>
+        left.request.cameraId.localeCompare(right.request.cameraId),
+      );
     const columns = Math.max(1, Math.ceil(Math.sqrt(running.length)));
     const rows = Math.max(1, Math.ceil(running.length / columns));
     overlay.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
@@ -344,13 +383,22 @@ export class CameraGrid {
     for (const child of [...overlay.children]) child.remove();
     for (const camera of running) {
       const cell = document.createElement('div');
-      Object.assign(cell.style, {position: 'relative', overflow: 'hidden', background: '#111111'});
+      Object.assign(cell.style, {
+        position: 'relative',
+        overflow: 'hidden',
+        background: '#111111',
+      });
       const video = document.createElement('video');
       video.muted = true;
       video.playsInline = true;
       video.autoplay = true;
-      video.srcObject = camera.lease?.getFrameSource().element.srcObject ?? null;
-      Object.assign(video.style, {width: '100%', height: '100%', objectFit: 'contain'});
+      video.srcObject =
+        camera.lease?.getFrameSource().element.srcObject ?? null;
+      Object.assign(video.style, {
+        width: '100%',
+        height: '100%',
+        objectFit: 'contain',
+      });
       const caption = document.createElement('div');
       Object.assign(caption.style, {
         position: 'absolute',
@@ -360,7 +408,7 @@ export class CameraGrid {
         background: 'rgba(0, 0, 0, 0.6)',
         color: '#ffffff',
         font: '14px system-ui, sans-serif',
-        borderRadius: '4px'
+        borderRadius: '4px',
       });
       // Sized in frame pixels and fitted like the video, so keypoints land where the frame shows them.
       const poseCanvas = document.createElement('canvas');
@@ -369,7 +417,7 @@ export class CameraGrid {
         inset: '0',
         width: '100%',
         height: '100%',
-        objectFit: 'contain'
+        objectFit: 'contain',
       });
       cell.appendChild(video);
       cell.appendChild(caption);
@@ -400,7 +448,9 @@ export class CameraGrid {
     pose.persons.forEach((person, index) => {
       const color = PERSON_COLORS[index % PERSON_COLORS.length] ?? '#ffffff';
       const points = new Map(
-        person.keypoints.filter((keypoint) => keypoint.score >= MINIMUM_KEYPOINT_SCORE).map((keypoint) => [keypoint.id, keypoint])
+        person.keypoints
+          .filter((keypoint) => keypoint.score >= MINIMUM_KEYPOINT_SCORE)
+          .map((keypoint) => [keypoint.id, keypoint]),
       );
       context.strokeStyle = color;
       context.fillStyle = color;
@@ -451,26 +501,38 @@ function parsePose(text: string): GridPose | undefined {
   return {
     frameWidth: Number(frame.frameWidth),
     frameHeight: Number(frame.frameHeight),
-    persons: (frame.persons as ReadonlyArray<{keypoints?: unknown}>)
-      .filter((person): person is {keypoints: Array<Partial<GridPoseKeypoint>>} => Array.isArray(person?.keypoints))
+    persons: (frame.persons as ReadonlyArray<{ keypoints?: unknown }>)
+      .filter(
+        (person): person is { keypoints: Array<Partial<GridPoseKeypoint>> } =>
+          Array.isArray(person?.keypoints),
+      )
       .map((person) => ({
         keypoints: person.keypoints
           .filter(
             (keypoint): keypoint is GridPoseKeypoint =>
-              typeof keypoint?.id === 'string' && Number.isFinite(keypoint.x) && Number.isFinite(keypoint.y)
+              typeof keypoint?.id === 'string' &&
+              Number.isFinite(keypoint.x) &&
+              Number.isFinite(keypoint.y),
           )
-          .map((keypoint) => ({id: keypoint.id, x: keypoint.x, y: keypoint.y, score: Number(keypoint.score) || 0}))
-      }))
+          .map((keypoint) => ({
+            id: keypoint.id,
+            x: keypoint.x,
+            y: keypoint.y,
+            score: Number(keypoint.score) || 0,
+          })),
+      })),
   };
 }
 
 /** Asks for the size as ideal, not exact: a camera that cannot meet it still starts, and says so. */
 export function constraintsFor(request: CameraRequest): MediaTrackConstraints {
   return {
-    ...(request.deviceId ? {deviceId: {exact: request.deviceId}} : {}),
-    ...(request.width > 0 ? {width: {ideal: request.width}} : {}),
-    ...(request.height > 0 ? {height: {ideal: request.height}} : {}),
-    ...(request.frameRate > 0 ? {frameRate: {ideal: request.frameRate}} : {})
+    ...(request.deviceId ? { deviceId: { exact: request.deviceId } } : {}),
+    ...(request.width > 0 ? { width: { ideal: request.width } } : {}),
+    ...(request.height > 0 ? { height: { ideal: request.height } } : {}),
+    ...(request.frameRate > 0
+      ? { frameRate: { ideal: request.frameRate } }
+      : {}),
   };
 }
 
@@ -492,8 +554,11 @@ export function createScratchCameraGridHost(): CameraGridHost {
       const candidate = Scratch.vm?.runtime?.['ext_kubohiroyacamerasource'];
       if (typeof candidate !== 'object' || candidate === null) return null;
       const port = candidate as Partial<CameraSourcePort>;
-      return typeof port.acquireCamera === 'function' ? (candidate as CameraSourcePort) : null;
+      return typeof port.acquireCamera === 'function'
+        ? (candidate as CameraSourcePort)
+        : null;
     },
-    nowMs: () => (typeof performance === 'undefined' ? Date.now() : performance.now())
+    nowMs: () =>
+      typeof performance === 'undefined' ? Date.now() : performance.now(),
   };
 }

@@ -21,8 +21,8 @@ interface TurboWarpRuntime {
 interface ScratchTranslate {
   (text: string): string;
   (
-    message: {default: string; description?: string},
-    placeholders?: Record<string, string | number>
+    message: { default: string; description?: string },
+    placeholders?: Record<string, string | number>,
   ): string;
 }
 
@@ -38,7 +38,7 @@ interface ScratchApi {
     toNumber(value: unknown): number;
     toBoolean(value: unknown): boolean;
   };
-  vm?: {runtime?: TurboWarpRuntime};
+  vm?: { runtime?: TurboWarpRuntime };
   translate: ScratchTranslate;
 }
 

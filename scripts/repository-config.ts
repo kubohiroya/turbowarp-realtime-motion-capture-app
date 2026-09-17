@@ -1,4 +1,4 @@
-import {readFile} from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 
 export const repositoryRoot = new URL('../', import.meta.url);
 
@@ -21,7 +21,7 @@ export interface AppExtensionEntry {
 
 export interface AppExtensionsEntry {
   readonly app: string;
-  readonly bundle: {readonly id: string; readonly name: string};
+  readonly bundle: { readonly id: string; readonly name: string };
   readonly extensions: readonly AppExtensionEntry[];
 }
 
@@ -59,7 +59,7 @@ export interface EmbeddedExtensionEntry {
 export interface EmbeddedExtensions {
   formatVersion: number;
   extensions: EmbeddedExtensionEntry[];
-  extensionBundles: Array<{id: string; name: string; members: string[]}>;
+  extensionBundles: Array<{ id: string; name: string; members: string[] }>;
 }
 
 export interface ExtensionManifestArgument {
@@ -78,7 +78,10 @@ export interface ExtensionManifest {
   readonly formatVersion: number;
   readonly id: string;
   readonly blocks: readonly ExtensionManifestBlock[];
-  readonly menus: ReadonlyArray<{readonly id: string; readonly acceptReporters: boolean}>;
+  readonly menus: ReadonlyArray<{
+    readonly id: string;
+    readonly acceptReporters: boolean;
+  }>;
 }
 
 export interface RequiredOperation {
@@ -171,7 +174,8 @@ export interface ProjectSource {
 
 /** Reads one JSON file relative to the repository root, or from an absolute URL. */
 export async function readJson<T>(location: URL | string): Promise<T> {
-  const url = typeof location === 'string' ? new URL(location, repositoryRoot) : location;
+  const url =
+    typeof location === 'string' ? new URL(location, repositoryRoot) : location;
   return JSON.parse(await readFile(url, 'utf8')) as T;
 }
 

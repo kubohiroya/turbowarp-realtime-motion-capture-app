@@ -1,10 +1,11 @@
 /**
- * Recording what the cameras saw, and playing it back without them (DEBUG_CAMERA_REPLAY).
+ * Recording the poses the cameras were estimated to show, and playing them back without them
+ * (DEBUG_POSE_REPLAY).
  *
  * Every stage after the camera — association, triangulation, identity, the avatar — has to be worked
- * on repeatedly against the same movement, and a performance cannot be repeated. A recording is the
- * 2D poses as they were estimated, with the calibration they were estimated under, so the rest of the
- * pipeline can be run again at a desk: the camera app replays instead of opening a camera, the fusion
+ * on repeatedly against the same movement, and a performance cannot be repeated. What is recorded is
+ * the 2D poses as they were estimated — not the camera's pixels — with the calibration they were
+ * estimated under, so the rest of the pipeline can be run again at a desk: the camera app replays instead of opening a camera, the fusion
  * app replays instead of waiting for a camera app over WebRTC, and the local app replays instead of
  * doing either.
  *
@@ -75,7 +76,12 @@ export class PoseReplay {
   private recordingState: RecordingState = 'idle';
   private recordedFrames = 0;
 
-  private session: {configuration: Record<string, unknown>; frames: Map<string, RecordedFrame[]>} | undefined;
+  private session:
+    | {
+        configuration: Record<string, unknown>;
+        frames: Map<string, RecordedFrame[]>;
+      }
+    | undefined;
   private sessionName = '';
   private replayState: ReplayState = 'idle';
   private replayStartedAtUs = 0;
@@ -118,8 +124,17 @@ export class PoseReplay {
     const capture = Number(frame['captureTimestampUs']);
     if (!(capture > 0)) return;
     const last = this.events[this.events.length - 1];
-    if (last?.cameraId === cameraId && Number(last.frame['captureTimestampUs']) === capture) return;
-    this.events.push({type: 'frame2d', atUs: this.host.pageTimeUs(), cameraId, frame});
+    if (
+      last?.cameraId === cameraId &&
+      Number(last.frame['captureTimestampUs']) === capture
+    )
+      return;
+    this.events.push({
+      type: 'frame2d',
+      atUs: this.host.pageTimeUs(),
+      cameraId,
+      frame,
+    });
     this.recordedFrames += 1;
     if (this.events.length > MAXIMUM_EVENTS) {
       this.events.splice(0, this.events.length - MAXIMUM_EVENTS);
@@ -142,18 +157,23 @@ export class PoseReplay {
     return JSON.stringify({
       schema: RECORDING_SCHEMA,
       version: RECORDING_VERSION,
-      producer: this.dropped === 0 ? 'debug-camera-replay' : `debug-camera-replay (${this.dropped} events dropped)`,
+      producer:
+        this.dropped === 0
+          ? 'debug-camera-replay'
+          : `debug-camera-replay (${this.dropped} events dropped)`,
       configuration: this.configuration,
-      events: this.events
+      events: this.events,
     });
   }
 
   public recordingSummary(): string {
-    if (this.recordingState === 'idle' && this.events.length === 0) return '録画していません。';
+    if (this.recordingState === 'idle' && this.events.length === 0)
+      return '録画していません。';
     const seconds = Math.round(this.spanUs() / 100_000) / 10;
     const cameras = new Set(this.events.map((event) => event.cameraId)).size;
     const state = this.recordingState === 'recording' ? '録画中' : '録画済み';
-    const dropped = this.dropped === 0 ? '' : `（古い${this.dropped}件を捨てました）`;
+    const dropped =
+      this.dropped === 0 ? '' : `（古い${this.dropped}件を捨てました）`;
     return `${state}: ${cameras}台 / ${this.recordedFrames}フレーム / ${seconds}秒${dropped}`;
   }
 
@@ -201,9 +221,10 @@ export class PoseReplay {
   public async load(name: string): Promise<void> {
     let text: string | null = null;
     try {
-      text = name.trim() === '' || !this.host.store.available()
-        ? await this.host.chooseFile()
-        : await this.host.store.read(recordingFileName(name));
+      text =
+        name.trim() === '' || !this.host.store.available()
+          ? await this.host.chooseFile()
+          : await this.host.store.read(recordingFileName(name));
     } catch (error) {
       this.error = messageOf(error);
       return;
@@ -218,13 +239,21 @@ export class PoseReplay {
   /** Takes a recording that is already in hand. Refuses anything it could not replay. */
   public open(text: string, name: string): void {
     const document = parseObject(text);
-    if (!document || document['schema'] !== RECORDING_SCHEMA || document['version'] !== RECORDING_VERSION) {
+    if (
+      !document ||
+      document['schema'] !== RECORDING_SCHEMA ||
+      document['version'] !== RECORDING_VERSION
+    ) {
       this.error = `録画として読めません（${RECORDING_SCHEMA} v${RECORDING_VERSION}）。`;
       return;
     }
     const configuration = document['configuration'];
     const events = document['events'];
-    if (typeof configuration !== 'object' || configuration === null || !Array.isArray(events)) {
+    if (
+      typeof configuration !== 'object' ||
+      configuration === null ||
+      !Array.isArray(events)
+    ) {
       this.error = '録画に設定またはイベントがありません。';
       return;
     }
@@ -235,11 +264,23 @@ export class PoseReplay {
       if (record['type'] !== 'frame2d') continue;
       const frame = record['frame'];
       const cameraId = record['cameraId'];
-      if (typeof cameraId !== 'string' || typeof frame !== 'object' || frame === null) continue;
-      const capture = Number((frame as Record<string, unknown>)['captureTimestampUs']);
+      if (
+        typeof cameraId !== 'string' ||
+        typeof frame !== 'object' ||
+        frame === null
+      )
+        continue;
+      const capture = Number(
+        (frame as Record<string, unknown>)['captureTimestampUs'],
+      );
       if (!(capture > 0)) continue;
       const list = frames.get(cameraId) ?? [];
-      list.push({type: 'frame2d', atUs: Number(record['atUs']) || capture, cameraId, frame: frame as Record<string, unknown>});
+      list.push({
+        type: 'frame2d',
+        atUs: Number(record['atUs']) || capture,
+        cameraId,
+        frame: frame as Record<string, unknown>,
+      });
       frames.set(cameraId, list);
     }
     let earliest = Number.POSITIVE_INFINITY;
@@ -253,7 +294,10 @@ export class PoseReplay {
       this.error = '録画にフレームがありません。';
       return;
     }
-    this.session = {configuration: configuration as Record<string, unknown>, frames};
+    this.session = {
+      configuration: configuration as Record<string, unknown>,
+      frames,
+    };
     this.sessionName = name;
     this.originStartUs = earliest;
     this.durationUs = Math.max(0, latest - earliest);
@@ -302,7 +346,10 @@ export class PoseReplay {
     }
     let index = this.cursor.get(cameraId) ?? 0;
     let chosen: RecordedFrame | undefined;
-    while (index < list.length && captureOf(list[index]!) - this.originStartUs <= elapsed) {
+    while (
+      index < list.length &&
+      captureOf(list[index]!) - this.originStartUs <= elapsed
+    ) {
       chosen = list[index];
       index += 1;
     }
@@ -310,13 +357,17 @@ export class PoseReplay {
     if (!chosen) return '';
     return JSON.stringify({
       ...chosen.frame,
-      captureTimestampUs: this.replayStartedAtUs + (captureOf(chosen) - this.originStartUs)
+      captureTimestampUs:
+        this.replayStartedAtUs + (captureOf(chosen) - this.originStartUs),
     });
   }
 
   public replayStateName(): ReplayState {
     // A replay that has run past the end reports it without waiting to be asked for a frame.
-    if (this.replayState === 'playing' && this.host.pageTimeUs() - this.replayStartedAtUs > this.durationUs) {
+    if (
+      this.replayState === 'playing' &&
+      this.host.pageTimeUs() - this.replayStartedAtUs > this.durationUs
+    ) {
       this.replayState = 'ended';
     }
     return this.replayState;
@@ -338,13 +389,18 @@ export class PoseReplay {
   }
 
   public loadedCamerasJson(): string {
-    return JSON.stringify(this.session ? [...this.session.frames.keys()].sort() : []);
+    return JSON.stringify(
+      this.session ? [...this.session.frames.keys()].sort() : [],
+    );
   }
 
   public loadedSummary(): string {
     if (!this.session) return '録画を読み込んでいません。';
     const cameras = [...this.session.frames.keys()].sort().join(', ');
-    const frames = [...this.session.frames.values()].reduce((total, list) => total + list.length, 0);
+    const frames = [...this.session.frames.values()].reduce(
+      (total, list) => total + list.length,
+      0,
+    );
     return `${this.sessionName}: ${cameras}（${frames}フレーム / ${Math.round(this.durationUs / 100_000) / 10}秒）`;
   }
 
@@ -367,7 +423,10 @@ function captureOf(event: RecordedFrame): number {
 /** A name the venue host will accept, from whatever the operator typed. */
 export function recordingFileName(name: string): string {
   const trimmed = name.trim().replace(/\.json$/iu, '');
-  const safe = trimmed.replace(/[^A-Za-z0-9._-]/gu, '-').replace(/^[^A-Za-z0-9]+/u, '').slice(0, 59);
+  const safe = trimmed
+    .replace(/[^A-Za-z0-9._-]/gu, '-')
+    .replace(/^[^A-Za-z0-9]+/u, '')
+    .slice(0, 59);
   return `${safe === '' ? 'recording' : safe}.json`;
 }
 
@@ -375,7 +434,9 @@ function parseObject(text: string): Record<string, unknown> | undefined {
   if (typeof text !== 'string' || text.trim() === '') return undefined;
   try {
     const value: unknown = JSON.parse(text);
-    return typeof value === 'object' && value !== null && !Array.isArray(value) ? (value as Record<string, unknown>) : undefined;
+    return typeof value === 'object' && value !== null && !Array.isArray(value)
+      ? (value as Record<string, unknown>)
+      : undefined;
   } catch {
     return undefined;
   }
@@ -399,31 +460,39 @@ export function createBrowserRecordingStore(): RecordingStorePort {
     return target.href;
   };
   const available = () =>
-    typeof location !== 'undefined' && (location.protocol === 'http:' || location.protocol === 'https:');
+    typeof location !== 'undefined' &&
+    (location.protocol === 'http:' || location.protocol === 'https:');
   return {
     available,
     async list() {
-      const response = await fetch(url(), {cache: 'no-store'});
-      if (!response.ok) throw new Error(`録画の一覧を読めません（${response.status}）。`);
-      const body = (await response.json()) as {recordings?: RecordingEntry[]};
+      const response = await fetch(url(), { cache: 'no-store' });
+      if (!response.ok)
+        throw new Error(`録画の一覧を読めません（${response.status}）。`);
+      const body = (await response.json()) as { recordings?: RecordingEntry[] };
       return body.recordings ?? [];
     },
     async read(name) {
-      const response = await fetch(url(name), {cache: 'no-store'});
-      if (!response.ok) throw new Error(`録画 ${name} を読めません（${response.status}）。`);
+      const response = await fetch(url(name), { cache: 'no-store' });
+      if (!response.ok)
+        throw new Error(`録画 ${name} を読めません（${response.status}）。`);
       return await response.text();
     },
     async write(name, text) {
-      const response = await fetch(url(name), {method: 'PUT', body: text});
-      if (!response.ok) throw new Error(`録画 ${name} を保存できません（${response.status}）。`);
-    }
+      const response = await fetch(url(name), { method: 'PUT', body: text });
+      if (!response.ok)
+        throw new Error(
+          `録画 ${name} を保存できません（${response.status}）。`,
+        );
+    },
   };
 }
 
 /** Hands the operator a file, for a page with no host to keep it on. */
 export function saveTextFileInBrowser(name: string, text: string): void {
   if (typeof document === 'undefined') return;
-  const url = URL.createObjectURL(new Blob([text], {type: 'application/json'}));
+  const url = URL.createObjectURL(
+    new Blob([text], { type: 'application/json' }),
+  );
   const anchor = document.createElement('a');
   anchor.href = url;
   anchor.download = name;

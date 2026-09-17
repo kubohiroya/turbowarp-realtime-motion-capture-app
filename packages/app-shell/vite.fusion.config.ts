@@ -1,11 +1,11 @@
-import {turboWarpExtension} from '@kubohiroya/vite-plugin-turbowarp-extension';
-import {defineConfig} from 'vite';
+import { turboWarpExtension } from '@kubohiroya/vite-plugin-turbowarp-extension';
+import { defineConfig } from 'vite';
 
-import {fusionAppConfig} from './src/apps/fusion.js';
+import { fusionAppConfig } from './src/apps/fusion.js';
 
 export default defineConfig({
   // One output directory per app: the plugin always clears its own outDir before writing.
-  build: {outDir: 'dist/fusion-app'},
+  build: { outDir: 'dist/fusion-app' },
   plugins: [
     turboWarpExtension({
       id: fusionAppConfig.id,
@@ -14,7 +14,7 @@ export default defineConfig({
       author: fusionAppConfig.author,
       license: fusionAppConfig.license,
       entry: 'src/entries/fusion.ts',
-      fileName: `${fusionAppConfig.slug}.js`
-    })
-  ]
+      fileName: `${fusionAppConfig.slug}.js`,
+    }),
+  ],
 });

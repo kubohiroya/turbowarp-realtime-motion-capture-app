@@ -1,4 +1,4 @@
-import {Pose3dService} from './service.ts';
+import { Pose3dService } from './service.ts';
 
 /**
  * The Worker side of interface v1. Everything it knows arrives as a message, so the same service
