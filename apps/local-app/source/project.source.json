@@ -44876,7 +44876,7 @@
           "inputs": {
             "TIMES": [
               3,
-              "s29b16",
+              "s29b17",
               [
                 10,
                 ""
@@ -44884,14 +44884,14 @@
             ],
             "SUBSTACK": [
               2,
-              "s29b17"
+              "s29b18"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s29b16": {
+        "s29b17": {
           "opcode": "data_lengthoflist",
           "next": null,
           "parent": "s29b13",
@@ -44905,9 +44905,9 @@
           "shadow": false,
           "topLevel": false
         },
-        "s29b17": {
+        "s29b18": {
           "opcode": "data_changevariableby",
-          "next": "s29b18",
+          "next": "s29b19",
           "parent": "s29b13",
           "inputs": {
             "VALUE": [
@@ -44927,14 +44927,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s29b18": {
+        "s29b19": {
           "opcode": "data_setvariableto",
-          "next": "s29b19",
-          "parent": "s29b17",
+          "next": "s29b20",
+          "parent": "s29b18",
           "inputs": {
             "VALUE": [
               3,
-              "s29b20",
+              "s29b21",
               [
                 10,
                 ""
@@ -44950,10 +44950,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s29b20": {
+        "s29b21": {
           "opcode": "data_itemoflist",
           "next": null,
-          "parent": "s29b18",
+          "parent": "s29b19",
           "inputs": {
             "INDEX": [
               3,
@@ -44977,32 +44977,32 @@
           "shadow": false,
           "topLevel": false
         },
-        "s29b19": {
+        "s29b20": {
           "opcode": "control_if",
           "next": null,
-          "parent": "s29b18",
+          "parent": "s29b19",
           "inputs": {
             "CONDITION": [
               2,
-              "s29b21"
+              "s29b22"
             ],
             "SUBSTACK": [
               2,
-              "s29b24"
+              "s29b25"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s29b21": {
+        "s29b22": {
           "opcode": "operator_equals",
           "next": null,
-          "parent": "s29b19",
+          "parent": "s29b20",
           "inputs": {
             "OPERAND1": [
               3,
-              "s29b22",
+              "s29b23",
               [
                 10,
                 ""
@@ -45020,14 +45020,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s29b22": {
+        "s29b23": {
           "opcode": "realtimemotioncapturelocalshell_jsonValueAt",
           "next": null,
-          "parent": "s29b21",
+          "parent": "s29b22",
           "inputs": {
             "JSON": [
               3,
-              "s29b23",
+              "s29b24",
               [
                 10,
                 ""
@@ -45045,10 +45045,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s29b23": {
+        "s29b24": {
           "opcode": "realtimemotioncapturelocalshell_jsonValueAt",
           "next": null,
-          "parent": "s29b22",
+          "parent": "s29b23",
           "inputs": {
             "JSON": [
               3,
@@ -45074,20 +45074,12 @@
           "shadow": false,
           "topLevel": false
         },
-        "s29b24": {
+        "s29b25": {
           "opcode": "realtimemotioncapturepose3dservice_addCamera",
           "next": null,
-          "parent": "s29b19",
+          "parent": "s29b20",
           "inputs": {
             "CAMERA_ID": [
-              3,
-              "s29b25",
-              [
-                10,
-                ""
-              ]
-            ],
-            "MODEL_JSON": [
               3,
               "s29b26",
               [
@@ -45095,9 +45087,17 @@
                 ""
               ]
             ],
+            "MODEL_JSON": [
+              3,
+              "s29b27",
+              [
+                10,
+                ""
+              ]
+            ],
             "PLACEMENT_JSON": [
               3,
-              "s29b28",
+              "s29b29",
               [
                 10,
                 ""
@@ -45105,7 +45105,7 @@
             ],
             "TIME_JSON": [
               3,
-              "s29b29",
+              "s29b30",
               [
                 10,
                 ""
@@ -45116,10 +45116,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s29b25": {
+        "s29b26": {
           "opcode": "realtimemotioncapturelocalshell_jsonValueAt",
           "next": null,
-          "parent": "s29b24",
+          "parent": "s29b25",
           "inputs": {
             "JSON": [
               3,
@@ -45145,14 +45145,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s29b26": {
+        "s29b27": {
           "opcode": "realtimemotioncapturelocalshell_jsonValueAt",
           "next": null,
-          "parent": "s29b24",
+          "parent": "s29b25",
           "inputs": {
             "JSON": [
               3,
-              "s29b27",
+              "s29b28",
               [
                 10,
                 ""
@@ -45170,10 +45170,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s29b27": {
+        "s29b28": {
           "opcode": "realtimemotioncapturelocalshell_jsonValueAt",
           "next": null,
-          "parent": "s29b26",
+          "parent": "s29b27",
           "inputs": {
             "JSON": [
               3,
@@ -45199,23 +45199,23 @@
           "shadow": false,
           "topLevel": false
         },
-        "s29b28": {
+        "s29b29": {
           "opcode": "kubohiroyatimespacesync_placementResultJson",
           "next": null,
-          "parent": "s29b24",
+          "parent": "s29b25",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s29b29": {
+        "s29b30": {
           "opcode": "realtimemotioncapturelocalshell_jsonValueAt",
           "next": null,
-          "parent": "s29b24",
+          "parent": "s29b25",
           "inputs": {
             "JSON": [
               3,
-              "s29b30",
+              "s29b31",
               [
                 10,
                 ""
@@ -45233,10 +45233,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s29b30": {
+        "s29b31": {
           "opcode": "realtimemotioncapturelocalshell_jsonValueAt",
           "next": null,
-          "parent": "s29b29",
+          "parent": "s29b30",
           "inputs": {
             "JSON": [
               3,
@@ -45263,13 +45263,60 @@
           "topLevel": false
         },
         "s29b14": {
-          "opcode": "realtimemotioncapturelocalshell_startPoseRecording",
+          "opcode": "realtimemotioncapturelocalshell_askNumbers",
           "next": "s29b15",
           "parent": "s29b13",
           "inputs": {
+            "TITLE": [
+              1,
+              [
+                10,
+                "録画の長さ（秒）と、1秒あたりに記録するフレーム数（fps）を入力してください。0を入れると、その制限をかけません。"
+              ]
+            ],
+            "FIELDS": [
+              1,
+              [
+                10,
+                "長さ (秒),fps"
+              ]
+            ],
+            "DEFAULTS": [
+              1,
+              [
+                10,
+                "0,0"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s29b15": {
+          "opcode": "realtimemotioncapturelocalshell_startPoseRecording",
+          "next": "s29b16",
+          "parent": "s29b14",
+          "inputs": {
             "CONFIGURATION_JSON": [
               3,
-              "s29b31",
+              "s29b32",
+              [
+                10,
+                ""
+              ]
+            ],
+            "SECONDS": [
+              3,
+              "s29b33",
+              [
+                10,
+                ""
+              ]
+            ],
+            "FPS": [
+              3,
+              "s29b34",
               [
                 10,
                 ""
@@ -45280,45 +45327,79 @@
           "shadow": false,
           "topLevel": false
         },
-        "s29b31": {
+        "s29b32": {
           "opcode": "realtimemotioncapturepose3dservice_configurationJson",
           "next": null,
-          "parent": "s29b14",
+          "parent": "s29b15",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s29b15": {
-          "opcode": "control_if_else",
+        "s29b33": {
+          "opcode": "realtimemotioncapturelocalshell_answeredNumberAt",
           "next": null,
-          "parent": "s29b14",
+          "parent": "s29b15",
           "inputs": {
-            "CONDITION": [
-              2,
-              "s29b32"
-            ],
-            "SUBSTACK": [
-              2,
-              "s29b34"
-            ],
-            "SUBSTACK2": [
-              2,
-              "s29b35"
+            "INDEX": [
+              1,
+              [
+                4,
+                "1"
+              ]
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s29b32": {
-          "opcode": "operator_equals",
+        "s29b34": {
+          "opcode": "realtimemotioncapturelocalshell_answeredNumberAt",
           "next": null,
           "parent": "s29b15",
           "inputs": {
+            "INDEX": [
+              1,
+              [
+                4,
+                "2"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s29b16": {
+          "opcode": "control_if_else",
+          "next": null,
+          "parent": "s29b15",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s29b35"
+            ],
+            "SUBSTACK": [
+              2,
+              "s29b37"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s29b38"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s29b35": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s29b16",
+          "inputs": {
             "OPERAND1": [
               3,
-              "s29b33",
+              "s29b36",
               [
                 10,
                 ""
@@ -45336,19 +45417,19 @@
           "shadow": false,
           "topLevel": false
         },
-        "s29b33": {
+        "s29b36": {
           "opcode": "realtimemotioncapturelocalshell_poseRecordingState",
           "next": null,
-          "parent": "s29b32",
+          "parent": "s29b35",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s29b34": {
+        "s29b37": {
           "opcode": "realtimemotioncapturelocalshell_showAppNotice",
           "next": null,
-          "parent": "s29b15",
+          "parent": "s29b16",
           "inputs": {
             "MESSAGE": [
               1,
@@ -45362,14 +45443,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s29b35": {
+        "s29b38": {
           "opcode": "realtimemotioncapturelocalshell_showAppError",
           "next": null,
-          "parent": "s29b15",
+          "parent": "s29b16",
           "inputs": {
             "MESSAGE": [
               3,
-              "s29b36",
+              "s29b39",
               [
                 10,
                 ""
@@ -45387,10 +45468,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s29b36": {
+        "s29b39": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s29b35",
+          "parent": "s29b38",
           "inputs": {
             "STRING1": [
               1,
@@ -45401,7 +45482,7 @@
             ],
             "STRING2": [
               3,
-              "s29b37",
+              "s29b40",
               [
                 10,
                 ""
@@ -45412,10 +45493,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s29b37": {
+        "s29b40": {
           "opcode": "realtimemotioncapturelocalshell_poseReplayError",
           "next": null,
-          "parent": "s29b36",
+          "parent": "s29b39",
           "inputs": {},
           "fields": {},
           "shadow": false,

@@ -334,6 +334,19 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
     return this.numbers;
   }
 
+  /**
+   * One field of the last answer, counting from one.
+   *
+   * The answer comes back in the layout the fields were asked in — `12,10` for two fields — so a
+   * script that wants one of them apart from the others would otherwise have to take the string
+   * apart itself.
+   */
+  public answeredNumberAt(args: { INDEX: unknown }): string {
+    const index = Math.round(Scratch.Cast.toNumber(args.INDEX)) - 1;
+    if (index < 0) return '';
+    return this.numbers.split(/[,;]/u)[index]?.trim() ?? '';
+  }
+
   public sortNetworkMessages(): void {
     this.network?.pump();
   }
@@ -483,9 +496,17 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
     return this.poseMeter ? JSON.stringify(this.poseMeter.measurement()) : '';
   }
 
-  public startPoseRecording(args: { CONFIGURATION_JSON: unknown }): void {
+  public startPoseRecording(args: {
+    CONFIGURATION_JSON: unknown;
+    SECONDS: unknown;
+    FPS: unknown;
+  }): void {
     this.poseReplay?.startRecording(
       Scratch.Cast.toString(args.CONFIGURATION_JSON),
+      {
+        maxSeconds: Scratch.Cast.toNumber(args.SECONDS),
+        fps: Scratch.Cast.toNumber(args.FPS),
+      },
     );
   }
 

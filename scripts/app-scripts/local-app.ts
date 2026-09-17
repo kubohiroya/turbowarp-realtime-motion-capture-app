@@ -1390,8 +1390,18 @@ export const localAppScripts: readonly Script[] = [
               item: spaceTime.item,
               apply: false,
             }),
+            // Both limits are the operator's: 0 records every frame, until they stop it.
+            shellBlock('askNumbers', {
+              TITLE: text(
+                '録画の長さ（秒）と、1秒あたりに記録するフレーム数（fps）を入力してください。0を入れると、その制限をかけません。',
+              ),
+              FIELDS: text('長さ (秒),fps'),
+              DEFAULTS: text('0,0'),
+            }),
             shellBlock('startPoseRecording', {
               CONFIGURATION_JSON: reporter(serviceBlock('configurationJson')),
+              SECONDS: shellValue('answeredNumberAt', { INDEX: number(1) }),
+              FPS: shellValue('answeredNumberAt', { INDEX: number(2) }),
             }),
             ifElse(
               equals(shellValue('poseRecordingState'), text('recording')),
