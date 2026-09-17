@@ -5,6 +5,7 @@ import {
   featureFlagGlobalKey,
   featureFlagNames,
   pairingFlagGlobalKey,
+  timeSpaceSyncFlagGlobalKey,
   resolveFeatureFlags
 } from '../src/feature-flags.js';
 
@@ -36,6 +37,15 @@ describe('applyFeatureFlags', () => {
     applyFeatureFlags(['protocolV1Codec'], {target: off});
     expect(on[pairingFlagGlobalKey]).toEqual({qrCodePairing: true});
     expect(off[pairingFlagGlobalKey]).toEqual({qrCodePairing: false});
+  });
+
+  it('writes both time-space-sync flags from the application setting, off unless asked', () => {
+    const on: Record<string, unknown> = {};
+    const off: Record<string, unknown> = {};
+    applyFeatureFlags([], {target: on, timeSpaceSync: true});
+    applyFeatureFlags([], {target: off});
+    expect(on[timeSpaceSyncFlagGlobalKey]).toEqual({opticalTimeSyncV1: true, placementSolveV1: true});
+    expect(off[timeSpaceSyncFlagGlobalKey]).toEqual({opticalTimeSyncV1: false, placementSolveV1: false});
   });
 
   it('reports a replaced set so a second shell in one bundle is visible', () => {

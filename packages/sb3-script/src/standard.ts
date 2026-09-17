@@ -87,6 +87,18 @@ export const modulo = (left: InputValue, right: InputValue): BlockNode =>
 export const changeVariable = (target: NamedReference, value: number | InputValue): BlockNode =>
   block('data_changevariableby', {VALUE: numericInput(value)}, {VARIABLE: field(target)});
 
+export const deleteAllOfList = (target: NamedReference): BlockNode =>
+  block('data_deletealloflist', {}, {LIST: field(target)});
+
+export const lengthOfList = (target: NamedReference): BlockNode =>
+  block('data_lengthoflist', {}, {LIST: field(target)});
+
+export const itemOfList = (index: number | InputValue, target: NamedReference): BlockNode =>
+  block('data_itemoflist', {INDEX: numericInput(index)}, {LIST: field(target)});
+
+export const lessThan = (left: InputValue, right: InputValue): BlockNode =>
+  block('operator_lt', {OPERAND1: left, OPERAND2: right});
+
 export const addToList = (value: InputValue, target: NamedReference): BlockNode =>
   block('data_addtolist', {ITEM: value}, {LIST: field(target)});
 

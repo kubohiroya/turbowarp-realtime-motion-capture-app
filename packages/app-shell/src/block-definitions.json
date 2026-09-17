@@ -190,6 +190,116 @@
       "text": "last QR image button",
       "description": "Reports the label of the button pressed last.",
       "arguments": {}
+    },
+    {
+      "opcode": "jsonValueAt",
+      "blockType": "REPORTER",
+      "text": "JSON [JSON] value at [PATH]",
+      "description": "Reads a dot-separated path. Numeric segments index arrays and length reports an array's length. Text reads as itself, other values as JSON, and anything missing as an empty string.",
+      "arguments": {
+        "JSON": {
+          "type": "STRING",
+          "defaultValue": "{\"a\":{\"b\":[1,2]}}"
+        },
+        "PATH": {
+          "type": "STRING",
+          "defaultValue": "a.b.length"
+        }
+      }
+    },
+    {
+      "opcode": "jsonWithJsonField",
+      "blockType": "REPORTER",
+      "text": "JSON [JSON] with field [KEY] set to JSON [VALUE]",
+      "description": "Returns the object with one field set to a JSON value. An empty object text starts a new object; empty or malformed VALUE becomes null. Reports an empty string when JSON is not an object.",
+      "arguments": {
+        "JSON": {
+          "type": "STRING",
+          "defaultValue": "{}"
+        },
+        "KEY": {
+          "type": "STRING",
+          "defaultValue": "result"
+        },
+        "VALUE": {
+          "type": "STRING",
+          "defaultValue": "{\"ok\":true}"
+        }
+      }
+    },
+    {
+      "opcode": "jsonWithTextField",
+      "blockType": "REPORTER",
+      "text": "JSON [JSON] with field [KEY] set to text [VALUE]",
+      "description": "Returns the object with one field set to a string.",
+      "arguments": {
+        "JSON": {
+          "type": "STRING",
+          "defaultValue": "{}"
+        },
+        "KEY": {
+          "type": "STRING",
+          "defaultValue": "cameraId"
+        },
+        "VALUE": {
+          "type": "STRING",
+          "defaultValue": "camera-1"
+        }
+      }
+    },
+    {
+      "opcode": "askConfirmation",
+      "blockType": "COMMAND",
+      "text": "ask [MESSAGE] confirm [CONFIRM] cancel [CANCEL]",
+      "description": "Shows a modal confirmation above everything, including the time pattern, and waits for the operator.",
+      "arguments": {
+        "MESSAGE": {
+          "type": "STRING",
+          "defaultValue": "Continue?"
+        },
+        "CONFIRM": {
+          "type": "STRING",
+          "defaultValue": "OK"
+        },
+        "CANCEL": {
+          "type": "STRING",
+          "defaultValue": "Cancel"
+        }
+      }
+    },
+    {
+      "opcode": "confirmationAccepted",
+      "blockType": "BOOLEAN",
+      "text": "confirmation accepted?",
+      "description": "Reports whether the last confirmation was accepted with its confirm button.",
+      "arguments": {}
+    },
+    {
+      "opcode": "askNumbers",
+      "blockType": "COMMAND",
+      "text": "ask numbers [TITLE] fields [FIELDS] defaults [DEFAULTS]",
+      "description": "Shows a numeric form with one field per label in FIELDS, separated by , or ;, and waits. Accept stays disabled until every field holds a finite number.",
+      "arguments": {
+        "TITLE": {
+          "type": "STRING",
+          "defaultValue": "Measured corners (m)"
+        },
+        "FIELDS": {
+          "type": "STRING",
+          "defaultValue": "x,y"
+        },
+        "DEFAULTS": {
+          "type": "STRING",
+          "defaultValue": ""
+        }
+      }
+    },
+    {
+      "opcode": "answeredNumbers",
+      "blockType": "REPORTER",
+      "text": "answered numbers",
+      "description": "Reports the last answer with the same , and ; separators as FIELDS, or an empty string when cancelled.",
+      "arguments": {}
     }
   ]
 }

@@ -2,6 +2,8 @@ import definitions from './block-definitions.json';
 import {validateAppConfig, type AppShellAppConfig} from './app-config.js';
 import {featureFlagNames, type FeatureFlagApplication} from './feature-flags.js';
 import type {LensCalibrationLauncher} from './lens-calibration.js';
+import {askNumbersWithDialog, confirmWithDialog, type DialogHost} from './dialogs.js';
+import {jsonValueOf, readJsonPath, withJsonField} from './json-fields.js';
 import {parseButtonLabels, type QrPanel} from './qr-panel.js';
 import type {MultiviewPoseShell} from './shell.js';
 
@@ -45,18 +47,22 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
   private readonly flags: FeatureFlagApplication;
   private readonly lensCalibration: LensCalibrationLauncher | null;
   private readonly qrPanel: QrPanel | null;
+  private readonly dialogs: DialogHost;
+  private confirmed = false;
+  private numbers = '';
 
   public constructor(
     config: AppShellAppConfig,
     shell: MultiviewPoseShell,
     flags: FeatureFlagApplication,
-    parts: {lensCalibration?: LensCalibrationLauncher; qrPanel?: QrPanel} = {}
+    parts: {lensCalibration?: LensCalibrationLauncher; qrPanel?: QrPanel; dialogs?: DialogHost} = {}
   ) {
     this.config = validateAppConfig(config);
     this.shell = shell;
     this.flags = flags;
     this.lensCalibration = parts.lensCalibration ?? null;
     this.qrPanel = parts.qrPanel ?? null;
+    this.dialogs = parts.dialogs ?? {document: null};
   }
 
   public getInfo(): Record<string, unknown> {
@@ -169,6 +175,57 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
 
   public lastQrImageButton(): string {
     return this.qrPanel?.lastButton() ?? '';
+  }
+
+  public jsonValueAt(args: {JSON: unknown; PATH: unknown}): string {
+    return readJsonPath(Scratch.Cast.toString(args.JSON), Scratch.Cast.toString(args.PATH));
+  }
+
+  public jsonWithJsonField(args: {JSON: unknown; KEY: unknown; VALUE: unknown}): string {
+    return withJsonField(
+      Scratch.Cast.toString(args.JSON),
+      Scratch.Cast.toString(args.KEY),
+      jsonValueOf(Scratch.Cast.toString(args.VALUE))
+    );
+  }
+
+  public jsonWithTextField(args: {JSON: unknown; KEY: unknown; VALUE: unknown}): string {
+    return withJsonField(
+      Scratch.Cast.toString(args.JSON),
+      Scratch.Cast.toString(args.KEY),
+      Scratch.Cast.toString(args.VALUE)
+    );
+  }
+
+  public async askConfirmation(args: {MESSAGE: unknown; CONFIRM: unknown; CANCEL: unknown}): Promise<void> {
+    this.confirmed = false;
+    this.confirmed = await confirmWithDialog(
+      this.dialogs,
+      Scratch.Cast.toString(args.MESSAGE),
+      Scratch.Cast.toString(args.CONFIRM),
+      Scratch.Cast.toString(args.CANCEL)
+    );
+  }
+
+  public confirmationAccepted(): boolean {
+    return this.confirmed;
+  }
+
+  public async askNumbers(args: {TITLE: unknown; FIELDS: unknown; DEFAULTS: unknown}): Promise<void> {
+    this.numbers = '';
+    const ja = this.shell.locale === 'ja';
+    const answer = await askNumbersWithDialog(
+      this.dialogs,
+      Scratch.Cast.toString(args.TITLE),
+      Scratch.Cast.toString(args.FIELDS),
+      Scratch.Cast.toString(args.DEFAULTS),
+      {accept: ja ? '決定' : 'OK', cancel: ja ? 'やめる' : 'Cancel'}
+    );
+    this.numbers = answer ?? '';
+  }
+
+  public answeredNumbers(): string {
+    return this.numbers;
   }
 
   private toScratchBlock(block: BlockDefinition): Record<string, unknown> {

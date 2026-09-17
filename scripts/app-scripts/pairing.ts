@@ -59,6 +59,8 @@ export interface PairingReferences {
   readonly pressesSeen: NamedReference;
   readonly step: NamedReference;
   readonly waited: NamedReference;
+  /** Set by the application's message dispatcher when the other side's test message arrives. */
+  readonly linkTest: NamedReference;
 }
 
 export const pairingReferences = (): PairingReferences => ({
@@ -66,7 +68,8 @@ export const pairingReferences = (): PairingReferences => ({
   partIndex: namedReference('pairing QR part index', 'variable:pairing-qr-part-index'),
   pressesSeen: namedReference('pairing button presses seen', 'variable:pairing-button-presses-seen'),
   step: namedReference('pairing step', 'variable:pairing-step'),
-  waited: namedReference('pairing test wait', 'variable:pairing-test-wait')
+  waited: namedReference('pairing test wait', 'variable:pairing-test-wait'),
+  linkTest: namedReference('link test message', 'variable:link-test-message')
 });
 
 export const pairingVariables = (references: PairingReferences, session: string) => ({
@@ -74,7 +77,8 @@ export const pairingVariables = (references: PairingReferences, session: string)
   [references.partIndex.id]: [references.partIndex.name, 1],
   [references.pressesSeen.id]: [references.pressesSeen.name, 0],
   [references.step.id]: [references.step.name, ''],
-  [references.waited.id]: [references.waited.name, 0]
+  [references.waited.id]: [references.waited.name, 0],
+  [references.linkTest.id]: [references.linkTest.name, '']
 });
 
 export const concatenate = (first: InputValue, ...rest: readonly InputValue[]): InputValue =>
@@ -220,8 +224,8 @@ export class PairingSteps {
    * other side's message may already be waiting; clearing would throw away the proof.
    */
   public exchangeTestMessage(from: string): BlockNode[] {
-    const {waited} = this.references;
-    const messageCount = reporter(block(`${webrtc}_messageCount`));
+    const {waited, linkTest} = this.references;
+    const received = not(equals(variable(linkTest), text('')));
     return [
       this.notice(
         concatenate(
@@ -237,19 +241,19 @@ export class PairingSteps {
         PEER: this.pairingValue('pairingRemotePeer')
       }),
       setVariable(waited, number(0)),
-      repeatUntil(or(greaterThan(messageCount, number(0)), greaterThan(variable(waited), number(100))), [
+      repeatUntil(or(received, greaterThan(variable(waited), number(100))), [
         wait(0.1),
         changeVariable(waited, 1)
       ]),
       ifElse(
-        greaterThan(messageCount, number(0)),
+        received,
         [
           this.notice(
             concatenate(
               text('接続しました（相手: '),
               this.pairingValue('pairingRemotePeer'),
               text('）。テストメッセージを送受信できました: '),
-              reporter(block(`${webrtc}_lastMessage`))
+              variable(linkTest)
             )
           )
         ],
@@ -263,6 +267,16 @@ export class PairingSteps {
         ]
       )
     ];
+  }
+
+  /**
+   * Forgets the previous exchange's test message.
+   *
+   * Cleared when an exchange starts, not before sending: the other side sends the moment it sees
+   * the connection, and its message may arrive before this side gets to send its own.
+   */
+  public resetLinkTest(): BlockNode {
+    return setVariable(this.references.linkTest, text(''));
   }
 
   /** Waits for the connection after the transport is done, or for the exchange to end. */

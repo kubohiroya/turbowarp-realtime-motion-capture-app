@@ -902,6 +902,325 @@
       ]
     },
     {
+      "role": "time-space-sync",
+      "repository": "kubohiroya/turbowarp-time-space-sync",
+      "package": "@kubohiroya/turbowarp-time-space-sync",
+      "version": "0.2.0",
+      "extensionId": "kubohiroyatimespacesync",
+      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-time-space-sync@0.2.0/dist/time-space-sync.js",
+      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-time-space-sync@0.2.0/dist/extension-manifest.json",
+      "sha256": "8fe41084b0760b03e18ced356a38ae9987085e137eb02ad1c6aca1bf444a5417",
+      "status": "ready",
+      "embeddedIn": [
+        "camera-app",
+        "fusion-app"
+      ],
+      "requiredOperations": [
+        {
+          "capability": "acknowledge the flashing pattern",
+          "opcode": "acknowledgePatternFlashing",
+          "availability": "ready"
+        },
+        {
+          "capability": "choose the pattern with corner cells",
+          "opcode": "setTimePatternProfile",
+          "availability": "ready"
+        },
+        {
+          "capability": "project the time pattern",
+          "opcode": "showTimePattern",
+          "availability": "ready"
+        },
+        {
+          "capability": "remove the time pattern",
+          "opcode": "hideTimePattern",
+          "availability": "ready"
+        },
+        {
+          "capability": "pattern shown",
+          "opcode": "timePatternShown",
+          "availability": "ready"
+        },
+        {
+          "capability": "pattern refresh settled",
+          "opcode": "timePatternStable",
+          "availability": "ready"
+        },
+        {
+          "capability": "measured display refresh",
+          "opcode": "timePatternRefreshUs",
+          "availability": "ready"
+        },
+        {
+          "capability": "start decoding a camera",
+          "opcode": "startOpticalTimeDecoder",
+          "availability": "ready"
+        },
+        {
+          "capability": "stop decoding",
+          "opcode": "stopOpticalTimeDecoder",
+          "availability": "ready"
+        },
+        {
+          "capability": "decoder state",
+          "opcode": "opticalTimeDecoderState",
+          "availability": "ready"
+        },
+        {
+          "capability": "decoder error",
+          "opcode": "opticalTimeDecoderError",
+          "availability": "ready"
+        },
+        {
+          "capability": "decode rate",
+          "opcode": "opticalTimeDecodeRate",
+          "availability": "ready"
+        },
+        {
+          "capability": "minimum calibration time",
+          "opcode": "opticalTimeMinimumCalibrationSeconds",
+          "availability": "ready"
+        },
+        {
+          "capability": "estimate the time correspondence",
+          "opcode": "estimateTimeCorrespondence",
+          "availability": "ready"
+        },
+        {
+          "capability": "time correspondence document",
+          "opcode": "timeCorrespondenceJson",
+          "availability": "ready"
+        },
+        {
+          "capability": "time correspondence error",
+          "opcode": "timeCorrespondenceError",
+          "availability": "ready"
+        },
+        {
+          "capability": "measure the projected corners",
+          "opcode": "measurePatternCorners",
+          "availability": "ready"
+        },
+        {
+          "capability": "placement observation from corners",
+          "opcode": "patternCornerObservationJson",
+          "availability": "ready"
+        },
+        {
+          "capability": "corner measurement error",
+          "opcode": "patternCornerError",
+          "availability": "ready"
+        },
+        {
+          "capability": "corner spread",
+          "opcode": "patternCornerSpreadPx",
+          "availability": "ready"
+        },
+        {
+          "capability": "camera model with distortion",
+          "opcode": "cameraModelJson",
+          "availability": "ready"
+        },
+        {
+          "capability": "reference from measured corners",
+          "opcode": "patternReferenceJson",
+          "availability": "ready"
+        },
+        {
+          "capability": "clear placement",
+          "opcode": "clearPlacement",
+          "availability": "ready"
+        },
+        {
+          "capability": "define the reference",
+          "opcode": "defineReference",
+          "availability": "ready"
+        },
+        {
+          "capability": "set a camera model",
+          "opcode": "setCameraModel",
+          "availability": "ready"
+        },
+        {
+          "capability": "add a placement observation",
+          "opcode": "addPlacementObservation",
+          "availability": "ready"
+        },
+        {
+          "capability": "solve placement",
+          "opcode": "solvePlacement",
+          "availability": "ready"
+        },
+        {
+          "capability": "placement result",
+          "opcode": "placementResultJson",
+          "availability": "ready"
+        },
+        {
+          "capability": "placement error",
+          "opcode": "placementError",
+          "availability": "ready"
+        },
+        {
+          "capability": "reprojection RMS",
+          "opcode": "placementReprojectionRms",
+          "availability": "ready"
+        }
+      ],
+      "blockContracts": {
+        "acknowledgePatternFlashing": {
+          "blockType": "command",
+          "arguments": {}
+        },
+        "setTimePatternProfile": {
+          "blockType": "command",
+          "arguments": {
+            "PROFILE_ID": "string"
+          }
+        },
+        "showTimePattern": {
+          "blockType": "command",
+          "arguments": {}
+        },
+        "hideTimePattern": {
+          "blockType": "command",
+          "arguments": {}
+        },
+        "timePatternShown": {
+          "blockType": "boolean",
+          "arguments": {}
+        },
+        "timePatternStable": {
+          "blockType": "boolean",
+          "arguments": {}
+        },
+        "timePatternRefreshUs": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "startOpticalTimeDecoder": {
+          "blockType": "command",
+          "arguments": {
+            "CAMERA_ID": "string",
+            "REFERENCE_ID": "string",
+            "REFRESH_US": "number",
+            "SECONDS": "number"
+          }
+        },
+        "stopOpticalTimeDecoder": {
+          "blockType": "command",
+          "arguments": {}
+        },
+        "opticalTimeDecoderState": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "opticalTimeDecoderError": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "opticalTimeDecodeRate": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "opticalTimeMinimumCalibrationSeconds": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "estimateTimeCorrespondence": {
+          "blockType": "command",
+          "arguments": {}
+        },
+        "timeCorrespondenceJson": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "timeCorrespondenceError": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "measurePatternCorners": {
+          "blockType": "command",
+          "arguments": {
+            "SECONDS": "number"
+          }
+        },
+        "patternCornerObservationJson": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "patternCornerError": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "patternCornerSpreadPx": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "cameraModelJson": {
+          "blockType": "reporter",
+          "arguments": {
+            "CAMERA_ID": "string"
+          }
+        },
+        "patternReferenceJson": {
+          "blockType": "reporter",
+          "arguments": {
+            "CORNERS": "string",
+            "MEASURED_BY": "string",
+            "REFERENCE_ID": "string",
+            "SIGMA_METERS": "number"
+          }
+        },
+        "clearPlacement": {
+          "blockType": "command",
+          "arguments": {}
+        },
+        "defineReference": {
+          "blockType": "command",
+          "arguments": {
+            "REFERENCE_JSON": "string"
+          }
+        },
+        "setCameraModel": {
+          "blockType": "command",
+          "arguments": {
+            "CAMERA_ID": "string",
+            "MODEL_JSON": "string"
+          }
+        },
+        "addPlacementObservation": {
+          "blockType": "command",
+          "arguments": {
+            "OBSERVATION_JSON": "string"
+          }
+        },
+        "solvePlacement": {
+          "blockType": "command",
+          "arguments": {
+            "RIG_ID": "string"
+          }
+        },
+        "placementResultJson": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "placementError": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "placementReprojectionRms": {
+          "blockType": "reporter",
+          "arguments": {
+            "CAMERA_ID": "string"
+          }
+        }
+      },
+      "gaps": [
+        "Camera roll must stay within ±45° of the projection and the view must not be mirrored; otherwise the corner measurement refuses with orientation-unproven."
+      ]
+    },
+    {
       "role": "dsl-json-schema",
       "repository": "kubohiroya/turbowarp-yaml-json",
       "package": "@kubohiroya/turbowarp-yaml-json",
@@ -1480,6 +1799,11 @@
       "app-ui",
       "dsl-json-schema",
       "multiview-high-level-blocks"
+    ],
+    "spaceTimeCalibration": [
+      "camera-source",
+      "webrtc-transport",
+      "time-space-sync"
     ]
   }
 }

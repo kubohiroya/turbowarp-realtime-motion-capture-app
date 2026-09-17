@@ -14,10 +14,10 @@ export const fusionAppConfig: AppShellAppConfig = {
     'qrCourierPairing',
     'protocolV1Codec',
     'avatarRetargetV1',
-    'frameSyncPatternV1',
     'poseFusion3D',
     'glowStickMarkers'
   ],
+  timeSpaceSync: true,
   noticeLocales: {
     en: {title: 'Fusion app'},
     ja: {title: '統合アプリからのお知らせ'}
