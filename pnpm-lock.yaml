@@ -34,13 +34,16 @@ importers:
         version: 0.3.0(@kubohiroya/turbowarp-camera-source@0.10.0)
       '@kubohiroya/turbowarp-realtime-motion-capture':
         specifier: 0.2.1
-        version: 0.2.1(@kubohiroya/turbowarp-aframe@0.3.0)(@kubohiroya/turbowarp-camera-source@0.10.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.10.0))(@kubohiroya/turbowarp-webrtc@0.3.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))
+        version: 0.2.1(@kubohiroya/turbowarp-aframe@0.3.0)(@kubohiroya/turbowarp-camera-source@0.10.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.10.0))(@kubohiroya/turbowarp-webrtc@0.4.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))
       '@kubohiroya/turbowarp-title-menu':
         specifier: 0.2.2
         version: 0.2.2
       '@kubohiroya/turbowarp-webrtc':
-        specifier: 0.3.0
-        version: 0.3.0
+        specifier: 0.4.0
+        version: 0.4.0
+      '@kubohiroya/turbowarp-webrtc-qrcode-pairing':
+        specifier: 0.1.0
+        version: 0.1.0(@kubohiroya/turbowarp-camera-source@0.10.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.10.0))(@kubohiroya/turbowarp-webrtc@0.4.0)
 
   apps/fusion-app:
     devDependencies:
@@ -50,18 +53,27 @@ importers:
       '@kubohiroya/turbowarp-asset-manager':
         specifier: 0.16.0
         version: 0.16.0
+      '@kubohiroya/turbowarp-camera-source':
+        specifier: 0.10.0
+        version: 0.10.0
       '@kubohiroya/turbowarp-diagnostic-overlay':
         specifier: 0.4.0
         version: 0.4.0
+      '@kubohiroya/turbowarp-jsqr':
+        specifier: 0.3.0
+        version: 0.3.0(@kubohiroya/turbowarp-camera-source@0.10.0)
       '@kubohiroya/turbowarp-realtime-motion-capture':
         specifier: 0.2.1
-        version: 0.2.1(@kubohiroya/turbowarp-aframe@0.3.0)(@kubohiroya/turbowarp-camera-source@0.5.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.5.0))(@kubohiroya/turbowarp-webrtc@0.3.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))
+        version: 0.2.1(@kubohiroya/turbowarp-aframe@0.3.0)(@kubohiroya/turbowarp-camera-source@0.10.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.10.0))(@kubohiroya/turbowarp-webrtc@0.4.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))
       '@kubohiroya/turbowarp-title-menu':
         specifier: 0.2.2
         version: 0.2.2
       '@kubohiroya/turbowarp-webrtc':
-        specifier: 0.3.0
-        version: 0.3.0
+        specifier: 0.4.0
+        version: 0.4.0
+      '@kubohiroya/turbowarp-webrtc-qrcode-pairing':
+        specifier: 0.1.0
+        version: 0.1.0(@kubohiroya/turbowarp-camera-source@0.10.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.10.0))(@kubohiroya/turbowarp-webrtc@0.4.0)
       '@kubohiroya/turbowarp-yaml-json':
         specifier: 0.3.0
         version: 0.3.0
@@ -160,10 +172,6 @@ packages:
     resolution: {integrity: sha512-9fIxjtIVzuj4h+vHcJdf2noMDYbs7IrH3YXv9hkCLXWl/Z/tdmO9fehWh41Yf5ixhGNGo3D2w6ECredHy8FtTg==}
     engines: {node: '>=22.18.0'}
 
-  '@kubohiroya/turbowarp-camera-source@0.5.0':
-    resolution: {integrity: sha512-0Ji1iL/HSl2PijGjcuPMOTN3cnc73oxGdmiiT9UIHL3BIUUPjaLDf3HCyoHyFaawdSIXQ8sspQt8gezlkv57uw==}
-    engines: {node: '>=22.18.0'}
-
   '@kubohiroya/turbowarp-diagnostic-overlay@0.4.0':
     resolution: {integrity: sha512-RjJyKPa6D4eeNd2LQZ/tivOpPdkg2t9cCC/7TeYx0FPhU4TdAn73P4h/qN3U18547NYrl/KlyLtPlVfedzkMSw==}
     engines: {node: '>=22.18.0'}
@@ -203,8 +211,23 @@ packages:
     resolution: {integrity: sha512-pMGQb328eJFrMf6J8CodSk9v46j5Twx15sKSu/RUox07ep8ci7YRrRl+BIz0Q+wtskVT50LISx1SBnnCCSxiPw==}
     engines: {node: '>=22'}
 
-  '@kubohiroya/turbowarp-webrtc@0.3.0':
-    resolution: {integrity: sha512-ftnJNOtR3BZhEpu6OPWMiMF8CwWQiFuqpJQqEkScvZRyJ2eal2cSamnz6Oc/rZdwew+Clsnan0Df67gcVurNRw==}
+  '@kubohiroya/turbowarp-webrtc-qrcode-pairing@0.1.0':
+    resolution: {integrity: sha512-BxdvLWCfRspi2ECw3pRVAmenyAQRVxrVU1S1qQsafE1tA3/7E1zK471dZ75iv0N4kw+SACD+fUNdIVSmOwHLLQ==}
+    engines: {node: '>=22.18.0'}
+    peerDependencies:
+      '@kubohiroya/turbowarp-camera-source': 0.5.0
+      '@kubohiroya/turbowarp-jsqr': 0.3.0
+      '@kubohiroya/turbowarp-webrtc': '>=0.4.0'
+    peerDependenciesMeta:
+      '@kubohiroya/turbowarp-camera-source':
+        optional: true
+      '@kubohiroya/turbowarp-jsqr':
+        optional: true
+      '@kubohiroya/turbowarp-webrtc':
+        optional: true
+
+  '@kubohiroya/turbowarp-webrtc@0.4.0':
+    resolution: {integrity: sha512-wGb2C/JK/unbA44XsKFjbCvMA0aKUhqVH5+wo92AS+2BQKQsB+Bow1sUrmTOdjH7M/0JJG3YxCZNa2fb7kmRBg==}
     engines: {node: '>=22.18.0'}
 
   '@kubohiroya/turbowarp-yaml-json@0.3.0':
@@ -1157,9 +1180,6 @@ snapshots:
 
   '@kubohiroya/turbowarp-camera-source@0.10.0': {}
 
-  '@kubohiroya/turbowarp-camera-source@0.5.0':
-    optional: true
-
   '@kubohiroya/turbowarp-diagnostic-overlay@0.4.0': {}
 
   '@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.10.0)':
@@ -1168,16 +1188,9 @@ snapshots:
     optionalDependencies:
       '@kubohiroya/turbowarp-camera-source': 0.10.0
 
-  '@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.5.0)':
-    dependencies:
-      jsqr: 1.4.0
-    optionalDependencies:
-      '@kubohiroya/turbowarp-camera-source': 0.5.0
-    optional: true
-
   '@kubohiroya/turbowarp-local-preview@0.1.0': {}
 
-  '@kubohiroya/turbowarp-realtime-motion-capture@0.2.1(@kubohiroya/turbowarp-aframe@0.3.0)(@kubohiroya/turbowarp-camera-source@0.10.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.10.0))(@kubohiroya/turbowarp-webrtc@0.3.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))':
+  '@kubohiroya/turbowarp-realtime-motion-capture@0.2.1(@kubohiroya/turbowarp-aframe@0.3.0)(@kubohiroya/turbowarp-camera-source@0.10.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.10.0))(@kubohiroya/turbowarp-webrtc@0.4.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))':
     dependencies:
       '@sinclair/typebox': 0.34.52
       '@techstark/opencv-js': 4.12.0-release.1
@@ -1191,28 +1204,7 @@ snapshots:
       '@kubohiroya/turbowarp-aframe': 0.3.0
       '@kubohiroya/turbowarp-camera-source': 0.10.0
       '@kubohiroya/turbowarp-jsqr': 0.3.0(@kubohiroya/turbowarp-camera-source@0.10.0)
-      '@kubohiroya/turbowarp-webrtc': 0.3.0
-    transitivePeerDependencies:
-      - '@mediapipe/pose'
-      - '@tensorflow/tfjs-backend-wasm'
-      - '@tensorflow/tfjs-backend-webgl'
-      - encoding
-
-  '@kubohiroya/turbowarp-realtime-motion-capture@0.2.1(@kubohiroya/turbowarp-aframe@0.3.0)(@kubohiroya/turbowarp-camera-source@0.5.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.5.0))(@kubohiroya/turbowarp-webrtc@0.3.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))':
-    dependencies:
-      '@sinclair/typebox': 0.34.52
-      '@techstark/opencv-js': 4.12.0-release.1
-      '@tensorflow-models/pose-detection': 2.1.3(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgpu@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-converter@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-core@4.22.0)
-      '@tensorflow/tfjs-backend-webgpu': 4.22.0(@tensorflow/tfjs-core@4.22.0)
-      '@tensorflow/tfjs-converter': 4.22.0(@tensorflow/tfjs-core@4.22.0)
-      '@tensorflow/tfjs-core': 4.22.0
-      kalidokit: 1.1.5
-      qrcode: 1.5.4
-    optionalDependencies:
-      '@kubohiroya/turbowarp-aframe': 0.3.0
-      '@kubohiroya/turbowarp-camera-source': 0.5.0
-      '@kubohiroya/turbowarp-jsqr': 0.3.0(@kubohiroya/turbowarp-camera-source@0.5.0)
-      '@kubohiroya/turbowarp-webrtc': 0.3.0
+      '@kubohiroya/turbowarp-webrtc': 0.4.0
     transitivePeerDependencies:
       - '@mediapipe/pose'
       - '@tensorflow/tfjs-backend-wasm'
@@ -1223,7 +1215,15 @@ snapshots:
     dependencies:
       '@kubohiroya/turbowarp-app-shell': 0.2.0
 
-  '@kubohiroya/turbowarp-webrtc@0.3.0': {}
+  '@kubohiroya/turbowarp-webrtc-qrcode-pairing@0.1.0(@kubohiroya/turbowarp-camera-source@0.10.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.10.0))(@kubohiroya/turbowarp-webrtc@0.4.0)':
+    dependencies:
+      qrcode: 1.5.4
+    optionalDependencies:
+      '@kubohiroya/turbowarp-camera-source': 0.10.0
+      '@kubohiroya/turbowarp-jsqr': 0.3.0(@kubohiroya/turbowarp-camera-source@0.10.0)
+      '@kubohiroya/turbowarp-webrtc': 0.4.0
+
+  '@kubohiroya/turbowarp-webrtc@0.4.0': {}
 
   '@kubohiroya/turbowarp-yaml-json@0.3.0':
     dependencies:
