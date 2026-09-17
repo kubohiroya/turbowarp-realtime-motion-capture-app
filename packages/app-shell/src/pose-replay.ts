@@ -76,10 +76,12 @@ export class PoseReplay {
   private recordingState: RecordingState = 'idle';
   private recordedFrames = 0;
 
+  private spaceTime = new Map<string, Record<string, unknown>>();
   private session:
     | {
         configuration: Record<string, unknown>;
         frames: Map<string, RecordedFrame[]>;
+        spaceTime: Map<string, Record<string, unknown>>;
       }
     | undefined;
   private sessionName = '';
@@ -110,6 +112,7 @@ export class PoseReplay {
     }
     this.configuration = configuration;
     this.events = [];
+    this.spaceTime = new Map();
     this.dropped = 0;
     this.recordedFrames = 0;
     this.recordingState = 'recording';
@@ -142,6 +145,16 @@ export class PoseReplay {
     }
   }
 
+  /**
+   * Records one camera's space-time measurement: the camera model, the corner observation and the
+   * time correspondence, exactly as the camera app sends them to the fusion app.
+   */
+  public recordSpaceTime(cameraId: string, payloadJson: string): void {
+    const payload = parseObject(payloadJson);
+    if (!payload) return;
+    this.spaceTime.set(cameraId, payload);
+  }
+
   public stopRecording(): void {
     if (this.recordingState !== 'recording') return;
     this.recordingState = this.events.length > 0 ? 'recorded' : 'idle';
@@ -162,6 +175,13 @@ export class PoseReplay {
           ? 'debug-camera-replay'
           : `debug-camera-replay (${this.dropped} events dropped)`,
       configuration: this.configuration,
+      ...(this.spaceTime.size === 0
+        ? {}
+        : {
+            spaceTime: [...this.spaceTime.entries()].map(
+              ([cameraId, payload]) => ({ cameraId, payload }),
+            ),
+          }),
       events: this.events,
     });
   }
@@ -294,9 +314,27 @@ export class PoseReplay {
       this.error = '録画にフレームがありません。';
       return;
     }
+    const spaceTime = new Map<string, Record<string, unknown>>();
+    for (const entry of Array.isArray(document['spaceTime'])
+      ? document['spaceTime']
+      : []) {
+      if (typeof entry !== 'object' || entry === null) continue;
+      const record = entry as Record<string, unknown>;
+      const cameraId = record['cameraId'];
+      const payload = record['payload'];
+      if (
+        typeof cameraId !== 'string' ||
+        typeof payload !== 'object' ||
+        payload === null
+      ) {
+        continue;
+      }
+      spaceTime.set(cameraId, payload as Record<string, unknown>);
+    }
     this.session = {
       configuration: configuration as Record<string, unknown>,
       frames,
+      spaceTime,
     };
     this.sessionName = name;
     this.originStartUs = earliest;
@@ -386,6 +424,25 @@ export class PoseReplay {
   /** The configuration the recording was made under, for configuring the 3D service the same way. */
   public loadedConfigurationJson(): string {
     return this.session ? JSON.stringify(this.session.configuration) : '';
+  }
+
+  /**
+   * The space-time measurement the recording carries for that camera, or an empty string.
+   *
+   * A camera app replaying a recording answers the fusion app's calibration request with this, which
+   * is what lets the placement be solved with no pattern on the wall and no camera looking at it. A
+   * recording of a single camera answers for whichever name it is asked about, because a camera app
+   * calls its camera `pose` while the recording may have been made under another name.
+   */
+  public spaceTimePayloadJson(cameraId: string): string {
+    const session = this.session;
+    if (!session) return '';
+    const payload =
+      session.spaceTime.get(cameraId) ??
+      (session.spaceTime.size === 1
+        ? [...session.spaceTime.values()][0]
+        : undefined);
+    return payload ? JSON.stringify(payload) : '';
   }
 
   public loadedCamerasJson(): string {

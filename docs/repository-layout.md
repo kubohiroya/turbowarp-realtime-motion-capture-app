@@ -32,7 +32,7 @@ apps/
 packages/
   app-shell/            アプリ所有のTurboWarp拡張（feature flagと画面）
   local-host/           ローカルホストの部品（[ローカルホスト](local-host.md)）
-  pose-3d-service/      3Dサービスのinterfaceとstub（[3Dサービス](pose-3d-service.md)）
+  pose-3d-service/      3Dサービスのinterfaceと実装（[3Dサービス](pose-3d-service.md)）
   sb3-script/           SB3のblock列を組み立てる
 config/
   app.json                   名前、モード、説明、実装予定（英語訳は`en`）

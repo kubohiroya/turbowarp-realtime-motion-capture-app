@@ -51,6 +51,8 @@ export const poseChannel = 'pose';
 export const poseHighWaterMarkBytes = 16_384;
 /** Flag names from the contract extension, as the app shell reports them. */
 export const poseFeatureFlag = 'webgpuMoveNetMultiPose';
+/** The application flag that turns pose recording and replay on (DEBUG_POSE_REPLAY). */
+export const poseReplayFlag = 'debugPoseReplayV1';
 
 const mc = (
   opcode: string,
@@ -352,6 +354,27 @@ export function cameraPoseScripts(options: {
                     changeVariable(r.frames, 1),
                     setVariable(r.frame, mcValue('latestPoseFrame2D')),
                     ifThen(not(equals(variable(r.frame), text(''))), [
+                      // The flag is checked first, so a build without recording never evaluates a
+                      // block it does not carry.
+                      ifThen(
+                        block(`${shell}_appFeatureEnabled`, {
+                          FEATURE: text(poseReplayFlag),
+                        }),
+                        [
+                          ifThen(
+                            equals(
+                              reporter(block(`${shell}_poseRecordingState`)),
+                              text('recording'),
+                            ),
+                            [
+                              block(`${shell}_recordPoseFrame`, {
+                                FRAME_JSON: variable(r.frame),
+                                CAMERA_ID: variable(r.localPeer),
+                              }),
+                            ],
+                          ),
+                        ],
+                      ),
                       block(`${webrtc}_sendLatestData`, {
                         PAYLOAD: variable(r.frame),
                         CHANNEL: text(poseChannel),

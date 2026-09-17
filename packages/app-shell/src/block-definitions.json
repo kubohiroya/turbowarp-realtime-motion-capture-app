@@ -625,6 +625,36 @@
       "requires": "poseReplay"
     },
     {
+      "opcode": "recordSpaceTimeResult",
+      "blockType": "COMMAND",
+      "text": "record space-time result [PAYLOAD_JSON] of camera [CAMERA_ID]",
+      "description": "Records one camera's space-time measurement — camera model, corner observation and time correspondence — as the camera app sends it to the fusion app. A replay answers the calibration request with it.",
+      "arguments": {
+        "PAYLOAD_JSON": {
+          "type": "STRING",
+          "defaultValue": ""
+        },
+        "CAMERA_ID": {
+          "type": "STRING",
+          "defaultValue": "pose"
+        }
+      },
+      "requires": "poseReplay"
+    },
+    {
+      "opcode": "replaySpaceTimePayload",
+      "blockType": "REPORTER",
+      "text": "replayed space-time result of camera [CAMERA_ID]",
+      "description": "The space-time measurement the loaded recording carries for that camera, or an empty string. A recording of one camera answers for whichever name it is asked about.",
+      "arguments": {
+        "CAMERA_ID": {
+          "type": "STRING",
+          "defaultValue": "pose"
+        }
+      },
+      "requires": "poseReplay"
+    },
+    {
       "opcode": "stopPoseRecording",
       "blockType": "COMMAND",
       "text": "stop pose recording",
