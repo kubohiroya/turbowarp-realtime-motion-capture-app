@@ -146,7 +146,8 @@
       "sha256": "0b5e951243e4fa5d2607ce7bae33efa4ee3ef217e771e6efbee80fd67ac64e45",
       "status": "ready",
       "embeddedIn": [
-        "camera-app"
+        "camera-app",
+        "fusion-app"
       ],
       "requiredOperations": [
         {
@@ -420,24 +421,15 @@
       "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-jsqr@0.3.0/dist/jsqr.js",
       "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-jsqr@0.3.0/dist/extension-manifest.json",
       "sha256": "9debed81ae10a18b50e24bc8becee7f200d0757859bcb989b9aeddfcd89ed401",
-      "status": "ready-with-dependency",
+      "status": "ready",
       "embeddedIn": [
-        "camera-app"
+        "camera-app",
+        "fusion-app"
       ],
       "requiredOperations": [
         {
-          "capability": "wait for QR text",
+          "capability": "decode QR text through the runtime capability the pairing extension reads",
           "opcode": "waitForQrTextSetRuntimeVar",
-          "availability": "ready"
-        },
-        {
-          "capability": "wait and broadcast",
-          "opcode": "waitForQrTextSetRuntimeVarAndBroadcast",
-          "availability": "ready"
-        },
-        {
-          "capability": "last decoded text",
-          "opcode": "lastQrTextReporter",
           "availability": "ready"
         }
       ],
@@ -448,33 +440,19 @@
             "CAMERA_ID": "string",
             "RUNTIME_VAR": "string"
           }
-        },
-        "waitForQrTextSetRuntimeVarAndBroadcast": {
-          "blockType": "command",
-          "arguments": {
-            "CAMERA_ID": "string",
-            "MESSAGE": "string",
-            "RUNTIME_VAR": "string"
-          }
-        },
-        "lastQrTextReporter": {
-          "blockType": "reporter",
-          "arguments": {}
         }
       },
-      "gaps": [
-        "Asynchronous result delivery still goes through a runtime variable, so the pairing script depends on the Temporary Variables extension."
-      ]
+      "gaps": []
     },
     {
       "role": "webrtc-transport",
       "repository": "kubohiroya/turbowarp-webrtc",
       "package": "@kubohiroya/turbowarp-webrtc",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "extensionId": "kubohiroyawebrtc",
-      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-webrtc@0.3.0/dist/turbowarp-webrtc.js",
-      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-webrtc@0.3.0/dist/extension-manifest.json",
-      "sha256": "8b8f6ed0714620dcde723cbb97f0435554fdacc5af767a76357f9280c4385e8d",
+      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-webrtc@0.4.0/dist/turbowarp-webrtc.js",
+      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-webrtc@0.4.0/dist/extension-manifest.json",
+      "sha256": "fa8e193b95740ba699d40fefcd5a9810339914ff6955cd7a000b6f8894013e02",
       "status": "ready",
       "embeddedIn": [
         "camera-app",
@@ -579,6 +557,21 @@
         {
           "capability": "per-camera offset",
           "opcode": "frameSyncOffsetOfCamera",
+          "availability": "ready"
+        },
+        {
+          "capability": "send a network message to one peer",
+          "opcode": "broadcastNetworkMessage",
+          "availability": "ready"
+        },
+        {
+          "capability": "received message count",
+          "opcode": "messageCount",
+          "availability": "ready"
+        },
+        {
+          "capability": "last received message",
+          "opcode": "lastMessage",
           "availability": "ready"
         }
       ],
@@ -716,9 +709,197 @@
           "arguments": {
             "CAMERA": "string"
           }
+        },
+        "broadcastNetworkMessage": {
+          "blockType": "command",
+          "arguments": {
+            "CHANNEL": "string",
+            "MESSAGE": "string",
+            "PAYLOAD": "string",
+            "PEER": "string"
+          }
+        },
+        "messageCount": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "lastMessage": {
+          "blockType": "reporter",
+          "arguments": {}
         }
       },
       "gaps": []
+    },
+    {
+      "role": "qr-pairing",
+      "repository": "kubohiroya/turbowarp-webrtc-qrcode-pairing",
+      "package": "@kubohiroya/turbowarp-webrtc-qrcode-pairing",
+      "version": "0.1.0",
+      "extensionId": "kubohiroyawebrtcqrcodepairing",
+      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-webrtc-qrcode-pairing@0.1.0/dist/webrtc-qrcode-pairing.js",
+      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-webrtc-qrcode-pairing@0.1.0/dist/extension-manifest.json",
+      "sha256": "9c68d36027e555df7965e38636d687256d8d63f4540828b263e4730641d45fb8",
+      "status": "ready",
+      "embeddedIn": [
+        "camera-app",
+        "fusion-app"
+      ],
+      "requiredOperations": [
+        {
+          "capability": "open an offer exchange",
+          "opcode": "startOfferPairing",
+          "availability": "ready"
+        },
+        {
+          "capability": "open an answer exchange",
+          "opcode": "startAnswerPairing",
+          "availability": "ready"
+        },
+        {
+          "capability": "read pairing QR parts from a camera",
+          "opcode": "scanPairingQrFromCamera",
+          "availability": "ready"
+        },
+        {
+          "capability": "render a part as an image",
+          "opcode": "pairingQrPartDataUri",
+          "availability": "ready"
+        },
+        {
+          "capability": "part count",
+          "opcode": "pairingQrPartCount",
+          "availability": "ready"
+        },
+        {
+          "capability": "exchange phase",
+          "opcode": "pairingPhase",
+          "availability": "ready"
+        },
+        {
+          "capability": "connection established",
+          "opcode": "isPairingConnected",
+          "availability": "ready"
+        },
+        {
+          "capability": "error code",
+          "opcode": "pairingError",
+          "availability": "ready"
+        },
+        {
+          "capability": "operator-facing error",
+          "opcode": "pairingErrorMessage",
+          "availability": "ready"
+        },
+        {
+          "capability": "remote peer name",
+          "opcode": "pairingRemotePeer",
+          "availability": "ready"
+        },
+        {
+          "capability": "expiry",
+          "opcode": "setPairingTimeout",
+          "availability": "ready"
+        },
+        {
+          "capability": "cancel an exchange",
+          "opcode": "cancelPairing",
+          "availability": "ready"
+        },
+        {
+          "capability": "release display state",
+          "opcode": "endPairingQrDisplay",
+          "availability": "ready"
+        }
+      ],
+      "blockContracts": {
+        "startOfferPairing": {
+          "blockType": "command",
+          "arguments": {
+            "LOCAL_PEER": "string",
+            "REMOTE_PEER": "string",
+            "SESSION": "string"
+          }
+        },
+        "startAnswerPairing": {
+          "blockType": "command",
+          "arguments": {
+            "LOCAL_PEER": "string",
+            "SESSION": "string"
+          }
+        },
+        "scanPairingQrFromCamera": {
+          "blockType": "command",
+          "arguments": {
+            "CAMERA_ID": "string",
+            "SESSION": "string"
+          }
+        },
+        "pairingQrPartDataUri": {
+          "blockType": "reporter",
+          "arguments": {
+            "INDEX": "number",
+            "SESSION": "string"
+          }
+        },
+        "pairingQrPartCount": {
+          "blockType": "reporter",
+          "arguments": {
+            "SESSION": "string"
+          }
+        },
+        "pairingPhase": {
+          "blockType": "reporter",
+          "arguments": {
+            "SESSION": "string"
+          }
+        },
+        "isPairingConnected": {
+          "blockType": "boolean",
+          "arguments": {
+            "SESSION": "string"
+          }
+        },
+        "pairingError": {
+          "blockType": "reporter",
+          "arguments": {
+            "SESSION": "string"
+          }
+        },
+        "pairingErrorMessage": {
+          "blockType": "reporter",
+          "arguments": {
+            "SESSION": "string"
+          }
+        },
+        "pairingRemotePeer": {
+          "blockType": "reporter",
+          "arguments": {
+            "SESSION": "string"
+          }
+        },
+        "setPairingTimeout": {
+          "blockType": "command",
+          "arguments": {
+            "SECONDS": "number",
+            "SESSION": "string"
+          }
+        },
+        "cancelPairing": {
+          "blockType": "command",
+          "arguments": {
+            "SESSION": "string"
+          }
+        },
+        "endPairingQrDisplay": {
+          "blockType": "command",
+          "arguments": {
+            "SESSION": "string"
+          }
+        }
+      },
+      "gaps": [
+        "Requires turbowarp-webrtc runtime capability v3 (0.4.0 or later)."
+      ]
     },
     {
       "role": "dsl-json-schema",
@@ -1275,7 +1456,7 @@
       "camera-source",
       "qr-reader",
       "webrtc-transport",
-      "multiview-high-level-blocks"
+      "qr-pairing"
     ],
     "poseStreaming": [
       "camera-source",

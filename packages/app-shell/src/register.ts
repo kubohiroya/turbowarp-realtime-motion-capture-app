@@ -2,6 +2,7 @@ import type {AppShellAppConfig} from './app-config.js';
 import {applyFeatureFlags, contractAlreadyLoaded} from './feature-flags.js';
 import {createBrowserLensCalibrationHost, createScratchShellHost} from './host.js';
 import {LensCalibrationLauncher} from './lens-calibration.js';
+import {createQrPanel} from './qr-panel.js';
 import {createMultiviewPoseShell} from './shell.js';
 import {MultiviewPoseAppShellExtension} from './extension.js';
 
@@ -17,11 +18,16 @@ import {MultiviewPoseAppShellExtension} from './extension.js';
 export function registerAppShell(config: AppShellAppConfig): void {
   const flags = applyFeatureFlags(config.featureFlags, {contractLoaded: contractAlreadyLoaded});
   const shell = createMultiviewPoseShell(config, createScratchShellHost());
-  const lensCalibration =
-    config.lensCalibration === true
-      ? new LensCalibrationLauncher(createBrowserLensCalibrationHost(shell.locale))
-      : null;
+  const qrPanel = createQrPanel({document: typeof document === 'undefined' ? null : document});
+  // The stop sign ends every exchange the pairing extension owns, so nothing is left for a panel to
+  // show; leaving it up would cover the stage with a code nobody can use.
+  Scratch.vm?.runtime?.on?.('PROJECT_STOP_ALL', () => qrPanel.hide());
   Scratch.extensions.register(
-    new MultiviewPoseAppShellExtension(config, shell, flags, lensCalibration)
+    new MultiviewPoseAppShellExtension(config, shell, flags, {
+      qrPanel,
+      ...(config.lensCalibration === true
+        ? {lensCalibration: new LensCalibrationLauncher(createBrowserLensCalibrationHost(shell.locale))}
+        : {})
+    })
   );
 }

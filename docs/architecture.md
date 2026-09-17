@@ -65,7 +65,7 @@ feature flagは起動時固定です。camera appとfusion appで必要なflag�
 
 | アプリ | 有効にするflag |
 |---|---|
-| camera app | `webgpuMoveNetMultiPose`、`protocolV1Codec`、`cameraCalibrationV1`、`frameSyncPatternV1`、`glowStickMarkers` |
+| camera app | `qrCourierPairing`、`webgpuMoveNetMultiPose`、`protocolV1Codec`、`cameraCalibrationV1`、`frameSyncPatternV1`、`glowStickMarkers` |
 | fusion app | `qrCourierPairing`、`protocolV1Codec`、`avatarRetargetV1`、`frameSyncPatternV1`、`poseFusion3D`、`glowStickMarkers` |
 
 シェルは`feature flag state`reporterで適用結果を公開します。`applied`以外の値は、bundleの並び順が

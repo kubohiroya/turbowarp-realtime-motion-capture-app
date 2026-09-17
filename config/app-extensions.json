@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "documentation": "Embedded extension composition for each SB3. The first member of every bundle is the app shell, because it writes the contract feature flags the later members read while they are evaluated. The shared title, menu, and DSL file UI follows it.",
+  "documentation": "Embedded extension composition for each SB3. The first member of every bundle is the app shell, because it writes the contract feature flags the later members read while they are evaluated. The shared title, menu, and DSL file UI follows it. The QR pairing extension follows WebRTC, Camera Source and jsQR, which it reaches through the runtime when a pairing starts, and reads its own startup flag, which the app shell also writes first.",
   "apps": [
     {
       "app": "camera-app",
@@ -45,6 +45,13 @@
           "apiManifest": "dist/extension-manifest.json"
         },
         {
+          "id": "kubohiroyawebrtcqrcodepairing",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-webrtc-qrcode-pairing",
+          "artifact": "dist/webrtc-qrcode-pairing.js",
+          "apiManifest": "dist/extension-manifest.json"
+        },
+        {
           "id": "kubohiroyarealtimemotioncapture",
           "provider": "npm",
           "package": "@kubohiroya/turbowarp-realtime-motion-capture",
@@ -82,10 +89,31 @@
           "apiManifest": "dist/extension-manifest.json"
         },
         {
+          "id": "kubohiroyacamerasource",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-camera-source",
+          "artifact": "dist/camera-source.js",
+          "apiManifest": "dist/extension-manifest.json"
+        },
+        {
+          "id": "kubohiroyajsqr",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-jsqr",
+          "artifact": "dist/jsqr.js",
+          "apiManifest": "dist/extension-manifest.json"
+        },
+        {
           "id": "kubohiroyawebrtc",
           "provider": "npm",
           "package": "@kubohiroya/turbowarp-webrtc",
           "artifact": "dist/turbowarp-webrtc.js",
+          "apiManifest": "dist/extension-manifest.json"
+        },
+        {
+          "id": "kubohiroyawebrtcqrcodepairing",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-webrtc-qrcode-pairing",
+          "artifact": "dist/webrtc-qrcode-pairing.js",
           "apiManifest": "dist/extension-manifest.json"
         },
         {

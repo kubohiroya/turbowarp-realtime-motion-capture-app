@@ -52,7 +52,8 @@ See [System architecture](docs/architecture.md) (Japanese) for the detailed resp
 | Startup block scripts (generated from TypeScript) | Available |
 | Block scripts for camera selection, GPU preview, stop, and disconnect monitoring | Available (not yet verified on real hardware) |
 | Lens calibration entry (restore a saved profile, open the lens calibration app on the same origin in its own window, load a profile file) | Available (not yet verified on real hardware; see [persistence](docs/persistence.md)) |
-| Block scripts for QR pairing and MoveNet pose estimation | Not implemented |
+| QR pairing (the fusion app projects the offer, the camera app shows the answer, a test message is exchanged once connected) | Available (not yet verified on real hardware; see [QR pairing](docs/qr-pairing.md)) |
+| Block scripts for MoveNet pose estimation | Not implemented |
 | Block scripts for multi-view calibration, 3D fusion, and avatar performance | Not implemented |
 | Persistence of settings and performance DSL | Decided, not implemented ([Persistence design](docs/persistence.md)) |
 | Local-host distribution as a single binary | In design ([Local host](docs/local-host.md)) |

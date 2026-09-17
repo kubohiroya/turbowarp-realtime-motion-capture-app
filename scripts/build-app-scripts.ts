@@ -3,13 +3,13 @@ import {readFile, writeFile} from 'node:fs/promises';
 import {buildBlocks} from '../packages/sb3-script/src/blocks.ts';
 
 import {cameraAppScripts, cameraAppStageData} from './app-scripts/camera-app.ts';
-import {fusionAppScripts} from './app-scripts/fusion-app.ts';
+import {fusionAppScripts, fusionAppStageData} from './app-scripts/fusion-app.ts';
 import {formatJson, readJson, repositoryRoot, type ProjectSource} from './repository-config.ts';
 
 const writeTracked = process.argv.includes('--write');
 const applications = [
   {app: 'camera-app', scripts: cameraAppScripts, stageData: cameraAppStageData},
-  {app: 'fusion-app', scripts: fusionAppScripts}
+  {app: 'fusion-app', scripts: fusionAppScripts, stageData: fusionAppStageData}
 ] as const;
 
 interface StageTarget {

@@ -3,7 +3,32 @@
     {
       "isStage": true,
       "name": "Stage",
-      "variables": {},
+      "variables": {
+        "variable:pairing-session": [
+          "pairing session",
+          ""
+        ],
+        "variable:pairing-qr-part-index": [
+          "pairing QR part index",
+          1
+        ],
+        "variable:pairing-button-presses-seen": [
+          "pairing button presses seen",
+          0
+        ],
+        "variable:pairing-step": [
+          "pairing step",
+          ""
+        ],
+        "variable:pairing-test-wait": [
+          "pairing test wait",
+          0
+        ],
+        "variable:paired-camera-count": [
+          "paired camera count",
+          0
+        ]
+      },
       "lists": {},
       "broadcasts": {},
       "blocks": {
@@ -69,9 +94,92 @@
           "topLevel": false
         },
         "s1b5": {
-          "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
+          "opcode": "control_if",
           "next": "s1b6",
           "parent": "s1b4",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s1b9"
+            ],
+            "SUBSTACK": [
+              2,
+              "s1b10"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s1b9": {
+          "opcode": "realtimemotioncapturefusionshell_appFeatureEnabled",
+          "next": null,
+          "parent": "s1b5",
+          "inputs": {
+            "FEATURE": [
+              1,
+              [
+                10,
+                "qrCourierPairing"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s1b10": {
+          "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
+          "next": "s1b11",
+          "parent": "s1b5",
+          "inputs": {
+            "ACTION": [
+              1,
+              [
+                10,
+                "pairCameraApp"
+              ]
+            ],
+            "LABEL": [
+              1,
+              [
+                10,
+                "カメラアプリと接続する"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s1b11": {
+          "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
+          "next": null,
+          "parent": "s1b10",
+          "inputs": {
+            "ACTION": [
+              1,
+              [
+                10,
+                "cancelPairing"
+              ]
+            ],
+            "LABEL": [
+              1,
+              [
+                10,
+                "接続をやめる"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s1b6": {
+          "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
+          "next": "s1b7",
+          "parent": "s1b5",
           "inputs": {
             "ACTION": [
               1,
@@ -92,19 +200,19 @@
           "shadow": false,
           "topLevel": false
         },
-        "s1b6": {
+        "s1b7": {
           "opcode": "realtimemotioncapturefusionshell_hideAppLoading",
-          "next": "s1b7",
-          "parent": "s1b5",
+          "next": "s1b8",
+          "parent": "s1b6",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s1b7": {
+        "s1b8": {
           "opcode": "kubohiroyaturbowarptitlemenu_showMenu",
           "next": null,
-          "parent": "s1b6",
+          "parent": "s1b7",
           "inputs": {},
           "fields": {},
           "shadow": false,
@@ -265,6 +373,4095 @@
           "fields": {},
           "shadow": false,
           "topLevel": false
+        },
+        "s5b1": {
+          "opcode": "kubohiroyaturbowarptitlemenu_whenAppMenuActionSelected",
+          "next": "s5b2",
+          "parent": null,
+          "inputs": {},
+          "fields": {
+            "ACTION": [
+              "pairCameraApp",
+              null
+            ]
+          },
+          "shadow": false,
+          "topLevel": true,
+          "x": 600,
+          "y": 48
+        },
+        "s5b2": {
+          "opcode": "control_if_else",
+          "next": "s5b3",
+          "parent": "s5b1",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b8"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b10"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s5b11"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b8": {
+          "opcode": "operator_not",
+          "next": null,
+          "parent": "s5b2",
+          "inputs": {
+            "OPERAND": [
+              2,
+              "s5b9"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b9": {
+          "opcode": "realtimemotioncapturefusionshell_appFeatureEnabled",
+          "next": null,
+          "parent": "s5b8",
+          "inputs": {
+            "FEATURE": [
+              1,
+              [
+                10,
+                "qrCourierPairing"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b10": {
+          "opcode": "realtimemotioncapturefusionshell_showAppError",
+          "next": null,
+          "parent": "s5b2",
+          "inputs": {
+            "MESSAGE": [
+              1,
+              [
+                10,
+                "この配布物ではQRペアリングが無効です。"
+              ]
+            ],
+            "DETAILS": [
+              1,
+              [
+                10,
+                "{\"code\":\"PAIRING_DISABLED\"}"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b11": {
+          "opcode": "data_changevariableby",
+          "next": "s5b12",
+          "parent": "s5b2",
+          "inputs": {
+            "VALUE": [
+              1,
+              [
+                4,
+                "1"
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "paired camera count",
+              "variable:paired-camera-count"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b12": {
+          "opcode": "data_setvariableto",
+          "next": "s5b13",
+          "parent": "s5b11",
+          "inputs": {
+            "VALUE": [
+              3,
+              "s5b18",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "pairing session",
+              "variable:pairing-session"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b18": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b12",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "camera-"
+              ]
+            ],
+            "STRING2": [
+              3,
+              [
+                12,
+                "paired camera count",
+                "variable:paired-camera-count"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b13": {
+          "opcode": "realtimemotioncapturefusionshell_showAppLoading",
+          "next": "s5b14",
+          "parent": "s5b12",
+          "inputs": {
+            "LABEL": [
+              1,
+              [
+                10,
+                "Offerを作っています"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b14": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_startOfferPairing",
+          "next": "s5b15",
+          "parent": "s5b13",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "LOCAL_PEER": [
+              1,
+              [
+                10,
+                "fusion"
+              ]
+            ],
+            "REMOTE_PEER": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b15": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_setPairingTimeout",
+          "next": "s5b16",
+          "parent": "s5b14",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "SECONDS": [
+              1,
+              [
+                4,
+                "600"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b16": {
+          "opcode": "realtimemotioncapturefusionshell_hideAppLoading",
+          "next": "s5b17",
+          "parent": "s5b15",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b17": {
+          "opcode": "control_if_else",
+          "next": null,
+          "parent": "s5b16",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b19"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b22"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s5b33"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b19": {
+          "opcode": "operator_not",
+          "next": null,
+          "parent": "s5b17",
+          "inputs": {
+            "OPERAND": [
+              2,
+              "s5b20"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b20": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s5b19",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s5b21",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "offer-ready"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b21": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
+          "next": null,
+          "parent": "s5b20",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b22": {
+          "opcode": "control_if_else",
+          "next": null,
+          "parent": "s5b17",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b23"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b25"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s5b26"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b23": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s5b22",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s5b24",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "cancelled"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b24": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
+          "next": null,
+          "parent": "s5b23",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b25": {
+          "opcode": "realtimemotioncapturefusionshell_showAppNotice",
+          "next": null,
+          "parent": "s5b22",
+          "inputs": {
+            "MESSAGE": [
+              1,
+              [
+                10,
+                "ペアリングをやめました。"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b26": {
+          "opcode": "realtimemotioncapturefusionshell_showAppError",
+          "next": null,
+          "parent": "s5b22",
+          "inputs": {
+            "MESSAGE": [
+              3,
+              "s5b27",
+              [
+                10,
+                ""
+              ]
+            ],
+            "DETAILS": [
+              1,
+              [
+                10,
+                "{\"code\":\"PAIRING_FAILED\"}"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b27": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b26",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b28",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "）"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b28": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b27",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b29",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s5b32",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b29": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b28",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b30",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "（"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b30": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b29",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "接続できませんでした。"
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s5b31",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b31": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingErrorMessage",
+          "next": null,
+          "parent": "s5b30",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b32": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingError",
+          "next": null,
+          "parent": "s5b28",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b33": {
+          "opcode": "data_setvariableto",
+          "next": "s5b34",
+          "parent": "s5b17",
+          "inputs": {
+            "VALUE": [
+              1,
+              [
+                4,
+                "1"
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "pairing QR part index",
+              "variable:pairing-qr-part-index"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b34": {
+          "opcode": "data_setvariableto",
+          "next": "s5b35",
+          "parent": "s5b33",
+          "inputs": {
+            "VALUE": [
+              1,
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "pairing step",
+              "variable:pairing-step"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b35": {
+          "opcode": "data_setvariableto",
+          "next": "s5b36",
+          "parent": "s5b34",
+          "inputs": {
+            "VALUE": [
+              3,
+              "s5b40",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "pairing button presses seen",
+              "variable:pairing-button-presses-seen"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b40": {
+          "opcode": "realtimemotioncapturefusionshell_qrImageButtonPresses",
+          "next": null,
+          "parent": "s5b35",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b36": {
+          "opcode": "realtimemotioncapturefusionshell_showQrImage",
+          "next": "s5b37",
+          "parent": "s5b35",
+          "inputs": {
+            "IMAGE": [
+              3,
+              "s5b41",
+              [
+                10,
+                ""
+              ]
+            ],
+            "CAPTION": [
+              3,
+              "s5b42",
+              [
+                10,
+                ""
+              ]
+            ],
+            "BUTTONS": [
+              1,
+              [
+                10,
+                "次のQR|Answerを読み取る|やめる"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b41": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingQrPartDataUri",
+          "next": null,
+          "parent": "s5b36",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "INDEX": [
+              3,
+              [
+                12,
+                "pairing QR part index",
+                "variable:pairing-qr-part-index"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b42": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b36",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b43",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                " — カメラアプリのカメラに写してください。Answerを運んできたら「Answerを読み取る」を押します"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b43": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b42",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b44",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s5b49",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b44": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b43",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b45",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                " / "
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b45": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b44",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b46",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              3,
+              [
+                12,
+                "pairing QR part index",
+                "variable:pairing-qr-part-index"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b46": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b45",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b47",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                " "
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b47": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b46",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b48",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "）"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b48": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b47",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "Offer（"
+              ]
+            ],
+            "STRING2": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b49": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingQrPartCount",
+          "next": null,
+          "parent": "s5b43",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b37": {
+          "opcode": "control_repeat_until",
+          "next": "s5b38",
+          "parent": "s5b36",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b50"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b63"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b50": {
+          "opcode": "operator_or",
+          "next": null,
+          "parent": "s5b37",
+          "inputs": {
+            "OPERAND1": [
+              2,
+              "s5b51"
+            ],
+            "OPERAND2": [
+              2,
+              "s5b52"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b51": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_isPairingConnected",
+          "next": null,
+          "parent": "s5b50",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b52": {
+          "opcode": "operator_or",
+          "next": null,
+          "parent": "s5b50",
+          "inputs": {
+            "OPERAND1": [
+              2,
+              "s5b53"
+            ],
+            "OPERAND2": [
+              2,
+              "s5b61"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b53": {
+          "opcode": "operator_or",
+          "next": null,
+          "parent": "s5b52",
+          "inputs": {
+            "OPERAND1": [
+              2,
+              "s5b54"
+            ],
+            "OPERAND2": [
+              2,
+              "s5b56"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b54": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s5b53",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s5b55",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "cancelled"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b55": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
+          "next": null,
+          "parent": "s5b54",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b56": {
+          "opcode": "operator_or",
+          "next": null,
+          "parent": "s5b53",
+          "inputs": {
+            "OPERAND1": [
+              2,
+              "s5b57"
+            ],
+            "OPERAND2": [
+              2,
+              "s5b59"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b57": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s5b56",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s5b58",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "expired"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b58": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
+          "next": null,
+          "parent": "s5b57",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b59": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s5b56",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s5b60",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "failed"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b60": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
+          "next": null,
+          "parent": "s5b59",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b61": {
+          "opcode": "operator_not",
+          "next": null,
+          "parent": "s5b52",
+          "inputs": {
+            "OPERAND": [
+              2,
+              "s5b62"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b62": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s5b61",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              [
+                12,
+                "pairing step",
+                "variable:pairing-step"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b63": {
+          "opcode": "control_if",
+          "next": "s5b64",
+          "parent": "s5b37",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b65"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b67"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b65": {
+          "opcode": "operator_gt",
+          "next": null,
+          "parent": "s5b63",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s5b66",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              3,
+              [
+                12,
+                "pairing button presses seen",
+                "variable:pairing-button-presses-seen"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b66": {
+          "opcode": "realtimemotioncapturefusionshell_qrImageButtonPresses",
+          "next": null,
+          "parent": "s5b65",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b67": {
+          "opcode": "data_setvariableto",
+          "next": "s5b68",
+          "parent": "s5b63",
+          "inputs": {
+            "VALUE": [
+              3,
+              "s5b69",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "pairing button presses seen",
+              "variable:pairing-button-presses-seen"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b69": {
+          "opcode": "realtimemotioncapturefusionshell_qrImageButtonPresses",
+          "next": null,
+          "parent": "s5b67",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b68": {
+          "opcode": "control_if_else",
+          "next": null,
+          "parent": "s5b67",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b70"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b72"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s5b86"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b70": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s5b68",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s5b71",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "次のQR"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b71": {
+          "opcode": "realtimemotioncapturefusionshell_lastQrImageButton",
+          "next": null,
+          "parent": "s5b70",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b72": {
+          "opcode": "data_setvariableto",
+          "next": "s5b73",
+          "parent": "s5b68",
+          "inputs": {
+            "VALUE": [
+              3,
+              "s5b74",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "pairing QR part index",
+              "variable:pairing-qr-part-index"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b74": {
+          "opcode": "operator_add",
+          "next": null,
+          "parent": "s5b72",
+          "inputs": {
+            "NUM1": [
+              3,
+              "s5b75",
+              [
+                10,
+                ""
+              ]
+            ],
+            "NUM2": [
+              1,
+              [
+                4,
+                "1"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b75": {
+          "opcode": "operator_mod",
+          "next": null,
+          "parent": "s5b74",
+          "inputs": {
+            "NUM1": [
+              3,
+              [
+                12,
+                "pairing QR part index",
+                "variable:pairing-qr-part-index"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "NUM2": [
+              3,
+              "s5b76",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b76": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingQrPartCount",
+          "next": null,
+          "parent": "s5b75",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b73": {
+          "opcode": "realtimemotioncapturefusionshell_showQrImage",
+          "next": null,
+          "parent": "s5b72",
+          "inputs": {
+            "IMAGE": [
+              3,
+              "s5b77",
+              [
+                10,
+                ""
+              ]
+            ],
+            "CAPTION": [
+              3,
+              "s5b78",
+              [
+                10,
+                ""
+              ]
+            ],
+            "BUTTONS": [
+              1,
+              [
+                10,
+                "次のQR|Answerを読み取る|やめる"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b77": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingQrPartDataUri",
+          "next": null,
+          "parent": "s5b73",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "INDEX": [
+              3,
+              [
+                12,
+                "pairing QR part index",
+                "variable:pairing-qr-part-index"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b78": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b73",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b79",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                " — カメラアプリのカメラに写してください。Answerを運んできたら「Answerを読み取る」を押します"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b79": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b78",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b80",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s5b85",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b80": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b79",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b81",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                " / "
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b81": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b80",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b82",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              3,
+              [
+                12,
+                "pairing QR part index",
+                "variable:pairing-qr-part-index"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b82": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b81",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b83",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                " "
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b83": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b82",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b84",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "）"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b84": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b83",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "Offer（"
+              ]
+            ],
+            "STRING2": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b85": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingQrPartCount",
+          "next": null,
+          "parent": "s5b79",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b86": {
+          "opcode": "control_if",
+          "next": "s5b87",
+          "parent": "s5b68",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b88"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b90"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b88": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s5b86",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s5b89",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "Answerを読み取る"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b89": {
+          "opcode": "realtimemotioncapturefusionshell_lastQrImageButton",
+          "next": null,
+          "parent": "s5b88",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b90": {
+          "opcode": "data_setvariableto",
+          "next": null,
+          "parent": "s5b86",
+          "inputs": {
+            "VALUE": [
+              1,
+              [
+                10,
+                "read-answer"
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "pairing step",
+              "variable:pairing-step"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b87": {
+          "opcode": "control_if",
+          "next": null,
+          "parent": "s5b86",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b91"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b93"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b91": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s5b87",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s5b92",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "やめる"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b92": {
+          "opcode": "realtimemotioncapturefusionshell_lastQrImageButton",
+          "next": null,
+          "parent": "s5b91",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b93": {
+          "opcode": "data_setvariableto",
+          "next": null,
+          "parent": "s5b87",
+          "inputs": {
+            "VALUE": [
+              1,
+              [
+                10,
+                "cancel"
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "pairing step",
+              "variable:pairing-step"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b64": {
+          "opcode": "control_wait",
+          "next": null,
+          "parent": "s5b63",
+          "inputs": {
+            "DURATION": [
+              1,
+              [
+                4,
+                "0.1"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b38": {
+          "opcode": "realtimemotioncapturefusionshell_hideQrImage",
+          "next": "s5b39",
+          "parent": "s5b37",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b39": {
+          "opcode": "control_if_else",
+          "next": null,
+          "parent": "s5b38",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b94"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b95"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s5b158"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b94": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s5b39",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              [
+                12,
+                "pairing step",
+                "variable:pairing-step"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "read-answer"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b95": {
+          "opcode": "realtimemotioncapturefusionshell_showAppNotice",
+          "next": "s5b96",
+          "parent": "s5b39",
+          "inputs": {
+            "MESSAGE": [
+              1,
+              [
+                10,
+                "スマートフォンに表示したAnswerのQRコードを、このPCのカメラに写してください。複数枚のときは全部を写します。"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b96": {
+          "opcode": "kubohiroyacamerasource_startSharedCamera",
+          "next": "s5b97",
+          "parent": "s5b95",
+          "inputs": {
+            "CAMERA_ID": [
+              1,
+              [
+                10,
+                "pairing"
+              ]
+            ],
+            "DEVICE_ID": [
+              1,
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b97": {
+          "opcode": "kubohiroyacamerasource_showCameraPreview",
+          "next": "s5b98",
+          "parent": "s5b96",
+          "inputs": {
+            "CAMERA_ID": [
+              1,
+              [
+                10,
+                "pairing"
+              ]
+            ],
+            "PREVIEW_FLIP": [
+              1,
+              [
+                10,
+                "horizontal"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b98": {
+          "opcode": "kubohiroyaturbowarptitlemenu_clearAppMenuActions",
+          "next": "s5b99",
+          "parent": "s5b97",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b99": {
+          "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
+          "next": "s5b100",
+          "parent": "s5b98",
+          "inputs": {
+            "ACTION": [
+              1,
+              [
+                10,
+                "dslFiles"
+              ]
+            ],
+            "LABEL": [
+              1,
+              [
+                10,
+                "演出ファイルを選ぶ"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b100": {
+          "opcode": "control_if",
+          "next": "s5b101",
+          "parent": "s5b99",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b108"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b109"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b108": {
+          "opcode": "realtimemotioncapturefusionshell_appFeatureEnabled",
+          "next": null,
+          "parent": "s5b100",
+          "inputs": {
+            "FEATURE": [
+              1,
+              [
+                10,
+                "qrCourierPairing"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b109": {
+          "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
+          "next": "s5b110",
+          "parent": "s5b100",
+          "inputs": {
+            "ACTION": [
+              1,
+              [
+                10,
+                "pairCameraApp"
+              ]
+            ],
+            "LABEL": [
+              1,
+              [
+                10,
+                "カメラアプリと接続する"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b110": {
+          "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
+          "next": null,
+          "parent": "s5b109",
+          "inputs": {
+            "ACTION": [
+              1,
+              [
+                10,
+                "cancelPairing"
+              ]
+            ],
+            "LABEL": [
+              1,
+              [
+                10,
+                "接続をやめる"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b101": {
+          "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
+          "next": "s5b102",
+          "parent": "s5b100",
+          "inputs": {
+            "ACTION": [
+              1,
+              [
+                10,
+                "diagnostics"
+              ]
+            ],
+            "LABEL": [
+              1,
+              [
+                10,
+                "動作状況を見る"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b102": {
+          "opcode": "kubohiroyaturbowarptitlemenu_showMenu",
+          "next": "s5b103",
+          "parent": "s5b101",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b103": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_scanPairingQrFromCamera",
+          "next": "s5b104",
+          "parent": "s5b102",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "CAMERA_ID": [
+              1,
+              [
+                10,
+                "pairing"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b104": {
+          "opcode": "kubohiroyacamerasource_hideCameraPreview",
+          "next": "s5b105",
+          "parent": "s5b103",
+          "inputs": {
+            "CAMERA_ID": [
+              1,
+              [
+                10,
+                "pairing"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b105": {
+          "opcode": "kubohiroyacamerasource_stopSharedCamera",
+          "next": "s5b106",
+          "parent": "s5b104",
+          "inputs": {
+            "CAMERA_ID": [
+              1,
+              [
+                10,
+                "pairing"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b106": {
+          "opcode": "control_wait_until",
+          "next": "s5b107",
+          "parent": "s5b105",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b111"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b111": {
+          "opcode": "operator_or",
+          "next": null,
+          "parent": "s5b106",
+          "inputs": {
+            "OPERAND1": [
+              2,
+              "s5b112"
+            ],
+            "OPERAND2": [
+              2,
+              "s5b113"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b112": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_isPairingConnected",
+          "next": null,
+          "parent": "s5b111",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b113": {
+          "opcode": "operator_or",
+          "next": null,
+          "parent": "s5b111",
+          "inputs": {
+            "OPERAND1": [
+              2,
+              "s5b114"
+            ],
+            "OPERAND2": [
+              2,
+              "s5b116"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b114": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s5b113",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s5b115",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "cancelled"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b115": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
+          "next": null,
+          "parent": "s5b114",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b116": {
+          "opcode": "operator_or",
+          "next": null,
+          "parent": "s5b113",
+          "inputs": {
+            "OPERAND1": [
+              2,
+              "s5b117"
+            ],
+            "OPERAND2": [
+              2,
+              "s5b119"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b117": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s5b116",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s5b118",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "expired"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b118": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
+          "next": null,
+          "parent": "s5b117",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b119": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s5b116",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s5b120",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "failed"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b120": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
+          "next": null,
+          "parent": "s5b119",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b107": {
+          "opcode": "control_if_else",
+          "next": null,
+          "parent": "s5b106",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b121"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b122"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s5b147"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b121": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_isPairingConnected",
+          "next": null,
+          "parent": "s5b107",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b122": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_endPairingQrDisplay",
+          "next": "s5b123",
+          "parent": "s5b107",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b123": {
+          "opcode": "realtimemotioncapturefusionshell_showAppNotice",
+          "next": "s5b124",
+          "parent": "s5b122",
+          "inputs": {
+            "MESSAGE": [
+              3,
+              "s5b128",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b128": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b123",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b129",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "）。テストメッセージを送受信しています。"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b129": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b128",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "接続しました（相手: "
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s5b130",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b130": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingRemotePeer",
+          "next": null,
+          "parent": "s5b129",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b124": {
+          "opcode": "kubohiroyawebrtc_broadcastNetworkMessage",
+          "next": "s5b125",
+          "parent": "s5b123",
+          "inputs": {
+            "MESSAGE": [
+              1,
+              [
+                10,
+                "twrmc-link-test"
+              ]
+            ],
+            "PAYLOAD": [
+              1,
+              [
+                10,
+                "{\"from\":\"fusion-app\"}"
+              ]
+            ],
+            "CHANNEL": [
+              1,
+              [
+                10,
+                "default"
+              ]
+            ],
+            "PEER": [
+              3,
+              "s5b131",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b131": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingRemotePeer",
+          "next": null,
+          "parent": "s5b124",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b125": {
+          "opcode": "data_setvariableto",
+          "next": "s5b126",
+          "parent": "s5b124",
+          "inputs": {
+            "VALUE": [
+              1,
+              [
+                4,
+                "0"
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "pairing test wait",
+              "variable:pairing-test-wait"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b126": {
+          "opcode": "control_repeat_until",
+          "next": "s5b127",
+          "parent": "s5b125",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b132"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b136"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b132": {
+          "opcode": "operator_or",
+          "next": null,
+          "parent": "s5b126",
+          "inputs": {
+            "OPERAND1": [
+              2,
+              "s5b133"
+            ],
+            "OPERAND2": [
+              2,
+              "s5b135"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b133": {
+          "opcode": "operator_gt",
+          "next": null,
+          "parent": "s5b132",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s5b134",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                4,
+                "0"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b134": {
+          "opcode": "kubohiroyawebrtc_messageCount",
+          "next": null,
+          "parent": "s5b133",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b135": {
+          "opcode": "operator_gt",
+          "next": null,
+          "parent": "s5b132",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              [
+                12,
+                "pairing test wait",
+                "variable:pairing-test-wait"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                4,
+                "100"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b136": {
+          "opcode": "control_wait",
+          "next": "s5b137",
+          "parent": "s5b126",
+          "inputs": {
+            "DURATION": [
+              1,
+              [
+                4,
+                "0.1"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b137": {
+          "opcode": "data_changevariableby",
+          "next": null,
+          "parent": "s5b136",
+          "inputs": {
+            "VALUE": [
+              1,
+              [
+                4,
+                "1"
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "pairing test wait",
+              "variable:pairing-test-wait"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b127": {
+          "opcode": "control_if_else",
+          "next": null,
+          "parent": "s5b126",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b138"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b140"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s5b146"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b138": {
+          "opcode": "operator_gt",
+          "next": null,
+          "parent": "s5b127",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s5b139",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                4,
+                "0"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b139": {
+          "opcode": "kubohiroyawebrtc_messageCount",
+          "next": null,
+          "parent": "s5b138",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b140": {
+          "opcode": "realtimemotioncapturefusionshell_showAppNotice",
+          "next": null,
+          "parent": "s5b127",
+          "inputs": {
+            "MESSAGE": [
+              3,
+              "s5b141",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b141": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b140",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b142",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s5b145",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b142": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b141",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b143",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "）。テストメッセージを送受信できました: "
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b143": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b142",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "接続しました（相手: "
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s5b144",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b144": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingRemotePeer",
+          "next": null,
+          "parent": "s5b143",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b145": {
+          "opcode": "kubohiroyawebrtc_lastMessage",
+          "next": null,
+          "parent": "s5b141",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b146": {
+          "opcode": "realtimemotioncapturefusionshell_showAppError",
+          "next": null,
+          "parent": "s5b127",
+          "inputs": {
+            "MESSAGE": [
+              1,
+              [
+                10,
+                "接続は成立しましたが、10秒以内に相手からテストメッセージが届きませんでした。相手側の画面を確認してください。"
+              ]
+            ],
+            "DETAILS": [
+              1,
+              [
+                10,
+                "{\"code\":\"PAIRING_TEST_MESSAGE_MISSING\"}"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b147": {
+          "opcode": "control_if_else",
+          "next": null,
+          "parent": "s5b107",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b148"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b150"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s5b151"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b148": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s5b147",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s5b149",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "cancelled"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b149": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
+          "next": null,
+          "parent": "s5b148",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b150": {
+          "opcode": "realtimemotioncapturefusionshell_showAppNotice",
+          "next": null,
+          "parent": "s5b147",
+          "inputs": {
+            "MESSAGE": [
+              1,
+              [
+                10,
+                "ペアリングをやめました。"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b151": {
+          "opcode": "realtimemotioncapturefusionshell_showAppError",
+          "next": null,
+          "parent": "s5b147",
+          "inputs": {
+            "MESSAGE": [
+              3,
+              "s5b152",
+              [
+                10,
+                ""
+              ]
+            ],
+            "DETAILS": [
+              1,
+              [
+                10,
+                "{\"code\":\"PAIRING_FAILED\"}"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b152": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b151",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b153",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "）"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b153": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b152",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b154",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s5b157",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b154": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b153",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b155",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "（"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b155": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b154",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "接続できませんでした。"
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s5b156",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b156": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingErrorMessage",
+          "next": null,
+          "parent": "s5b155",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b157": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingError",
+          "next": null,
+          "parent": "s5b153",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b158": {
+          "opcode": "control_if_else",
+          "next": null,
+          "parent": "s5b39",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b159"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b160"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s5b163"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b159": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s5b158",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              [
+                12,
+                "pairing step",
+                "variable:pairing-step"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "cancel"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b160": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_cancelPairing",
+          "next": "s5b161",
+          "parent": "s5b158",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b161": {
+          "opcode": "realtimemotioncapturefusionshell_hideQrImage",
+          "next": "s5b162",
+          "parent": "s5b160",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b162": {
+          "opcode": "realtimemotioncapturefusionshell_showAppNotice",
+          "next": null,
+          "parent": "s5b161",
+          "inputs": {
+            "MESSAGE": [
+              1,
+              [
+                10,
+                "ペアリングをやめました。"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b163": {
+          "opcode": "control_if_else",
+          "next": null,
+          "parent": "s5b158",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b164"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b166"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s5b167"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b164": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s5b163",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s5b165",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "cancelled"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b165": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
+          "next": null,
+          "parent": "s5b164",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b166": {
+          "opcode": "realtimemotioncapturefusionshell_showAppNotice",
+          "next": null,
+          "parent": "s5b163",
+          "inputs": {
+            "MESSAGE": [
+              1,
+              [
+                10,
+                "ペアリングをやめました。"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b167": {
+          "opcode": "realtimemotioncapturefusionshell_showAppError",
+          "next": null,
+          "parent": "s5b163",
+          "inputs": {
+            "MESSAGE": [
+              3,
+              "s5b168",
+              [
+                10,
+                ""
+              ]
+            ],
+            "DETAILS": [
+              1,
+              [
+                10,
+                "{\"code\":\"PAIRING_FAILED\"}"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b168": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b167",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b169",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "）"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b169": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b168",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b170",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s5b173",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b170": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b169",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b171",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "（"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b171": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b170",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "接続できませんでした。"
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s5b172",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b172": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingErrorMessage",
+          "next": null,
+          "parent": "s5b171",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b173": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingError",
+          "next": null,
+          "parent": "s5b169",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b3": {
+          "opcode": "kubohiroyaturbowarptitlemenu_clearAppMenuActions",
+          "next": "s5b4",
+          "parent": "s5b2",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b4": {
+          "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
+          "next": "s5b5",
+          "parent": "s5b3",
+          "inputs": {
+            "ACTION": [
+              1,
+              [
+                10,
+                "dslFiles"
+              ]
+            ],
+            "LABEL": [
+              1,
+              [
+                10,
+                "演出ファイルを選ぶ"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b5": {
+          "opcode": "control_if",
+          "next": "s5b6",
+          "parent": "s5b4",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b174"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b175"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b174": {
+          "opcode": "realtimemotioncapturefusionshell_appFeatureEnabled",
+          "next": null,
+          "parent": "s5b5",
+          "inputs": {
+            "FEATURE": [
+              1,
+              [
+                10,
+                "qrCourierPairing"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b175": {
+          "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
+          "next": "s5b176",
+          "parent": "s5b5",
+          "inputs": {
+            "ACTION": [
+              1,
+              [
+                10,
+                "pairCameraApp"
+              ]
+            ],
+            "LABEL": [
+              1,
+              [
+                10,
+                "カメラアプリと接続する"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b176": {
+          "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
+          "next": null,
+          "parent": "s5b175",
+          "inputs": {
+            "ACTION": [
+              1,
+              [
+                10,
+                "cancelPairing"
+              ]
+            ],
+            "LABEL": [
+              1,
+              [
+                10,
+                "接続をやめる"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b6": {
+          "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
+          "next": "s5b7",
+          "parent": "s5b5",
+          "inputs": {
+            "ACTION": [
+              1,
+              [
+                10,
+                "diagnostics"
+              ]
+            ],
+            "LABEL": [
+              1,
+              [
+                10,
+                "動作状況を見る"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b7": {
+          "opcode": "kubohiroyaturbowarptitlemenu_showMenu",
+          "next": null,
+          "parent": "s5b6",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s6b1": {
+          "opcode": "kubohiroyaturbowarptitlemenu_whenAppMenuActionSelected",
+          "next": "s6b2",
+          "parent": null,
+          "inputs": {},
+          "fields": {
+            "ACTION": [
+              "cancelPairing",
+              null
+            ]
+          },
+          "shadow": false,
+          "topLevel": true,
+          "x": 600,
+          "y": 1400
+        },
+        "s6b2": {
+          "opcode": "kubohiroyacamerasource_hideCameraPreview",
+          "next": "s6b3",
+          "parent": "s6b1",
+          "inputs": {
+            "CAMERA_ID": [
+              1,
+              [
+                10,
+                "pairing"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s6b3": {
+          "opcode": "kubohiroyacamerasource_stopSharedCamera",
+          "next": "s6b4",
+          "parent": "s6b2",
+          "inputs": {
+            "CAMERA_ID": [
+              1,
+              [
+                10,
+                "pairing"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s6b4": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_cancelPairing",
+          "next": "s6b5",
+          "parent": "s6b3",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s6b5": {
+          "opcode": "realtimemotioncapturefusionshell_hideQrImage",
+          "next": "s6b6",
+          "parent": "s6b4",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s6b6": {
+          "opcode": "realtimemotioncapturefusionshell_showAppNotice",
+          "next": "s6b7",
+          "parent": "s6b5",
+          "inputs": {
+            "MESSAGE": [
+              1,
+              [
+                10,
+                "ペアリングをやめました。"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s6b7": {
+          "opcode": "kubohiroyaturbowarptitlemenu_clearAppMenuActions",
+          "next": "s6b8",
+          "parent": "s6b6",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s6b8": {
+          "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
+          "next": "s6b9",
+          "parent": "s6b7",
+          "inputs": {
+            "ACTION": [
+              1,
+              [
+                10,
+                "dslFiles"
+              ]
+            ],
+            "LABEL": [
+              1,
+              [
+                10,
+                "演出ファイルを選ぶ"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s6b9": {
+          "opcode": "control_if",
+          "next": "s6b10",
+          "parent": "s6b8",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s6b12"
+            ],
+            "SUBSTACK": [
+              2,
+              "s6b13"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s6b12": {
+          "opcode": "realtimemotioncapturefusionshell_appFeatureEnabled",
+          "next": null,
+          "parent": "s6b9",
+          "inputs": {
+            "FEATURE": [
+              1,
+              [
+                10,
+                "qrCourierPairing"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s6b13": {
+          "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
+          "next": "s6b14",
+          "parent": "s6b9",
+          "inputs": {
+            "ACTION": [
+              1,
+              [
+                10,
+                "pairCameraApp"
+              ]
+            ],
+            "LABEL": [
+              1,
+              [
+                10,
+                "カメラアプリと接続する"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s6b14": {
+          "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
+          "next": null,
+          "parent": "s6b13",
+          "inputs": {
+            "ACTION": [
+              1,
+              [
+                10,
+                "cancelPairing"
+              ]
+            ],
+            "LABEL": [
+              1,
+              [
+                10,
+                "接続をやめる"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s6b10": {
+          "opcode": "kubohiroyaturbowarptitlemenu_addAppMenuAction",
+          "next": "s6b11",
+          "parent": "s6b9",
+          "inputs": {
+            "ACTION": [
+              1,
+              [
+                10,
+                "diagnostics"
+              ]
+            ],
+            "LABEL": [
+              1,
+              [
+                10,
+                "動作状況を見る"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s6b11": {
+          "opcode": "kubohiroyaturbowarptitlemenu_showMenu",
+          "next": null,
+          "parent": "s6b10",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
         }
       },
       "comments": {},
@@ -293,7 +4490,10 @@
   "extensions": [
     "realtimemotioncapturefusionshell",
     "kubohiroyaturbowarptitlemenu",
+    "kubohiroyacamerasource",
+    "kubohiroyajsqr",
     "kubohiroyawebrtc",
+    "kubohiroyawebrtcqrcodepairing",
     "kubohiroyayamljson",
     "kubohiroyarealtimemotioncapture",
     "kubohiroyaassetmanager",
@@ -303,7 +4503,10 @@
   "extensionURLs": {
     "realtimemotioncapturefusionshell": "embedded-extension:extensions/realtimemotioncapturefusionshell.js",
     "kubohiroyaturbowarptitlemenu": "embedded-extension:extensions/kubohiroyaturbowarptitlemenu.js",
+    "kubohiroyacamerasource": "embedded-extension:extensions/kubohiroyacamerasource.js",
+    "kubohiroyajsqr": "embedded-extension:extensions/kubohiroyajsqr.js",
     "kubohiroyawebrtc": "embedded-extension:extensions/kubohiroyawebrtc.js",
+    "kubohiroyawebrtcqrcodepairing": "embedded-extension:extensions/kubohiroyawebrtcqrcodepairing.js",
     "kubohiroyayamljson": "embedded-extension:extensions/kubohiroyayamljson.js",
     "kubohiroyarealtimemotioncapture": "embedded-extension:extensions/kubohiroyarealtimemotioncapture.js",
     "kubohiroyaassetmanager": "embedded-extension:extensions/kubohiroyaassetmanager.js",

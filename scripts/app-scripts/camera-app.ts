@@ -28,6 +28,12 @@ import {
   whenBroadcastReceived,
   whenFlagClicked
 } from '../../packages/sb3-script/src/standard.ts';
+import {
+  pairingButtons,
+  pairingReferences,
+  PairingSteps,
+  pairingVariables
+} from './pairing.ts';
 
 const shell = 'realtimemotioncapturecamerashell';
 const titleMenu = 'kubohiroyaturbowarptitlemenu';
@@ -37,9 +43,13 @@ const action = {
   chooseCamera: 'chooseCamera',
   openLensCalibration: 'openLensCalibration',
   loadLensCalibrationFile: 'loadLensCalibrationFile',
+  pairWithFusion: 'pairWithFusion',
+  cancelPairing: 'cancelPairing',
   stopCamera: 'stopCamera',
   diagnostics: 'diagnostics'
 } as const;
+
+const pairingRefs = pairingReferences();
 
 const cameraId = 'pose';
 const cameraShouldBeRunning = namedReference(
@@ -95,7 +105,8 @@ export const cameraAppStageData = {
     [lensCalibrationReady.id]: [lensCalibrationReady.name, 'false'],
     [lensCalibrationDeviceId.id]: [lensCalibrationDeviceId.name, ''],
     [storedProfilesGenerationBefore.id]: [storedProfilesGenerationBefore.name, 0],
-    [lensProfileRejection.id]: [lensProfileRejection.name, '']
+    [lensProfileRejection.id]: [lensProfileRejection.name, ''],
+    ...pairingVariables(pairingRefs, 'fusion-link')
   },
   broadcasts: {
     [lensCalibrationRequested.id]: lensCalibrationRequested.name,
@@ -117,6 +128,8 @@ const shellBlock = (opcode: string, inputs: Readonly<Record<string, InputValue>>
   block(`${shell}_${opcode}`, inputs);
 const shellValue = (opcode: string) => reporter(shellBlock(opcode));
 
+const pairing = new PairingSteps(shell, pairingRefs);
+
 const baseMenuActions = (chooseCameraLabel: string): BlockNode[] => [
   block(`${titleMenu}_addAppMenuAction`, {
     ACTION: text(action.chooseCamera),
@@ -130,6 +143,16 @@ const baseMenuActions = (chooseCameraLabel: string): BlockNode[] => [
     ACTION: text(action.loadLensCalibrationFile),
     LABEL: text('レンズ校正ファイルを読む')
   }),
+  ifThen(pairing.featureEnabled(), [
+    block(`${titleMenu}_addAppMenuAction`, {
+      ACTION: text(action.pairWithFusion),
+      LABEL: text('統合アプリと接続する')
+    }),
+    block(`${titleMenu}_addAppMenuAction`, {
+      ACTION: text(action.cancelPairing),
+      LABEL: text('接続をやめる')
+    })
+  ]),
   block(`${titleMenu}_addAppMenuAction`, {
     ACTION: text(action.stopCamera),
     LABEL: text('カメラを止める')
@@ -544,6 +567,81 @@ export const cameraAppScripts: readonly Script[] = [
         )
       ]
     ),
+    block(`${titleMenu}_showMenu`)
+  ]),
+
+  /**
+   * M-07, camera side: read the fusion app's offer and answer it.
+   *
+   * The offer is read with the camera already chosen for pose, through the same shared camera, so
+   * the operator aims it at the projection once. The answer is shown full screen until the fusion
+   * app connects; the courier photographs each part with a phone and carries it there.
+   */
+  script({x: 2000, y: 48}, [
+    block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.pairWithFusion}),
+    block(`${titleMenu}_clearAppMenuActions`),
+    broadcastMessageAndWait(menuActionsRequested),
+    ifElse(
+      not(pairing.featureEnabled()),
+      [pairing.error(text('この配布物ではQRペアリングが無効です。'), 'PAIRING_DISABLED')],
+      [
+        ifElse(
+          not(cameraBlock('isCameraRunning', {CAMERA_ID: text(cameraId)})),
+          [
+            pairing.error(
+              text('先に「カメラを選ぶ」で、統合アプリの投影を写すカメラを選んでください。'),
+              'CAMERA_NOT_RUNNING'
+            )
+          ],
+          [
+            pairing.pairing('cancelPairing'),
+            pairing.pairing('startAnswerPairing', {LOCAL_PEER: text('')}),
+            pairing.pairing('setPairingTimeout', {SECONDS: number(600)}),
+            pairing.notice(
+              text(
+                '統合アプリが投影しているOfferのQRコードを、このカメラに写してください。複数枚のときは全部を写します。'
+              )
+            ),
+            block(`${titleMenu}_showMenu`),
+            pairing.pairing('scanPairingQrFromCamera', {CAMERA_ID: text(cameraId)}),
+            waitUntil(
+              or(pairing.phaseIs('answer-ready'), or(pairing.ended(), pairing.pairing('isPairingConnected')))
+            ),
+            ifElse(
+              pairing.ended(),
+              [pairing.reportEnded()],
+              [
+                ...pairing.presentParts(
+                  'Answer',
+                  'スマートフォンで撮影して、統合アプリへ運んでください',
+                  [pairingButtons.next, pairingButtons.cancel],
+                  pairing.pairing('isPairingConnected')
+                ),
+                ifElse(
+                  pairing.pairing('isPairingConnected'),
+                  [pairing.pairing('endPairingQrDisplay'), ...pairing.exchangeTestMessage('camera-app')],
+                  [
+                    ifElse(
+                      equals(variable(pairingRefs.step), text('cancel')),
+                      pairing.cancel(),
+                      [pairing.reportEnded()]
+                    )
+                  ]
+                )
+              ]
+            )
+          ]
+        )
+      ]
+    ),
+    block(`${titleMenu}_showMenu`)
+  ]),
+
+  script({x: 2000, y: 1400}, [
+    block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.cancelPairing}),
+    block(`${titleMenu}_clearAppMenuActions`),
+    broadcastMessageAndWait(menuActionsRequested),
+    ...pairing.cancel(),
     block(`${titleMenu}_showMenu`)
   ]),
 
