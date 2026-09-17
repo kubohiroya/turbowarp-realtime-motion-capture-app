@@ -16,9 +16,12 @@
     "skipLibCheck": true,
     "types": [
       "node"
-    ]
+    ],
+    "allowImportingTsExtensions": true,
+    "noEmit": true
   },
   "include": [
+    "scripts",
     "src",
     "tests",
     "vite.config.ts"

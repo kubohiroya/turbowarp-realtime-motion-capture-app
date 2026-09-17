@@ -1,9 +1,9 @@
 import {describe, expect, it} from 'vitest';
 
-import type {ServicePort} from '../src/client.js';
-import {Pose3dService} from '../src/service.js';
-import {installScratchStub} from './scratch-stub.js';
-import {frame, identity, model} from './fixtures.js';
+import type {ServicePort} from '../src/client.ts';
+import {Pose3dService} from '../src/service.ts';
+import {installScratchStub} from './scratch-stub.ts';
+import {frame, identity, model} from './fixtures.ts';
 
 installScratchStub();
 const {Pose3dServiceExtension} = await import('../src/extension.js');

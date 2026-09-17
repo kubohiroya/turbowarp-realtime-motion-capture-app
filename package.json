@@ -57,6 +57,7 @@
     "check:pins": "node --experimental-strip-types scripts/pin-embedded-extensions.ts",
     "update:readiness": "node --experimental-strip-types scripts/update-extension-readiness.ts",
     "check:bundle-order": "node --experimental-strip-types scripts/check-bundle-order.ts",
+    "pose3d:eval": "node --experimental-strip-types packages/pose-3d-service/scripts/pose-3d-eval.ts",
     "check:packages": "pnpm --filter \"./packages/*\" --if-present run check",
     "snapshot": "node --experimental-strip-types scripts/release-snapshot.ts --write",
     "build:player": "node --experimental-strip-types scripts/build-player.ts",

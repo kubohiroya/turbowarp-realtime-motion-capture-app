@@ -8,9 +8,9 @@ import {
   validatePoseFrame3D,
   validateResponse,
   type PoseFrame3DV2
-} from '../src/contracts.js';
-import {Pose3dService} from '../src/service.js';
-import {configuration, frame} from './fixtures.js';
+} from '../src/contracts.ts';
+import {Pose3dService} from '../src/service.ts';
+import {configuration, frame} from './fixtures.ts';
 
 function pose3d(): PoseFrame3DV2 {
   const service = new Pose3dService();
