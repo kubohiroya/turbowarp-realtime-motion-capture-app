@@ -51,7 +51,8 @@ frame alignment、人物対応付け、triangulation、3D solveは高位拡張`t
 | QRペアリング（fusion appがOfferを投影、camera appがAnswerを表示、接続後にテストメッセージを送受信） | 利用可能（実機確認前。[QRペアリング](docs/qr-pairing.md)） |
 | MoveNet姿勢推定と送信（camera appがWebGPU MoveNetで2D姿勢を推定し、`PoseFrame2D`をlatest-data channelでfusion appへ送る） | 利用可能（実機確認前。[姿勢推定と送信](docs/pose-stream.md)） |
 | 空間と時刻の校正（fusion appが時刻パターンを投影し、各camera appが時刻対応と四隅を測定、fusion appが配置をsolveしてREADYを判定） | 利用可能（実機確認前。[空間と時刻の校正](docs/space-time-calibration.md)） |
-| 3D統合、アバター演出のblockスクリプト | 未実装 |
+| 3Dサービス連携の段階1（interface v1、stubサービス、fusion appの転送・検証・状況表示。フラグ`external3dServiceV1`は既定OFF） | 利用可能（stubのみ。[3Dサービス](docs/pose-3d-service.md)、#34） |
+| 3D推定の本体、アバター演出のblockスクリプト | 未実装 |
 | 設定・演出DSLの永続化 | 方針確定・未実装（[永続化設計](docs/persistence.md)） |
 | 単体バイナリでのローカルホスト配布 | 設計中（[ローカルホスト](docs/local-host.md)） |
 | 会場機材でのE2E検証とv0.1.0配布 | 未実施 |

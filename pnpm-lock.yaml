@@ -125,6 +125,24 @@ importers:
         specifier: 5.0.0
         version: 5.0.0(@types/node@24.13.3)(vite@8.2.2(@types/node@24.13.3)(yaml@2.9.1))
 
+  packages/pose-3d-service:
+    devDependencies:
+      '@kubohiroya/vite-plugin-turbowarp-extension':
+        specifier: 0.5.0
+        version: 0.5.0(vite@8.2.2(@types/node@24.13.3)(yaml@2.9.1))
+      '@types/node':
+        specifier: 24.13.3
+        version: 24.13.3
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vite:
+        specifier: 8.2.2
+        version: 8.2.2(@types/node@24.13.3)(yaml@2.9.1)
+      vitest:
+        specifier: 5.0.0
+        version: 5.0.0(@types/node@24.13.3)(vite@8.2.2(@types/node@24.13.3)(yaml@2.9.1))
+
   packages/sb3-script:
     devDependencies:
       '@types/node':

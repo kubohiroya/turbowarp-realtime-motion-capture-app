@@ -38,7 +38,15 @@ export interface AppShellAppConfig {
    * placement. The shell writes that extension's startup flags from this, before it is evaluated.
    */
   readonly timeSpaceSync?: boolean;
+  /**
+   * Application flags, fixed at startup and off unless listed. Unlike `featureFlags` they are not
+   * handed to any extension: they only decide which paths this application's own scripts offer.
+   */
+  readonly appFlags?: readonly AppFlagName[];
 }
+
+export const appFlagNames = ['external3dServiceV1'] as const;
+export type AppFlagName = (typeof appFlagNames)[number];
 
 const idPattern = /^[a-z0-9]+$/;
 
