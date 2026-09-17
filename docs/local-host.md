@@ -455,3 +455,21 @@ Webからダウンロードさせる段階になったら、Apple Developer Prog
   作らず、必要になった時点でlocal-preview側へ提案します。
 - サーバ本体（route定義、watcherの配線、ライフサイクル）は本リポジトリが書きます。local-previewは
   ライブラリであり、CLIを提供しません。
+
+## 録画の保管（/recordings）
+
+ポーズの録画（`twrmc/pose-3d-session` v1）を、会場のPCのディレクトリに置きます。アプリごとにポートが
+違ってもディレクトリは同じなので、camera appで録った録画をfusion appで再生できます。
+
+| メソッド | 内容 |
+|---|---|
+| `GET /recordings` | 一覧（名前、バイト数、更新時刻） |
+| `GET /recordings?name=<名前>` | 読み出し |
+| `PUT /recordings?name=<名前>` | 書き込み（JSONでない本文は拒否、64 MBまで） |
+| `DELETE /recordings?name=<名前>` | 削除 |
+
+名前は英数字と`.`・`-`・`_`で、`.json`で終わるものだけを受け付けます。区切り文字も先頭のドットも
+受け付けないので、ディレクトリの外は指せません。ほかの経路と同じくトークンが要ります。
+
+置き場所は`TWRMC_RECORDINGS`、既定はホームの`multiview-pose-recordings`です。
+

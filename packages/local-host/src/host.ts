@@ -7,6 +7,7 @@ import {
   type StableSourceWatcher
 } from '@kubohiroya/turbowarp-local-preview';
 
+import {createRecordingsRoute, recordingsPath} from './recordings.ts';
 import {
   acquireRunLock,
   findPortHolder,
@@ -44,6 +45,11 @@ export interface LocalHostOptions {
   /** The packaged lens calibration app. Absent when the build carried none; the route then 404s. */
   readonly lensCalibrationPlayer?: {readonly path: string} | {readonly html: string};
   readonly dsl?: DslSource;
+  /**
+   * Where pose recordings live on this PC. Every application's host reads the same directory, so a
+   * recording made in one can be replayed in another. Absent leaves the route out.
+   */
+  readonly recordingsDirectory?: string;
   readonly onError?: (error: unknown) => void;
   /** Test seam for process and port liveness. */
   readonly runLock?: Omit<RunLockEnvironment, 'directory'>;
@@ -158,7 +164,10 @@ async function serve(
       [playerPath]: () => htmlResponse(html),
       ...(lensCalibrationHtml === null
         ? {}
-        : {[lensCalibrationPath]: () => htmlResponse(lensCalibrationHtml)})
+        : {[lensCalibrationPath]: () => htmlResponse(lensCalibrationHtml)}),
+      ...(options.recordingsDirectory === undefined
+        ? {}
+        : {[recordingsPath]: createRecordingsRoute({directory: options.recordingsDirectory})})
     },
     /**
      * The host does not flush the event stream until it writes, so a page that connects before any

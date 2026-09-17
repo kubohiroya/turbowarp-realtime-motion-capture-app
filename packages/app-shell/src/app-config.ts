@@ -50,7 +50,7 @@ export interface AppShellAppConfig {
   readonly cameraGrid?: boolean;
 }
 
-export const appFlagNames = ['external3dServiceV1'] as const;
+export const appFlagNames = ['external3dServiceV1', 'debugCameraReplayV1'] as const;
 export type AppFlagName = (typeof appFlagNames)[number];
 
 const idPattern = /^[a-z0-9]+$/;
