@@ -181,7 +181,6 @@ export function fusionPose3dScripts(options: {
     reporter(block(`${shell}_latestDataPeers`, { CHANNEL: channel() }));
   const indexText = () => reporter(join(variable(r.index), text('')));
   const status = () => serviceValue('serviceStatusJson');
-  const payload = () => json(variable(r.item), 'payload');
 
   /** Walks the cameras that have sent poses, in name order. */
   const forEachSendingCamera = (body: BlockNode[]): BlockNode[] => [
