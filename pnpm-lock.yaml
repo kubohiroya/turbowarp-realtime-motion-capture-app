@@ -95,6 +95,9 @@ importers:
       '@kubohiroya/turbowarp-realtime-motion-capture':
         specifier: 0.3.0
         version: 0.3.0(@kubohiroya/turbowarp-aframe@0.3.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.13.0))(@kubohiroya/turbowarp-webrtc@0.4.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))
+      '@kubohiroya/turbowarp-time-space-sync':
+        specifier: 0.2.0
+        version: 0.2.0
       '@kubohiroya/turbowarp-title-menu':
         specifier: 0.2.2
         version: 0.2.2

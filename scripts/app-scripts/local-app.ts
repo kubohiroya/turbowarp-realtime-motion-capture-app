@@ -11,15 +11,19 @@ import {
   type Script
 } from '../../packages/sb3-script/src/blocks.ts';
 import {
+  addToList,
   and,
   broadcastMessageAndWait,
   changeVariable,
+  deleteAllOfList,
   equals,
   greaterThan,
   ifElse,
   ifThen,
+  itemOfList,
   join,
   label,
+  lengthOfList,
   modulo,
   add,
   not,
@@ -31,6 +35,17 @@ import {
   whenBroadcastReceived,
   whenFlagClicked
 } from '../../packages/sb3-script/src/standard.ts';
+import {
+  fusionSyncLists,
+  fusionSyncReferences,
+  fusionSyncVariables,
+  measureSeconds,
+  measureSpaceTimeSteps,
+  patternProfileId,
+  referenceId,
+  spaceTimeSolveSteps,
+  timeSpaceSync
+} from './space-time.ts';
 
 /**
  * The standalone app (#36): run several USB cameras on one PC, measure them, and calibrate each lens.
@@ -49,6 +64,14 @@ import {
  * frame carries the capture time Camera Source reports, and the app shows what a turn costs: the
  * inference time and rate per camera, the delay from capture to result, the spread of the cameras'
  * capture times, and how long a round of every camera takes.
+ *
+ * Stage 4: time correspondence and placement are calibrated in this page. The page shows the time
+ * pattern — on the monitor or projector the cameras look at — and each camera is measured against it in
+ * turn: the pattern's decoded time gives how much later that camera stamps a frame than the pattern was
+ * drawn, and the pattern's four corners give a placement observation. The operator enters the corners'
+ * measured positions, the cameras are placed, and the page says READY only when every figure clears
+ * the same thresholds as the camera and fusion apps (M-08). The measurement and the solve are the
+ * steps those apps use.
  */
 
 const shell = 'realtimemotioncapturelocalshell';
@@ -77,7 +100,8 @@ const action = {
   stopCameras: 'stopCameras',
   diagnostics: 'diagnostics',
   startPose: 'startPose',
-  stopPose: 'stopPose'
+  stopPose: 'stopPose',
+  calibrateSpaceTime: 'calibrateSpaceTime'
 } as const;
 const deviceAction = (index: number) => `addDevice${index}`;
 const calibrateLensAction = (index: number) => `calibrateLens${index}`;
@@ -101,6 +125,9 @@ const poseRunning = namedReference('pose running', 'variable:pose-running');
 const poseStopped = namedReference('pose stopped', 'variable:pose-stopped');
 const poseCalibration = namedReference('pose calibration ID', 'variable:pose-calibration-id');
 const poseWindowStart = namedReference('pose window start', 'variable:pose-window-start');
+const spaceTime = fusionSyncReferences();
+const spaceTimeMeasurement = namedReference('space-time measurement', 'variable:space-time-measurement');
+const spaceTimeDelays = namedReference('space-time delays', 'variable:space-time-delays');
 const profilesGenerationBefore = namedReference(
   'stored profiles generation before',
   'variable:stored-profiles-generation-before'
@@ -125,8 +152,12 @@ export const localAppStageData = {
     [poseRunning.id]: [poseRunning.name, 'false'],
     [poseStopped.id]: [poseStopped.name, 'true'],
     [poseCalibration.id]: [poseCalibration.name, ''],
-    [poseWindowStart.id]: [poseWindowStart.name, 0]
+    [poseWindowStart.id]: [poseWindowStart.name, 0],
+    ...fusionSyncVariables(spaceTime),
+    [spaceTimeMeasurement.id]: [spaceTimeMeasurement.name, ''],
+    [spaceTimeDelays.id]: [spaceTimeDelays.name, '']
   },
+  lists: fusionSyncLists(spaceTime),
   broadcasts: {
     [menuActionsRequested.id]: menuActionsRequested.name,
     [camerasChanged.id]: camerasChanged.name
@@ -254,7 +285,8 @@ const baseMenu = (): BlockNode[] => [
   addMenu(action.stopCameras, text('すべてのカメラを止める')),
   addMenu(action.diagnostics, text('動作状況を見る')),
   addMenu(action.startPose, text('姿勢推定を始める')),
-  addMenu(action.stopPose, text('姿勢推定を止める'))
+  addMenu(action.stopPose, text('姿勢推定を止める')),
+  addMenu(action.calibrateSpaceTime, text('空間と時刻を校正する'))
 ];
 
 const poseValue = (opcode: string): InputValue => reporter(block(`${motionCapture}_${opcode}`, {CAMERA_ID: slotId()}));
@@ -555,6 +587,156 @@ export const localAppScripts: readonly Script[] = [
                 block(`${motionCapture}_stopAllPoseCameras`),
                 ...forEachBoundSlot([shellBlock('showGridPose', {FRAME_JSON: text(''), CAMERA_ID: slotId()})]),
                 setVariable(poseStopped, text('true'))
+              ]
+            )
+          ]
+        )
+      ]
+    ),
+    block(`${titleMenu}_showMenu`)
+  ]),
+
+  /**
+   * Shows the time pattern in this page and measures every running camera against it in turn, then
+   * solves placement and judges READY.
+   *
+   * Only cameras whose lens calibration fits them as they run and was solved on their device are
+   * measured; a camera without one is named and nothing is shown. The pattern flickers, so the operator
+   * confirms before it appears. It stays up until the last camera has been measured.
+   */
+  script({x: 3200, y: 48}, [
+    block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.calibrateSpaceTime}),
+    ...stopPoseAndWait(),
+    setVariable(spaceTime.ready, text('false')),
+    setVariable(failures, text('')),
+    ...forEachBoundSlot([
+      ifThen(slotRunning(), [
+        ifThen(
+          not(
+            and(
+              equals(slotValue('cameraProfileCompatibility'), text('compatible')),
+              sourceBlock('cameraProfileOnDevice', {CAMERA_ID: slotId()})
+            )
+          ),
+          [setVariable(failures, concatenate(variable(failures), slotId(), text(' / ')))]
+        )
+      ])
+    ]),
+    ifElse(
+      equals(shellValue('gridCamerasSummary'), text('')),
+      [error(text('動いているカメラがありません。先にカメラを開始してください。'), 'SPACE_TIME_NO_CAMERAS')],
+      [
+        ifElse(
+          not(equals(variable(failures), text(''))),
+          [
+            error(
+              concatenate(
+                text('レンズ校正が済んでいないカメラがあります: '),
+                variable(failures),
+                text('先に「cam-n のレンズを校正する」で校正してください。')
+              ),
+              'SPACE_TIME_LENS_UNCALIBRATED'
+            )
+          ],
+          [
+            shellBlock('askConfirmation', {
+              MESSAGE: text(
+                'これからこのページに時刻パターンを全画面で表示し、カメラを1台ずつ測ります。パターンは毎秒何十回も明滅します。光過敏の方が見ないよう知らせてから表示してください。すべてのカメラから、パターン全体が正立して見えるようにしてください。表示中はEscキーで消せます。'
+              ),
+              CONFIRM: text('表示する'),
+              CANCEL: text('やめる')
+            }),
+            ifElse(
+              not(shellBlock('confirmationAccepted')),
+              [notice(text('空間と時刻の校正をやめました。'))],
+              [
+                block(`${timeSpaceSync}_acknowledgePatternFlashing`),
+                block(`${timeSpaceSync}_setTimePatternProfile`, {PROFILE_ID: text(patternProfileId)}),
+                block(`${timeSpaceSync}_showTimePattern`),
+                setVariable(spaceTime.waited, number(0)),
+                repeatUntil(
+                  or(
+                    block(`${timeSpaceSync}_timePatternStable`),
+                    greaterThan(variable(spaceTime.waited), number(50))
+                  ),
+                  [block('control_wait', {DURATION: number(0.1)}), changeVariable(spaceTime.waited, 1)]
+                ),
+                deleteAllOfList(spaceTime.results),
+                setVariable(spaceTime.expected, number(0)),
+                ...forEachBoundSlot([
+                  ifThen(and(slotRunning(), block(`${timeSpaceSync}_timePatternShown`)), [
+                    changeVariable(spaceTime.expected, 1),
+                    notice(concatenate(slotId(), text('で時刻パターンを測っています。カメラを動かさないでください。'))),
+                    ...measureSpaceTimeSteps({
+                      shell,
+                      cameraId: slotId(),
+                      referenceId: text(referenceId),
+                      refreshUs: reporter(block(`${timeSpaceSync}_timePatternRefreshUs`)),
+                      measureSeconds: number(measureSeconds),
+                      result: spaceTimeMeasurement
+                    }),
+                    addToList(
+                      shellValue('jsonWithJsonField', {
+                        JSON: shellValue('jsonWithTextField', {JSON: text('{}'), KEY: text('peer'), VALUE: slotId()}),
+                        KEY: text('payload'),
+                        VALUE: variable(spaceTimeMeasurement)
+                      }),
+                      spaceTime.results
+                    )
+                  ])
+                ]),
+                block(`${timeSpaceSync}_hideTimePattern`),
+                ...spaceTimeSolveSteps(shell, spaceTime),
+                ifThen(equals(variable(spaceTime.ready), text('true')), [
+                  setVariable(spaceTimeDelays, text('')),
+                  setVariable(spaceTime.index, number(0)),
+                  repeat(reporter(lengthOfList(spaceTime.results)), [
+                    changeVariable(spaceTime.index, 1),
+                    setVariable(spaceTime.item, reporter(itemOfList(variable(spaceTime.index), spaceTime.results))),
+                    setVariable(
+                      spaceTimeDelays,
+                      concatenate(
+                        variable(spaceTimeDelays),
+                        shellValue('jsonValueAt', {JSON: variable(spaceTime.item), PATH: text('peer')}),
+                        text(' '),
+                        reporter(
+                          block('operator_round', {
+                            NUM: reporter(
+                              block('operator_divide', {
+                                NUM1: shellValue('jsonValueAt', {
+                                  JSON: variable(spaceTime.item),
+                                  PATH: text('payload.correspondence.displayToTimestampDelayUs')
+                                }),
+                                NUM2: number(1000)
+                              })
+                            )
+                          })
+                        ),
+                        text('ms（±'),
+                        reporter(
+                          block('operator_round', {
+                            NUM: reporter(
+                              block('operator_divide', {
+                                NUM1: shellValue('jsonValueAt', {
+                                  JSON: variable(spaceTime.item),
+                                  PATH: text('payload.correspondence.uncertaintyUs')
+                                }),
+                                NUM2: number(1000)
+                              })
+                            )
+                          })
+                        ),
+                        text('ms） / ')
+                      )
+                    )
+                  ]),
+                  notice(
+                    concatenate(
+                      text('READY: 空間と時刻の校正が品質基準を満たしました。表示から各カメラの撮影時刻までの遅れ: '),
+                      variable(spaceTimeDelays)
+                    )
+                  )
+                ])
               ]
             )
           ]

@@ -144,6 +144,93 @@ export const cameraSyncRoute = (references: CameraSyncReferences, message: Named
 });
 
 /**
+ * Measures one camera against the time pattern on show, and leaves the outcome in `result`.
+ *
+ * The outcome is `{status: "measured", correspondence, observation, cornerSpreadPx, cameraModel,
+ * decodeRate}` or `{status: "failed", error}`. The decoder is stopped afterwards either way, so the
+ * next camera can be measured with the same pattern still up. Shared by the camera app, which measures
+ * its one camera on the fusion app's request, and the local app, which measures each of its cameras
+ * in turn.
+ */
+export function measureSpaceTimeSteps(options: {
+  readonly shell: string;
+  readonly cameraId: InputValue;
+  readonly referenceId: InputValue;
+  readonly refreshUs: InputValue;
+  readonly measureSeconds: InputValue;
+  readonly result: NamedReference;
+}): BlockNode[] {
+  const json = new Json(options.shell);
+  const result = variable(options.result);
+  const failWith = (code: InputValue): BlockNode =>
+    setVariable(
+      options.result,
+      json.withText(json.withText(text('{}'), 'status', text('failed')), 'error', code)
+    );
+  return [
+    tss('stopOpticalTimeDecoder'),
+    tss('setTimePatternProfile', {PROFILE_ID: text(patternProfileId)}),
+    tss('startOpticalTimeDecoder', {
+      CAMERA_ID: options.cameraId,
+      REFERENCE_ID: options.referenceId,
+      SECONDS: reporter(
+        block('operator_add', {
+          NUM1: tssValue('opticalTimeMinimumCalibrationSeconds'),
+          NUM2: number(1)
+        })
+      ),
+      REFRESH_US: options.refreshUs
+    }),
+    ifElse(
+      not(equals(tssValue('opticalTimeDecoderState'), text('ready'))),
+      [failWith(concatenate(text('decoder:'), tssValue('opticalTimeDecoderError')))],
+      [
+        tss('measurePatternCorners', {SECONDS: options.measureSeconds}),
+        tss('estimateTimeCorrespondence'),
+        ifElse(
+          not(equals(tssValue('patternCornerError'), text(''))),
+          [failWith(concatenate(text('corners:'), tssValue('patternCornerError')))],
+          [
+            ifElse(
+              not(equals(tssValue('timeCorrespondenceError'), text(''))),
+              [failWith(concatenate(text('time:'), tssValue('timeCorrespondenceError')))],
+              [
+                setVariable(options.result, json.withText(text('{}'), 'status', text('measured'))),
+                setVariable(
+                  options.result,
+                  json.withJson(result, 'correspondence', tssValue('timeCorrespondenceJson'))
+                ),
+                setVariable(
+                  options.result,
+                  json.withJson(result, 'observation', tssValue('patternCornerObservationJson'))
+                ),
+                setVariable(
+                  options.result,
+                  json.withJson(result, 'cornerSpreadPx', tssValue('patternCornerSpreadPx'))
+                ),
+                setVariable(
+                  options.result,
+                  json.withJson(
+                    result,
+                    'cameraModel',
+                    tssValue('cameraModelJson', {CAMERA_ID: options.cameraId})
+                  )
+                ),
+                setVariable(
+                  options.result,
+                  json.withJson(result, 'decodeRate', tssValue('opticalTimeDecodeRate'))
+                )
+              ]
+            )
+          ]
+        )
+      ]
+    ),
+    tss('stopOpticalTimeDecoder')
+  ];
+}
+
+/**
  * Measures on request and always answers.
  *
  * A camera that cannot measure still replies, with the reason, so the fusion app can name the camera
@@ -173,65 +260,14 @@ export function cameraSyncSteps(options: {
           shell,
           text('統合アプリの投影パターンで、時刻と配置を校正しています。カメラを動かさないでください。')
         ),
-        tss('stopOpticalTimeDecoder'),
-        tss('setTimePatternProfile', {PROFILE_ID: text(patternProfileId)}),
-        tss('startOpticalTimeDecoder', {
-          CAMERA_ID: text(cameraId),
-          REFERENCE_ID: json.at(request, 'payload.referenceId'),
-          SECONDS: reporter(
-            block('operator_add', {
-              NUM1: tssValue('opticalTimeMinimumCalibrationSeconds'),
-              NUM2: number(1)
-            })
-          ),
-          REFRESH_US: json.at(request, 'payload.refreshUs')
-        }),
-        ifElse(
-          not(equals(tssValue('opticalTimeDecoderState'), text('ready'))),
-          [failWith(concatenate(text('decoder:'), tssValue('opticalTimeDecoderError')))],
-          [
-            tss('measurePatternCorners', {SECONDS: json.at(request, 'payload.measureSeconds')}),
-            tss('estimateTimeCorrespondence'),
-            ifElse(
-              not(equals(tssValue('patternCornerError'), text(''))),
-              [failWith(concatenate(text('corners:'), tssValue('patternCornerError')))],
-              [
-                ifElse(
-                  not(equals(tssValue('timeCorrespondenceError'), text(''))),
-                  [failWith(concatenate(text('time:'), tssValue('timeCorrespondenceError')))],
-                  [
-                    setVariable(references.result, json.withText(text('{}'), 'status', text('measured'))),
-                    setVariable(
-                      references.result,
-                      json.withJson(result, 'correspondence', tssValue('timeCorrespondenceJson'))
-                    ),
-                    setVariable(
-                      references.result,
-                      json.withJson(result, 'observation', tssValue('patternCornerObservationJson'))
-                    ),
-                    setVariable(
-                      references.result,
-                      json.withJson(result, 'cornerSpreadPx', tssValue('patternCornerSpreadPx'))
-                    ),
-                    setVariable(
-                      references.result,
-                      json.withJson(
-                        result,
-                        'cameraModel',
-                        tssValue('cameraModelJson', {CAMERA_ID: text(cameraId)})
-                      )
-                    ),
-                    setVariable(
-                      references.result,
-                      json.withJson(result, 'decodeRate', tssValue('opticalTimeDecodeRate'))
-                    )
-                  ]
-                )
-              ]
-            )
-          ]
-        ),
-        tss('stopOpticalTimeDecoder')
+        ...measureSpaceTimeSteps({
+          shell,
+          cameraId: text(cameraId),
+          referenceId: json.at(request, 'payload.referenceId'),
+          refreshUs: json.at(request, 'payload.refreshUs'),
+          measureSeconds: json.at(request, 'payload.measureSeconds'),
+          result: references.result
+        })
       ]
     ),
     block(`${webrtc}_broadcastNetworkMessage`, {
@@ -398,6 +434,32 @@ export function fusionSyncSteps(options: {
       ]
     )
   ];
+}
+
+/**
+ * Solves placement from the measurements in `results` and says READY or why not.
+ *
+ * Each item is `{peer, payload}`, where `payload` is what `measureSpaceTimeSteps` produced for the
+ * camera named `peer`. `expected` holds how many items there should be. Shared by the fusion app,
+ * whose items arrive from camera apps, and the local app, which measures its own cameras.
+ */
+export function spaceTimeSolveSteps(shell: string, r: FusionSyncReferences): BlockNode[] {
+  const json = new Json(shell);
+  const item = variable(r.item);
+  const peer = variable(r.peer);
+  const payload = json.at(item, 'payload');
+  const addFailure = (reason: InputValue): BlockNode =>
+    setVariable(r.failures, concatenate(variable(r.failures), peer, text(': '), reason, text(' / ')));
+  const forEachResult = (body: BlockNode[]): BlockNode[] => [
+    setVariable(r.index, number(0)),
+    repeat(reporter(lengthOfList(r.results)), [
+      changeVariable(r.index, 1),
+      setVariable(r.item, reporter(itemOfList(variable(r.index), r.results))),
+      setVariable(r.peer, json.at(item, 'peer')),
+      ...body
+    ])
+  ];
+  return stepsAfterReplies(shell, r, json, {item, peer, payload, addFailure, forEachResult});
 }
 
 function stepsAfterReplies(

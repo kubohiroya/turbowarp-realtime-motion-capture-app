@@ -3,9 +3,10 @@ import type {AppShellAppConfig} from '../app-config.js';
 /**
  * The standalone app (#36): several USB cameras on one PC, processed and shown in one page.
  *
- * Stage 1 runs and measures cameras, stage 2 calibrates each one's lens, and stage 3 estimates every
- * camera's 2D pose, which is the one contract flag requested so far. Each later stage adds the flags
- * and extensions it needs.
+ * Stage 1 runs and measures cameras, stage 2 calibrates each one's lens, stage 3 estimates every
+ * camera's 2D pose — the one contract flag requested so far — and stage 4 calibrates time
+ * correspondence and placement in this page, which switches Time-Space Sync on. Each later stage adds
+ * the flags and extensions it needs.
  */
 export const localAppConfig: AppShellAppConfig = {
   id: 'realtimemotioncapturelocalshell',
@@ -20,6 +21,7 @@ export const localAppConfig: AppShellAppConfig = {
   featureFlags: ['webgpuMoveNetMultiPose'],
   cameraGrid: true,
   lensCalibration: true,
+  timeSpaceSync: true,
   noticeLocales: {
     en: {title: 'Local app'},
     ja: {title: 'ローカルアプリからのお知らせ'}
