@@ -7,7 +7,7 @@
     "check": "node ../../scripts/ensure-source-directories.ts camera-app && sb3-toolchain check source"
   },
   "devDependencies": {
-    "@kubohiroya/turbowarp-camera-source": "0.10.0",
+    "@kubohiroya/turbowarp-camera-source": "0.11.0",
     "@kubohiroya/turbowarp-diagnostic-overlay": "0.4.0",
     "@kubohiroya/turbowarp-jsqr": "0.3.0",
     "@kubohiroya/turbowarp-realtime-motion-capture": "0.2.1",

@@ -96,9 +96,8 @@ IPアドレスは候補を並べ替えるヒントとしてなら使えますが
 それぞれ別の保存領域で、内容は移動しません。プロファイルを消せば消えます。
 
 したがってIndexedDBは**その端末での再入力を省くためのキャッシュ**であり、バックアップではありません。
-正の保存経路はファイルへのexport／importとします。拡張にはすでに`camera calibration JSON`
-reporterと`import camera calibration`blockがあるので、運用手順としては会場ごとのフォルダへ
-書き出して保管します。
+正の保存経路はファイルへのexport／importとします。ファイルはレンズ校正アプリが書き出すROSの
+`camera_info` YAML（下記）で、運用手順としては会場ごとのフォルダへ書き出して保管します。
 
 ## camera appのレンズ校正の入口（実装済み）
 
@@ -114,6 +113,13 @@ camera appは、カメラが動き始めた直後にレンズ校正を確かめ�
      同じdeviceでカメラを再開し、1.を繰り返します。ウィンドウが閉じられた場合も再開します。
    - **レンズ校正ファイルを読む**：ダイアログのボタンからファイルを選び、`register camera profile ... as [pose]`
      で登録します。合わなければ登録を取り消します。合えばIndexedDBへも保存し、次回の読込みを省きます。
+
+レンズ校正ファイルは、レンズ校正アプリが書き出すROSの`camera_info` YAMLです（camera-source 0.11.0以降）。
+標準の部分はROSやOpenCV系のツールもそのまま読み、ROSに置き場の無い校正日時・撮影条件・品質は
+`turbowarp_camera_source`の項目に入ります。TurboWarpはリストの書き出しを`profile.txt`として保存するので、
+ファイル選択は`.txt`／`.yaml`／`.yml`／`.json`を受け付けます。形式の判別はcamera-sourceがテキストから行います。
+`packages/app-shell/tests/lens-calibration-file.test.ts`は、校正アプリの契約fixtureを、camera appが埋め込む
+camera-sourceのバンドルに、この入口と同じ順序で読ませて確かめます。
 
 同じoriginであることが前提です。turbowarp.orgやファイルで開いたSB3には校正アプリが並んでいないため、
 「開けない」と表示してファイルの読込みを案内します。

@@ -37,14 +37,14 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-camera-source",
-        "version": "0.10.0",
+        "version": "0.11.0",
         "artifact": "dist/camera-source.js",
-        "integrity": "sha256-C16VEkPk+l0mB857rjPvpO4+8hfncebvvugP1nrGTkU=",
+        "integrity": "sha256-iBB4aYm69rX8tatdmUhZCOcHAmmXrN/CC3kfDrbK8Cs=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyacamerasource.manifest.json",
           "formatVersion": 1,
-          "integrity": "sha256-PC5fCMb+0BGpwlMDBxiSbWDEv1xJFFUk/STa9zQoYJM="
+          "integrity": "sha256-e0SOHu0ozzEbUou69Jmy4Y0RPWi9bPyD3H3+jTyUV+k="
         }
       }
     },
