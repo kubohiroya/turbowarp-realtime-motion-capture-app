@@ -4,12 +4,14 @@ import {buildBlocks} from '../packages/sb3-script/src/blocks.ts';
 
 import {cameraAppScripts, cameraAppStageData} from './app-scripts/camera-app.ts';
 import {fusionAppScripts, fusionAppStageData} from './app-scripts/fusion-app.ts';
+import {localAppScripts, localAppStageData} from './app-scripts/local-app.ts';
 import {formatJson, readJson, repositoryRoot, type ProjectSource} from './repository-config.ts';
 
 const writeTracked = process.argv.includes('--write');
 const applications = [
   {app: 'camera-app', scripts: cameraAppScripts, stageData: cameraAppStageData},
-  {app: 'fusion-app', scripts: fusionAppScripts, stageData: fusionAppStageData}
+  {app: 'fusion-app', scripts: fusionAppScripts, stageData: fusionAppStageData},
+  {app: 'local-app', scripts: localAppScripts, stageData: localAppStageData}
 ] as const;
 
 interface StageTarget {

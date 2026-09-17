@@ -1,0 +1,11 @@
+{
+  "formatVersion": 1,
+  "state": "candidate",
+  "sourceIdentity": "sha256:42e87336b365051329227765bd32ea65bb5c7a29a440a036a23fa66235debaf0",
+  "artifact": {
+    "filename": "local-app.sb3",
+    "sha256": "678f00274eb2d8426078e44ca1294a6ec53215c84d8aac2a271b38584d549052",
+    "size": 130017
+  },
+  "publication": {}
+}

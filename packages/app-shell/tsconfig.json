@@ -12,5 +12,5 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["src", "tests", "vite.camera.config.ts", "vite.fusion.config.ts"]
+  "include": ["src", "tests", "vite.camera.config.ts", "vite.fusion.config.ts", "vite.local.config.ts"]
 }

@@ -84,6 +84,18 @@ importers:
         specifier: 0.3.0
         version: 0.3.0
 
+  apps/local-app:
+    devDependencies:
+      '@kubohiroya/turbowarp-camera-source':
+        specifier: 0.11.0
+        version: 0.11.0
+      '@kubohiroya/turbowarp-diagnostic-overlay':
+        specifier: 0.4.0
+        version: 0.4.0
+      '@kubohiroya/turbowarp-title-menu':
+        specifier: 0.2.2
+        version: 0.2.2
+
   packages/app-shell:
     dependencies:
       '@kubohiroya/turbowarp-app-shell':

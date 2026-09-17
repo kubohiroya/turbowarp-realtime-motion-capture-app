@@ -1,0 +1,107 @@
+{
+  "formatVersion": 1,
+  "id": "kubohiroyaturbowarptitlemenu",
+  "blocks": [
+    {
+      "opcode": "addAppMenuAction",
+      "blockType": "COMMAND",
+      "arguments": [
+        {
+          "id": "ACTION",
+          "type": "STRING"
+        },
+        {
+          "id": "LABEL",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "opcode": "clearAppMenuActions",
+      "blockType": "COMMAND",
+      "arguments": []
+    },
+    {
+      "opcode": "hasSavedDsl",
+      "blockType": "BOOLEAN",
+      "arguments": []
+    },
+    {
+      "opcode": "lastDslError",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "openedDslName",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "openedDslSource",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "reloadOpenedDsl",
+      "blockType": "COMMAND",
+      "arguments": []
+    },
+    {
+      "opcode": "savedDslCount",
+      "blockType": "REPORTER",
+      "arguments": []
+    },
+    {
+      "opcode": "setAppMenuActionEnabled",
+      "blockType": "COMMAND",
+      "arguments": [
+        {
+          "id": "ACTION",
+          "type": "STRING",
+          "menu": "menuActions"
+        },
+        {
+          "id": "ENABLED",
+          "type": "BOOLEAN"
+        }
+      ]
+    },
+    {
+      "opcode": "showDslFiles",
+      "blockType": "COMMAND",
+      "arguments": []
+    },
+    {
+      "opcode": "showMenu",
+      "blockType": "COMMAND",
+      "arguments": []
+    },
+    {
+      "opcode": "showTitle",
+      "blockType": "COMMAND",
+      "arguments": []
+    },
+    {
+      "opcode": "whenAppMenuActionSelected",
+      "blockType": "HAT",
+      "arguments": [
+        {
+          "id": "ACTION",
+          "type": "STRING",
+          "menu": "menuActions"
+        }
+      ]
+    },
+    {
+      "opcode": "whenDslSourceOpened",
+      "blockType": "HAT",
+      "arguments": []
+    }
+  ],
+  "menus": [
+    {
+      "id": "menuActions",
+      "acceptReporters": false
+    }
+  ]
+}

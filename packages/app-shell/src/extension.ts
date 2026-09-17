@@ -5,6 +5,8 @@ import type {LensCalibrationLauncher} from './lens-calibration.js';
 import {askNumbersWithDialog, confirmWithDialog, type DialogHost} from './dialogs.js';
 import {jsonValueOf, readJsonPath, withJsonField} from './json-fields.js';
 import type {NetworkRouter} from './network-router.js';
+import type {CameraGrid} from './camera-grid.js';
+import type {SettingsStore} from './settings.js';
 import {parseButtonLabels, type QrPanel} from './qr-panel.js';
 import type {MultiviewPoseShell} from './shell.js';
 
@@ -24,7 +26,7 @@ interface BlockDefinition {
   description: string;
   arguments: Record<string, DefinitionArgument>;
   /** Present on blocks only an application with that capability offers. */
-  requires?: 'lensCalibration';
+  requires?: 'lensCalibration' | 'cameraGrid';
 }
 
 const blockDefinitions = definitions.blocks as readonly BlockDefinition[];
@@ -50,6 +52,8 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
   private readonly qrPanel: QrPanel | null;
   private readonly dialogs: DialogHost;
   private readonly network: NetworkRouter | null;
+  private readonly cameraGrid: CameraGrid | null;
+  private readonly settings: SettingsStore | null;
   private confirmed = false;
   private numbers = '';
 
@@ -62,6 +66,8 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
       qrPanel?: QrPanel;
       dialogs?: DialogHost;
       network?: NetworkRouter;
+      cameraGrid?: CameraGrid;
+      settings?: SettingsStore;
     } = {}
   ) {
     this.config = validateAppConfig(config);
@@ -71,6 +77,8 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
     this.qrPanel = parts.qrPanel ?? null;
     this.dialogs = parts.dialogs ?? {document: null};
     this.network = parts.network ?? null;
+    this.cameraGrid = parts.cameraGrid ?? null;
+    this.settings = parts.settings ?? null;
   }
 
   public getInfo(): Record<string, unknown> {
@@ -80,7 +88,12 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
       docsURI: this.config.docsURI,
       blockIconURI: this.config.blockIconURI,
       blocks: blockDefinitions
-        .filter((block) => block.requires === undefined || this.lensCalibration !== null)
+        .filter(
+          (block) =>
+            block.requires === undefined ||
+            (block.requires === 'lensCalibration' && this.lensCalibration !== null) ||
+            (block.requires === 'cameraGrid' && this.cameraGrid !== null)
+        )
         .map((block) => this.toScratchBlock(block)),
       menus: {
         featureFlags: {acceptReporters: false, items: [...featureFlagNames, ...appFlagNames]}
@@ -263,6 +276,70 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
 
   public latestDataPeers(args: {CHANNEL: unknown}): string {
     return JSON.stringify(this.network?.latestPeers(Scratch.Cast.toString(args.CHANNEL)) ?? []);
+  }
+
+  public async startGridCamera(args: {
+    CAMERA_ID: unknown;
+    DEVICE_ID: unknown;
+    WIDTH: unknown;
+    HEIGHT: unknown;
+    FPS: unknown;
+  }): Promise<void> {
+    await this.cameraGrid?.start({
+      cameraId: Scratch.Cast.toString(args.CAMERA_ID).trim(),
+      deviceId: Scratch.Cast.toString(args.DEVICE_ID).trim(),
+      width: Scratch.Cast.toNumber(args.WIDTH),
+      height: Scratch.Cast.toNumber(args.HEIGHT),
+      frameRate: Scratch.Cast.toNumber(args.FPS)
+    });
+  }
+
+  public async stopGridCamera(args: {CAMERA_ID: unknown}): Promise<void> {
+    await this.cameraGrid?.stop(Scratch.Cast.toString(args.CAMERA_ID).trim());
+  }
+
+  public async stopAllGridCameras(): Promise<void> {
+    await this.cameraGrid?.stopAll();
+  }
+
+  public showCameraGrid(): void {
+    this.cameraGrid?.show();
+  }
+
+  public hideCameraGrid(): void {
+    this.cameraGrid?.hide();
+  }
+
+  public gridCameraState(args: {CAMERA_ID: unknown}): string {
+    return this.cameraGrid?.report(Scratch.Cast.toString(args.CAMERA_ID).trim())?.state ?? 'stopped';
+  }
+
+  public gridCameraError(args: {CAMERA_ID: unknown}): string {
+    return this.cameraGrid?.report(Scratch.Cast.toString(args.CAMERA_ID).trim())?.error ?? '';
+  }
+
+  public gridCamerasJson(): string {
+    return JSON.stringify(this.cameraGrid?.reports() ?? []);
+  }
+
+  public gridCamerasSummary(): string {
+    const reports = this.cameraGrid?.reports() ?? [];
+    if (reports.length === 0) return '';
+    return reports
+      .map((report) =>
+        report.state === 'running'
+          ? `${report.cameraId}: ${report.settings.width}x${report.settings.height} 設定${report.settings.frameRate}fps 実測${report.measuredFps}fps（要求${report.requested.width}x${report.requested.height} ${report.requested.frameRate}fps）${report.label ? ` ${report.label}` : ''}`
+          : `${report.cameraId}: ${report.state} ${report.error}`
+      )
+      .join(' / ');
+  }
+
+  public rememberSetting(args: {KEY: unknown; VALUE: unknown}): void {
+    this.settings?.set(Scratch.Cast.toString(args.KEY), Scratch.Cast.toString(args.VALUE));
+  }
+
+  public rememberedSetting(args: {KEY: unknown}): string {
+    return this.settings?.get(Scratch.Cast.toString(args.KEY)) ?? '';
   }
 
   private toScratchBlock(block: BlockDefinition): Record<string, unknown> {

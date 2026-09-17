@@ -43,6 +43,11 @@ export interface AppShellAppConfig {
    * handed to any extension: they only decide which paths this application's own scripts offer.
    */
   readonly appFlags?: readonly AppFlagName[];
+  /**
+   * Whether this application runs several cameras itself: starting them at a requested size, showing
+   * them side by side, and measuring the frames each one actually delivers.
+   */
+  readonly cameraGrid?: boolean;
 }
 
 export const appFlagNames = ['external3dServiceV1'] as const;

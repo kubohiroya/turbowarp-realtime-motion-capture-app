@@ -26,7 +26,8 @@
       "status": "ready",
       "embeddedIn": [
         "camera-app",
-        "fusion-app"
+        "fusion-app",
+        "local-app"
       ],
       "requiredOperations": [
         {
@@ -147,7 +148,8 @@
       "status": "ready",
       "embeddedIn": [
         "camera-app",
-        "fusion-app"
+        "fusion-app",
+        "local-app"
       ],
       "requiredOperations": [
         {
@@ -1536,7 +1538,8 @@
       "status": "ready",
       "embeddedIn": [
         "camera-app",
-        "fusion-app"
+        "fusion-app",
+        "local-app"
       ],
       "requiredOperations": [
         {

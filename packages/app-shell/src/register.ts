@@ -4,6 +4,8 @@ import {createBrowserLensCalibrationHost, createScratchShellHost} from './host.j
 import {LensCalibrationLauncher} from './lens-calibration.js';
 import {createScratchNetworkRouterHost, NetworkRouter} from './network-router.js';
 import {createQrPanel} from './qr-panel.js';
+import {CameraGrid, createScratchCameraGridHost} from './camera-grid.js';
+import {browserStorage, createSettingsStore} from './settings.js';
 import {createMultiviewPoseShell} from './shell.js';
 import {MultiviewPoseAppShellExtension} from './extension.js';
 
@@ -31,9 +33,18 @@ export function registerAppShell(config: AppShellAppConfig): void {
       qrPanel,
       dialogs: {document: typeof document === 'undefined' ? null : document},
       network: new NetworkRouter(createScratchNetworkRouterHost()),
+      settings: createSettingsStore(`twrmc.${config.id}`, browserStorage),
+      ...(config.cameraGrid === true ? {cameraGrid: createCameraGrid()} : {}),
       ...(config.lensCalibration === true
         ? {lensCalibration: new LensCalibrationLauncher(createBrowserLensCalibrationHost(shell.locale))}
         : {})
     })
   );
+}
+
+/** The grid releases its cameras with the project, as Camera Source releases its own. */
+function createCameraGrid(): CameraGrid {
+  const grid = new CameraGrid(createScratchCameraGridHost());
+  Scratch.vm?.runtime?.on?.('PROJECT_STOP_ALL', () => void grid.stopAll());
+  return grid;
 }
