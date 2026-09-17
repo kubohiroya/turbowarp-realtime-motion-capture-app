@@ -21,6 +21,8 @@ import { PoseMeter, createBrowserPoseMeterHost } from './pose-meter.js';
 import {
   PoseReplay,
   createBrowserRecordingStore,
+  readRecordingFile,
+  RECORDING_FILE_ACCEPT,
   saveTextFileInBrowser,
 } from './pose-replay.js';
 
@@ -86,7 +88,13 @@ function createPoseReplayHost(locale: ShellLocale) {
     chooseFile: () =>
       typeof document === 'undefined'
         ? Promise.resolve(null)
-        : chooseTextFileWithDialog({ document, mount: document.body, locale }),
+        : chooseTextFileWithDialog({
+            document,
+            mount: document.body,
+            locale,
+            accept: RECORDING_FILE_ACCEPT,
+            read: readRecordingFile,
+          }),
     saveFile: saveTextFileInBrowser,
   };
 }

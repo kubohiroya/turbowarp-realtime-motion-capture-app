@@ -20,7 +20,14 @@ import type {
 } from './contracts.ts';
 
 export const SESSION_SCHEMA = 'twrmc/pose-3d-session';
-export const SESSION_VERSION = 1;
+/**
+ * Version 2 is JSONL: a header line, then one line per event, then the truth frames when there are
+ * any. A session is written while it is taken — by a camera app recording a venue, or by this tool
+ * writing a long scene — so it has to be readable before it is complete, and appendable while it
+ * grows. Version 1, a single JSON document, is still read.
+ */
+export const SESSION_VERSION = 2;
+export const LEGACY_SESSION_VERSION = 1;
 
 export interface SessionFrameEvent {
   readonly type: 'frame2d';
@@ -66,8 +73,22 @@ export interface Session {
   readonly truth?: readonly TruthFrame[];
 }
 
+/** The session as lines: header, events in order, then the truth frames a scene brought with it. */
 export function serializeSession(session: Session): string {
-  return JSON.stringify(session);
+  const lines = [
+    JSON.stringify({
+      type: 'header',
+      schema: SESSION_SCHEMA,
+      version: SESSION_VERSION,
+      producer: session.producer,
+      configuration: session.configuration,
+    }),
+    ...session.events.map((event) => JSON.stringify(event)),
+    ...(session.truth ?? []).map((frame) =>
+      JSON.stringify({ type: 'truth', ...frame }),
+    ),
+  ];
+  return `${lines.join('\n')}\n`;
 }
 
 /**
@@ -79,6 +100,98 @@ export function serializeSession(session: Session): string {
  * it would there.
  */
 export function parseSession(
+  text: string,
+): { ok: true; session: Session } | { ok: false; reason: string } {
+  const first = text.split('\n', 1)[0] ?? '';
+  let header: unknown;
+  try {
+    header = JSON.parse(first);
+  } catch {
+    header = undefined;
+  }
+  if (
+    typeof header === 'object' &&
+    header !== null &&
+    (header as Record<string, unknown>)['type'] === 'header'
+  ) {
+    return parseSessionLines(text, header as Record<string, unknown>);
+  }
+  return parseSessionDocument(text);
+}
+
+/**
+ * Reads a session written as lines.
+ *
+ * A line that cannot be read ends the session there rather than failing it: a recording interrupted
+ * mid-line is a recording of everything before that line, and refusing it would throw away the take
+ * to keep the format tidy. Everything before the broken line is replayed, and the caller is told
+ * nothing, because a truncated take is what it looks like.
+ */
+function parseSessionLines(
+  text: string,
+  header: Record<string, unknown>,
+): { ok: true; session: Session } | { ok: false; reason: string } {
+  if (header['schema'] !== SESSION_SCHEMA)
+    return {
+      ok: false,
+      reason: `A session must have schema ${SESSION_SCHEMA}.`,
+    };
+  if (header['version'] !== SESSION_VERSION) {
+    return {
+      ok: false,
+      reason: `Session version ${String(header['version'])} is not supported.`,
+    };
+  }
+  if (typeof header['producer'] !== 'string')
+    return { ok: false, reason: 'A session must name its producer.' };
+  if (
+    typeof header['configuration'] !== 'object' ||
+    header['configuration'] === null
+  ) {
+    return {
+      ok: false,
+      reason: 'A session must carry the configuration it was recorded with.',
+    };
+  }
+  const events: SessionEvent[] = [];
+  const truth: TruthFrame[] = [];
+  const lines = text.split('\n');
+  for (const [index, line] of lines.entries()) {
+    if (index === 0 || line.trim() === '') continue;
+    let value: unknown;
+    try {
+      value = JSON.parse(line);
+    } catch {
+      break;
+    }
+    if (typeof value !== 'object' || value === null || Array.isArray(value))
+      break;
+    const record = value as Record<string, unknown>;
+    const kind = record['type'];
+    if (kind === 'truth') {
+      truth.push(record as unknown as TruthFrame);
+      continue;
+    }
+    if (kind !== 'frame2d' && kind !== 'requestPose3d') continue;
+    const failure = eventFailure(record, index + 1);
+    if (failure !== undefined) return { ok: false, reason: failure };
+    events.push(record as unknown as SessionEvent);
+  }
+  return {
+    ok: true,
+    session: {
+      schema: SESSION_SCHEMA,
+      version: SESSION_VERSION,
+      producer: header['producer'],
+      configuration: header['configuration'] as Session['configuration'],
+      events,
+      ...(truth.length === 0 ? {} : { truth }),
+    },
+  };
+}
+
+/** Reads the single-document form, which is what every session written before version 2 is. */
+function parseSessionDocument(
   text: string,
 ): { ok: true; session: Session } | { ok: false; reason: string } {
   let value: unknown;
@@ -99,7 +212,7 @@ export function parseSession(
       ok: false,
       reason: `A session must have schema ${SESSION_SCHEMA}.`,
     };
-  if (record['version'] !== SESSION_VERSION) {
+  if (record['version'] !== LEGACY_SESSION_VERSION) {
     return {
       ok: false,
       reason: `Session version ${String(record['version'])} is not supported.`,
@@ -122,25 +235,32 @@ export function parseSession(
   for (const [index, event] of events.entries()) {
     if (typeof event !== 'object' || event === null)
       return { ok: false, reason: `Event ${index} is not an object.` };
-    const kind = (event as Record<string, unknown>)['type'];
-    const atUs = (event as Record<string, unknown>)['atUs'];
-    if (kind !== 'frame2d' && kind !== 'requestPose3d') {
-      return {
-        ok: false,
-        reason: `Event ${index} has an unknown type ${String(kind)}.`,
-      };
-    }
-    if (typeof atUs !== 'number' || !Number.isFinite(atUs)) {
-      return { ok: false, reason: `Event ${index} needs a finite atUs.` };
-    }
-    if (
-      kind === 'frame2d' &&
-      typeof (event as Record<string, unknown>)['cameraId'] !== 'string'
-    ) {
-      return { ok: false, reason: `Event ${index} needs a cameraId.` };
-    }
+    const failure = eventFailure(event as Record<string, unknown>, index);
+    if (failure !== undefined) return { ok: false, reason: failure };
   }
-  return { ok: true, session: record as unknown as Session };
+  return {
+    ok: true,
+    session: {
+      ...(record as unknown as Session),
+      version: SESSION_VERSION,
+    } as Session,
+  };
+}
+
+/** What is wrong with an event, or nothing. Shared by both forms, so both refuse the same things. */
+function eventFailure(
+  event: Record<string, unknown>,
+  where: number,
+): string | undefined {
+  const kind = event['type'];
+  if (kind !== 'frame2d' && kind !== 'requestPose3d')
+    return `Event ${where} has an unknown type ${String(kind)}.`;
+  const atUs = event['atUs'];
+  if (typeof atUs !== 'number' || !Number.isFinite(atUs))
+    return `Event ${where} needs a finite atUs.`;
+  if (kind === 'frame2d' && typeof event['cameraId'] !== 'string')
+    return `Event ${where} needs a cameraId.`;
+  return undefined;
 }
 
 /**
