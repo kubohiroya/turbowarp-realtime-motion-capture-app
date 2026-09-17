@@ -1,5 +1,5 @@
-import {createServer} from 'node:net';
-import {mkdir, readdir, readFile, rm, writeFile} from 'node:fs/promises';
+import { createServer } from 'node:net';
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 
 /**
  * Run locks that say exactly which application holds a loopback port.
@@ -42,13 +42,13 @@ export interface RunLock {
 }
 
 export type AcquireRunLockResult =
-  | {readonly acquired: true; readonly lock: RunLock}
-  | {readonly acquired: false; readonly holder: RunLockRecord};
+  | { readonly acquired: true; readonly lock: RunLock }
+  | { readonly acquired: false; readonly holder: RunLockRecord };
 
 export type PortHolder =
-  | {readonly kind: 'self'; readonly record: RunLockRecord}
-  | {readonly kind: 'application'; readonly record: RunLockRecord}
-  | {readonly kind: 'unknown'};
+  | { readonly kind: 'self'; readonly record: RunLockRecord }
+  | { readonly kind: 'application'; readonly record: RunLockRecord }
+  | { readonly kind: 'unknown' };
 
 const lockSuffix = '.lock';
 /** Matches the application ids this repository uses, and keeps a lock name inside one path segment. */
@@ -77,8 +77,10 @@ export function defaultIsPortBound(port: number): Promise<boolean> {
 }
 
 function lockUrl(directory: string | URL, app: string): URL {
-  if (!appPattern.test(app)) throw new TypeError(`Unsafe application id for a run lock: ${app}`);
-  const base = typeof directory === 'string' ? new URL(`file://${directory}/`) : directory;
+  if (!appPattern.test(app))
+    throw new TypeError(`Unsafe application id for a run lock: ${app}`);
+  const base =
+    typeof directory === 'string' ? new URL(`file://${directory}/`) : directory;
   return new URL(`${app}${lockSuffix}`, base);
 }
 
@@ -90,7 +92,8 @@ function parseRecord(contents: string): RunLockRecord | null {
     return null;
   }
   if (typeof parsed !== 'object' || parsed === null) return null;
-  const {app, port, origin, pid, startedAt} = parsed as Partial<RunLockRecord>;
+  const { app, port, origin, pid, startedAt } =
+    parsed as Partial<RunLockRecord>;
   if (
     typeof app !== 'string' ||
     typeof origin !== 'string' ||
@@ -102,7 +105,7 @@ function parseRecord(contents: string): RunLockRecord | null {
   ) {
     return null;
   }
-  return {app, port, origin, pid, startedAt};
+  return { app, port, origin, pid, startedAt };
 }
 
 /**
@@ -112,7 +115,10 @@ function parseRecord(contents: string): RunLockRecord | null {
  * enough because an unrelated program may have taken it after a crash. Requiring both turns a
  * leftover file from a previous run into a stale lock instead of a false "already running".
  */
-async function isLive(record: RunLockRecord, environment: RunLockEnvironment): Promise<boolean> {
+async function isLive(
+  record: RunLockRecord,
+  environment: RunLockEnvironment,
+): Promise<boolean> {
   const isProcessAlive = environment.isProcessAlive ?? defaultIsProcessAlive;
   const isPortBound = environment.isPortBound ?? defaultIsPortBound;
   if (!isProcessAlive(record.pid)) return false;
@@ -126,8 +132,10 @@ async function readLock(url: URL): Promise<RunLockRecord | null> {
 }
 
 /** Takes the lock for one application, replacing a lock left behind by a previous run. */
-export async function acquireRunLock(options: AcquireRunLockOptions): Promise<AcquireRunLockResult> {
-  const {app, port} = options;
+export async function acquireRunLock(
+  options: AcquireRunLockOptions,
+): Promise<AcquireRunLockResult> {
+  const { app, port } = options;
   const url = lockUrl(options.directory, app);
   const now = options.now ?? (() => new Date());
   const record: RunLockRecord = {
@@ -135,23 +143,23 @@ export async function acquireRunLock(options: AcquireRunLockOptions): Promise<Ac
     port,
     origin: `http://127.0.0.1:${port}`,
     pid: options.pid ?? process.pid,
-    startedAt: now().toISOString()
+    startedAt: now().toISOString(),
   };
   const contents = `${JSON.stringify(record, null, 2)}\n`;
 
-  await mkdir(new URL('./', url), {recursive: true});
+  await mkdir(new URL('./', url), { recursive: true });
   for (let attempt = 0; attempt < 2; attempt += 1) {
     try {
-      await writeFile(url, contents, {flag: 'wx'});
-      return {acquired: true, lock: createLock(url, record)};
+      await writeFile(url, contents, { flag: 'wx' });
+      return { acquired: true, lock: createLock(url, record) };
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
     }
     const existing = await readLock(url);
     if (existing !== null && (await isLive(existing, options))) {
-      return {acquired: false, holder: existing};
+      return { acquired: false, holder: existing };
     }
-    await rm(url, {force: true});
+    await rm(url, { force: true });
   }
   throw new Error(`Could not take the run lock for ${app}.`);
 }
@@ -163,8 +171,8 @@ function createLock(url: URL, record: RunLockRecord): RunLock {
       // Only remove our own record: a host that replaced a stale lock owns the file now.
       const current = await readLock(url);
       if (current !== null && current.pid !== record.pid) return;
-      await rm(url, {force: true});
-    }
+      await rm(url, { force: true });
+    },
   };
 }
 
@@ -179,7 +187,9 @@ export interface FindPortHolderOptions extends RunLockEnvironment {
  *
  * Stale locks are removed while scanning, so a crashed run cannot keep accusing itself.
  */
-export async function findPortHolder(options: FindPortHolderOptions): Promise<PortHolder> {
+export async function findPortHolder(
+  options: FindPortHolderOptions,
+): Promise<PortHolder> {
   const base =
     typeof options.directory === 'string'
       ? new URL(`file://${options.directory}/`)
@@ -190,15 +200,18 @@ export async function findPortHolder(options: FindPortHolderOptions): Promise<Po
     const url = new URL(name, base);
     const record = await readLock(url);
     if (record === null) {
-      await rm(url, {force: true});
+      await rm(url, { force: true });
       continue;
     }
     if (record.port !== options.port) continue;
     if (!(await isLive(record, options))) {
-      await rm(url, {force: true});
+      await rm(url, { force: true });
       continue;
     }
-    return {kind: record.app === options.app ? 'self' : 'application', record};
+    return {
+      kind: record.app === options.app ? 'self' : 'application',
+      record,
+    };
   }
-  return {kind: 'unknown'};
+  return { kind: 'unknown' };
 }

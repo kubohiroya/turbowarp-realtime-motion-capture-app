@@ -26,7 +26,7 @@ export type SerializedBlocks = Record<BlockId, SerializedBlock>;
 const inputKind = {
   shadowOnly: 1,
   blockOnly: 2,
-  blockWithShadow: 3
+  blockWithShadow: 3,
 } as const;
 
 const primitive = {
@@ -34,7 +34,7 @@ const primitive = {
   text: 10,
   broadcast: 11,
   variable: 12,
-  list: 13
+  list: 13,
 } as const;
 
 /** Allocates child blocks and C-block bodies under the block that owns the input. */
@@ -59,12 +59,14 @@ export interface FieldReference {
 
 const assertNamedReference = (reference: NamedReference): void => {
   if (reference.name.length === 0 || reference.id.length === 0) {
-    throw new TypeError('A named Scratch reference needs both a name and a stable id.');
+    throw new TypeError(
+      'A named Scratch reference needs both a name and a stable id.',
+    );
   }
 };
 
 export function namedReference(name: string, id: string): NamedReference {
-  const reference = {name, id};
+  const reference = { name, id };
   assertNamedReference(reference);
   return reference;
 }
@@ -83,12 +85,14 @@ export interface Script {
 
 /** A literal typed into a text slot. */
 export function text(value: string): InputValue {
-  return {encode: () => [inputKind.shadowOnly, [primitive.text, value]]};
+  return { encode: () => [inputKind.shadowOnly, [primitive.text, value]] };
 }
 
 /** A literal typed into a number slot. */
 export function number(value: number): InputValue {
-  return {encode: () => [inputKind.shadowOnly, [primitive.number, String(value)]]};
+  return {
+    encode: () => [inputKind.shadowOnly, [primitive.number, String(value)]],
+  };
 }
 
 /** A stable Scratch variable reference embedded directly in a reporter input. */
@@ -98,8 +102,8 @@ export function variable(reference: NamedReference): InputValue {
     encode: () => [
       inputKind.blockWithShadow,
       [primitive.variable, reference.name, reference.id],
-      [primitive.text, '']
-    ]
+      [primitive.text, ''],
+    ],
   };
 }
 
@@ -110,8 +114,8 @@ export function list(reference: NamedReference): InputValue {
     encode: () => [
       inputKind.blockWithShadow,
       [primitive.list, reference.name, reference.id],
-      [primitive.text, '']
-    ]
+      [primitive.text, ''],
+    ],
   };
 }
 
@@ -119,14 +123,17 @@ export function list(reference: NamedReference): InputValue {
 export function broadcast(reference: NamedReference): InputValue {
   assertNamedReference(reference);
   return {
-    encode: () => [inputKind.shadowOnly, [primitive.broadcast, reference.name, reference.id]]
+    encode: () => [
+      inputKind.shadowOnly,
+      [primitive.broadcast, reference.name, reference.id],
+    ],
   };
 }
 
 /** A dropdown field that names a variable, list, broadcast, or other stable Scratch entity. */
 export function field(reference: NamedReference): FieldReference {
   assertNamedReference(reference);
-  return {value: reference.name, id: reference.id};
+  return { value: reference.name, id: reference.id };
 }
 
 /**
@@ -141,33 +148,38 @@ export function reporter(node: BlockNode): InputValue {
     encode: (allocate) => [
       inputKind.blockWithShadow,
       allocate.block(node),
-      [primitive.text, '']
-    ]
+      [primitive.text, ''],
+    ],
   };
 }
 
 /** A boolean block placed in a hexagonal slot. Boolean slots have no shadow. */
 export function condition(node: BlockNode): InputValue {
-  return {encode: (allocate) => [inputKind.blockOnly, allocate.block(node)]};
+  return { encode: (allocate) => [inputKind.blockOnly, allocate.block(node)] };
 }
 
 /** A non-empty body placed inside a C block. */
 export function substack(nodes: readonly BlockNode[]): InputValue {
-  if (nodes.length === 0) throw new TypeError('A substack needs at least one block.');
-  return {encode: (allocate) => [inputKind.blockOnly, allocate.stack(nodes)]};
+  if (nodes.length === 0)
+    throw new TypeError('A substack needs at least one block.');
+  return { encode: (allocate) => [inputKind.blockOnly, allocate.stack(nodes)] };
 }
 
 export function block(
   opcode: string,
   inputs: Readonly<Record<string, InputValue>> = {},
-  fields: Readonly<Record<string, string | FieldReference>> = {}
+  fields: Readonly<Record<string, string | FieldReference>> = {},
 ): BlockNode {
-  return {opcode, inputs, fields};
+  return { opcode, inputs, fields };
 }
 
-export function script(position: {x: number; y: number}, blocks: readonly BlockNode[]): Script {
-  if (blocks.length === 0) throw new TypeError('A script needs at least one block.');
-  return {x: position.x, y: position.y, blocks};
+export function script(
+  position: { x: number; y: number },
+  blocks: readonly BlockNode[],
+): Script {
+  if (blocks.length === 0)
+    throw new TypeError('A script needs at least one block.');
+  return { x: position.x, y: position.y, blocks };
 }
 
 /**
@@ -183,7 +195,12 @@ export function buildBlocks(scripts: readonly Script[]): SerializedBlocks {
     let counter = 0;
     const nextId = () => `s${scriptIndex + 1}b${(counter += 1)}`;
 
-    const emit = (node: BlockNode, id: BlockId, parent: BlockId | null, top: boolean): void => {
+    const emit = (
+      node: BlockNode,
+      id: BlockId,
+      parent: BlockId | null,
+      top: boolean,
+    ): void => {
       const entry: SerializedBlock = {
         opcode: node.opcode,
         next: null,
@@ -191,7 +208,7 @@ export function buildBlocks(scripts: readonly Script[]): SerializedBlocks {
         inputs: {},
         fields: {},
         shadow: false,
-        topLevel: top
+        topLevel: top,
       };
       if (top) {
         entry.x = current.x;
@@ -205,7 +222,7 @@ export function buildBlocks(scripts: readonly Script[]): SerializedBlocks {
           emit(child, childId, id, false);
           return childId;
         },
-        stack: (body) => emitChain(body, id)
+        stack: (body) => emitChain(body, id),
       };
 
       for (const [name, value] of Object.entries(node.inputs ?? {})) {
@@ -217,11 +234,19 @@ export function buildBlocks(scripts: readonly Script[]): SerializedBlocks {
       }
     };
 
-    const emitChain = (nodes: readonly BlockNode[], parent: BlockId | null): BlockId => {
+    const emitChain = (
+      nodes: readonly BlockNode[],
+      parent: BlockId | null,
+    ): BlockId => {
       const ids = nodes.map(() => nextId());
       nodes.forEach((node, index) => {
         const id = ids[index] as BlockId;
-        emit(node, id, index === 0 ? parent : (ids[index - 1] as BlockId), false);
+        emit(
+          node,
+          id,
+          index === 0 ? parent : (ids[index - 1] as BlockId),
+          false,
+        );
         const next = ids[index + 1];
         if (next !== undefined) (serialized[id] as SerializedBlock).next = next;
       });
@@ -231,7 +256,12 @@ export function buildBlocks(scripts: readonly Script[]): SerializedBlocks {
     const ids = current.blocks.map(() => nextId());
     current.blocks.forEach((node, index) => {
       const id = ids[index] as BlockId;
-      emit(node, id, index === 0 ? null : (ids[index - 1] as BlockId), index === 0);
+      emit(
+        node,
+        id,
+        index === 0 ? null : (ids[index - 1] as BlockId),
+        index === 0,
+      );
       const next = ids[index + 1];
       if (next !== undefined) (serialized[id] as SerializedBlock).next = next;
     });

@@ -6,8 +6,8 @@
       "text": "begin 3D service configuration implementation [IMPLEMENTATION] reference [REFERENCE_ID]",
       "description": "Starts assembling a configuration. Stage 1 implementations are stub-normal, stub-timeout and stub-invalid.",
       "arguments": {
-        "IMPLEMENTATION": {"type": "STRING", "defaultValue": "stub-normal"},
-        "REFERENCE_ID": {"type": "STRING", "defaultValue": "venue-projection"}
+        "IMPLEMENTATION": { "type": "STRING", "defaultValue": "stub-normal" },
+        "REFERENCE_ID": { "type": "STRING", "defaultValue": "venue-projection" }
       }
     },
     {
@@ -16,10 +16,10 @@
       "text": "add 3D service camera [CAMERA_ID] model [MODEL_JSON] placement [PLACEMENT_JSON] time [TIME_JSON]",
       "description": "Adds one camera: its camera model with distortion, the placement result it appears in, and its time correspondence.",
       "arguments": {
-        "CAMERA_ID": {"type": "STRING", "defaultValue": "camera-1"},
-        "MODEL_JSON": {"type": "STRING", "defaultValue": "{}"},
-        "PLACEMENT_JSON": {"type": "STRING", "defaultValue": "{}"},
-        "TIME_JSON": {"type": "STRING", "defaultValue": ""}
+        "CAMERA_ID": { "type": "STRING", "defaultValue": "camera-1" },
+        "MODEL_JSON": { "type": "STRING", "defaultValue": "{}" },
+        "PLACEMENT_JSON": { "type": "STRING", "defaultValue": "{}" },
+        "TIME_JSON": { "type": "STRING", "defaultValue": "" }
       }
     },
     {
@@ -35,9 +35,9 @@
       "text": "send pose frame [FRAME_JSON] from camera [CAMERA_ID] received [AGE_MS] ms ago",
       "description": "Forwards a camera's newest PoseFrame2D unchanged. Repeats, stale frames, invalid frames and frames of another calibration are not sent.",
       "arguments": {
-        "FRAME_JSON": {"type": "STRING", "defaultValue": ""},
-        "CAMERA_ID": {"type": "STRING", "defaultValue": "camera-1"},
-        "AGE_MS": {"type": "NUMBER", "defaultValue": 0}
+        "FRAME_JSON": { "type": "STRING", "defaultValue": "" },
+        "CAMERA_ID": { "type": "STRING", "defaultValue": "camera-1" },
+        "AGE_MS": { "type": "NUMBER", "defaultValue": 0 }
       }
     },
     {

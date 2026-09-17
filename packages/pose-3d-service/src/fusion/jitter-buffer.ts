@@ -1,5 +1,10 @@
-import {COCO_17_KEYPOINT_IDS} from '../contracts.ts';
-import type {Coco17KeypointId, Keypoint2D, PoseFrame2D, PoseFrame2DPerson} from '../contracts.ts';
+import { COCO_17_KEYPOINT_IDS } from '../contracts.ts';
+import type {
+  Coco17KeypointId,
+  Keypoint2D,
+  PoseFrame2D,
+  PoseFrame2DPerson,
+} from '../contracts.ts';
 import type {
   SynchronizedCameraSample,
   SynchronizedKeypoint2D,
@@ -7,7 +12,7 @@ import type {
   SynchronizedPoseSample,
 } from './types.ts';
 
-export type IngestOutcome = "accepted" | "duplicate" | "late";
+export type IngestOutcome = 'accepted' | 'duplicate' | 'late';
 
 export interface JitterBufferOptions {
   /** Ring slots retained per camera. */
@@ -45,7 +50,7 @@ export class PoseFrameRingBuffer {
   public constructor(capacity: number) {
     this.capacity = capacity;
     if (!Number.isInteger(capacity) || capacity < 2) {
-      throw new Error("Ring buffer capacity must be an integer of at least 2.");
+      throw new Error('Ring buffer capacity must be an integer of at least 2.');
     }
     this.slots = new Array<PoseFrame2D | undefined>(capacity).fill(undefined);
   }
@@ -77,14 +82,14 @@ export class PoseFrameRingBuffer {
     const timestamp = frame.captureTimestampUs;
     const newest = this.newestTimestampUs();
     if (newest !== undefined && timestamp < newest - jitterWindowUs) {
-      return "late";
+      return 'late';
     }
 
     let index = this.count;
     while (index > 0) {
       const candidate = this.at(index - 1);
       if (!candidate) break;
-      if (candidate.captureTimestampUs === timestamp) return "duplicate";
+      if (candidate.captureTimestampUs === timestamp) return 'duplicate';
       if (candidate.captureTimestampUs < timestamp) break;
       index -= 1;
     }
@@ -95,20 +100,20 @@ export class PoseFrameRingBuffer {
       }
       this.slots[this.slot(index)] = frame;
       this.count += 1;
-      return "accepted";
+      return 'accepted';
     }
 
-    if (index === 0) return "late";
+    if (index === 0) return 'late';
     if (index === this.count) {
       this.head = (this.head + 1) % this.capacity;
       this.slots[this.slot(this.count - 1)] = frame;
-      return "accepted";
+      return 'accepted';
     }
     for (let position = 1; position < index; position += 1) {
       this.slots[this.slot(position - 1)] = this.slots[this.slot(position)];
     }
     this.slots[this.slot(index - 1)] = frame;
-    return "accepted";
+    return 'accepted';
   }
 
   /** Resamples this camera at one past instant, or returns undefined. */
@@ -207,7 +212,7 @@ export class MultiCameraJitterBuffer {
       this.buffers.set(frame.cameraId, buffer);
     }
     const outcome = buffer.insert(frame, this.options.jitterWindowUs);
-    if (outcome === "accepted") this.acceptedFrames += 1;
+    if (outcome === 'accepted') this.acceptedFrames += 1;
     else this.droppedFrames += 1;
     return outcome;
   }
@@ -398,8 +403,6 @@ function singleKeypoints(
     };
   });
 }
-
-
 
 function keypointsById(
   person: PoseFrame2DPerson,

@@ -38,10 +38,10 @@ v0.1.0の基準構成ではfusion appが拡張のfusion blockで3Dを復元し�
 
 画面まわりは2つの拡張が分担します。どちらもアプリより下の層にあり、SB3 bundleの先頭2つを占めます。
 
-| 拡張 | 担当 |
-|---|---|
+| 拡張                                                                             | 担当                                                            |
+| -------------------------------------------------------------------------------- | --------------------------------------------------------------- |
 | `@turbowarp-realtime-motion-capture-app/app-shell`（本リポジトリ所有、member 1） | contract feature flagの注入、読み込み表示、エラー表示、flag診断 |
-| `@kubohiroya/turbowarp-title-menu`（member 2） | タイトル／about画面、アプリメニュー、DSLファイルの保管と管理 |
+| `@kubohiroya/turbowarp-title-menu`（member 2）                                   | タイトル／about画面、アプリメニュー、DSLファイルの保管と管理    |
 
 順序には意味があります。`turbowarp-realtime-motion-capture`は評価時にfeature flagを固定するため、それを
 書き込むapp-shellが必ず先頭でなければなりません。
@@ -63,10 +63,10 @@ app-shellの役割は次の2つです。
 feature flagは起動時固定です。camera appとfusion appで必要なflagが異なるため、シェルはアプリごとに
 別のextension IDでビルドします。
 
-| アプリ | 有効にするflag |
-|---|---|
+| アプリ     | 有効にするflag                                                                                             |
+| ---------- | ---------------------------------------------------------------------------------------------------------- |
 | camera app | `qrCourierPairing`、`webgpuMoveNetMultiPose`、`protocolV1Codec`、`cameraCalibrationV1`、`glowStickMarkers` |
-| fusion app | `qrCourierPairing`、`protocolV1Codec`、`avatarRetargetV1`、`poseFusion3D`、`glowStickMarkers` |
+| fusion app | `qrCourierPairing`、`protocolV1Codec`、`avatarRetargetV1`、`poseFusion3D`、`glowStickMarkers`              |
 
 シェルは`feature flag state`reporterで適用結果を公開します。`applied`以外の値は、bundleの並び順が
 壊れていて契約拡張が先に評価されたことを意味するため、起動を続けずreadinessを失敗にします。
@@ -92,14 +92,14 @@ feature flagは起動時固定です。camera appとfusion appで必要なflag�
 
 ## アプリと拡張の責務
 
-| 領域 | camera app | fusion app | TurboWarp拡張 |
-|---|---|---|---|
+| 領域             | camera app                    | fusion app                            | TurboWarp拡張                                           |
+| ---------------- | ----------------------------- | ------------------------------------- | ------------------------------------------------------- |
 | 画面と操作フロー | カメラ選択、preview、状態表示 | セッション、校正、演出、readiness表示 | タイトル、メニュー、DSL管理、overlay、再利用可能なblock |
-| カメラ映像 | 端末内で取得・推論 | 受信しない | camera lifecycleとGPU入力 |
-| 通信 | 2D姿勢と診断を送信 | policy送信、2D姿勢の集約 | QR courier、WebRTC channel、backpressure、clock sync |
-| データ契約 | schemaを検証して生成 | schemaを検証して利用 | schema、codec、上限、versioningの正本 |
-| 3D処理 | しない | fusion blockを呼ぶ | jitter buffer、人物対応付け、triangulation、3D solve |
-| 表示 | 2D診断 | 3D avatarと演出 | scene graph、retargeting、asset lifecycle |
+| カメラ映像       | 端末内で取得・推論            | 受信しない                            | camera lifecycleとGPU入力                               |
+| 通信             | 2D姿勢と診断を送信            | policy送信、2D姿勢の集約              | QR courier、WebRTC channel、backpressure、clock sync    |
+| データ契約       | schemaを検証して生成          | schemaを検証して利用                  | schema、codec、上限、versioningの正本                   |
+| 3D処理           | しない                        | fusion blockを呼ぶ                    | jitter buffer、人物対応付け、triangulation、3D solve    |
+| 表示             | 2D診断                        | 3D avatarと演出                       | scene graph、retargeting、asset lifecycle               |
 
 ## 安全性とプライバシー
 

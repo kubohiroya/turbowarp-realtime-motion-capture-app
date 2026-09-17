@@ -1,4 +1,4 @@
-import type {AppShellAppConfig} from '../app-config.js';
+import type { AppShellAppConfig } from '../app-config.js';
 
 /**
  * The standalone app (#36): several USB cameras on one PC, processed and shown in one page.
@@ -12,10 +12,12 @@ export const localAppConfig: AppShellAppConfig = {
   id: 'realtimemotioncapturelocalshell',
   slug: 'local-app-shell',
   name: 'Realtime Motion Capture Local App',
-  description: 'Application shell for the standalone realtime motion capture app that runs every camera on one PC.',
+  description:
+    'Application shell for the standalone realtime motion capture app that runs every camera on one PC.',
   author: 'Hiroya Kubo',
   license: 'MPL-2.0',
-  docsURI: 'https://kubohiroya.github.io/turbowarp-realtime-motion-capture-app/',
+  docsURI:
+    'https://kubohiroya.github.io/turbowarp-realtime-motion-capture-app/',
   blockIconURI:
     'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCI+PHJlY3QgeD0iNCIgeT0iMTIiIHdpZHRoPSIzMCIgaGVpZ2h0PSIyNCIgcng9IjQiIGZpbGw9IiM0Qzk3RkYiLz48cGF0aCBkPSJNMzQgMjJsMTAtNnYxNmwtMTAtNnoiIGZpbGw9IiMyRTZGRDkiLz48Y2lyY2xlIGN4PSIxOSIgY3k9IjI0IiByPSI3IiBmaWxsPSIjRkZGRkZGIi8+PC9zdmc+',
   featureFlags: ['webgpuMoveNetMultiPose'],
@@ -25,11 +27,11 @@ export const localAppConfig: AppShellAppConfig = {
   // The 3D service has only stub implementations (#34, stage 1); kept off, as in the fusion app.
   appFlags: [],
   noticeLocales: {
-    en: {title: 'Local app'},
-    ja: {title: 'ローカルアプリからのお知らせ'}
+    en: { title: 'Local app' },
+    ja: { title: 'ローカルアプリからのお知らせ' },
   },
   errorLocales: {
-    en: {title: 'Local app stopped'},
-    ja: {title: 'ローカルアプリが停止しました'}
-  }
+    en: { title: 'Local app stopped' },
+    ja: { title: 'ローカルアプリが停止しました' },
+  },
 };

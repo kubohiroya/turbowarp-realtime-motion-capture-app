@@ -6,11 +6,11 @@
  * script keeps the meaning of every field and the shell knows none of them.
  */
 
-function parse(text: string): {ok: true; value: unknown} | {ok: false} {
+function parse(text: string): { ok: true; value: unknown } | { ok: false } {
   try {
-    return {ok: true, value: JSON.parse(text)};
+    return { ok: true, value: JSON.parse(text) };
   } catch {
-    return {ok: false};
+    return { ok: false };
   }
 }
 
@@ -56,13 +56,26 @@ export function readJsonPath(json: string, path: string): string {
  * An empty base starts a new object, so a script can build a message field by field. A base that is
  * not a JSON object returns '' instead of silently discarding what it held.
  */
-export function withJsonField(json: string, key: string, value: unknown): string {
-  const base = json.trim() === '' ? {ok: true as const, value: {}} : parse(json);
-  if (!base.ok || typeof base.value !== 'object' || base.value === null || Array.isArray(base.value)) {
+export function withJsonField(
+  json: string,
+  key: string,
+  value: unknown,
+): string {
+  const base =
+    json.trim() === '' ? { ok: true as const, value: {} } : parse(json);
+  if (
+    !base.ok ||
+    typeof base.value !== 'object' ||
+    base.value === null ||
+    Array.isArray(base.value)
+  ) {
     return '';
   }
   if (key.trim() === '') return '';
-  return JSON.stringify({...(base.value as Record<string, unknown>), [key]: value});
+  return JSON.stringify({
+    ...(base.value as Record<string, unknown>),
+    [key]: value,
+  });
 }
 
 /** Parses a field value given as JSON text. Empty or malformed text becomes null, never a string. */

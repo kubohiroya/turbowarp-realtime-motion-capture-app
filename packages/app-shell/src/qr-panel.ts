@@ -65,7 +65,7 @@ export function createQrPanel(host: QrPanelHost): QrPanel {
       background: '#ffffff',
       color: '#111111',
       zIndex: '1000',
-      fontFamily: 'system-ui, sans-serif'
+      fontFamily: 'system-ui, sans-serif',
     });
 
     const image = document.createElement('img');
@@ -74,7 +74,7 @@ export function createQrPanel(host: QrPanelHost): QrPanel {
       width: 'min(78vmin, 78vw)',
       height: 'min(78vmin, 78vw)',
       objectFit: 'contain',
-      imageRendering: 'pixelated'
+      imageRendering: 'pixelated',
     });
 
     const caption = document.createElement('p');
@@ -83,21 +83,29 @@ export function createQrPanel(host: QrPanelHost): QrPanel {
       fontSize: '20px',
       lineHeight: '1.4',
       textAlign: 'center',
-      maxWidth: '90vw'
+      maxWidth: '90vw',
     });
 
     const buttons = document.createElement('div');
-    Object.assign(buttons.style, {display: 'flex', gap: '12px', flexWrap: 'wrap'});
+    Object.assign(buttons.style, {
+      display: 'flex',
+      gap: '12px',
+      flexWrap: 'wrap',
+    });
 
     root.appendChild(image);
     root.appendChild(caption);
     root.appendChild(buttons);
     document.body.appendChild(root);
-    mounted = {root, image, caption, buttons};
+    mounted = { root, image, caption, buttons };
     return mounted;
   }
 
-  function renderButtons(document: Document, parts: Mounted, labels: readonly string[]): void {
+  function renderButtons(
+    document: Document,
+    parts: Mounted,
+    labels: readonly string[],
+  ): void {
     // Rebuilt only when the set changes. Replacing a button under the operator's pointer between
     // mousedown and mouseup would swallow the click that advances to the next part.
     const key = labels.join('|');
@@ -112,7 +120,7 @@ export function createQrPanel(host: QrPanelHost): QrPanel {
         font: 'inherit',
         fontSize: '18px',
         padding: '10px 20px',
-        borderRadius: '8px'
+        borderRadius: '8px',
       });
       button.addEventListener('click', () => {
         pressCount += 1;
@@ -142,6 +150,6 @@ export function createQrPanel(host: QrPanelHost): QrPanel {
     isShown: () => mounted !== null,
     dispose() {
       this.hide();
-    }
+    },
   };
 }

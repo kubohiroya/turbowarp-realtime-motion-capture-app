@@ -1,21 +1,23 @@
-import {describe, expect, it, vi} from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import {
   chooseTextFileWithDialog,
   lensCalibrationRequestParameters,
   lensCalibrationRoute,
   LensCalibrationLauncher,
-  type LensCalibrationHost
+  type LensCalibrationHost,
 } from '../src/lens-calibration.js';
-import {fakeDocument, fakeElement, findByText} from './fake-dom.js';
+import { fakeDocument, fakeElement, findByText } from './fake-dom.js';
 
-function host(overrides: Partial<LensCalibrationHost> = {}): LensCalibrationHost {
+function host(
+  overrides: Partial<LensCalibrationHost> = {},
+): LensCalibrationHost {
   return {
     resolveUrl: () => 'http://127.0.0.1:49711/lens-calibration?token=t',
     isServed: async () => true,
-    openWindow: () => ({closed: false}),
+    openWindow: () => ({ closed: false }),
     chooseTextFile: async () => null,
-    ...overrides
+    ...overrides,
   };
 }
 
@@ -26,8 +28,10 @@ describe('LensCalibrationLauncher', () => {
   });
 
   it('opens the calibration app and reads closed once the operator closes the window', async () => {
-    const window = {closed: false};
-    const launcher = new LensCalibrationLauncher(host({openWindow: () => window}));
+    const window = { closed: false };
+    const launcher = new LensCalibrationLauncher(
+      host({ openWindow: () => window }),
+    );
 
     await expect(launcher.open()).resolves.toBe('open');
     expect(launcher.isOpen()).toBe(true);
@@ -39,8 +43,8 @@ describe('LensCalibrationLauncher', () => {
 
   it('brings an open window forward instead of opening a second one', async () => {
     const focus = vi.fn();
-    const openWindow = vi.fn(() => ({closed: false, focus}));
-    const launcher = new LensCalibrationLauncher(host({openWindow}));
+    const openWindow = vi.fn(() => ({ closed: false, focus }));
+    const launcher = new LensCalibrationLauncher(host({ openWindow }));
 
     await launcher.open();
     await launcher.open();
@@ -50,9 +54,16 @@ describe('LensCalibrationLauncher', () => {
   });
 
   it('names the camera and its size for one of several cameras', async () => {
-    const resolveUrl = vi.fn(() => 'http://127.0.0.1:49713/lens-calibration?token=t');
-    const launcher = new LensCalibrationLauncher(host({resolveUrl}));
-    const request = {deviceId: 'device-b', width: 1280, height: 720, frameRate: 30};
+    const resolveUrl = vi.fn(
+      () => 'http://127.0.0.1:49713/lens-calibration?token=t',
+    );
+    const launcher = new LensCalibrationLauncher(host({ resolveUrl }));
+    const request = {
+      deviceId: 'device-b',
+      width: 1280,
+      height: 720,
+      frameRate: 30,
+    };
 
     await expect(launcher.open(request)).resolves.toBe('open');
 
@@ -61,19 +72,28 @@ describe('LensCalibrationLauncher', () => {
       ['cameraDeviceId', 'device-b'],
       ['cameraWidth', '1280'],
       ['cameraHeight', '720'],
-      ['cameraFrameRate', '30']
+      ['cameraFrameRate', '30'],
     ]);
-    expect(lensCalibrationRequestParameters({...request, frameRate: Number.NaN})).toHaveLength(3);
+    expect(
+      lensCalibrationRequestParameters({ ...request, frameRate: Number.NaN }),
+    ).toHaveLength(3);
   });
 
   it('leaves a window open for another camera alone and reports busy', async () => {
-    const window = {closed: false, focus: vi.fn()};
+    const window = { closed: false, focus: vi.fn() };
     const openWindow = vi.fn(() => window);
-    const launcher = new LensCalibrationLauncher(host({openWindow}));
-    const cameraA = {deviceId: 'device-a', width: 1280, height: 720, frameRate: 30};
+    const launcher = new LensCalibrationLauncher(host({ openWindow }));
+    const cameraA = {
+      deviceId: 'device-a',
+      width: 1280,
+      height: 720,
+      frameRate: 30,
+    };
 
     await launcher.open(cameraA);
-    await expect(launcher.open({...cameraA, deviceId: 'device-b'})).resolves.toBe('busy');
+    await expect(
+      launcher.open({ ...cameraA, deviceId: 'device-b' }),
+    ).resolves.toBe('busy');
     expect(openWindow).toHaveBeenCalledTimes(1);
     expect(launcher.isOpen()).toBe(true);
 
@@ -83,22 +103,28 @@ describe('LensCalibrationLauncher', () => {
 
     window.closed = true;
     expect(launcher.state()).toBe('closed');
-    await expect(launcher.open({...cameraA, deviceId: 'device-b'})).resolves.toBe('open');
+    await expect(
+      launcher.open({ ...cameraA, deviceId: 'device-b' }),
+    ).resolves.toBe('open');
     expect(openWindow).toHaveBeenCalledTimes(2);
   });
 
   it('is unavailable on a page with no origin to serve the calibration app from', async () => {
-    const openWindow = vi.fn(() => ({closed: false}));
-    const launcher = new LensCalibrationLauncher(host({resolveUrl: () => null, openWindow}));
+    const openWindow = vi.fn(() => ({ closed: false }));
+    const launcher = new LensCalibrationLauncher(
+      host({ resolveUrl: () => null, openWindow }),
+    );
 
     await expect(launcher.open()).resolves.toBe('unavailable');
     expect(openWindow).not.toHaveBeenCalled();
   });
 
   it('is unavailable when the host carries no calibration app, or cannot be asked', async () => {
-    const missing = new LensCalibrationLauncher(host({isServed: async () => false}));
+    const missing = new LensCalibrationLauncher(
+      host({ isServed: async () => false }),
+    );
     const failing = new LensCalibrationLauncher(
-      host({isServed: () => Promise.reject(new Error('offline'))})
+      host({ isServed: () => Promise.reject(new Error('offline')) }),
     );
 
     await expect(missing.open()).resolves.toBe('unavailable');
@@ -106,7 +132,9 @@ describe('LensCalibrationLauncher', () => {
   });
 
   it('reports a window the browser refused as blocked', async () => {
-    const launcher = new LensCalibrationLauncher(host({openWindow: () => null}));
+    const launcher = new LensCalibrationLauncher(
+      host({ openWindow: () => null }),
+    );
 
     await expect(launcher.open()).resolves.toBe('blocked');
     expect(launcher.state()).toBe('blocked');
@@ -115,11 +143,13 @@ describe('LensCalibrationLauncher', () => {
   it('keeps the chosen file text and clears it when a later choice is abandoned', async () => {
     const choices = ['{"schema":"twcs/camera-intrinsics"}', null];
     const launcher = new LensCalibrationLauncher(
-      host({chooseTextFile: async () => choices.shift() ?? null})
+      host({ chooseTextFile: async () => choices.shift() ?? null }),
     );
 
     await launcher.chooseFile();
-    expect(launcher.chosenFileText()).toBe('{"schema":"twcs/camera-intrinsics"}');
+    expect(launcher.chosenFileText()).toBe(
+      '{"schema":"twcs/camera-intrinsics"}',
+    );
 
     await launcher.chooseFile();
     expect(launcher.chosenFileText()).toBe('');
@@ -132,7 +162,7 @@ describe('chooseTextFileWithDialog', () => {
     const choice = chooseTextFileWithDialog({
       document: fakeDocument(),
       mount: mount as unknown as HTMLElement,
-      locale: 'ja'
+      locale: 'ja',
     });
 
     expect(mount.children).toHaveLength(1);
@@ -147,7 +177,7 @@ describe('chooseTextFileWithDialog', () => {
     void chooseTextFileWithDialog({
       document: fakeDocument(),
       mount: mount as unknown as HTMLElement,
-      locale: 'en'
+      locale: 'en',
     });
     const input = findInput(mount);
     const picked = vi.fn();
@@ -159,7 +189,9 @@ describe('chooseTextFileWithDialog', () => {
   });
 });
 
-function findInput(element: ReturnType<typeof fakeElement>): ReturnType<typeof fakeElement> | null {
+function findInput(
+  element: ReturnType<typeof fakeElement>,
+): ReturnType<typeof fakeElement> | null {
   if (element.tagName === 'input') return element;
   for (const child of element.children) {
     const found = findInput(child);

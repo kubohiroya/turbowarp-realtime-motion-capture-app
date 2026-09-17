@@ -1,5 +1,5 @@
-import type {ServiceCamera} from '../contracts.ts';
-import type {CameraModel, KeypointObservation, Vector3} from './types.ts';
+import type { ServiceCamera } from '../contracts.ts';
+import type { CameraModel, KeypointObservation, Vector3 } from './types.ts';
 
 const SUPPORTED_DISTORTION_LENGTHS = new Set([0, 4, 5, 8]);
 const ORTHONORMAL_TOLERANCE = 1e-3;
@@ -14,22 +14,39 @@ const MINIMUM_DEPTH = 1e-6;
  * pinhole camera rather than being refused.
  */
 export function createCameraModel(camera: ServiceCamera): CameraModel {
-  const {intrinsics} = camera.model;
-  const {fx, fy, cx, cy, skew} = intrinsics;
-  if (!(fx > 0) || !(fy > 0) || !isFiniteNumber(cx) || !isFiniteNumber(cy) || !isFiniteNumber(skew)) {
-    throw new Error(`Camera ${camera.cameraId} needs finite intrinsics with positive focal lengths.`);
+  const { intrinsics } = camera.model;
+  const { fx, fy, cx, cy, skew } = intrinsics;
+  if (
+    !(fx > 0) ||
+    !(fy > 0) ||
+    !isFiniteNumber(cx) ||
+    !isFiniteNumber(cy) ||
+    !isFiniteNumber(skew)
+  ) {
+    throw new Error(
+      `Camera ${camera.cameraId} needs finite intrinsics with positive focal lengths.`,
+    );
   }
   const coefficients = camera.model.distortion.coefficients;
   if (!SUPPORTED_DISTORTION_LENGTHS.has(coefficients.length)) {
-    throw new Error(`Camera ${camera.cameraId} must carry 0, 4, 5 or 8 OpenCV distortion coefficients.`);
+    throw new Error(
+      `Camera ${camera.cameraId} must carry 0, 4, 5 or 8 OpenCV distortion coefficients.`,
+    );
   }
-  const distortion = Array.from({length: 8}, (_, index) => coefficients[index] ?? 0);
+  const distortion = Array.from(
+    { length: 8 },
+    (_, index) => coefficients[index] ?? 0,
+  );
   if (!distortion.every(isFiniteNumber)) {
-    throw new Error(`Camera ${camera.cameraId} distortion coefficients must be finite.`);
+    throw new Error(
+      `Camera ${camera.cameraId} distortion coefficients must be finite.`,
+    );
   }
   const matrix = camera.cameraFromReference;
   if (matrix.length !== 16 || !matrix.every(isFiniteNumber)) {
-    throw new Error(`Camera ${camera.cameraId} needs a 16 number cameraFromReference.`);
+    throw new Error(
+      `Camera ${camera.cameraId} needs a 16 number cameraFromReference.`,
+    );
   }
   for (const [index, expected] of [
     [12, 0],
@@ -38,10 +55,14 @@ export function createCameraModel(camera: ServiceCamera): CameraModel {
     [15, 1],
   ] as const) {
     if (Math.abs(element(matrix, index) - expected) > 1e-6) {
-      throw new Error(`Camera ${camera.cameraId} cameraFromReference must be an affine transform.`);
+      throw new Error(
+        `Camera ${camera.cameraId} cameraFromReference must be an affine transform.`,
+      );
     }
   }
-  const rotation = [0, 1, 2, 4, 5, 6, 8, 9, 10].map((index) => element(matrix, index));
+  const rotation = [0, 1, 2, 4, 5, 6, 8, 9, 10].map((index) =>
+    element(matrix, index),
+  );
   const translation = [3, 7, 11].map((index) => element(matrix, index));
   requireOrthonormal(rotation);
 
@@ -57,7 +78,7 @@ export function createCameraModel(camera: ServiceCamera): CameraModel {
     skew,
     distortion,
     rotation,
-    translation
+    translation,
   };
 }
 
@@ -369,7 +390,7 @@ function requireOrthonormal(rotation: readonly number[]): void {
       const expected = i === j ? 1 : 0;
       if (Math.abs(dot - expected) > ORTHONORMAL_TOLERANCE) {
         throw new Error(
-          "worldFromCameraMatrix rotation must be orthonormal within 1e-3.",
+          'worldFromCameraMatrix rotation must be orthonormal within 1e-3.',
         );
       }
     }
@@ -386,7 +407,7 @@ function requireOrthonormal(rotation: readonly number[]): void {
         element(rotation, 4) * element(rotation, 6));
   if (Math.abs(determinant - 1) > ORTHONORMAL_TOLERANCE) {
     throw new Error(
-      "worldFromCameraMatrix rotation must be a right-handed rotation.",
+      'worldFromCameraMatrix rotation must be a right-handed rotation.',
     );
   }
 }
@@ -433,5 +454,5 @@ function element(values: readonly number[], index: number): number {
 }
 
 function isFiniteNumber(value: number): boolean {
-  return typeof value === "number" && Number.isFinite(value);
+  return typeof value === 'number' && Number.isFinite(value);
 }

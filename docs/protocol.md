@@ -8,14 +8,14 @@
 
 ## 利用する契約
 
-| 契約 | schema識別子 | 用途 |
-|---|---|---|
-| Session policy | `twrmc/session-policy` | revision、有効期限、session topology、calibration参照、MoveNet設定、運用上限。pairing credentialは含めない |
-| Camera calibration | `twrmc/camera-calibration` | 画像geometry、intrinsic、distortion、camera-to-world transform |
-| PoseFrame2D v1 | `twrmc/pose-frame-2d` | 最大6人分のtracking IDと順序固定COCO-17画像keypoint |
-| PoseFrame2D v2 | `twrmc/pose-frame-2d` | v1に加えて、人物ごとのサイリウムmarker観測（最大4件） |
-| PoseFrame3D | `twrmc/pose-frame-3d` | 最大6人分の3D姿勢と品質情報 |
-| Performance DSL | `twrmc/performance-dsl` | 最大6人分の色、開始／終了演出、avatar asset |
+| 契約               | schema識別子               | 用途                                                                                                       |
+| ------------------ | -------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Session policy     | `twrmc/session-policy`     | revision、有効期限、session topology、calibration参照、MoveNet設定、運用上限。pairing credentialは含めない |
+| Camera calibration | `twrmc/camera-calibration` | 画像geometry、intrinsic、distortion、camera-to-world transform                                             |
+| PoseFrame2D v1     | `twrmc/pose-frame-2d`      | 最大6人分のtracking IDと順序固定COCO-17画像keypoint                                                        |
+| PoseFrame2D v2     | `twrmc/pose-frame-2d`      | v1に加えて、人物ごとのサイリウムmarker観測（最大4件）                                                      |
+| PoseFrame3D        | `twrmc/pose-frame-3d`      | 最大6人分の3D姿勢と品質情報                                                                                |
+| Performance DSL    | `twrmc/performance-dsl`    | 最大6人分の色、開始／終了演出、avatar asset                                                                |
 
 正本の定義は`turbowarp-realtime-motion-capture`の`src/protocol/schemas.ts`にあり、生成したJSON Schemaは
 同repositoryの`schemas/`で配布します。app側はextensionのcodec blockを通してvalidateとencodeを

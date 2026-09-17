@@ -1,5 +1,5 @@
-import {COCO_17_KEYPOINT_IDS} from '../contracts.ts';
-import type {Coco17KeypointId} from '../contracts.ts';
+import { COCO_17_KEYPOINT_IDS } from '../contracts.ts';
+import type { Coco17KeypointId } from '../contracts.ts';
 import {
   depthOf,
   meanReprojectionError,
@@ -66,7 +66,7 @@ export function fuseSynchronizedSample(
   const persons: FusedPerson[] = [];
   for (const cluster of clusters) {
     const cameraIds = [
-      ...new Set(cluster.map((index) => views[index]?.cameraId ?? "")),
+      ...new Set(cluster.map((index) => views[index]?.cameraId ?? '')),
     ]
       .filter((cameraId) => cameraId.length > 0)
       .sort();
@@ -108,7 +108,7 @@ function collectViews(
         cameraId: camera.cameraId,
         trackingId: person.trackingId,
         model,
-        observations
+        observations,
       });
     }
   }

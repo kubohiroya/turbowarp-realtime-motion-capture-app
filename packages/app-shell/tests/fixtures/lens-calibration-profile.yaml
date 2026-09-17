@@ -19,19 +19,19 @@ projection_matrix:
   cols: 4
   data: [912.4371, 0, 641.2097, 0, 0, 910.8123, 359.6452, 0, 0, 0, 1, 0]
 turbowarp_camera_source:
-  schema: "twcs/camera-intrinsics"
+  schema: 'twcs/camera-intrinsics'
   version: 1
-  profileId: "session-1"
-  calibratedAt: "2026-09-17T06:40:12.518Z"
-  producer: "turbowarp-camera-calibration"
+  profileId: 'session-1'
+  calibratedAt: '2026-09-17T06:40:12.518Z'
+  producer: 'turbowarp-camera-calibration'
   undistorted: false
   capture:
     frameRate: 30
-    resizeMode: "none"
+    resizeMode: 'none'
     zoom: 1
-    focusMode: "continuous"
+    focusMode: 'continuous'
   quality:
     sampleCount: 18
     reprojectionErrorPx: 0.412
   device:
-    label: "FaceTime HD Camera"
+    label: 'FaceTime HD Camera'

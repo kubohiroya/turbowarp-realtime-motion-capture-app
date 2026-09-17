@@ -1,4 +1,4 @@
-import type {Coco17KeypointId} from '../contracts.ts';
+import type { Coco17KeypointId } from '../contracts.ts';
 
 /** One temporally resampled COCO-17 keypoint of one tracked person. */
 export interface SynchronizedKeypoint2D {

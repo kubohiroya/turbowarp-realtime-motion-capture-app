@@ -8,9 +8,15 @@
  * The service is replaced, never the session, so two implementations are compared on identical input.
  */
 
-import {Pose3dService} from './service.ts';
-import {request, validateResponse, type ImplementationId, type PoseFrame3DV2, type ServiceErrorCode} from './contracts.ts';
-import type {Session} from './session.ts';
+import { Pose3dService } from './service.ts';
+import {
+  request,
+  validateResponse,
+  type ImplementationId,
+  type PoseFrame3DV2,
+  type ServiceErrorCode,
+} from './contracts.ts';
+import type { Session } from './session.ts';
 
 export interface ServiceHandler {
   handle(message: unknown): unknown;
@@ -30,7 +36,10 @@ export interface ReplayResult {
   readonly framesAccepted: number;
   readonly requests: number;
   readonly unanswered: number;
-  readonly errors: ReadonlyArray<{readonly code: ServiceErrorCode; readonly message: string}>;
+  readonly errors: ReadonlyArray<{
+    readonly code: ServiceErrorCode;
+    readonly message: string;
+  }>;
   /** Milliseconds the service spent on each message, in the order they were handled. */
   readonly handleMs: readonly number[];
 }
@@ -43,14 +52,17 @@ export interface ReplayOptions {
   readonly nowMs?: () => number;
 }
 
-export function replaySession(session: Session, options: ReplayOptions = {}): ReplayResult {
+export function replaySession(
+  session: Session,
+  options: ReplayOptions = {},
+): ReplayResult {
   const service = options.service ?? new Pose3dService();
   const nowMs = options.nowMs ?? defaultNowMs;
   const configuration = options.implementation
-    ? {...session.configuration, implementation: options.implementation}
+    ? { ...session.configuration, implementation: options.implementation }
     : session.configuration;
   const answers: ReplayAnswer[] = [];
-  const errors: Array<{code: ServiceErrorCode; message: string}> = [];
+  const errors: Array<{ code: ServiceErrorCode; message: string }> = [];
   const handleMs: number[] = [];
   let id = 1;
   let framesSent = 0;
@@ -67,31 +79,56 @@ export function replaySession(session: Session, options: ReplayOptions = {}): Re
 
   const configured = send(request(id++, 'configure', configuration));
   const checkedConfiguration = validateResponse(configured);
-  if (!checkedConfiguration.ok || checkedConfiguration.value.type !== 'configured') {
+  if (
+    !checkedConfiguration.ok ||
+    checkedConfiguration.value.type !== 'configured'
+  ) {
     const reason = !checkedConfiguration.ok
-      ? {code: checkedConfiguration.code, message: checkedConfiguration.message}
-      : {code: 'invalid-response' as const, message: `Expected configured, received ${checkedConfiguration.value.type}.`};
-    return {answers: [], framesSent: 0, framesAccepted: 0, requests: 0, unanswered: 0, errors: [reason], handleMs};
+      ? {
+          code: checkedConfiguration.code,
+          message: checkedConfiguration.message,
+        }
+      : {
+          code: 'invalid-response' as const,
+          message: `Expected configured, received ${checkedConfiguration.value.type}.`,
+        };
+    return {
+      answers: [],
+      framesSent: 0,
+      framesAccepted: 0,
+      requests: 0,
+      unanswered: 0,
+      errors: [reason],
+      handleMs,
+    };
   }
 
   for (const event of session.events) {
     if (event.type === 'frame2d') {
       framesSent += 1;
-      const answer = validateResponse(send(request(id++, 'frame2d', {cameraId: event.cameraId, frame: event.frame})));
-      if (!answer.ok) errors.push({code: answer.code, message: answer.message});
+      const answer = validateResponse(
+        send(
+          request(id++, 'frame2d', {
+            cameraId: event.cameraId,
+            frame: event.frame,
+          }),
+        ),
+      );
+      if (!answer.ok)
+        errors.push({ code: answer.code, message: answer.message });
       else if (answer.value.type === 'accepted') framesAccepted += 1;
       else if (answer.value.type === 'error') errors.push(answer.value.payload);
       continue;
     }
     requests += 1;
-    const raw = send(request(id++, 'requestPose3d', {timestampUs: null}));
+    const raw = send(request(id++, 'requestPose3d', { timestampUs: null }));
     if (raw === null || raw === undefined) {
       unanswered += 1;
       continue;
     }
     const answer = validateResponse(raw);
     if (!answer.ok) {
-      errors.push({code: answer.code, message: answer.message});
+      errors.push({ code: answer.code, message: answer.message });
       continue;
     }
     if (answer.value.type === 'error') {
@@ -99,15 +136,33 @@ export function replaySession(session: Session, options: ReplayOptions = {}): Re
       continue;
     }
     if (answer.value.type !== 'pose3d') {
-      errors.push({code: 'invalid-response', message: `Expected pose3d, received ${answer.value.type}.`});
+      errors.push({
+        code: 'invalid-response',
+        message: `Expected pose3d, received ${answer.value.type}.`,
+      });
       continue;
     }
-    answers.push({atUs: event.atUs, frame: answer.value.payload, handleMs: handleMs[handleMs.length - 1] ?? 0});
+    answers.push({
+      atUs: event.atUs,
+      frame: answer.value.payload,
+      handleMs: handleMs[handleMs.length - 1] ?? 0,
+    });
   }
 
-  return {answers, framesSent, framesAccepted, requests, unanswered, errors, handleMs};
+  return {
+    answers,
+    framesSent,
+    framesAccepted,
+    requests,
+    unanswered,
+    errors,
+    handleMs,
+  };
 }
 
 function defaultNowMs(): number {
-  return typeof performance === 'object' && typeof performance.now === 'function' ? performance.now() : Date.now();
+  return typeof performance === 'object' &&
+    typeof performance.now === 'function'
+    ? performance.now()
+    : Date.now();
 }

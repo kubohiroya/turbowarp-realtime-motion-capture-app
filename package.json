@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": false,
   "description": "Reproducible source workspace for the TurboWarp Realtime Motion Capture camera and fusion apps.",
+  "license": "MPL-2.0",
+  "author": "Hiroya Kubo",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kubohiroya/turbowarp-realtime-motion-capture-app.git"
@@ -25,6 +27,7 @@
     "apps/*/source/assets",
     "config",
     "docs",
+    "index.html",
     "packages/*/package.json",
     "packages/*/scripts",
     "packages/*/src",
@@ -32,9 +35,13 @@
     "packages/*/tsconfig.json",
     "packages/*/vite.*.config.ts",
     "scripts",
+    "src",
+    "tests",
     "pnpm-lock.yaml",
     "pnpm-workspace.yaml",
-    "tsconfig.json"
+    "tsconfig.json",
+    "vite.config.ts",
+    "vitest.config.ts"
   ],
   "publishConfig": {
     "access": "public"
@@ -45,30 +52,46 @@
     "node": ">=22.18.0"
   },
   "scripts": {
-    "build": "pnpm --recursive --if-present run build",
-    "check:apps": "pnpm --filter \"./apps/*\" --if-present run check",
-    "check:extensions": "node --experimental-strip-types scripts/update-extension-readiness.ts --check && node --experimental-strip-types scripts/check-extension-readiness.ts",
-    "format": "node --experimental-strip-types scripts/check-format.ts",
-    "lint": "node --experimental-strip-types scripts/check-repository.ts",
-    "test": "node --experimental-strip-types scripts/release-snapshot.ts",
+    "dev": "vite --host 127.0.0.1",
+    "build": "pnpm run build:sb3 && vite build",
+    "build:workspaces": "pnpm --recursive --if-present run build",
+    "build:sb3": "pnpm run build:workspaces && node --experimental-strip-types scripts/build-downloads.ts",
+    "lint": "eslint config scripts src tests vite.config.ts vitest.config.ts",
+    "format": "prettier --check .",
+    "format:write": "prettier --write .",
     "typecheck": "tsc --project tsconfig.json && node --experimental-strip-types scripts/check-script-syntax.ts && pnpm --filter \"./packages/*\" --if-present run typecheck",
-    "check": "pnpm run lint && pnpm run format && pnpm run typecheck && pnpm run check:packages && pnpm run check:scripts && pnpm run check:pins && pnpm run check:extensions && pnpm run check:apps && pnpm run check:bundle-order && pnpm run test && pnpm run build",
-    "pin:extensions": "node --experimental-strip-types scripts/pin-embedded-extensions.ts --write",
-    "check:pins": "node --experimental-strip-types scripts/pin-embedded-extensions.ts",
-    "update:readiness": "node --experimental-strip-types scripts/update-extension-readiness.ts",
-    "check:bundle-order": "node --experimental-strip-types scripts/check-bundle-order.ts",
-    "pose3d:eval": "node --experimental-strip-types packages/pose-3d-service/scripts/pose-3d-eval.ts",
+    "test": "vitest run",
+    "check:repository": "node --experimental-strip-types scripts/check-repository.ts",
+    "check:text": "node --experimental-strip-types scripts/check-format.ts",
+    "check:release": "node --experimental-strip-types scripts/release-snapshot.ts",
+    "check:apps": "pnpm --filter \"./apps/*\" --if-present run check",
     "check:packages": "pnpm --filter \"./packages/*\" --if-present run check",
+    "check:extensions": "node --experimental-strip-types scripts/update-extension-readiness.ts --check && node --experimental-strip-types scripts/check-extension-readiness.ts",
+    "check:pins": "node --experimental-strip-types scripts/pin-embedded-extensions.ts",
+    "check:bundle-order": "node --experimental-strip-types scripts/check-bundle-order.ts",
+    "check:scripts": "node --experimental-strip-types scripts/build-app-scripts.ts",
+    "check": "pnpm run lint && pnpm run format && pnpm run typecheck && pnpm run test && pnpm run check:repository && pnpm run check:text && pnpm run check:packages && pnpm run check:scripts && pnpm run check:pins && pnpm run check:extensions && pnpm run check:apps && pnpm run check:bundle-order && pnpm run check:release && pnpm run build",
+    "pin:extensions": "node --experimental-strip-types scripts/pin-embedded-extensions.ts --write",
+    "update:readiness": "node --experimental-strip-types scripts/update-extension-readiness.ts",
     "snapshot": "node --experimental-strip-types scripts/release-snapshot.ts --write",
     "build:player": "node --experimental-strip-types scripts/build-player.ts",
     "build:binary": "node --experimental-strip-types scripts/build-binary.ts",
     "build:scripts": "node --experimental-strip-types scripts/build-app-scripts.ts --write",
-    "check:scripts": "node --experimental-strip-types scripts/build-app-scripts.ts"
+    "pose3d:eval": "node --experimental-strip-types packages/pose-3d-service/scripts/pose-3d-eval.ts"
   },
   "devDependencies": {
+    "@eslint/js": "9.39.5",
     "@kubohiroya/sb3-toolchain": "0.12.0",
     "@turbowarp/packager": "3.13.0",
     "@types/node": "24.13.3",
-    "typescript": "5.9.3"
+    "eslint": "9.39.5",
+    "prettier": "3.9.6",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.66.0",
+    "vite": "8.2.2",
+    "vitest": "5.0.0"
+  },
+  "dependencies": {
+    "@kubohiroya/turbowarp-app-shell": "0.2.0"
   }
 }

@@ -7,7 +7,7 @@ import {
   text,
   variable,
   type BlockNode,
-  type Script
+  type Script,
 } from '../../packages/sb3-script/src/blocks.ts';
 import {
   equals,
@@ -16,7 +16,7 @@ import {
   repeatUntil,
   setVariable,
   wait,
-  whenFlagClicked
+  whenFlagClicked,
 } from '../../packages/sb3-script/src/standard.ts';
 
 /**
@@ -35,14 +35,14 @@ const webrtc = 'kubohiroyawebrtc';
 
 export const networkReferences = () => ({
   message: namedReference('network message', 'variable:network-message'),
-  type: namedReference('network message type', 'variable:network-message-type')
+  type: namedReference('network message type', 'variable:network-message-type'),
 });
 
 export type NetworkReferences = ReturnType<typeof networkReferences>;
 
 export const networkVariables = (references: NetworkReferences) => ({
   [references.message.id]: [references.message.name, ''],
-  [references.type.id]: [references.type.name, '']
+  [references.type.id]: [references.type.name, ''],
 });
 
 export interface MessageRoute {
@@ -54,28 +54,39 @@ export function messageDispatcher(
   shell: string,
   references: NetworkReferences,
   routes: readonly MessageRoute[],
-  position: {x: number; y: number}
+  position: { x: number; y: number },
 ): Script {
   return script(position, [
     whenFlagClicked(),
     // Pose frames travel on latest-data channels. The answering side attaches them only when this
     // is on at the moment the connection opens, so it is switched on before anything can pair.
-    block(`${webrtc}_setLatestDataEnabled`, {ENABLED: text('true')}),
+    block(`${webrtc}_setLatestDataEnabled`, { ENABLED: text('true') }),
     forever([
       block(`${shell}_sortNetworkMessages`),
-      repeatUntil(equals(reporter(block(`${shell}_sortedMessageCount`)), number(0)), [
-        setVariable(references.message, reporter(block(`${shell}_nextSortedMessage`))),
-        setVariable(
-          references.type,
-          reporter(
-            block(`${shell}_jsonValueAt`, {JSON: variable(references.message), PATH: text('type')})
-          )
-        ),
-        ...routes.map((route) =>
-          ifThen(equals(variable(references.type), text(route.type)), [...route.handle])
-        )
-      ]),
-      wait(0.05)
-    ])
+      repeatUntil(
+        equals(reporter(block(`${shell}_sortedMessageCount`)), number(0)),
+        [
+          setVariable(
+            references.message,
+            reporter(block(`${shell}_nextSortedMessage`)),
+          ),
+          setVariable(
+            references.type,
+            reporter(
+              block(`${shell}_jsonValueAt`, {
+                JSON: variable(references.message),
+                PATH: text('type'),
+              }),
+            ),
+          ),
+          ...routes.map((route) =>
+            ifThen(equals(variable(references.type), text(route.type)), [
+              ...route.handle,
+            ]),
+          ),
+        ],
+      ),
+      wait(0.05),
+    ]),
   ]);
 }

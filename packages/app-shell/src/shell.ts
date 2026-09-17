@@ -1,10 +1,10 @@
 import {
   createAppShellLoadingPresenter,
   createRuntimeMessageIndicator,
-  resolveAppShellLocale
+  resolveAppShellLocale,
 } from '@kubohiroya/turbowarp-app-shell';
 
-import type {AppShellAppConfig, ShellLocale} from './app-config.js';
+import type { AppShellAppConfig, ShellLocale } from './app-config.js';
 
 export type ShellState = 'unmounted' | 'ready' | 'unavailable';
 
@@ -57,10 +57,11 @@ function normalizeLocale(value: string | undefined): ShellLocale {
  */
 export function createMultiviewPoseShell(
   config: AppShellAppConfig,
-  host: ShellHost
+  host: ShellHost,
 ): MultiviewPoseShell {
   const locale = normalizeLocale(
-    host.resolveLocale?.() ?? (host.document === null ? 'en' : resolveAppShellLocale())
+    host.resolveLocale?.() ??
+      (host.document === null ? 'en' : resolveAppShellLocale()),
   );
   let parts: MountedParts | null = null;
   let state: ShellState = 'unmounted';
@@ -73,22 +74,25 @@ export function createMultiviewPoseShell(
     const target = host.resolveMount();
     if (document === null || target === null) return null;
     try {
-      const loading = createAppShellLoadingPresenter({document, mount: target});
+      const loading = createAppShellLoadingPresenter({
+        document,
+        mount: target,
+      });
       const notice = createRuntimeMessageIndicator({
         document,
         mount: target,
         initialLocale: locale,
         tone: 'info',
-        locales: config.noticeLocales
+        locales: config.noticeLocales,
       });
       const error = createRuntimeMessageIndicator({
         document,
         mount: target,
         initialLocale: locale,
         tone: 'error',
-        locales: config.errorLocales
+        locales: config.errorLocales,
       });
-      parts = {loading, notice, error};
+      parts = { loading, notice, error };
       state = 'ready';
       return parts;
     } catch {
@@ -101,7 +105,9 @@ export function createMultiviewPoseShell(
     locale,
     state: () => state,
     showLoading(label, progress) {
-      mount()?.loading.show(progress === null ? {label} : {label, progress});
+      mount()?.loading.show(
+        progress === null ? { label } : { label, progress },
+      );
     },
     hideLoading() {
       parts?.loading.hide();
@@ -109,12 +115,14 @@ export function createMultiviewPoseShell(
     showNotice(message) {
       const mounted = mount();
       mounted?.error.hide();
-      mounted?.notice.show({message});
+      mounted?.notice.show({ message });
     },
     showError(message, details) {
       const mounted = mount();
       mounted?.notice.hide();
-      mounted?.error.show(Object.keys(details).length === 0 ? {message} : {message, details});
+      mounted?.error.show(
+        Object.keys(details).length === 0 ? { message } : { message, details },
+      );
     },
     hideMessage() {
       parts?.notice.hide();
@@ -128,6 +136,6 @@ export function createMultiviewPoseShell(
       parts?.error.dispose();
       parts = null;
       state = 'unmounted';
-    }
+    },
   };
 }

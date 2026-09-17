@@ -27,12 +27,20 @@ import {
   type PoseFrame2D,
   type PoseFrame3DPerson,
   type PoseFrame3DV2,
-  type ServiceConfiguration
+  type ServiceConfiguration,
 } from '../contracts.ts';
-import {fuseSynchronizedSample, DEFAULT_FUSION_GEOMETRY_OPTIONS, type FusionGeometryOptions} from './fuse.ts';
-import {createCameraModel, depthOf} from './geometry.ts';
-import {MultiCameraJitterBuffer, DEFAULT_JITTER_BUFFER_OPTIONS, type JitterBufferOptions} from './jitter-buffer.ts';
-import type {CameraModel, FusedPerson} from './types.ts';
+import {
+  fuseSynchronizedSample,
+  DEFAULT_FUSION_GEOMETRY_OPTIONS,
+  type FusionGeometryOptions,
+} from './fuse.ts';
+import { createCameraModel, depthOf } from './geometry.ts';
+import {
+  MultiCameraJitterBuffer,
+  DEFAULT_JITTER_BUFFER_OPTIONS,
+  type JitterBufferOptions,
+} from './jitter-buffer.ts';
+import type { CameraModel, FusedPerson } from './types.ts';
 
 export interface FusionOptions {
   readonly buffer: JitterBufferOptions;
@@ -49,7 +57,7 @@ export interface FusionOptions {
 export const DEFAULT_FUSION_OPTIONS: FusionOptions = Object.freeze({
   buffer: DEFAULT_JITTER_BUFFER_OPTIONS,
   geometry: DEFAULT_FUSION_GEOMETRY_OPTIONS,
-  outputDelayUs: 33_000
+  outputDelayUs: 33_000,
 });
 
 export interface FusionStatus {
@@ -102,10 +110,16 @@ export class FusionEstimator {
     if (this.models.size === 0) return null;
     const newest = this.buffer.newestTimestampUs();
     if (newest === undefined) return null;
-    const outputTimestampUs = timestampUs ?? newest - this.options.outputDelayUs;
+    const outputTimestampUs =
+      timestampUs ?? newest - this.options.outputDelayUs;
     const sample = this.buffer.sampleAt(outputTimestampUs);
-    if (sample.cameras.length < this.options.geometry.minCamerasPerPerson) return null;
-    const persons = fuseSynchronizedSample(sample, this.models, this.options.geometry).slice(0, LIMITS.maxPersons);
+    if (sample.cameras.length < this.options.geometry.minCamerasPerPerson)
+      return null;
+    const persons = fuseSynchronizedSample(
+      sample,
+      this.models,
+      this.options.geometry,
+    ).slice(0, LIMITS.maxPersons);
     this.lastOutputTimestampUs = outputTimestampUs;
     this.lastPersons = persons.length;
     if (persons.length === 0) return null;
@@ -116,7 +130,7 @@ export class FusionEstimator {
       timestampUs: outputTimestampUs,
       referenceId: this.referenceId,
       implementation: 'fusion-v0',
-      persons: persons.map((person) => this.toPerson(person))
+      persons: persons.map((person) => this.toPerson(person)),
     };
   }
 
@@ -127,24 +141,38 @@ export class FusionEstimator {
       acceptedFrames: this.buffer.acceptedFrameCount(),
       droppedFrames: this.buffer.droppedFrameCount(),
       lastOutputTimestampUs: this.lastOutputTimestampUs,
-      lastPersons: this.lastPersons
+      lastPersons: this.lastPersons,
     };
   }
 
   private toPerson(person: FusedPerson): PoseFrame3DPerson {
     const joints: Joint3D[] = COCO_17_KEYPOINT_IDS.map((id) => {
-      const keypoint = person.keypoints.find((candidate) => candidate.id === id);
+      const keypoint = person.keypoints.find(
+        (candidate) => candidate.id === id,
+      );
       if (!keypoint?.point) {
-        return {id, x: 0, y: 0, z: 0, sigma: 0, state: 'missing', cameraIds: []};
+        return {
+          id,
+          x: 0,
+          y: 0,
+          z: 0,
+          sigma: 0,
+          state: 'missing',
+          cameraIds: [],
+        };
       }
       return {
         id,
         x: keypoint.point.x,
         y: keypoint.point.y,
         z: keypoint.point.z,
-        sigma: this.sigmaOf(keypoint.meanReprojectionErrorPx, keypoint.point, person.cameraIds),
+        sigma: this.sigmaOf(
+          keypoint.meanReprojectionErrorPx,
+          keypoint.point,
+          person.cameraIds,
+        ),
         state: 'measured',
-        cameraIds: [...person.cameraIds]
+        cameraIds: [...person.cameraIds],
       };
     });
     return {
@@ -155,7 +183,7 @@ export class FusionEstimator {
       confidence: person.score,
       identitySource: 'geometry',
       meanReprojectionErrorPx: person.meanReprojectionErrorPx,
-      joints
+      joints,
     };
   }
 
@@ -168,7 +196,11 @@ export class FusionEstimator {
    * a floor rather than a bound — enough to compare joints within a frame, not to trust as a
    * confidence interval. A real covariance comes with the constrained solve in stage 5.
    */
-  private sigmaOf(errorPx: number, point: {x: number; y: number; z: number}, cameraIds: readonly string[]): number {
+  private sigmaOf(
+    errorPx: number,
+    point: { x: number; y: number; z: number },
+    cameraIds: readonly string[],
+  ): number {
     let sigma = 0;
     for (const cameraId of cameraIds) {
       const model = this.models.get(cameraId);
@@ -183,7 +215,9 @@ export class FusionEstimator {
 }
 
 /** The contract's identifier alphabet, which a tracking ID from a detector need not respect. */
-function identifierOf(member: {cameraId: string; trackingId: string} | undefined): string {
+function identifierOf(
+  member: { cameraId: string; trackingId: string } | undefined,
+): string {
   const text = `${member?.cameraId ?? 'unknown'}.${member?.trackingId ?? 'unknown'}`;
   return text.replace(/[^A-Za-z0-9._-]/gu, '_').slice(0, 64);
 }

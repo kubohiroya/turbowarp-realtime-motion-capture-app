@@ -6,7 +6,7 @@ import {
   script,
   text,
   variable,
-  type Script
+  type Script,
 } from '../../packages/sb3-script/src/blocks.ts';
 import {
   changeVariable,
@@ -15,22 +15,26 @@ import {
   ifThen,
   join,
   not,
-  setVariable
+  setVariable,
 } from '../../packages/sb3-script/src/standard.ts';
-import {messageDispatcher, networkReferences, networkVariables} from './network.ts';
-import {fusionPoseChannelSetup, fusionPoseSummary} from './pose.ts';
+import {
+  messageDispatcher,
+  networkReferences,
+  networkVariables,
+} from './network.ts';
+import { fusionPoseChannelSetup, fusionPoseSummary } from './pose.ts';
 import {
   external3dServiceFlag,
   fusionPose3dReferences,
   fusionPose3dScripts,
-  fusionPose3dVariables
+  fusionPose3dVariables,
 } from './pose-3d.ts';
 import {
   fusionSyncLists,
   fusionSyncReferences,
   fusionSyncRoute,
   fusionSyncSteps,
-  fusionSyncVariables
+  fusionSyncVariables,
 } from './space-time.ts';
 import {
   concatenate,
@@ -38,7 +42,7 @@ import {
   pairingButtons,
   pairingReferences,
   PairingSteps,
-  pairingVariables
+  pairingVariables,
 } from './pairing.ts';
 
 const shell = 'realtimemotioncapturefusionshell';
@@ -53,7 +57,7 @@ const action = {
   start3d: 'start3d',
   stop3d: 'stop3d',
   cancelPairing: 'cancelPairing',
-  diagnostics: 'diagnostics'
+  diagnostics: 'diagnostics',
 } as const;
 
 /** The camera the answer is read with. Its own name, so it never shares a lease with anything else. */
@@ -66,11 +70,14 @@ const pose3dRefs = fusionPose3dReferences();
 const poseSummary = {
   index: namedReference('pose summary index', 'variable:pose-summary-index'),
   peer: namedReference('pose summary peer', 'variable:pose-summary-peer'),
-  summary: namedReference('pose summary', 'variable:pose-summary')
+  summary: namedReference('pose summary', 'variable:pose-summary'),
 };
 const pairing = new PairingSteps(shell, pairingRefs);
 /** Numbers the camera apps in the order they were paired: camera-1, camera-2, ... */
-const pairedCameraCount = namedReference('paired camera count', 'variable:paired-camera-count');
+const pairedCameraCount = namedReference(
+  'paired camera count',
+  'variable:paired-camera-count',
+);
 
 export const fusionAppStageData = {
   variables: {
@@ -81,10 +88,10 @@ export const fusionAppStageData = {
     [poseSummary.index.id]: [poseSummary.index.name, 0],
     [poseSummary.peer.id]: [poseSummary.peer.name, ''],
     [poseSummary.summary.id]: [poseSummary.summary.name, ''],
-    [pairedCameraCount.id]: [pairedCameraCount.name, 0]
+    [pairedCameraCount.id]: [pairedCameraCount.name, 0],
   },
   lists: fusionSyncLists(syncRefs),
-  broadcasts: {}
+  broadcasts: {},
 } as const;
 
 const joinLabel = (left: string, right: ReturnType<typeof block>) =>
@@ -94,41 +101,50 @@ const menu = () => [
   block(`${titleMenu}_clearAppMenuActions`),
   block(`${titleMenu}_addAppMenuAction`, {
     ACTION: text(action.dslFiles),
-    LABEL: text('演出ファイルを選ぶ')
+    LABEL: text('演出ファイルを選ぶ'),
   }),
   ifThen(pairing.featureEnabled(), [
     block(`${titleMenu}_addAppMenuAction`, {
       ACTION: text(action.pairCameraApp),
-      LABEL: text('カメラアプリと接続する')
+      LABEL: text('カメラアプリと接続する'),
     }),
     block(`${titleMenu}_addAppMenuAction`, {
       ACTION: text(action.cancelPairing),
-      LABEL: text('接続をやめる')
+      LABEL: text('接続をやめる'),
     }),
     block(`${titleMenu}_addAppMenuAction`, {
       ACTION: text(action.spaceTimeCalibration),
-      LABEL: text('空間と時刻を校正する')
-    })
-  ]),
-  ifThen(block(`${shell}_appFeatureEnabled`, {FEATURE: text(external3dServiceFlag)}), [
-    block(`${titleMenu}_addAppMenuAction`, {
-      ACTION: text(action.start3d),
-      LABEL: text('3D統合を開始する')
+      LABEL: text('空間と時刻を校正する'),
     }),
-    block(`${titleMenu}_addAppMenuAction`, {
-      ACTION: text(action.stop3d),
-      LABEL: text('3D統合を止める')
-    })
   ]),
+  ifThen(
+    block(`${shell}_appFeatureEnabled`, {
+      FEATURE: text(external3dServiceFlag),
+    }),
+    [
+      block(`${titleMenu}_addAppMenuAction`, {
+        ACTION: text(action.start3d),
+        LABEL: text('3D統合を開始する'),
+      }),
+      block(`${titleMenu}_addAppMenuAction`, {
+        ACTION: text(action.stop3d),
+        LABEL: text('3D統合を止める'),
+      }),
+    ],
+  ),
   block(`${titleMenu}_addAppMenuAction`, {
     ACTION: text(action.diagnostics),
-    LABEL: text('動作状況を見る')
-  })
+    LABEL: text('動作状況を見る'),
+  }),
 ];
 
 const stopAnswerPreview = () => [
-  block(`${cameraSource}_hideCameraPreview`, {CAMERA_ID: text(answerCameraId)}),
-  block(`${cameraSource}_stopSharedCamera`, {CAMERA_ID: text(answerCameraId)})
+  block(`${cameraSource}_hideCameraPreview`, {
+    CAMERA_ID: text(answerCameraId),
+  }),
+  block(`${cameraSource}_stopSharedCamera`, {
+    CAMERA_ID: text(answerCameraId),
+  }),
 ];
 
 /**
@@ -144,11 +160,13 @@ export const fusionAppScripts: readonly Script[] = [
     [
       {
         type: linkTestMessage,
-        handle: [setVariable(pairingRefs.linkTest, variable(networkRefs.message))]
+        handle: [
+          setVariable(pairingRefs.linkTest, variable(networkRefs.message)),
+        ],
       },
-      fusionSyncRoute(syncRefs, networkRefs.message)
+      fusionSyncRoute(syncRefs, networkRefs.message),
     ],
-    {x: 1200, y: 48}
+    { x: 1200, y: 48 },
   ),
 
   /** M-10 (#34 stage 1): forward 2D poses to the 3D pose service and show its state. */
@@ -160,62 +178,82 @@ export const fusionAppScripts: readonly Script[] = [
     spaceTimeResults: syncRefs.results,
     startAction: action.start3d,
     stopAction: action.stop3d,
-    position: {x: 1800, y: 48}
+    position: { x: 1800, y: 48 },
   }),
 
   /** M-08, fusion side: project the pattern, collect every camera's result, solve, and gate READY. */
-  script({x: 1200, y: 700}, [
-    block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.spaceTimeCalibration}),
-    ...fusionSyncSteps({shell, references: syncRefs}),
+  script({ x: 1200, y: 700 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.spaceTimeCalibration },
+    ),
+    ...fusionSyncSteps({ shell, references: syncRefs }),
     ...menu(),
-    block(`${titleMenu}_showMenu`)
+    block(`${titleMenu}_showMenu`),
   ]),
 
-  script({x: 48, y: 48}, [
+  script({ x: 48, y: 48 }, [
     block('event_whenflagclicked'),
-    block(`${shell}_showAppLoading`, {LABEL: text('統合アプリを起動しています')}),
+    block(`${shell}_showAppLoading`, {
+      LABEL: text('統合アプリを起動しています'),
+    }),
     ...menu(),
     block(`${shell}_hideAppLoading`),
-    block(`${titleMenu}_showMenu`)
+    block(`${titleMenu}_showMenu`),
   ]),
 
-  script({x: 48, y: 320}, [
-    block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.dslFiles}),
-    block(`${titleMenu}_showDslFiles`)
+  script({ x: 48, y: 320 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.dslFiles },
+    ),
+    block(`${titleMenu}_showDslFiles`),
   ]),
 
   /**
    * A DSL is announced by the extension, not polled for. The source is read here so a later script
    * can validate it; nothing consumes it yet.
    */
-  script({x: 48, y: 480}, [
+  script({ x: 48, y: 480 }, [
     block(`${titleMenu}_whenDslSourceOpened`),
     block(`${shell}_showAppNotice`, {
-      MESSAGE: joinLabel('読み込んだ演出ファイル: ', block(`${titleMenu}_openedDslName`))
-    })
+      MESSAGE: joinLabel(
+        '読み込んだ演出ファイル: ',
+        block(`${titleMenu}_openedDslName`),
+      ),
+    }),
   ]),
 
-  script({x: 48, y: 660}, [
-    block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.diagnostics}),
-    ...fusionPoseSummary({shell, ...poseSummary}),
+  script({ x: 48, y: 660 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.diagnostics },
+    ),
+    ...fusionPoseSummary({ shell, ...poseSummary }),
     block(`${shell}_showAppNotice`, {
       MESSAGE: reporter(
         join(
-          joinLabel('起動時の機能設定: ', block(`${shell}_appFeatureFlagState`)),
+          joinLabel(
+            '起動時の機能設定: ',
+            block(`${shell}_appFeatureFlagState`),
+          ),
           reporter(
             join(
               text(' / 姿勢フレーム: '),
               reporter(
                 block('operator_join', {
                   STRING1: variable(poseSummary.summary),
-                  STRING2: text('')
-                })
-              )
-            )
-          )
-        )
-      )
-    })
+                  STRING2: text(''),
+                }),
+              ),
+            ),
+          ),
+        ),
+      ),
+    }),
   ]),
 
   /**
@@ -225,82 +263,113 @@ export const fusionAppScripts: readonly Script[] = [
    * second camera app's answer can never complete the first one's exchange. The answer camera shows
    * a preview while it reads, because the courier has to see where to hold the phone.
    */
-  script({x: 600, y: 48}, [
-    block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.pairCameraApp}),
+  script({ x: 600, y: 48 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.pairCameraApp },
+    ),
     ifElse(
       not(pairing.featureEnabled()),
-      [pairing.error(text('この配布物ではQRペアリングが無効です。'), 'PAIRING_DISABLED')],
+      [
+        pairing.error(
+          text('この配布物ではQRペアリングが無効です。'),
+          'PAIRING_DISABLED',
+        ),
+      ],
       [
         changeVariable(pairedCameraCount, 1),
-        setVariable(pairingRefs.session, reporter(join(text('camera-'), variable(pairedCameraCount)))),
-        block(`${shell}_showAppLoading`, {LABEL: text('Offerを作っています')}),
+        setVariable(
+          pairingRefs.session,
+          reporter(join(text('camera-'), variable(pairedCameraCount))),
+        ),
+        block(`${shell}_showAppLoading`, {
+          LABEL: text('Offerを作っています'),
+        }),
         pairing.resetLinkTest(),
         // The offer carries the channels it was created with, so the pose channel exists first.
         ...fusionPoseChannelSetup(variable(pairingRefs.session)),
         pairing.pairing('startOfferPairing', {
           LOCAL_PEER: text('fusion'),
-          REMOTE_PEER: variable(pairingRefs.session)
+          REMOTE_PEER: variable(pairingRefs.session),
         }),
-        pairing.pairing('setPairingTimeout', {SECONDS: number(600)}),
+        pairing.pairing('setPairingTimeout', { SECONDS: number(600) }),
         block(`${shell}_hideAppLoading`),
         ifElse(
           not(pairing.phaseIs('offer-ready')),
           [pairing.reportEnded()],
           [
             ...pairing.presentParts(
-              concatenate(text('Offer（'), variable(pairingRefs.session), text('）')),
+              concatenate(
+                text('Offer（'),
+                variable(pairingRefs.session),
+                text('）'),
+              ),
               'カメラアプリのカメラに写してください。Answerを運んできたら「Answerを読み取る」を押します',
-              [pairingButtons.next, pairingButtons.readAnswer, pairingButtons.cancel],
-              pairing.pairing('isPairingConnected')
+              [
+                pairingButtons.next,
+                pairingButtons.readAnswer,
+                pairingButtons.cancel,
+              ],
+              pairing.pairing('isPairingConnected'),
             ),
             ifElse(
               equals(variable(pairingRefs.step), text('read-answer')),
               [
                 pairing.notice(
                   text(
-                    'スマートフォンに表示したAnswerのQRコードを、このPCのカメラに写してください。複数枚のときは全部を写します。'
-                  )
+                    'スマートフォンに表示したAnswerのQRコードを、このPCのカメラに写してください。複数枚のときは全部を写します。',
+                  ),
                 ),
                 block(`${cameraSource}_startSharedCamera`, {
                   CAMERA_ID: text(answerCameraId),
-                  DEVICE_ID: text('')
+                  DEVICE_ID: text(''),
                 }),
                 block(`${cameraSource}_showCameraPreview`, {
                   CAMERA_ID: text(answerCameraId),
-                  PREVIEW_FLIP: text('horizontal')
+                  PREVIEW_FLIP: text('horizontal'),
                 }),
                 ...menu(),
                 block(`${titleMenu}_showMenu`),
-                pairing.pairing('scanPairingQrFromCamera', {CAMERA_ID: text(answerCameraId)}),
+                pairing.pairing('scanPairingQrFromCamera', {
+                  CAMERA_ID: text(answerCameraId),
+                }),
                 ...stopAnswerPreview(),
                 pairing.awaitConnection(),
                 ifElse(
                   pairing.pairing('isPairingConnected'),
-                  [pairing.pairing('endPairingQrDisplay'), ...pairing.exchangeTestMessage('fusion-app')],
-                  [pairing.reportEnded()]
-                )
+                  [
+                    pairing.pairing('endPairingQrDisplay'),
+                    ...pairing.exchangeTestMessage('fusion-app'),
+                  ],
+                  [pairing.reportEnded()],
+                ),
               ],
               [
                 ifElse(
                   equals(variable(pairingRefs.step), text('cancel')),
                   pairing.cancel(),
-                  [pairing.reportEnded()]
-                )
-              ]
-            )
-          ]
-        )
-      ]
+                  [pairing.reportEnded()],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
     ),
     ...menu(),
-    block(`${titleMenu}_showMenu`)
+    block(`${titleMenu}_showMenu`),
   ]),
 
-  script({x: 600, y: 1400}, [
-    block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.cancelPairing}),
+  script({ x: 600, y: 1400 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.cancelPairing },
+    ),
     ...stopAnswerPreview(),
     ...pairing.cancel(),
     ...menu(),
-    block(`${titleMenu}_showMenu`)
-  ])
+    block(`${titleMenu}_showMenu`),
+  ]),
 ];
