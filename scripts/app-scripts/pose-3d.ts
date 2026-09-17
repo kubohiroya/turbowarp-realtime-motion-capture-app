@@ -29,19 +29,22 @@ import {poseChannel} from './pose.ts';
 import {referenceId, timeSpaceSync} from './space-time.ts';
 
 /**
- * M-10, stage 1 of #34: forward every camera's 2D poses to the 3D pose service and show what comes
- * back.
+ * M-10: forward every camera's 2D poses to the 3D pose service and show what comes back.
  *
  * The service runs in a Worker behind the `realtimemotioncapturepose3dservice` extension. These
  * scripts configure it from the space-time calibration, forward each camera's newest frame, ask for
  * the 3D pose, and show the service's state. They implement no alignment, association or
- * triangulation (#11).
+ * triangulation themselves (#11); the service does (#34).
  */
 
 export const pose3dService = 'realtimemotioncapturepose3dservice';
 export const external3dServiceFlag = 'external3dServiceV1';
-/** The only implementations stage 1 has. Output from it is labelled as the stub wherever shown. */
-export const serviceImplementation = 'stub-normal';
+/**
+ * The implementation the apps ask for: `fusion-v0`, which aligns the cameras in time, associates the
+ * people they report and triangulates their joints (#34, stage 3). Every figure shown names it, so a
+ * later implementation — or a stub — cannot be mistaken for this one.
+ */
+export const serviceImplementation = 'fusion-v0';
 
 const service = (opcode: string, inputs: Readonly<Record<string, InputValue>> = {}) =>
   block(`${pose3dService}_${opcode}`, inputs);

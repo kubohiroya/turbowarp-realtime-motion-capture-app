@@ -56,7 +56,8 @@ const MINIMUM_CAMERAS = 2;
 
 export function evaluate(session: Session, replay: ReplayResult): EvaluationMetrics {
   const base: EvaluationMetrics = {
-    implementation: session.configuration.implementation,
+    // What answered, which is the replay's implementation when it replaced the session's.
+    implementation: replay.answers.find((answer) => answer.frame)?.frame?.implementation ?? session.configuration.implementation,
     requests: replay.requests,
     answered: replay.answers.length,
     empty: replay.answers.filter((answer) => answer.frame === null).length,
