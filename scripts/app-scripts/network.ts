@@ -12,8 +12,8 @@ import {
 import {
   equals,
   forever,
-  greaterThan,
   ifThen,
+  repeatUntil,
   setVariable,
   wait,
   whenFlagClicked
@@ -26,6 +26,9 @@ import {
  * able to wait on the queue itself, and the first one to take a message would take it from the
  * others. A single dispatcher takes each message once, records it by type in a variable, and the
  * flows wait on their own variable instead of the shared queue.
+ *
+ * The queue is sorted by the app shell first: pose frames arrive faster than a script takes one
+ * message per frame, so they are kept as the newest per camera there and never enter this loop.
  */
 
 const webrtc = 'kubohiroyawebrtc';
@@ -55,9 +58,13 @@ export function messageDispatcher(
 ): Script {
   return script(position, [
     whenFlagClicked(),
+    // Pose frames travel on latest-data channels. The answering side attaches them only when this
+    // is on at the moment the connection opens, so it is switched on before anything can pair.
+    block(`${webrtc}_setLatestDataEnabled`, {ENABLED: text('true')}),
     forever([
-      ifThen(greaterThan(reporter(block(`${webrtc}_messageCount`)), number(0)), [
-        setVariable(references.message, reporter(block(`${webrtc}_nextMessage`))),
+      block(`${shell}_sortNetworkMessages`),
+      repeatUntil(equals(reporter(block(`${shell}_sortedMessageCount`)), number(0)), [
+        setVariable(references.message, reporter(block(`${shell}_nextSortedMessage`))),
         setVariable(
           references.type,
           reporter(

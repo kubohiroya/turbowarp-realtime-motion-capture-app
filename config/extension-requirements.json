@@ -173,6 +173,10 @@
         {
           "capability": "lens profile saved in any window of this origin",
           "opcode": "storedCameraProfilesGeneration"
+        },
+        {
+          "capability": "registered lens profile document",
+          "opcode": "cameraProfileJson"
         }
       ],
       "gaps": []
@@ -294,6 +298,10 @@
         {
           "capability": "last received message",
           "opcode": "lastMessage"
+        },
+        {
+          "capability": "latest-data sent count",
+          "opcode": "latestDataSentCount"
         }
       ],
       "gaps": []
@@ -718,6 +726,22 @@
         {
           "capability": "identify performers by glow stick",
           "opcode": "enableGlowStickMarkers"
+        },
+        {
+          "capability": "pipeline state",
+          "opcode": "posePipelineState"
+        },
+        {
+          "capability": "pose error code",
+          "opcode": "poseErrorCode"
+        },
+        {
+          "capability": "pose error",
+          "opcode": "poseError"
+        },
+        {
+          "capability": "stop MoveNet",
+          "opcode": "stopWebGpuMoveNetMultiPose"
         }
       ],
       "gaps": [

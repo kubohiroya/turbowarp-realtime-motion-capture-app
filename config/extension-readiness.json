@@ -269,6 +269,11 @@
           "capability": "lens profile saved in any window of this origin",
           "opcode": "storedCameraProfilesGeneration",
           "availability": "ready"
+        },
+        {
+          "capability": "registered lens profile document",
+          "opcode": "cameraProfileJson",
+          "availability": "ready"
         }
       ],
       "blockContracts": {
@@ -408,6 +413,12 @@
         "storedCameraProfilesGeneration": {
           "blockType": "reporter",
           "arguments": {}
+        },
+        "cameraProfileJson": {
+          "blockType": "reporter",
+          "arguments": {
+            "CAMERA_ID": "string"
+          }
         }
       },
       "gaps": []
@@ -573,6 +584,11 @@
           "capability": "last received message",
           "opcode": "lastMessage",
           "availability": "ready"
+        },
+        {
+          "capability": "latest-data sent count",
+          "opcode": "latestDataSentCount",
+          "availability": "ready"
         }
       ],
       "blockContracts": {
@@ -726,6 +742,13 @@
         "lastMessage": {
           "blockType": "reporter",
           "arguments": {}
+        },
+        "latestDataSentCount": {
+          "blockType": "reporter",
+          "arguments": {
+            "CHANNEL": "string",
+            "PEER": "string"
+          }
         }
       },
       "gaps": []
@@ -1664,6 +1687,26 @@
           "capability": "identify performers by glow stick",
           "opcode": "enableGlowStickMarkers",
           "availability": "ready"
+        },
+        {
+          "capability": "pipeline state",
+          "opcode": "posePipelineState",
+          "availability": "ready"
+        },
+        {
+          "capability": "pose error code",
+          "opcode": "poseErrorCode",
+          "availability": "ready"
+        },
+        {
+          "capability": "pose error",
+          "opcode": "poseError",
+          "availability": "ready"
+        },
+        {
+          "capability": "stop MoveNet",
+          "opcode": "stopWebGpuMoveNetMultiPose",
+          "availability": "ready"
         }
       ],
       "blockContracts": {
@@ -1760,6 +1803,22 @@
           "arguments": {
             "KEYPOINTS": "string"
           }
+        },
+        "posePipelineState": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "poseErrorCode": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "poseError": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "stopWebGpuMoveNetMultiPose": {
+          "blockType": "command",
+          "arguments": {}
         }
       },
       "gaps": [
