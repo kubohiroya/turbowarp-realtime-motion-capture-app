@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { Pose3dService } from '../src/service.js';
-import { configuration, frame } from './fixtures.js';
+import { Pose3dService } from '../src/service.ts';
+import { configuration, frame } from './fixtures.ts';
 
 const envelope = (id: number, type: string, payload: unknown) => ({
   interface: 'twrmc/pose-3d-service',

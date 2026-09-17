@@ -15,7 +15,7 @@ import {
   type PoseFrame3DV2,
   type ServiceConfiguration,
   type ServiceResponse,
-} from './contracts.js';
+} from './contracts.ts';
 
 /**
  * The service side of interface v1: takes requests, answers them, and owns every piece of state.

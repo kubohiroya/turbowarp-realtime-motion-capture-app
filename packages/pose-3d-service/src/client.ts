@@ -10,7 +10,7 @@ import {
   type ServiceErrorCode,
   type ServiceRequest,
   type ServiceResponse,
-} from './contracts.js';
+} from './contracts.ts';
 
 /** How the client reaches a service: a Worker in the page, or anything else that carries messages. */
 export interface ServicePort {

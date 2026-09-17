@@ -260,10 +260,16 @@ describe('failures the operator has to act on', () => {
 });
 
 describe('performance DSL', () => {
-  async function startWithDsl(contents: string) {
+  async function startWithDsl(
+    contents: string,
+    overrides: Partial<Parameters<typeof startLocalHost>[0]> = {},
+  ) {
     const path = join(directory, 'show.yaml');
     await writeFile(path, contents);
-    const result = await start({ dsl: { projectRoot: directory, path } });
+    const result = await start({
+      dsl: { projectRoot: directory, path },
+      ...overrides,
+    });
     if (!result.started) throw new Error('did not start');
     return { host: result.host, path };
   }
@@ -342,13 +348,23 @@ describe('performance DSL', () => {
   });
 
   it('republishes when the file changes on disk', async () => {
-    const { host, path } = await startWithDsl('performers: 1');
+    // The startup re-reads are off, so the watch is the only thing that can publish here.
+    const { host, path } = await startWithDsl('performers: 1', {
+      startupRecheckDelaysMs: [],
+    });
 
-    await writeFile(path, 'performers: 2');
+    const republished = () => host.dsl()?.source === 'performers: 2';
 
-    const deadline = Date.now() + 5000;
-    while (host.dsl()?.source !== 'performers: 2' && Date.now() < deadline) {
-      await new Promise((resolve) => setTimeout(resolve, 25));
+    // The host has only just opened its fs.watch, and the OS can drop a write
+    // made while it is still registering the watch (FSEvents on macOS). Such a
+    // write is never reported, so rewrite the change until the watcher publishes it.
+    const deadline = Date.now() + 4000;
+    while (!republished() && Date.now() < deadline) {
+      await writeFile(path, 'performers: 2');
+      const attemptDeadline = Math.min(Date.now() + 500, deadline);
+      while (!republished() && Date.now() < attemptDeadline) {
+        await new Promise((resolve) => setTimeout(resolve, 25));
+      }
     }
     expect(host.dsl()).toMatchObject({ source: 'performers: 2' });
   });

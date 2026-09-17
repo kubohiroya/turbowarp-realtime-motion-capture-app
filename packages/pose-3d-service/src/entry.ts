@@ -1,6 +1,6 @@
-import { extensionId, Pose3dServiceExtension } from './extension.js';
+import { extensionId, Pose3dServiceExtension } from './extension.ts';
 import ServiceWorker from './worker.ts?worker&inline';
-import type { ServicePort } from './client.js';
+import type { ServicePort } from './client.ts';
 
 function createWorkerPort(): ServicePort {
   const worker = new ServiceWorker();

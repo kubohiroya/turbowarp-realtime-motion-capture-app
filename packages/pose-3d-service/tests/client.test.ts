@@ -4,10 +4,10 @@ import {
   Pose3dServiceClient,
   type ClientClock,
   type ServicePort,
-} from '../src/client.js';
-import { LIMITS } from '../src/contracts.js';
-import { Pose3dService } from '../src/service.js';
-import { configuration, frame } from './fixtures.js';
+} from '../src/client.ts';
+import { LIMITS } from '../src/contracts.ts';
+import { Pose3dService } from '../src/service.ts';
+import { configuration, frame } from './fixtures.ts';
 
 /** A clock whose timers only fire when the test advances it. */
 function manualClock() {

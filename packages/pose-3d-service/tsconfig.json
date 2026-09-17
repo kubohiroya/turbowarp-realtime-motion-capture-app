@@ -10,7 +10,9 @@
     "exactOptionalPropertyTypes": true,
     "isolatedModules": true,
     "skipLibCheck": true,
-    "types": ["node"]
+    "types": ["node"],
+    "allowImportingTsExtensions": true,
+    "noEmit": true
   },
-  "include": ["src", "tests", "vite.config.ts"]
+  "include": ["scripts", "src", "tests", "vite.config.ts"]
 }

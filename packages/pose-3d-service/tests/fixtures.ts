@@ -3,7 +3,7 @@ import {
   type ImplementationId,
   type PoseFrame2D,
   type ServiceConfiguration,
-} from '../src/contracts.js';
+} from '../src/contracts.ts';
 
 export const identity = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 3, 0, 0, 0, 1];
 

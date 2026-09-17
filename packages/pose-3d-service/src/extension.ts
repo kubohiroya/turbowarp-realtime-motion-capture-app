@@ -3,8 +3,8 @@ import {
   Pose3dServiceClient,
   type ClientClock,
   type ServicePort,
-} from './client.js';
-import { toPoseFrame3DV1, type ServiceCamera } from './contracts.js';
+} from './client.ts';
+import { toPoseFrame3DV1, type ServiceCamera } from './contracts.ts';
 
 type BlockTypeName = 'COMMAND' | 'REPORTER';
 type ArgumentTypeName = 'STRING' | 'NUMBER';

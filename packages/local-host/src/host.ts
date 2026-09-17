@@ -48,6 +48,8 @@ export interface LocalHostOptions {
   readonly onError?: (error: unknown) => void;
   /** Test seam for process and port liveness. */
   readonly runLock?: Omit<RunLockEnvironment, 'directory'>;
+  /** Test seam for the startup re-reads. Empty leaves the watch as the only source of changes. */
+  readonly startupRecheckDelaysMs?: readonly number[];
 }
 
 export interface DslPublication {
@@ -222,6 +224,8 @@ async function serve(
   await watcher
     ?.publishNow()
     .catch((error: unknown) => options.onError?.(error));
+  const rechecks =
+    watcher === null ? null : scheduleStartupRechecks(watcher, options);
 
   const origin = new URL(host.url).origin;
   return {
@@ -233,10 +237,47 @@ async function serve(
       lock: lock.record,
       dsl: () => published,
       async stop() {
+        rechecks?.cancel();
         await watcher?.close();
         await host?.close();
         await lock.release();
       },
+    },
+  };
+}
+
+/**
+ * Delays, measured from startup, at which the DSL on disk is read again.
+ *
+ * A watch is not live the moment it is opened: on macOS the operating system can drop a write made
+ * while it is still registering the watch, and nothing ever reports that write. Startup is where
+ * this bites, because the first read happens milliseconds after the watch is opened, so an edit
+ * saved in that instant would sit on disk unpublished until the next one. Reading again costs one
+ * small file read; the late delay covers a machine too busy to register the watch promptly.
+ */
+const defaultStartupRecheckDelaysMs = [250, 2_000];
+
+/**
+ * Re-reads the source after startup, so an edit the watch never reported is still published.
+ *
+ * The timers do not hold the process open: a host with nothing else to do should exit.
+ */
+function scheduleStartupRechecks(
+  watcher: StableSourceWatcher,
+  options: LocalHostOptions,
+): { cancel(): void } {
+  const delays =
+    options.startupRecheckDelaysMs ?? defaultStartupRecheckDelaysMs;
+  const timers = delays.map((delayMs) =>
+    setTimeout(() => {
+      void watcher
+        .publishNow()
+        .catch((error: unknown) => options.onError?.(error));
+    }, delayMs).unref(),
+  );
+  return {
+    cancel: () => {
+      for (const timer of timers) clearTimeout(timer);
     },
   };
 }
