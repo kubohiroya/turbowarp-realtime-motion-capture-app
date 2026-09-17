@@ -5,6 +5,8 @@ import {installScratchStub} from './scratch-stub.js';
 installScratchStub();
 
 const {cameraAppConfig} = await import('../src/apps/camera.js');
+const {fusionAppConfig} = await import('../src/apps/fusion.js');
+const {LensCalibrationLauncher} = await import('../src/lens-calibration.js');
 const {MultiviewPoseAppShellExtension} = await import('../src/extension.js');
 const {createMultiviewPoseShell} = await import('../src/shell.js');
 const {resolveFeatureFlags} = await import('../src/feature-flags.js');
@@ -34,7 +36,16 @@ function createExtension() {
     }
   });
   const flags = {flags: resolveFeatureFlags(cameraAppConfig.featureFlags), state: 'applied'} as const;
-  return {calls, extension: new MultiviewPoseAppShellExtension(cameraAppConfig, recording, flags)};
+  const launcher = new LensCalibrationLauncher({
+    resolveUrl: () => null,
+    isServed: async () => false,
+    openWindow: () => null,
+    chooseTextFile: async () => null
+  });
+  return {
+    calls,
+    extension: new MultiviewPoseAppShellExtension(cameraAppConfig, recording, flags, launcher)
+  };
 }
 
 describe('getInfo', () => {
@@ -52,11 +63,40 @@ describe('getInfo', () => {
   it('leaves the title, menu, and DSL surface to turbowarp-title-menu', () => {
     const blocks = info['blocks'] as Array<Record<string, unknown>>;
     const opcodes = blocks.map((block) => block['opcode']);
-    expect(blocks).toHaveLength(11);
+    expect(blocks).toHaveLength(16);
     for (const absent of ['whenAppMenuActionSelected', 'setAppStatus', 'setAppMenuActionEnabled']) {
       expect(opcodes).not.toContain(absent);
     }
     expect(Object.keys(info['menus'] as Record<string, unknown>)).toEqual(['featureFlags']);
+  });
+
+  it('offers the lens calibration blocks only to an application given a launcher', () => {
+    const fusionShell = createMultiviewPoseShell(fusionAppConfig, {
+      document: fakeDocument(),
+      resolveMount: () => fakeElement('div') as unknown as HTMLElement
+    });
+    const fusion = new MultiviewPoseAppShellExtension(fusionAppConfig, fusionShell, {
+      flags: resolveFeatureFlags(fusionAppConfig.featureFlags),
+      state: 'applied'
+    });
+    const fusionOpcodes = (fusion.getInfo()['blocks'] as Array<Record<string, unknown>>).map(
+      (block) => block['opcode']
+    );
+    expect(fusionOpcodes).toHaveLength(11);
+    expect(fusionOpcodes).not.toContain('openLensCalibrationApp');
+
+    const cameraOpcodes = (info['blocks'] as Array<Record<string, unknown>>).map(
+      (block) => block['opcode']
+    );
+    expect(cameraOpcodes).toEqual(
+      expect.arrayContaining([
+        'openLensCalibrationApp',
+        'lensCalibrationAppState',
+        'lensCalibrationAppOpen',
+        'chooseLensCalibrationFile',
+        'chosenLensCalibrationFile'
+      ])
+    );
   });
 
   it('exposes every contract feature flag in the feature dropdown', () => {

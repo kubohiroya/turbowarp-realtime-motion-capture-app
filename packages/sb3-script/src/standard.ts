@@ -49,6 +49,9 @@ export const repeat = (times: number | InputValue, body: readonly BlockNode[]): 
 export const repeatUntil = (test: BlockNode, body: readonly BlockNode[]): BlockNode =>
   block('control_repeat_until', {CONDITION: condition(test), SUBSTACK: substack(body)});
 
+export const waitUntil = (test: BlockNode): BlockNode =>
+  block('control_wait_until', {CONDITION: condition(test)});
+
 export const wait = (seconds: number | InputValue): BlockNode =>
   block('control_wait', {DURATION: numericInput(seconds)});
 
@@ -60,6 +63,9 @@ export const equals = (left: InputValue, right: InputValue): BlockNode =>
 
 export const greaterThan = (left: InputValue, right: InputValue): BlockNode =>
   block('operator_gt', {OPERAND1: left, OPERAND2: right});
+
+export const or = (left: BlockNode, right: BlockNode): BlockNode =>
+  block('operator_or', {OPERAND1: condition(left), OPERAND2: condition(right)});
 
 export const not = (value: BlockNode): BlockNode =>
   block('operator_not', {OPERAND: condition(value)});

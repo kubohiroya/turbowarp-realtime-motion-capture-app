@@ -17,6 +17,7 @@ export const cameraAppConfig: AppShellAppConfig = {
     'frameSyncPatternV1',
     'glowStickMarkers'
   ],
+  lensCalibration: true,
   noticeLocales: {
     en: {title: 'Camera app'},
     ja: {title: 'カメラアプリからのお知らせ'}

@@ -109,6 +109,46 @@
           "menu": "featureFlags"
         }
       }
+    },
+    {
+      "opcode": "openLensCalibrationApp",
+      "blockType": "COMMAND",
+      "text": "open lens calibration app",
+      "description": "Opens the lens calibration app served beside this one on the same origin, in its own window. Waits only for the window to open, not for a calibration.",
+      "arguments": {},
+      "requires": "lensCalibration"
+    },
+    {
+      "opcode": "lensCalibrationAppState",
+      "blockType": "REPORTER",
+      "text": "lens calibration app state",
+      "description": "Reports open, closed, unavailable (no calibration app on this origin), or blocked (the browser refused the window).",
+      "arguments": {},
+      "requires": "lensCalibration"
+    },
+    {
+      "opcode": "lensCalibrationAppOpen",
+      "blockType": "BOOLEAN",
+      "text": "lens calibration app is open?",
+      "description": "Reports whether the calibration window opened by this app is still open.",
+      "arguments": {},
+      "requires": "lensCalibration"
+    },
+    {
+      "opcode": "chooseLensCalibrationFile",
+      "blockType": "COMMAND",
+      "text": "choose lens calibration file",
+      "description": "Asks the operator for a profile JSON file through a dialog, and waits until a file is read or the dialog is cancelled.",
+      "arguments": {},
+      "requires": "lensCalibration"
+    },
+    {
+      "opcode": "chosenLensCalibrationFile",
+      "blockType": "REPORTER",
+      "text": "chosen lens calibration file",
+      "description": "Reports the text of the file chosen last, or an empty string when the choice was cancelled.",
+      "arguments": {},
+      "requires": "lensCalibration"
     }
   ]
 }

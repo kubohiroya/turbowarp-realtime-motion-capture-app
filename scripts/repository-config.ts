@@ -146,6 +146,15 @@ export interface ReadinessInventory {
 export interface LocalHostApp {
   readonly port: number;
   readonly title: string;
+  /** A lens calibration app served beside this one on the same origin. */
+  readonly lensCalibration?: LocalHostLensCalibration;
+}
+
+export interface LocalHostLensCalibration {
+  /** Repository that builds the SB3, for a reader tracing where the bytes came from. */
+  readonly repository: string;
+  /** Repository-relative SB3 path. Optional at build time: without it the route is simply absent. */
+  readonly sb3: string;
 }
 
 export interface LocalHostConfig {

@@ -129,6 +129,50 @@
         {
           "capability": "actual frame rate",
           "opcode": "cameraFrameRate"
+        },
+        {
+          "capability": "register a lens profile under this app's camera name",
+          "opcode": "registerCameraProfileAs"
+        },
+        {
+          "capability": "lens profile validation error",
+          "opcode": "cameraProfileError"
+        },
+        {
+          "capability": "lens profile validation detail",
+          "opcode": "cameraProfileErrorDetail"
+        },
+        {
+          "capability": "lens profile fit",
+          "opcode": "cameraProfileCompatibility"
+        },
+        {
+          "capability": "lens profile fit detail",
+          "opcode": "cameraProfileCompatibilityDetail"
+        },
+        {
+          "capability": "withdraw a lens profile",
+          "opcode": "forgetCameraProfile"
+        },
+        {
+          "capability": "save a lens profile to browser storage",
+          "opcode": "saveCameraProfile"
+        },
+        {
+          "capability": "restore a fitting lens profile from browser storage",
+          "opcode": "restoreStoredCameraProfile"
+        },
+        {
+          "capability": "browser storage outcome",
+          "opcode": "storedCameraProfileResult"
+        },
+        {
+          "capability": "browser storage outcome detail",
+          "opcode": "storedCameraProfileDetail"
+        },
+        {
+          "capability": "lens profile saved in any window of this origin",
+          "opcode": "storedCameraProfilesGeneration"
         }
       ],
       "gaps": []

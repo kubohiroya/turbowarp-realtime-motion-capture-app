@@ -139,11 +139,11 @@
       "role": "camera-source",
       "repository": "kubohiroya/turbowarp-camera-source",
       "package": "@kubohiroya/turbowarp-camera-source",
-      "version": "0.6.0",
+      "version": "0.10.0",
       "extensionId": "kubohiroyacamerasource",
-      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.6.0/dist/camera-source.js",
-      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.6.0/dist/extension-manifest.json",
-      "sha256": "6f1c3547e24f2e76921d28726d12766faa642324570fe264615216417d675521",
+      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.10.0/dist/camera-source.js",
+      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.10.0/dist/extension-manifest.json",
+      "sha256": "0b5e951243e4fa5d2607ce7bae33efa4ee3ef217e771e6efbee80fd67ac64e45",
       "status": "ready",
       "embeddedIn": [
         "camera-app"
@@ -213,6 +213,61 @@
           "capability": "actual frame rate",
           "opcode": "cameraFrameRate",
           "availability": "ready"
+        },
+        {
+          "capability": "register a lens profile under this app's camera name",
+          "opcode": "registerCameraProfileAs",
+          "availability": "ready"
+        },
+        {
+          "capability": "lens profile validation error",
+          "opcode": "cameraProfileError",
+          "availability": "ready"
+        },
+        {
+          "capability": "lens profile validation detail",
+          "opcode": "cameraProfileErrorDetail",
+          "availability": "ready"
+        },
+        {
+          "capability": "lens profile fit",
+          "opcode": "cameraProfileCompatibility",
+          "availability": "ready"
+        },
+        {
+          "capability": "lens profile fit detail",
+          "opcode": "cameraProfileCompatibilityDetail",
+          "availability": "ready"
+        },
+        {
+          "capability": "withdraw a lens profile",
+          "opcode": "forgetCameraProfile",
+          "availability": "ready"
+        },
+        {
+          "capability": "save a lens profile to browser storage",
+          "opcode": "saveCameraProfile",
+          "availability": "ready"
+        },
+        {
+          "capability": "restore a fitting lens profile from browser storage",
+          "opcode": "restoreStoredCameraProfile",
+          "availability": "ready"
+        },
+        {
+          "capability": "browser storage outcome",
+          "opcode": "storedCameraProfileResult",
+          "availability": "ready"
+        },
+        {
+          "capability": "browser storage outcome detail",
+          "opcode": "storedCameraProfileDetail",
+          "availability": "ready"
+        },
+        {
+          "capability": "lens profile saved in any window of this origin",
+          "opcode": "storedCameraProfilesGeneration",
+          "availability": "ready"
         }
       ],
       "blockContracts": {
@@ -265,7 +320,7 @@
           "blockType": "command",
           "arguments": {
             "CAMERA_ID": "string",
-            "MIRRORED": "string"
+            "PREVIEW_FLIP": "string"
           }
         },
         "hideCameraPreview": {
@@ -291,6 +346,67 @@
           "arguments": {
             "CAMERA_ID": "string"
           }
+        },
+        "registerCameraProfileAs": {
+          "blockType": "command",
+          "arguments": {
+            "CAMERA_ID": "string",
+            "PROFILE_JSON": "string"
+          }
+        },
+        "cameraProfileError": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "cameraProfileErrorDetail": {
+          "blockType": "reporter",
+          "arguments": {}
+        },
+        "cameraProfileCompatibility": {
+          "blockType": "reporter",
+          "arguments": {
+            "CAMERA_ID": "string"
+          }
+        },
+        "cameraProfileCompatibilityDetail": {
+          "blockType": "reporter",
+          "arguments": {
+            "CAMERA_ID": "string"
+          }
+        },
+        "forgetCameraProfile": {
+          "blockType": "command",
+          "arguments": {
+            "CAMERA_ID": "string"
+          }
+        },
+        "saveCameraProfile": {
+          "blockType": "command",
+          "arguments": {
+            "CAMERA_ID": "string"
+          }
+        },
+        "restoreStoredCameraProfile": {
+          "blockType": "command",
+          "arguments": {
+            "CAMERA_ID": "string"
+          }
+        },
+        "storedCameraProfileResult": {
+          "blockType": "reporter",
+          "arguments": {
+            "CAMERA_ID": "string"
+          }
+        },
+        "storedCameraProfileDetail": {
+          "blockType": "reporter",
+          "arguments": {
+            "CAMERA_ID": "string"
+          }
+        },
+        "storedCameraProfilesGeneration": {
+          "blockType": "reporter",
+          "arguments": {}
         }
       },
       "gaps": []

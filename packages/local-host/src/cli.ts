@@ -14,6 +14,8 @@ export interface LocalHostCliOptions {
   readonly port: number;
   /** The packaged player, embedded in the binary. */
   readonly player: string;
+  /** The packaged lens calibration app, embedded next to the player when the build carried one. */
+  readonly lensCalibrationPlayer?: string;
   readonly argv?: readonly string[];
   readonly env?: Readonly<Record<string, string | undefined>>;
   readonly write?: (line: string) => void;
@@ -104,7 +106,10 @@ export async function runLocalHostCli(options: LocalHostCliOptions): Promise<Cli
     title: options.title,
     port: options.port,
     lockDirectory: resolveLockDirectory(env),
-    player: {html: options.player}
+    player: {html: options.player},
+    ...(options.lensCalibrationPlayer === undefined
+      ? {}
+      : {lensCalibrationPlayer: {html: options.lensCalibrationPlayer}})
   });
 
   if (!result.started) {
