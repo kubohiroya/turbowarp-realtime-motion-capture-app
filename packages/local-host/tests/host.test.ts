@@ -5,7 +5,12 @@ import {join} from 'node:path';
 
 import {afterEach, beforeEach, describe, expect, it} from 'vitest';
 
-import {playerPath, startLocalHost, type StartedLocalHost} from '../src/host.ts';
+import {
+  lensCalibrationPath,
+  playerPath,
+  startLocalHost,
+  type StartedLocalHost
+} from '../src/host.ts';
 
 const playerHtml = '<!doctype html><title>player</title><body>packaged player';
 
@@ -122,6 +127,39 @@ describe('startLocalHost', () => {
     await expect(
       import('node:fs/promises').then(({readdir}) => readdir(lockDirectory).catch(() => []))
     ).resolves.toEqual([]);
+  });
+
+  it('serves the lens calibration app on the same origin when the build carries one', async () => {
+    const calibrationHtml = '<!doctype html><title>lens calibration</title>';
+    const result = await start({lensCalibrationPlayer: {html: calibrationHtml}});
+    if (!result.started) throw new Error('did not start');
+
+    const token = new URL(result.host.url).searchParams.get('token') ?? '';
+    const response = await fetch(`${result.host.origin}${lensCalibrationPath}?token=${token}`);
+    expect(response.status).toBe(200);
+    await expect(response.text()).resolves.toBe(calibrationHtml);
+    const head = await fetch(`${result.host.origin}${lensCalibrationPath}?token=${token}`, {
+      method: 'HEAD'
+    });
+    expect(head.status).toBe(200);
+  });
+
+  it('has no lens calibration route when the build carries none', async () => {
+    const result = await start();
+    if (!result.started) throw new Error('did not start');
+
+    const token = new URL(result.host.url).searchParams.get('token') ?? '';
+    const response = await fetch(`${result.host.origin}${lensCalibrationPath}?token=${token}`, {
+      method: 'HEAD'
+    });
+    expect(response.ok).toBe(false);
+  });
+
+  it('refuses to start when a lens calibration app was asked for and cannot be read', async () => {
+    const path = join(directory, 'absent-calibration.html');
+    const result = await start({lensCalibrationPlayer: {path}});
+
+    expect(result).toEqual({started: false, reason: 'player-missing', path});
   });
 
   it('records the run lock while it serves', async () => {

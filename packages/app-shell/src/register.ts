@@ -1,6 +1,7 @@
 import type {AppShellAppConfig} from './app-config.js';
 import {applyFeatureFlags, contractAlreadyLoaded} from './feature-flags.js';
-import {createScratchShellHost} from './host.js';
+import {createBrowserLensCalibrationHost, createScratchShellHost} from './host.js';
+import {LensCalibrationLauncher} from './lens-calibration.js';
 import {createMultiviewPoseShell} from './shell.js';
 import {MultiviewPoseAppShellExtension} from './extension.js';
 
@@ -16,5 +17,11 @@ import {MultiviewPoseAppShellExtension} from './extension.js';
 export function registerAppShell(config: AppShellAppConfig): void {
   const flags = applyFeatureFlags(config.featureFlags, {contractLoaded: contractAlreadyLoaded});
   const shell = createMultiviewPoseShell(config, createScratchShellHost());
-  Scratch.extensions.register(new MultiviewPoseAppShellExtension(config, shell, flags));
+  const lensCalibration =
+    config.lensCalibration === true
+      ? new LensCalibrationLauncher(createBrowserLensCalibrationHost(shell.locale))
+      : null;
+  Scratch.extensions.register(
+    new MultiviewPoseAppShellExtension(config, shell, flags, lensCalibration)
+  );
 }

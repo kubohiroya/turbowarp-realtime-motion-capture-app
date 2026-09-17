@@ -100,7 +100,36 @@ IPアドレスは候補を並べ替えるヒントとしてなら使えますが
 reporterと`import camera calibration`blockがあるので、運用手順としては会場ごとのフォルダへ
 書き出して保管します。
 
-## 未決定: どの拡張が持つか
+## camera appのレンズ校正の入口（実装済み）
+
+camera appは、カメラが動き始めた直後にレンズ校正を確かめます。
+
+1. `restore stored camera profile for [pose]`で、このoriginのIndexedDBに保存された校正を新しい順に
+   調べ、今のカメラに`compatible`なものだけを登録します。使ったときはどの校正かを通知に表示し、
+   メニューからいつでも校正し直せます。`incompatible`／`undetermined`は適用せず、理由を表示します。
+2. 保存済みが無い、または合わないときは、メニューの次のどちらかを選びます。
+   - **レンズ校正アプリで校正する**：camera appはカメラを手放し、同じoriginの`/lens-calibration`
+     （ローカルホストが配信）を別ウィンドウで開きます。校正アプリが解いたprofileをIndexedDBへ保存すると、
+     `stored camera profiles generation`がBroadcastChannel経由で増えるので、camera appはそれを待って
+     同じdeviceでカメラを再開し、1.を繰り返します。ウィンドウが閉じられた場合も再開します。
+   - **レンズ校正ファイルを読む**：ダイアログのボタンからファイルを選び、`register camera profile ... as [pose]`
+     で登録します。合わなければ登録を取り消します。合えばIndexedDBへも保存し、次回の読込みを省きます。
+
+同じoriginであることが前提です。turbowarp.orgやファイルで開いたSB3には校正アプリが並んでいないため、
+「開けない」と表示してファイルの読込みを案内します。
+
+上の「無言のauto-applyにはしません」は、次の形に置き換えました。確認の操作は求めませんが、
+`compatible`と判定されたものだけを使い、使った校正のprofile IDと校正日時を通知に表示します。
+
+## どの拡張が持つか（決定）
+
+保存・復元のblockは`@kubohiroya/turbowarp-camera-source`（0.10.0以降）が持ちます。profile契約と
+互換性判定の持ち主であり、校正アプリとcamera appの両方に埋め込まれているため、DB名・store・keyの
+契約を1か所に置けます。app shellが持つのは、校正アプリのウィンドウとファイル選択ダイアログだけです。
+
+以下は決定前の検討記録です。
+
+## 検討記録: どの拡張が持つか
 
 IndexedDBの読み書きblockはどの拡張も持っていません。選択肢は2つです。
 

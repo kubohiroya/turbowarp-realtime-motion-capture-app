@@ -47,6 +47,7 @@ frame alignment、人物対応付け、triangulation、3D solveは高位拡張`t
 | タイトル画面、アプリメニュー、DSLファイル管理（Title Menu拡張） | 利用可能 |
 | アプリ起動時のblockスクリプト（TypeScriptから生成） | 利用可能 |
 | カメラ選択、GPU preview、停止、切断監視のblockスクリプト | 利用可能（実機確認前） |
+| レンズ校正の入口（保存済み校正の復元、同じoriginのレンズ校正アプリを別ウィンドウで開く、校正ファイルの読込み） | 利用可能（実機確認前。[永続化設計](docs/persistence.md)） |
 | QRペアリング、MoveNet姿勢推定のblockスクリプト | 未実装 |
 | 複数視点の校正、3D統合、アバター演出のblockスクリプト | 未実装 |
 | 設定・演出DSLの永続化 | 方針確定・未実装（[永続化設計](docs/persistence.md)） |

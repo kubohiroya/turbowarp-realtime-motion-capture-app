@@ -1,6 +1,7 @@
 import definitions from './block-definitions.json';
 import {validateAppConfig, type AppShellAppConfig} from './app-config.js';
 import {featureFlagNames, type FeatureFlagApplication} from './feature-flags.js';
+import type {LensCalibrationLauncher} from './lens-calibration.js';
 import type {MultiviewPoseShell} from './shell.js';
 
 type BlockTypeName = 'COMMAND' | 'REPORTER' | 'BOOLEAN';
@@ -18,6 +19,8 @@ interface BlockDefinition {
   text: string;
   description: string;
   arguments: Record<string, DefinitionArgument>;
+  /** Present on blocks only an application with that capability offers. */
+  requires?: 'lensCalibration';
 }
 
 const blockDefinitions = definitions.blocks as readonly BlockDefinition[];
@@ -39,15 +42,18 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
   private readonly config: AppShellAppConfig;
   private readonly shell: MultiviewPoseShell;
   private readonly flags: FeatureFlagApplication;
+  private readonly lensCalibration: LensCalibrationLauncher | null;
 
   public constructor(
     config: AppShellAppConfig,
     shell: MultiviewPoseShell,
-    flags: FeatureFlagApplication
+    flags: FeatureFlagApplication,
+    lensCalibration: LensCalibrationLauncher | null = null
   ) {
     this.config = validateAppConfig(config);
     this.shell = shell;
     this.flags = flags;
+    this.lensCalibration = lensCalibration;
   }
 
   public getInfo(): Record<string, unknown> {
@@ -56,7 +62,9 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
       name: this.config.name,
       docsURI: this.config.docsURI,
       blockIconURI: this.config.blockIconURI,
-      blocks: blockDefinitions.map((block) => this.toScratchBlock(block)),
+      blocks: blockDefinitions
+        .filter((block) => block.requires === undefined || this.lensCalibration !== null)
+        .map((block) => this.toScratchBlock(block)),
       menus: {
         featureFlags: {acceptReporters: false, items: [...featureFlagNames]}
       }
@@ -118,6 +126,26 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
   public appFeatureEnabled(args: {FEATURE: unknown}): boolean {
     const name = Scratch.Cast.toString(args.FEATURE);
     return Object.entries(this.flags.flags).some(([flag, value]) => flag === name && value);
+  }
+
+  public async openLensCalibrationApp(): Promise<void> {
+    await this.lensCalibration?.open();
+  }
+
+  public lensCalibrationAppState(): string {
+    return this.lensCalibration?.state() ?? 'unavailable';
+  }
+
+  public lensCalibrationAppOpen(): boolean {
+    return this.lensCalibration?.isOpen() ?? false;
+  }
+
+  public async chooseLensCalibrationFile(): Promise<void> {
+    await this.lensCalibration?.chooseFile();
+  }
+
+  public chosenLensCalibrationFile(): string {
+    return this.lensCalibration?.chosenFileText() ?? '';
   }
 
   private toScratchBlock(block: BlockDefinition): Record<string, unknown> {

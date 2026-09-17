@@ -18,6 +18,15 @@ import {
 /** Path the packaged player is served from. The root redirects here so either URL works. */
 export const playerPath = '/app';
 
+/**
+ * Path the lens calibration app is served from, next to the application on the same origin.
+ *
+ * Same origin is the point. The calibration app saves the profile it solves to browser storage, and
+ * the camera app reads it back from there; storage is scoped to the origin, so a calibration app
+ * opened from anywhere else would save into a store the camera app cannot see.
+ */
+export const lensCalibrationPath = '/lens-calibration';
+
 export interface DslSource {
   /** Directory the watcher is allowed to watch inside. */
   readonly projectRoot: string;
@@ -32,6 +41,8 @@ export interface LocalHostOptions {
   readonly lockDirectory: string;
   /** The packaged player, as a file to read or as markup already in hand. */
   readonly player: {readonly path: string} | {readonly html: string};
+  /** The packaged lens calibration app. Absent when the build carried none; the route then 404s. */
+  readonly lensCalibrationPlayer?: {readonly path: string} | {readonly html: string};
   readonly dsl?: DslSource;
   readonly onError?: (error: unknown) => void;
   /** Test seam for process and port liveness. */
@@ -74,6 +85,12 @@ function redirectScript(): string {
   return `location.replace(${JSON.stringify(playerPath)} + location.search);`;
 }
 
+function htmlResponse(html: string): Response {
+  return new Response(html, {
+    headers: {'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store'}
+  });
+}
+
 async function readPlayer(
   player: LocalHostOptions['player']
 ): Promise<{html: string} | {missing: string}> {
@@ -94,6 +111,14 @@ async function readPlayer(
 export async function startLocalHost(options: LocalHostOptions): Promise<LocalHostResult> {
   const player = await readPlayer(options.player);
   if ('missing' in player) return {started: false, reason: 'player-missing', path: player.missing};
+  const lensCalibration =
+    options.lensCalibrationPlayer === undefined
+      ? null
+      : await readPlayer(options.lensCalibrationPlayer);
+  // A companion that was asked for and cannot be read is a broken build, not an optional extra.
+  if (lensCalibration !== null && 'missing' in lensCalibration) {
+    return {started: false, reason: 'player-missing', path: lensCalibration.missing};
+  }
 
   const lockEnvironment = {directory: options.lockDirectory, ...options.runLock};
   const acquired = await acquireRunLock({...lockEnvironment, app: options.app, port: options.port});
@@ -102,7 +127,7 @@ export async function startLocalHost(options: LocalHostOptions): Promise<LocalHo
   }
 
   try {
-    return await serve(options, player.html, acquired.lock);
+    return await serve(options, player.html, lensCalibration?.html ?? null, acquired.lock);
   } catch (error) {
     await acquired.lock.release();
     if (!isAddressInUse(error)) throw error;
@@ -117,6 +142,7 @@ export async function startLocalHost(options: LocalHostOptions): Promise<LocalHo
 async function serve(
   options: LocalHostOptions,
   html: string,
+  lensCalibrationHtml: string | null,
   lock: RunLock
 ): Promise<LocalHostResult> {
   let published: DslPublication | null = null;
@@ -127,10 +153,10 @@ async function serve(
     port: options.port,
     clientScript: redirectScript(),
     routes: {
-      [playerPath]: () =>
-        new Response(html, {
-          headers: {'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store'}
-        })
+      [playerPath]: () => htmlResponse(html),
+      ...(lensCalibrationHtml === null
+        ? {}
+        : {[lensCalibrationPath]: () => htmlResponse(lensCalibrationHtml)})
     },
     /**
      * The host does not flush the event stream until it writes, so a page that connects before any

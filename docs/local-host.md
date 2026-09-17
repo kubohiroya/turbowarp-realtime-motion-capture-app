@@ -58,6 +58,17 @@ mixed content制限とローカルネットワークアクセスの許可プロ�
               └──────────────────────────┘
 ```
 
+## レンズ校正アプリの同梱
+
+camera appのホストは、`/lens-calibration`でレンズ校正アプリ（`turbowarp-camera-calibration-app`）の
+プレイヤーも配信できます。校正アプリが解いたprofileをIndexedDBへ保存し、camera appがそこから復元する
+ため、両者は同じoriginでなければなりません。
+
+校正アプリにはまだ公開artifactが無いため、SB3は`config/local-host.json`の`lensCalibration.sb3`
+（`apps/camera-app/local/lens-calibration.sb3`、Git管理外）へ手で置きます。`build:player`は、置かれていれば
+SHA-256を表示して`camera-app-lens-calibration-player.html`を作り、`build:binary`はそれを同梱します。
+無ければ警告して続行し、camera appは「校正アプリを開けない」と表示してファイルの読込みを案内します。
+
 ## 決定事項
 
 ### portは固定する

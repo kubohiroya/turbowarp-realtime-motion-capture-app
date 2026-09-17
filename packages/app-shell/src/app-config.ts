@@ -28,6 +28,11 @@ export interface AppShellAppConfig {
   readonly noticeLocales: AppShellMessageLocales;
   /** Heading for a failure that stopped the application. */
   readonly errorLocales: AppShellMessageLocales;
+  /**
+   * Whether this application offers the lens calibration entry: opening the calibration app beside
+   * it and choosing a profile file. Only the camera app owns a camera to calibrate.
+   */
+  readonly lensCalibration?: boolean;
 }
 
 const idPattern = /^[a-z0-9]+$/;

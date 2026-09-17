@@ -51,6 +51,7 @@ See [System architecture](docs/architecture.md) (Japanese) for the detailed resp
 | Title screen, app menu, DSL file management (Title Menu extension) | Available |
 | Startup block scripts (generated from TypeScript) | Available |
 | Block scripts for camera selection, GPU preview, stop, and disconnect monitoring | Available (not yet verified on real hardware) |
+| Lens calibration entry (restore a saved profile, open the lens calibration app on the same origin in its own window, load a profile file) | Available (not yet verified on real hardware; see [persistence](docs/persistence.md)) |
 | Block scripts for QR pairing and MoveNet pose estimation | Not implemented |
 | Block scripts for multi-view calibration, 3D fusion, and avatar performance | Not implemented |
 | Persistence of settings and performance DSL | Decided, not implemented ([Persistence design](docs/persistence.md)) |

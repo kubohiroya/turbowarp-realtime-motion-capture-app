@@ -4,7 +4,11 @@
   "apps": {
     "camera-app": {
       "port": 49711,
-      "title": "Multiview Pose Camera App"
+      "title": "Multiview Pose Camera App",
+      "lensCalibration": {
+        "repository": "kubohiroya/turbowarp-camera-calibration-app",
+        "sb3": "apps/camera-app/local/lens-calibration.sb3"
+      }
     },
     "fusion-app": {
       "port": 49712,
