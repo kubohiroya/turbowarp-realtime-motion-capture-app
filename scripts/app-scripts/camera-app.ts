@@ -11,17 +11,20 @@ import {
   type Script,
 } from '../../packages/sb3-script/src/blocks.ts';
 import {
+  and,
   broadcastMessage,
   broadcastMessageAndWait,
   equals,
   forever,
   greaterThan,
   ifElse,
+  changeVariable,
   ifThen,
   join,
   label,
   not,
   or,
+  repeatUntil,
   setVariable,
   wait,
   waitUntil,
@@ -37,6 +40,8 @@ import {
   cameraPoseReferences,
   cameraPoseScripts,
   cameraPoseVariables,
+  poseChannel,
+  poseReplayFlag,
 } from './pose.ts';
 import {
   cameraSyncBroadcasts,
@@ -67,6 +72,11 @@ const action = {
   cancelPairing: 'cancelPairing',
   stopCamera: 'stopCamera',
   diagnostics: 'diagnostics',
+  startRecording: 'startRecording',
+  stopRecording: 'stopRecording',
+  chooseRecording: 'chooseRecording',
+  startReplay: 'startReplay',
+  stopReplay: 'stopReplay',
 } as const;
 
 const pairingRefs = pairingReferences();
@@ -75,6 +85,20 @@ const syncRefs = cameraSyncReferences();
 const poseRefs = cameraPoseReferences();
 
 const cameraId = 'pose';
+const replayRunning = namedReference(
+  'replay running',
+  'variable:replay-running',
+);
+const replayFrame = namedReference('replay frame', 'variable:replay-frame');
+const replayWindowStart = namedReference(
+  'replay window start',
+  'variable:replay-window-start',
+);
+const replayFrames = namedReference('replay frames', 'variable:replay-frames');
+const replaySyncPayload = namedReference(
+  'replay space-time payload',
+  'variable:replay-space-time-payload',
+);
 const cameraShouldBeRunning = namedReference(
   'camera should be running',
   'variable:camera-should-be-running',
@@ -123,6 +147,11 @@ const maximumMenuDevices = 8;
 export const cameraAppStageData = {
   variables: {
     [cameraShouldBeRunning.id]: [cameraShouldBeRunning.name, 'false'],
+    [replayRunning.id]: [replayRunning.name, 'false'],
+    [replayFrame.id]: [replayFrame.name, ''],
+    [replayWindowStart.id]: [replayWindowStart.name, 0],
+    [replayFrames.id]: [replayFrames.name, 0],
+    [replaySyncPayload.id]: [replaySyncPayload.name, ''],
     [selectedDeviceIndex.id]: [selectedDeviceIndex.name, 1],
     [lastCameraStartErrorCode.id]: [lastCameraStartErrorCode.name, ''],
     [lensCalibrationReady.id]: [lensCalibrationReady.name, 'false'],
@@ -166,6 +195,10 @@ const shellBlock = (
   inputs: Readonly<Record<string, InputValue>> = {},
 ) => block(`${shell}_${opcode}`, inputs);
 const shellValue = (opcode: string) => reporter(shellBlock(opcode));
+const shellValueWith = (
+  opcode: string,
+  inputs: Readonly<Record<string, InputValue>>,
+) => reporter(shellBlock(opcode, inputs));
 
 const pairing = new PairingSteps(shell, pairingRefs);
 
@@ -182,6 +215,31 @@ const baseMenuActions = (chooseCameraLabel: string): BlockNode[] => [
     ACTION: text(action.loadLensCalibrationFile),
     LABEL: text('レンズ校正ファイルを読む'),
   }),
+  ifThen(
+    block(`${shell}_appFeatureEnabled`, { FEATURE: text(poseReplayFlag) }),
+    [
+      block(`${titleMenu}_addAppMenuAction`, {
+        ACTION: text(action.startRecording),
+        LABEL: text('ポーズの録画を始める'),
+      }),
+      block(`${titleMenu}_addAppMenuAction`, {
+        ACTION: text(action.stopRecording),
+        LABEL: text('ポーズの録画を止めて保存する'),
+      }),
+      block(`${titleMenu}_addAppMenuAction`, {
+        ACTION: text(action.chooseRecording),
+        LABEL: text('録画を読み込む'),
+      }),
+      block(`${titleMenu}_addAppMenuAction`, {
+        ACTION: text(action.startReplay),
+        LABEL: text('録画で再生する（カメラ不要）'),
+      }),
+      block(`${titleMenu}_addAppMenuAction`, {
+        ACTION: text(action.stopReplay),
+        LABEL: text('再生を止める'),
+      }),
+    ],
+  ),
   ifThen(pairing.featureEnabled(), [
     block(`${titleMenu}_addAppMenuAction`, {
       ACTION: text(action.pairWithFusion),
@@ -370,15 +428,81 @@ export const cameraAppScripts: readonly Script[] = [
     position: { x: 3200, y: 48 },
   }),
 
-  /** M-08, camera side: measure time and corners when the fusion app starts a calibration. */
+  /**
+   * M-08, camera side: measure time and corners when the fusion app starts a calibration.
+   *
+   * While replaying a recording there is no camera to measure with, so the measurement the recording
+   * carries is sent instead. That is what lets the fusion app place the cameras and run the whole
+   * calibration with no pattern on the wall.
+   */
   script({ x: 2600, y: 700 }, [
     whenBroadcastReceived(syncRefs.requested),
-    ...cameraSyncSteps({
-      shell,
-      cameraId,
-      references: syncRefs,
-      lensCalibrationReady,
-    }),
+    // Read only where the build carries replay: a block that is not registered must not be evaluated.
+    setVariable(replaySyncPayload, text('')),
+    ifThen(
+      block(`${shell}_appFeatureEnabled`, { FEATURE: text(poseReplayFlag) }),
+      [
+        setVariable(
+          replaySyncPayload,
+          shellValueWith('replaySpaceTimePayload', {
+            CAMERA_ID: text(cameraId),
+          }),
+        ),
+      ],
+    ),
+    ifElse(
+      // Answered from the recording while it is replaying, and whenever a recording is loaded and no
+      // camera is open: there is nothing to measure with then, and the recording knows what this
+      // camera saw.
+      and(
+        not(equals(variable(replaySyncPayload), text(''))),
+        or(
+          equals(variable(replayRunning), text('true')),
+          not(cameraBlock('isCameraRunning', { CAMERA_ID: text(cameraId) })),
+        ),
+      ),
+      [
+        setVariable(syncRefs.result, variable(replaySyncPayload)),
+        block(`kubohiroyawebrtc_broadcastNetworkMessage`, {
+          MESSAGE: text('twrmc-sync-result'),
+          PAYLOAD: variable(syncRefs.result),
+          CHANNEL: text('default'),
+          PEER: text('*'),
+        }),
+        shellBlock('showAppNotice', {
+          MESSAGE: text(
+            '録画に入っている空間と時刻の測定結果を統合アプリへ送りました。カメラでは測っていません。',
+          ),
+        }),
+      ],
+      [
+        ...cameraSyncSteps({
+          shell,
+          cameraId,
+          references: syncRefs,
+          lensCalibrationReady,
+        }),
+        ifThen(
+          block(`${shell}_appFeatureEnabled`, {
+            FEATURE: text(poseReplayFlag),
+          }),
+          [
+            ifThen(
+              equals(
+                reporter(block(`${shell}_poseRecordingState`)),
+                text('recording'),
+              ),
+              [
+                shellBlock('recordSpaceTimeResult', {
+                  PAYLOAD_JSON: variable(syncRefs.result),
+                  CAMERA_ID: text(cameraId),
+                }),
+              ],
+            ),
+          ],
+        ),
+      ],
+    ),
   ]),
 
   script({ x: 48, y: 48 }, [
@@ -890,5 +1014,343 @@ export const cameraAppScripts: readonly Script[] = [
     whenBroadcastReceived(menuActionsRequested),
     ...cameraDeviceMenuActions(),
     ...baseMenuActions('カメラを探し直す'),
+  ]),
+
+  /**
+   * DEBUG_POSE_REPLAY: record the poses this camera sends, with the calibration behind them.
+   *
+   * The configuration a recording carries names this app and its reference; the camera's own model
+   * and placement observation travel in the space-time result, which is recorded when the fusion app
+   * calibrates. That is what a replay needs to stand in for this camera.
+   */
+  script({ x: 5200, y: 48 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.startRecording },
+    ),
+    shellBlock('startPoseRecording', {
+      CONFIGURATION_JSON: text(
+        JSON.stringify({
+          implementation: 'fusion-v0',
+          referenceId: 'venue-projection',
+          cameras: [],
+        }),
+      ),
+    }),
+    ifElse(
+      equals(shellValue('poseRecordingState'), text('recording')),
+      [
+        block(`${shell}_showAppNotice`, {
+          MESSAGE: text(
+            'ポーズの録画を始めました。「姿勢推定を始める」で送っているフレームと、空間と時刻の測定結果を記録します。',
+          ),
+        }),
+      ],
+      [
+        block(`${shell}_showAppError`, {
+          MESSAGE: concatenate(
+            text('録画を始められませんでした: '),
+            shellValue('poseReplayError'),
+          ),
+          DETAILS: text(JSON.stringify({ code: 'RECORDING_FAILED' })),
+        }),
+      ],
+    ),
+    block(`${titleMenu}_showMenu`),
+  ]),
+
+  script({ x: 5200, y: 1200 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.stopRecording },
+    ),
+    shellBlock('stopPoseRecording'),
+    ifElse(
+      equals(shellValue('poseRecordingState'), text('recorded')),
+      [
+        shellBlock('askNumbers', {
+          TITLE: text(
+            '録画に付ける番号を入力してください。会場のPCに camera-app-<番号>.json として保存します。',
+          ),
+          FIELDS: text('番号'),
+          DEFAULTS: text('1'),
+        }),
+        ifElse(
+          equals(shellValue('answeredNumbers'), text('')),
+          [
+            block(`${shell}_showAppNotice`, {
+              MESSAGE: text(
+                '録画の保存をやめました。録画はこのページに残っています。',
+              ),
+            }),
+          ],
+          [
+            shellBlock('saveRecording', {
+              NAME: concatenate(
+                text('camera-app-'),
+                shellValue('answeredNumbers'),
+              ),
+            }),
+            ifElse(
+              equals(shellValue('poseReplayError'), text('')),
+              [
+                block(`${shell}_showAppNotice`, {
+                  MESSAGE: concatenate(
+                    text('録画を保存しました。'),
+                    shellValue('poseRecordingSummary'),
+                  ),
+                }),
+              ],
+              [
+                block(`${shell}_showAppError`, {
+                  MESSAGE: concatenate(
+                    text('録画を保存できませんでした: '),
+                    shellValue('poseReplayError'),
+                  ),
+                  DETAILS: text(
+                    JSON.stringify({ code: 'RECORDING_SAVE_FAILED' }),
+                  ),
+                }),
+              ],
+            ),
+          ],
+        ),
+      ],
+      [
+        block(`${shell}_showAppNotice`, {
+          MESSAGE: text(
+            '保存できる録画がありません。「ポーズの録画を始める」から録ってください。',
+          ),
+        }),
+      ],
+    ),
+    block(`${titleMenu}_showMenu`),
+  ]),
+
+  script({ x: 5200, y: 2400 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.chooseRecording },
+    ),
+    shellBlock('refreshRecordings'),
+    ifElse(
+      equals(shellValue('recordingCount'), number(0)),
+      [shellBlock('loadRecording', { NAME: text('') })],
+      [
+        block(`${shell}_showAppNotice`, {
+          MESSAGE: concatenate(text('録画: '), shellValue('recordingsSummary')),
+        }),
+        shellBlock('askNumbers', {
+          TITLE: text(
+            '読み込む録画の番号を入力してください（表示した順に1から数えます）。',
+          ),
+          FIELDS: text('番号'),
+          DEFAULTS: text('1'),
+        }),
+        ifElse(
+          equals(shellValue('answeredNumbers'), text('')),
+          [
+            block(`${shell}_showAppNotice`, {
+              MESSAGE: text('録画の読み込みをやめました。'),
+            }),
+          ],
+          [
+            shellBlock('loadRecording', {
+              NAME: shellValueWith('recordingNameAt', {
+                INDEX: shellValue('answeredNumbers'),
+              }),
+            }),
+          ],
+        ),
+      ],
+    ),
+    ifElse(
+      equals(shellValue('poseReplayError'), text('')),
+      [
+        block(`${shell}_showAppNotice`, {
+          MESSAGE: concatenate(
+            text('読み込みました: '),
+            shellValue('replaySummary'),
+          ),
+        }),
+      ],
+      [
+        block(`${shell}_showAppError`, {
+          MESSAGE: concatenate(
+            text('録画を読み込めませんでした: '),
+            shellValue('poseReplayError'),
+          ),
+          DETAILS: text(JSON.stringify({ code: 'RECORDING_LOAD_FAILED' })),
+        }),
+      ],
+    ),
+    block(`${titleMenu}_showMenu`),
+  ]),
+
+  /**
+   * Sends a recording to the fusion app as this camera, with no camera open.
+   *
+   * The pairing is real: the fusion app sees an ordinary camera app on the other end of the WebRTC
+   * connection, and the calibration request is answered from the recording. Only the camera is absent.
+   */
+  script({ x: 5200, y: 3600 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.startReplay },
+    ),
+    setVariable(poseRefs.peer, pairing.pairingValue('pairingRemotePeer')),
+    setVariable(poseRefs.localPeer, pairing.pairingValue('pairingLocalPeer')),
+    ifElse(
+      equals(variable(replayRunning), text('true')),
+      [
+        block(`${shell}_showAppNotice`, {
+          MESSAGE: text('録画はすでに再生しています。'),
+        }),
+      ],
+      [
+        ifElse(
+          equals(
+            shellValue('replaySummary'),
+            text('録画を読み込んでいません。'),
+          ),
+          [
+            block(`${shell}_showAppError`, {
+              MESSAGE: text('先に「録画を読み込む」で録画を選んでください。'),
+              DETAILS: text(JSON.stringify({ code: 'REPLAY_NOT_LOADED' })),
+            }),
+          ],
+          [
+            ifElse(
+              or(
+                equals(variable(poseRefs.peer), text('')),
+                not(
+                  equals(
+                    reporter(
+                      block(`kubohiroyawebrtc_connectionState`, {
+                        PEER: variable(poseRefs.peer),
+                      }),
+                    ),
+                    text('connected'),
+                  ),
+                ),
+              ),
+              [
+                block(`${shell}_showAppError`, {
+                  MESSAGE: text(
+                    '統合アプリと接続していないため、再生を始めません。先に「統合アプリと接続する」を選んでください。',
+                  ),
+                  DETAILS: text(
+                    JSON.stringify({ code: 'REPLAY_NOT_CONNECTED' }),
+                  ),
+                }),
+              ],
+              [
+                setVariable(replayRunning, text('true')),
+                setVariable(replayFrames, number(0)),
+                shellBlock('startPoseReplay'),
+                block(`${shell}_showAppNotice`, {
+                  MESSAGE: concatenate(
+                    text('録画を再生して統合アプリへ送っています: '),
+                    shellValue('replaySummary'),
+                  ),
+                }),
+                block(`${titleMenu}_showMenu`),
+                setVariable(
+                  replayWindowStart,
+                  reporter(block('sensing_timer')),
+                ),
+                repeatUntil(
+                  or(
+                    not(equals(variable(replayRunning), text('true'))),
+                    not(equals(shellValue('replayState'), text('playing'))),
+                  ),
+                  [
+                    setVariable(
+                      replayFrame,
+                      shellValueWith('replayPoseFrame', {
+                        CAMERA_ID: variable(poseRefs.localPeer),
+                      }),
+                    ),
+                    ifThen(not(equals(variable(replayFrame), text(''))), [
+                      block(`kubohiroyawebrtc_sendLatestData`, {
+                        PAYLOAD: variable(replayFrame),
+                        CHANNEL: text(poseChannel),
+                        PEER: variable(poseRefs.peer),
+                      }),
+                      changeVariable(replayFrames, 1),
+                    ]),
+                    ifThen(
+                      greaterThan(
+                        reporter(
+                          block('operator_subtract', {
+                            NUM1: reporter(block('sensing_timer')),
+                            NUM2: variable(replayWindowStart),
+                          }),
+                        ),
+                        number(1),
+                      ),
+                      [
+                        block(`${shell}_showAppNotice`, {
+                          MESSAGE: concatenate(
+                            text('再生 '),
+                            shellValue('replayPositionMs'),
+                            text(' / '),
+                            shellValue('replayDurationMs'),
+                            text(' ms / 送信: '),
+                            variable(replayFrames),
+                            text(' 件'),
+                          ),
+                        }),
+                        setVariable(
+                          replayWindowStart,
+                          reporter(block('sensing_timer')),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                setVariable(replayRunning, text('false')),
+                block(`${shell}_showAppNotice`, {
+                  MESSAGE: concatenate(
+                    text('録画の再生が終わりました。送信: '),
+                    variable(replayFrames),
+                    text(' 件'),
+                  ),
+                }),
+              ],
+            ),
+          ],
+        ),
+      ],
+    ),
+    block(`${titleMenu}_showMenu`),
+  ]),
+
+  script({ x: 5200, y: 7200 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.stopReplay },
+    ),
+    ifElse(
+      equals(variable(replayRunning), text('true')),
+      [
+        setVariable(replayRunning, text('false')),
+        shellBlock('stopPoseReplay'),
+        block(`${shell}_showAppNotice`, {
+          MESSAGE: text('再生を止めました。'),
+        }),
+      ],
+      [
+        block(`${shell}_showAppNotice`, {
+          MESSAGE: text('録画を再生していません。'),
+        }),
+      ],
+    ),
+    block(`${titleMenu}_showMenu`),
   ]),
 ];

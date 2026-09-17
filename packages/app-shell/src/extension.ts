@@ -499,6 +499,24 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
     );
   }
 
+  public recordSpaceTimeResult(args: {
+    PAYLOAD_JSON: unknown;
+    CAMERA_ID: unknown;
+  }): void {
+    this.poseReplay?.recordSpaceTime(
+      Scratch.Cast.toString(args.CAMERA_ID).trim(),
+      Scratch.Cast.toString(args.PAYLOAD_JSON),
+    );
+  }
+
+  public replaySpaceTimePayload(args: { CAMERA_ID: unknown }): string {
+    return (
+      this.poseReplay?.spaceTimePayloadJson(
+        Scratch.Cast.toString(args.CAMERA_ID).trim(),
+      ) ?? ''
+    );
+  }
+
   public stopPoseRecording(): void {
     this.poseReplay?.stopRecording();
   }
