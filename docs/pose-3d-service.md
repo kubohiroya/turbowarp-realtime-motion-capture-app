@@ -54,6 +54,12 @@ TurboWarp拡張`realtimemotioncapturepose3dservice`として埋め込まれ、�
    timeoutや不正な応答のときは3D出力を空にし（`degraded`）、理由と2Dの状況を表示し続ける。
    有効な応答が戻れば`ready`に戻る。
 
+## local-app
+
+local-app（#36 段階5）も同じ拡張と設定の部品を使い、同じフラグで有効にします。1ページで全カメラを推定するため、
+2Dフレームの`peerId`はすべて`local`で、カメラは設定したカメラID（`cam-1`…）で区別します。stubの`cameraIds`も
+設定したカメラIDです。詳しくは[local-app](local-app.md)。
+
 ## 検証の状況
 
 - 自動：`pnpm check`。パッケージの契約テスト26件（検証、stubの3実装、client の重複・古いフレーム・

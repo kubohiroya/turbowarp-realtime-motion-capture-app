@@ -46,6 +46,12 @@ import {
   spaceTimeSolveSteps,
   timeSpaceSync
 } from './space-time.ts';
+import {
+  configurePose3dServiceSteps,
+  external3dServiceFlag,
+  pose3dService,
+  pose3dStatusText
+} from './pose-3d.ts';
 
 /**
  * The standalone app (#36): run several USB cameras on one PC, measure them, and calibrate each lens.
@@ -72,6 +78,12 @@ import {
  * measured positions, the cameras are placed, and the page says READY only when every figure clears
  * the same thresholds as the camera and fusion apps (M-08). The measurement and the solve are the
  * steps those apps use.
+ *
+ * Stage 5: the 2D poses go to the 3D pose service (#34) from the same loop that estimates them. The
+ * service is configured from the stage-4 calibration — each camera's model, placement and time
+ * correspondence — exactly as the fusion app configures it from its camera apps, and each round asks
+ * for the current 3D frame. Stage 1 of #34 has only stub implementations, so this is behind the same
+ * `external3dServiceV1` flag as in the fusion app and every figure names the implementation.
  */
 
 const shell = 'realtimemotioncapturelocalshell';
@@ -101,7 +113,9 @@ const action = {
   diagnostics: 'diagnostics',
   startPose: 'startPose',
   stopPose: 'stopPose',
-  calibrateSpaceTime: 'calibrateSpaceTime'
+  calibrateSpaceTime: 'calibrateSpaceTime',
+  start3d: 'start3d',
+  stop3d: 'stop3d'
 } as const;
 const deviceAction = (index: number) => `addDevice${index}`;
 const calibrateLensAction = (index: number) => `calibrateLens${index}`;
@@ -128,6 +142,8 @@ const poseWindowStart = namedReference('pose window start', 'variable:pose-windo
 const spaceTime = fusionSyncReferences();
 const spaceTimeMeasurement = namedReference('space-time measurement', 'variable:space-time-measurement');
 const spaceTimeDelays = namedReference('space-time delays', 'variable:space-time-delays');
+/** `true` while each pose round is also forwarded to the 3D service. */
+const pose3dEnabled = namedReference('3D enabled', 'variable:3d-enabled');
 const profilesGenerationBefore = namedReference(
   'stored profiles generation before',
   'variable:stored-profiles-generation-before'
@@ -155,7 +171,8 @@ export const localAppStageData = {
     [poseWindowStart.id]: [poseWindowStart.name, 0],
     ...fusionSyncVariables(spaceTime),
     [spaceTimeMeasurement.id]: [spaceTimeMeasurement.name, ''],
-    [spaceTimeDelays.id]: [spaceTimeDelays.name, '']
+    [spaceTimeDelays.id]: [spaceTimeDelays.name, ''],
+    [pose3dEnabled.id]: [pose3dEnabled.name, 'false']
   },
   lists: fusionSyncLists(spaceTime),
   broadcasts: {
@@ -286,8 +303,15 @@ const baseMenu = (): BlockNode[] => [
   addMenu(action.diagnostics, text('動作状況を見る')),
   addMenu(action.startPose, text('姿勢推定を始める')),
   addMenu(action.stopPose, text('姿勢推定を止める')),
-  addMenu(action.calibrateSpaceTime, text('空間と時刻を校正する'))
+  addMenu(action.calibrateSpaceTime, text('空間と時刻を校正する')),
+  ifThen(shellBlock('appFeatureEnabled', {FEATURE: text(external3dServiceFlag)}), [
+    addMenu(action.start3d, text('3D推定を始める')),
+    addMenu(action.stop3d, text('3D推定を止める'))
+  ])
 ];
+
+const serviceBlock = (opcode: string, inputs: Readonly<Record<string, InputValue>> = {}) =>
+  block(`${pose3dService}_${opcode}`, inputs);
 
 const poseValue = (opcode: string): InputValue => reporter(block(`${motionCapture}_${opcode}`, {CAMERA_ID: slotId()}));
 
@@ -302,6 +326,19 @@ const stopPoseAndWait = (): BlockNode[] => [
     setVariable(poseRunning, text('false')),
     waitUntil(equals(variable(poseStopped), text('true'))),
     notice(text('カメラを変更するため、姿勢推定を止めました。変更が済んだら「姿勢推定を始める」を選んでください。'))
+  ]),
+  ...invalidateCalibration()
+];
+
+/**
+ * A changed camera — restarted, at another size, or with another lens calibration — no longer matches
+ * the placement solved for it, so READY is withdrawn and the 3D service, configured from it, stops.
+ */
+const invalidateCalibration = (): BlockNode[] => [
+  setVariable(spaceTime.ready, text('false')),
+  ifThen(equals(variable(pose3dEnabled), text('true')), [
+    setVariable(pose3dEnabled, text('false')),
+    serviceBlock('stopService')
   ])
 ];
 
@@ -569,17 +606,55 @@ export const localAppScripts: readonly Script[] = [
                     ifThen(and(slotRunning(), not(equals(poseValue('poseCameraStatusJson'), text('')))), [
                       block(`${motionCapture}_inferPoseCameraAtFrameTime`, {CAMERA_ID: slotId()}),
                       shellBlock('showGridPose', {FRAME_JSON: poseValue('poseCameraFrame2D'), CAMERA_ID: slotId()}),
-                      shellBlock('recordPoseStatus', {STATUS_JSON: poseValue('poseCameraStatusJson'), CAMERA_ID: slotId()})
+                      shellBlock('recordPoseStatus', {STATUS_JSON: poseValue('poseCameraStatusJson'), CAMERA_ID: slotId()}),
+                      ifThen(equals(variable(pose3dEnabled), text('true')), [
+                        serviceBlock('sendPoseFrame', {
+                          FRAME_JSON: poseValue('poseCameraFrame2D'),
+                          CAMERA_ID: slotId(),
+                          AGE_MS: shellValue('poseFrameAgeMs', {FRAME_JSON: poseValue('poseCameraFrame2D')})
+                        })
+                      ])
                     ])
                   ]),
                   shellBlock('endPoseRound'),
+                  ifThen(equals(variable(pose3dEnabled), text('true')), [serviceBlock('requestPose3d')]),
                   ifThen(
                     greaterThan(
                       reporter(block('operator_subtract', {NUM1: reporter(block('sensing_timer')), NUM2: variable(poseWindowStart)})),
                       number(1)
                     ),
                     [
-                      notice(concatenate(text('姿勢推定 — '), shellValue('poseMeasurementSummary'))),
+                      ifElse(
+                        equals(variable(pose3dEnabled), text('true')),
+                        [
+                          ifElse(
+                            equals(reporter(serviceBlock('serviceState')), text('ready')),
+                            [
+                              notice(
+                                concatenate(
+                                  pose3dStatusText(shell),
+                                  text(' — 姿勢推定 '),
+                                  shellValue('poseMeasurementSummary')
+                                )
+                              )
+                            ],
+                            [
+                              error(
+                                concatenate(
+                                  text('3D出力を停止中です（'),
+                                  reporter(serviceBlock('serviceState')),
+                                  text('）: '),
+                                  reporter(serviceBlock('serviceError')),
+                                  text(' — 姿勢推定 '),
+                                  shellValue('poseMeasurementSummary')
+                                ),
+                                'POSE_3D_WITHHELD'
+                              )
+                            ]
+                          )
+                        ],
+                        [notice(concatenate(text('姿勢推定 — '), shellValue('poseMeasurementSummary')))]
+                      ),
                       setVariable(poseWindowStart, reporter(block('sensing_timer')))
                     ]
                   )
@@ -746,6 +821,74 @@ export const localAppScripts: readonly Script[] = [
     block(`${titleMenu}_showMenu`)
   ]),
 
+  /**
+   * Configures the 3D service from the space-time calibration and turns forwarding on.
+   *
+   * Forwarding happens in the pose loop, so 3D output starts once pose estimation runs; starting 3D
+   * first is allowed and says so.
+   */
+  script({x: 3800, y: 48}, [
+    block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.start3d}),
+    ifElse(
+      not(shellBlock('appFeatureEnabled', {FEATURE: text(external3dServiceFlag)})),
+      [error(text('この配布物では3Dサービスとの連携が無効です。'), 'POSE_3D_DISABLED')],
+      [
+        ifElse(
+          not(equals(variable(spaceTime.ready), text('true'))),
+          [
+            error(
+              text('空間と時刻の校正がREADYではありません。先に「空間と時刻を校正する」を済ませてください。'),
+              'POSE_3D_NOT_CALIBRATED'
+            )
+          ],
+          [
+            shellBlock('showAppLoading', {LABEL: text('3Dサービスを準備しています')}),
+            ...configurePose3dServiceSteps({
+              shell,
+              spaceTimeResults: spaceTime.results,
+              index: spaceTime.index,
+              item: spaceTime.item
+            }),
+            shellBlock('hideAppLoading'),
+            ifElse(
+              not(equals(reporter(serviceBlock('serviceState')), text('ready'))),
+              [
+                setVariable(pose3dEnabled, text('false')),
+                error(
+                  concatenate(text('3Dサービスを開始できませんでした: '), reporter(serviceBlock('serviceError'))),
+                  'POSE_3D_CONFIGURE_FAILED'
+                )
+              ],
+              [
+                setVariable(pose3dEnabled, text('true')),
+                ifElse(
+                  equals(variable(poseRunning), text('true')),
+                  [notice(text('3D推定を始めました。姿勢推定の各周で3Dサービスへ送ります。'))],
+                  [notice(text('3Dサービスを準備しました。「姿勢推定を始める」を選ぶと、3D推定が始まります。'))]
+                )
+              ]
+            )
+          ]
+        )
+      ]
+    ),
+    block(`${titleMenu}_showMenu`)
+  ]),
+
+  script({x: 3800, y: 1600}, [
+    block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.stop3d}),
+    ifElse(
+      equals(variable(pose3dEnabled), text('true')),
+      [
+        setVariable(pose3dEnabled, text('false')),
+        serviceBlock('stopService'),
+        notice(text('3D推定を止めました。姿勢推定は続けています。'))
+      ],
+      [notice(text('3D推定は動いていません。'))]
+    ),
+    block(`${titleMenu}_showMenu`)
+  ]),
+
   script({x: 2600, y: 3000}, [
     block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: action.stopPose}),
     ifElse(
@@ -865,6 +1008,7 @@ function calibrateLensScript(index: number): Script {
 function loadLensFileScript(index: number): Script {
   return script({x: 2000, y: 700 + (index - 1) * 1400}, [
     block(`${titleMenu}_whenAppMenuActionSelected`, {}, {ACTION: loadLensFileAction(index)}),
+    ...stopPoseAndWait(),
     setVariable(slot, number(index)),
     ifElse(
       not(slotRunning()),

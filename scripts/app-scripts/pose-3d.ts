@@ -50,6 +50,66 @@ const serviceValue = (opcode: string) => reporter(service(opcode));
 const concatenate = (first: InputValue, ...rest: readonly InputValue[]): InputValue =>
   rest.reduce((left, right) => reporter(join(left, right)), first);
 
+/**
+ * Configures the service from the space-time calibration and applies it.
+ *
+ * `spaceTimeResults` holds `{peer, payload}` items as `measureSpaceTimeSteps` produced them; every
+ * measured camera is added under its `peer` name with its camera model, the solved placement and its
+ * time correspondence. Shared by the fusion app, whose items come from camera apps, and the local app,
+ * whose items are its own cameras.
+ */
+export function configurePose3dServiceSteps(options: {
+  readonly shell: string;
+  readonly spaceTimeResults: NamedReference;
+  readonly index: NamedReference;
+  readonly item: NamedReference;
+}): BlockNode[] {
+  const json = (value: InputValue, path: string) =>
+    reporter(block(`${options.shell}_jsonValueAt`, {JSON: value, PATH: text(path)}));
+  const payload = () => json(variable(options.item), 'payload');
+  return [
+    service('beginConfiguration', {IMPLEMENTATION: text(serviceImplementation), REFERENCE_ID: text(referenceId)}),
+    setVariable(options.index, number(0)),
+    repeat(reporter(lengthOfList(options.spaceTimeResults)), [
+      changeVariable(options.index, 1),
+      setVariable(options.item, reporter(itemOfList(variable(options.index), options.spaceTimeResults))),
+      ifThen(equals(json(payload(), 'status'), text('measured')), [
+        service('addCamera', {
+          CAMERA_ID: json(variable(options.item), 'peer'),
+          MODEL_JSON: json(payload(), 'cameraModel'),
+          PLACEMENT_JSON: reporter(block(`${timeSpaceSync}_placementResultJson`)),
+          TIME_JSON: json(payload(), 'correspondence')
+        })
+      ])
+    ]),
+    service('applyConfiguration')
+  ];
+}
+
+/** The service's own state and counters, always naming the implementation. */
+export function pose3dStatusText(shell: string): InputValue {
+  const json = (path: string) =>
+    reporter(block(`${shell}_jsonValueAt`, {JSON: serviceValue('serviceStatusJson'), PATH: text(path)}));
+  return concatenate(
+    text('3D統合（'),
+    json('implementation'),
+    text('）— 人数: '),
+    json('persons'),
+    text(' / RTT: '),
+    json('rttMs'),
+    text(' ms / 3D経過: '),
+    json('poseAgeMs'),
+    text(' ms / 送信: '),
+    json('framesSent'),
+    text(' / 古いフレーム: '),
+    json('framesStale'),
+    text(' / 不正: '),
+    json('framesInvalid'),
+    text(' / 拒否: '),
+    json('framesRejected')
+  );
+}
+
 export const fusionPose3dReferences = () => ({
   running: namedReference('3D running', 'variable:3d-running'),
   index: namedReference('3D index', 'variable:3d-index'),
@@ -103,23 +163,8 @@ export function fusionPose3dScripts(options: {
     ])
   ];
 
-  const configure = (): BlockNode[] => [
-    service('beginConfiguration', {IMPLEMENTATION: text(serviceImplementation), REFERENCE_ID: text(referenceId)}),
-    setVariable(r.index, number(0)),
-    repeat(reporter(lengthOfList(options.spaceTimeResults)), [
-      changeVariable(r.index, 1),
-      setVariable(r.item, reporter(itemOfList(variable(r.index), options.spaceTimeResults))),
-      ifThen(equals(json(payload(), 'status'), text('measured')), [
-        service('addCamera', {
-          CAMERA_ID: json(variable(r.item), 'peer'),
-          MODEL_JSON: json(payload(), 'cameraModel'),
-          PLACEMENT_JSON: reporter(block(`${timeSpaceSync}_placementResultJson`)),
-          TIME_JSON: json(payload(), 'correspondence')
-        })
-      ])
-    ]),
-    service('applyConfiguration')
-  ];
+  const configure = (): BlockNode[] =>
+    configurePose3dServiceSteps({shell, spaceTimeResults: options.spaceTimeResults, index: r.index, item: r.item});
 
   /**
    * One line for the operator: the service's own state and counters, and how old each camera's newest

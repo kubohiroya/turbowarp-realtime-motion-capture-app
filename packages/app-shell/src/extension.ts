@@ -377,6 +377,10 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
     return this.poseMeter?.summary() ?? '';
   }
 
+  public poseFrameAgeMs(args: {FRAME_JSON: unknown}): number {
+    return this.poseMeter?.frameAgeMs(Scratch.Cast.toString(args.FRAME_JSON)) ?? -1;
+  }
+
   public poseMeasurementJson(): string {
     return this.poseMeter ? JSON.stringify(this.poseMeter.measurement()) : '';
   }
