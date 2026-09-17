@@ -390,42 +390,54 @@ export const fusionAppScripts: readonly Script[] = [
               pairing.pairing('isPairingConnected'),
             ),
             ifElse(
-              equals(variable(pairingRefs.step), text('read-answer')),
+              // The exchange can connect while the Offer is still on screen: the camera app's answer
+              // reached this app by another route, or a retry completed. That is a connection, not a
+              // failure, so it is taken before the operator's button is read.
+              pairing.pairing('isPairingConnected'),
               [
-                pairing.notice(
-                  text(
-                    'スマートフォンに表示したAnswerのQRコードを、このPCのカメラに写してください。複数枚のときは全部を写します。',
-                  ),
-                ),
-                block(`${cameraSource}_startSharedCamera`, {
-                  CAMERA_ID: text(answerCameraId),
-                  DEVICE_ID: text(''),
-                }),
-                block(`${cameraSource}_showCameraPreview`, {
-                  CAMERA_ID: text(answerCameraId),
-                  PREVIEW_FLIP: text('horizontal'),
-                }),
-                ...menu(),
-                block(`${titleMenu}_showMenu`),
-                pairing.pairing('scanPairingQrFromCamera', {
-                  CAMERA_ID: text(answerCameraId),
-                }),
-                ...stopAnswerPreview(),
-                pairing.awaitConnection(),
-                ifElse(
-                  pairing.pairing('isPairingConnected'),
-                  [
-                    pairing.pairing('endPairingQrDisplay'),
-                    ...pairing.exchangeTestMessage('fusion-app'),
-                  ],
-                  [pairing.reportEnded()],
-                ),
+                pairing.pairing('endPairingQrDisplay'),
+                ...pairing.exchangeTestMessage('fusion-app'),
               ],
               [
                 ifElse(
-                  equals(variable(pairingRefs.step), text('cancel')),
-                  pairing.cancel(),
-                  [pairing.reportEnded()],
+                  equals(variable(pairingRefs.step), text('read-answer')),
+                  [
+                    pairing.notice(
+                      text(
+                        'スマートフォンに表示したAnswerのQRコードを、このPCのカメラに写してください。複数枚のときは全部を写します。',
+                      ),
+                    ),
+                    block(`${cameraSource}_startSharedCamera`, {
+                      CAMERA_ID: text(answerCameraId),
+                      DEVICE_ID: text(''),
+                    }),
+                    block(`${cameraSource}_showCameraPreview`, {
+                      CAMERA_ID: text(answerCameraId),
+                      PREVIEW_FLIP: text('horizontal'),
+                    }),
+                    ...menu(),
+                    block(`${titleMenu}_showMenu`),
+                    pairing.pairing('scanPairingQrFromCamera', {
+                      CAMERA_ID: text(answerCameraId),
+                    }),
+                    ...stopAnswerPreview(),
+                    pairing.awaitConnection(),
+                    ifElse(
+                      pairing.pairing('isPairingConnected'),
+                      [
+                        pairing.pairing('endPairingQrDisplay'),
+                        ...pairing.exchangeTestMessage('fusion-app'),
+                      ],
+                      [pairing.reportEnded()],
+                    ),
+                  ],
+                  [
+                    ifElse(
+                      equals(variable(pairingRefs.step), text('cancel')),
+                      pairing.cancel(),
+                      [pairing.reportEnded()],
+                    ),
+                  ],
                 ),
               ],
             ),
