@@ -290,11 +290,19 @@ describe('performance DSL', () => {
   it('republishes when the file changes on disk', async () => {
     const {host, path} = await startWithDsl('performers: 1');
 
-    await writeFile(path, 'performers: 2');
+    const republished = () => host.dsl()?.source === 'performers: 2';
 
-    const deadline = Date.now() + 5000;
-    while (host.dsl()?.source !== 'performers: 2' && Date.now() < deadline) {
-      await new Promise((resolve) => setTimeout(resolve, 25));
+    // The host has only just opened its fs.watch, and the OS can drop a write
+    // made while it is still registering the watch (FSEvents on macOS). Such a
+    // write is never reported, so rewrite the change until the watcher publishes
+    // it. publishNow is never called here: only the watcher can republish.
+    const deadline = Date.now() + 4000;
+    while (!republished() && Date.now() < deadline) {
+      await writeFile(path, 'performers: 2');
+      const attemptDeadline = Math.min(Date.now() + 500, deadline);
+      while (!republished() && Date.now() < attemptDeadline) {
+        await new Promise((resolve) => setTimeout(resolve, 25));
+      }
     }
     expect(host.dsl()).toMatchObject({source: 'performers: 2'});
   });
