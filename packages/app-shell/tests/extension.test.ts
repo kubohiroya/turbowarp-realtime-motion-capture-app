@@ -65,7 +65,7 @@ describe('getInfo', () => {
   it('leaves the title, menu, and DSL surface to turbowarp-title-menu', () => {
     const blocks = info['blocks'] as Array<Record<string, unknown>>;
     const opcodes = blocks.map((block) => block['opcode']);
-    expect(blocks).toHaveLength(36);
+    expect(blocks).toHaveLength(37);
     for (const absent of ['whenAppMenuActionSelected', 'setAppStatus', 'setAppMenuActionEnabled']) {
       expect(opcodes).not.toContain(absent);
     }
@@ -93,6 +93,7 @@ describe('getInfo', () => {
     expect(cameraOpcodes).toEqual(
       expect.arrayContaining([
         'openLensCalibrationApp',
+        'openLensCalibrationAppForCamera',
         'lensCalibrationAppState',
         'lensCalibrationAppOpen',
         'chooseLensCalibrationFile',

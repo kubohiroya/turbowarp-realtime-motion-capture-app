@@ -1,4 +1,9 @@
-import {chooseTextFileWithDialog, lensCalibrationRoute, type LensCalibrationHost} from './lens-calibration.js';
+import {
+  chooseTextFileWithDialog,
+  lensCalibrationRequestParameters,
+  lensCalibrationRoute,
+  type LensCalibrationHost
+} from './lens-calibration.js';
 import type {ShellLocale} from './app-config.js';
 import type {ShellHost} from './shell.js';
 
@@ -28,10 +33,14 @@ export function createScratchShellHost(): ShellHost {
  */
 export function createBrowserLensCalibrationHost(locale: ShellLocale): LensCalibrationHost {
   return {
-    resolveUrl() {
+    resolveUrl(request) {
       if (typeof location === 'undefined') return null;
       if (location.protocol !== 'http:' && location.protocol !== 'https:') return null;
-      return new URL(`${lensCalibrationRoute}${location.search}`, location.href).href;
+      const url = new URL(`${lensCalibrationRoute}${location.search}`, location.href);
+      if (request !== undefined) {
+        for (const [name, value] of lensCalibrationRequestParameters(request)) url.searchParams.set(name, value);
+      }
+      return url.href;
     },
     async isServed(url) {
       const response = await fetch(url, {method: 'HEAD', cache: 'no-store'});

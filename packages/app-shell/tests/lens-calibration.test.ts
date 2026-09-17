@@ -2,6 +2,7 @@ import {describe, expect, it, vi} from 'vitest';
 
 import {
   chooseTextFileWithDialog,
+  lensCalibrationRequestParameters,
   lensCalibrationRoute,
   LensCalibrationLauncher,
   type LensCalibrationHost
@@ -46,6 +47,44 @@ describe('LensCalibrationLauncher', () => {
 
     expect(openWindow).toHaveBeenCalledTimes(1);
     expect(focus).toHaveBeenCalledTimes(1);
+  });
+
+  it('names the camera and its size for one of several cameras', async () => {
+    const resolveUrl = vi.fn(() => 'http://127.0.0.1:49713/lens-calibration?token=t');
+    const launcher = new LensCalibrationLauncher(host({resolveUrl}));
+    const request = {deviceId: 'device-b', width: 1280, height: 720, frameRate: 30};
+
+    await expect(launcher.open(request)).resolves.toBe('open');
+
+    expect(resolveUrl).toHaveBeenCalledWith(request);
+    expect(lensCalibrationRequestParameters(request)).toEqual([
+      ['cameraDeviceId', 'device-b'],
+      ['cameraWidth', '1280'],
+      ['cameraHeight', '720'],
+      ['cameraFrameRate', '30']
+    ]);
+    expect(lensCalibrationRequestParameters({...request, frameRate: Number.NaN})).toHaveLength(3);
+  });
+
+  it('leaves a window open for another camera alone and reports busy', async () => {
+    const window = {closed: false, focus: vi.fn()};
+    const openWindow = vi.fn(() => window);
+    const launcher = new LensCalibrationLauncher(host({openWindow}));
+    const cameraA = {deviceId: 'device-a', width: 1280, height: 720, frameRate: 30};
+
+    await launcher.open(cameraA);
+    await expect(launcher.open({...cameraA, deviceId: 'device-b'})).resolves.toBe('busy');
+    expect(openWindow).toHaveBeenCalledTimes(1);
+    expect(launcher.isOpen()).toBe(true);
+
+    // The same camera again brings it forward.
+    await expect(launcher.open(cameraA)).resolves.toBe('open');
+    expect(window.focus).toHaveBeenCalledTimes(1);
+
+    window.closed = true;
+    expect(launcher.state()).toBe('closed');
+    await expect(launcher.open({...cameraA, deviceId: 'device-b'})).resolves.toBe('open');
+    expect(openWindow).toHaveBeenCalledTimes(2);
   });
 
   it('is unavailable on a page with no origin to serve the calibration app from', async () => {
