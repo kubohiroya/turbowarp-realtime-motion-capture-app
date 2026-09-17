@@ -1,34 +1,43 @@
-import {describe, expect, it} from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-import {validateAppConfig, type AppShellAppConfig} from '../src/app-config.js';
-import {cameraAppConfig} from '../src/apps/camera.js';
-import {fusionAppConfig} from '../src/apps/fusion.js';
-import {localAppConfig} from '../src/apps/local.js';
-import {featureFlagNames, resolveFeatureFlags} from '../src/feature-flags.js';
+import {
+  validateAppConfig,
+  type AppShellAppConfig,
+} from '../src/app-config.js';
+import { cameraAppConfig } from '../src/apps/camera.js';
+import { fusionAppConfig } from '../src/apps/fusion.js';
+import { localAppConfig } from '../src/apps/local.js';
+import { featureFlagNames, resolveFeatureFlags } from '../src/feature-flags.js';
 
-const shippedConfigs: readonly AppShellAppConfig[] = [cameraAppConfig, fusionAppConfig, localAppConfig];
+const shippedConfigs: readonly AppShellAppConfig[] = [
+  cameraAppConfig,
+  fusionAppConfig,
+  localAppConfig,
+];
 
 describe('shipped application configurations', () => {
   it('use valid extension IDs', () => {
-    for (const config of shippedConfigs) expect(validateAppConfig(config)).toBe(config);
+    for (const config of shippedConfigs)
+      expect(validateAppConfig(config)).toBe(config);
   });
 
   it('request only flags the contract extension defines', () => {
     for (const config of shippedConfigs) {
       expect(() => resolveFeatureFlags(config.featureFlags)).not.toThrow();
-      for (const flag of config.featureFlags) expect(featureFlagNames).toContain(flag);
+      for (const flag of config.featureFlags)
+        expect(featureFlagNames).toContain(flag);
     }
   });
 
   it('keep the two shells under distinct extension IDs', () => {
     expect(cameraAppConfig.id).not.toBe(fusionAppConfig.id);
   });
-
 });
 
 describe('validateAppConfig', () => {
   it('rejects an extension ID TurboWarp cannot use', () => {
-    expect(() => validateAppConfig({...cameraAppConfig, id: 'Camera-Shell'})).toThrow(/Extension ID/);
+    expect(() =>
+      validateAppConfig({ ...cameraAppConfig, id: 'Camera-Shell' }),
+    ).toThrow(/Extension ID/);
   });
-
 });

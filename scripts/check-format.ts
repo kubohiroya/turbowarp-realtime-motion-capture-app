@@ -1,7 +1,7 @@
-import {readFile} from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 
-import {repositoryRoot} from './repository-config.ts';
-import {repositoryFiles} from './repository-files.ts';
+import { repositoryRoot } from './repository-config.ts';
+import { repositoryFiles } from './repository-files.ts';
 
 const errors: string[] = [];
 for (const file of await repositoryFiles()) {

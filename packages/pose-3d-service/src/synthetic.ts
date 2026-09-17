@@ -13,9 +13,20 @@
  * good synthetic figure as a good venue figure.
  */
 
-import {COCO_17_KEYPOINT_IDS, type Coco17KeypointId, type PoseFrame2D, type ServiceCamera, type ServiceConfiguration} from './contracts.ts';
-import type {Session, SessionEvent, TruthFrame, TruthPerson} from './session.ts';
-import {SESSION_SCHEMA, SESSION_VERSION} from './session.ts';
+import {
+  COCO_17_KEYPOINT_IDS,
+  type Coco17KeypointId,
+  type PoseFrame2D,
+  type ServiceCamera,
+  type ServiceConfiguration,
+} from './contracts.ts';
+import type {
+  Session,
+  SessionEvent,
+  TruthFrame,
+  TruthPerson,
+} from './session.ts';
+import { SESSION_SCHEMA, SESSION_VERSION } from './session.ts';
 
 export interface SceneOptions {
   readonly seed: number;
@@ -45,7 +56,7 @@ export const DEFAULT_SCENE: SceneOptions = Object.freeze({
   identitySwitchRate: 0.02,
   imageWidth: 1280,
   imageHeight: 720,
-  startedAtUs: 1_789_000_000_000_000
+  startedAtUs: 1_789_000_000_000_000,
 });
 
 type Vector3 = readonly [number, number, number];
@@ -74,7 +85,7 @@ const SKELETON: Readonly<Record<Coco17KeypointId, Vector3>> = Object.freeze({
   left_knee: [0.12, 0.45, 0.02],
   right_knee: [-0.12, 0.45, 0.02],
   left_ankle: [0.12, 0.88, 0],
-  right_ankle: [-0.12, 0.88, 0]
+  right_ankle: [-0.12, 0.88, 0],
 });
 
 /** The hips' height above the floor, so the floor is y = HIP_HEIGHT in reference coordinates. */
@@ -85,19 +96,27 @@ export interface SyntheticScene {
   readonly options: SceneOptions;
 }
 
-export function generateScene(overrides: Partial<SceneOptions> = {}): SyntheticScene {
-  const options: SceneOptions = {...DEFAULT_SCENE, ...overrides};
-  if (options.cameras < 2) throw new Error('A scene needs at least two cameras to be triangulated.');
+export function generateScene(
+  overrides: Partial<SceneOptions> = {},
+): SyntheticScene {
+  const options: SceneOptions = { ...DEFAULT_SCENE, ...overrides };
+  if (options.cameras < 2)
+    throw new Error('A scene needs at least two cameras to be triangulated.');
   const random = mulberry32(options.seed);
   const cameras = placeCameras(options);
   const configuration: ServiceConfiguration = {
     implementation: 'stub-normal',
     referenceId: 'synthetic-room',
-    cameras: cameras.map((camera) => camera.service)
+    cameras: cameras.map((camera) => camera.service),
   };
-  const frameCount = Math.max(1, Math.round(options.seconds * options.frameRate));
+  const frameCount = Math.max(
+    1,
+    Math.round(options.seconds * options.frameRate),
+  );
   const frameIntervalUs = Math.round(1_000_000 / options.frameRate);
-  const paths = Array.from({length: options.persons}, (_, index) => personPath(index, options.persons));
+  const paths = Array.from({ length: options.persons }, (_, index) =>
+    personPath(index, options.persons),
+  );
 
   const events: SessionEvent[] = [];
   const truth: TruthFrame[] = [];
@@ -112,29 +131,40 @@ export function generateScene(overrides: Partial<SceneOptions> = {}): SyntheticS
     const seconds = index / options.frameRate;
     const persons = paths.map((path, person) => ({
       personId: `person-${person + 1}`,
-      joints: jointsOf(path, seconds)
+      joints: jointsOf(path, seconds),
     }));
     const truthPersons: TruthPerson[] = persons.map((person) => ({
       personId: person.personId,
-      joints: person.joints.map(({id, position}) => ({
+      joints: person.joints.map(({ id, position }) => ({
         id,
         x: position[0],
         y: position[1],
         z: position[2],
         cameraIds: cameras
-          .filter((camera) => !isHidden(hiddenUntil, camera.service.cameraId, person.personId, seconds))
+          .filter(
+            (camera) =>
+              !isHidden(
+                hiddenUntil,
+                camera.service.cameraId,
+                person.personId,
+                seconds,
+              ),
+          )
           .filter((camera) => project(camera, position, options) !== undefined)
-          .map((camera) => camera.service.cameraId)
-      }))
+          .map((camera) => camera.service.cameraId),
+      })),
     }));
-    truth.push({timestampUs, persons: truthPersons});
+    truth.push({ timestampUs, persons: truthPersons });
 
     for (const camera of cameras) {
       const cameraId = camera.service.cameraId;
       const visible: Array<PoseFrame2D['persons'][number]> = [];
       for (const person of persons) {
         const key = `${cameraId}/${person.personId}`;
-        if (random() < options.occlusionRate / options.frameRate && !isHidden(hiddenUntil, cameraId, person.personId, seconds)) {
+        if (
+          random() < options.occlusionRate / options.frameRate &&
+          !isHidden(hiddenUntil, cameraId, person.personId, seconds)
+        ) {
           // Lost for half a second to two seconds, as a tracker loses somebody behind another.
           hiddenUntil.set(key, seconds + 0.5 + random() * 1.5);
         }
@@ -142,21 +172,28 @@ export function generateScene(overrides: Partial<SceneOptions> = {}): SyntheticS
           trackingIds.delete(key);
           continue;
         }
-        if (!trackingIds.has(key) || random() < options.identitySwitchRate / options.frameRate) {
+        if (
+          !trackingIds.has(key) ||
+          random() < options.identitySwitchRate / options.frameRate
+        ) {
           trackingIds.set(key, `track-${nextTrackingId++}`);
         }
-        const keypoints = person.joints.map(({id, position}) => {
+        const keypoints = person.joints.map(({ id, position }) => {
           const projected = project(camera, position, options);
-          if (projected === undefined) return {id, x: 0, y: 0, score: 0};
+          if (projected === undefined) return { id, x: 0, y: 0, score: 0 };
           return {
             id,
             x: round3(projected[0] + gaussian(random) * options.noisePx),
             y: round3(projected[1] + gaussian(random) * options.noisePx),
-            score: round3(0.7 + random() * 0.29)
+            score: round3(0.7 + random() * 0.29),
           };
         });
         if (keypoints.every((keypoint) => keypoint.score === 0)) continue;
-        visible.push({trackingId: trackingIds.get(key) ?? 'track-0', score: 0.9, keypoints});
+        visible.push({
+          trackingId: trackingIds.get(key) ?? 'track-0',
+          score: 0.9,
+          keypoints,
+        });
       }
       // A tracker reports whoever it found, in its own order.
       shuffle(visible, random);
@@ -176,11 +213,11 @@ export function generateScene(overrides: Partial<SceneOptions> = {}): SyntheticS
           frameWidth: options.imageWidth,
           frameHeight: options.imageHeight,
           calibrationId: camera.service.model.intrinsicProfileId,
-          persons: visible
-        }
+          persons: visible,
+        },
       });
     }
-    events.push({type: 'requestPose3d', atUs: timestampUs + 25_000});
+    events.push({ type: 'requestPose3d', atUs: timestampUs + 25_000 });
   }
 
   return {
@@ -191,8 +228,8 @@ export function generateScene(overrides: Partial<SceneOptions> = {}): SyntheticS
       producer: `synthetic/walk-v1 seed=${options.seed} cameras=${options.cameras} persons=${options.persons}`,
       configuration,
       events,
-      truth
-    }
+      truth,
+    },
   };
 }
 
@@ -206,10 +243,12 @@ interface SceneCamera {
 /** Cameras on an arc in front of the reference plane, all looking at the middle of the room. */
 function placeCameras(options: SceneOptions): SceneCamera[] {
   const target: Vector3 = [0, 0, 4];
-  return Array.from({length: options.cameras}, (_, index) => {
-    const angle = -Math.PI / 3 + (index / Math.max(1, options.cameras - 1)) * ((2 * Math.PI) / 3);
+  return Array.from({ length: options.cameras }, (_, index) => {
+    const angle =
+      -Math.PI / 3 +
+      (index / Math.max(1, options.cameras - 1)) * ((2 * Math.PI) / 3);
     const eye: Vector3 = [Math.sin(angle) * 5, -1.4, 4 - Math.cos(angle) * 5];
-    const {rotation, translation} = lookAt(eye, target);
+    const { rotation, translation } = lookAt(eye, target);
     const cameraId = `camera-${index + 1}`;
     return {
       rotation,
@@ -217,51 +256,104 @@ function placeCameras(options: SceneOptions): SceneCamera[] {
       service: {
         cameraId,
         model: {
-          intrinsics: {fx: 900, fy: 900, cx: (options.imageWidth - 1) / 2, cy: (options.imageHeight - 1) / 2, skew: 0},
-          distortion: {model: 'none', coefficients: []},
+          intrinsics: {
+            fx: 900,
+            fy: 900,
+            cx: (options.imageWidth - 1) / 2,
+            cy: (options.imageHeight - 1) / 2,
+            skew: 0,
+          },
+          distortion: { model: 'none', coefficients: [] },
           intrinsicProfileId: `synthetic-${cameraId}`,
           imageWidth: options.imageWidth,
-          imageHeight: options.imageHeight
+          imageHeight: options.imageHeight,
         },
         cameraFromReference: [
-          rotation[0]!, rotation[1]!, rotation[2]!, translation[0],
-          rotation[3]!, rotation[4]!, rotation[5]!, translation[1],
-          rotation[6]!, rotation[7]!, rotation[8]!, translation[2],
-          0, 0, 0, 1
+          rotation[0]!,
+          rotation[1]!,
+          rotation[2]!,
+          translation[0],
+          rotation[3]!,
+          rotation[4]!,
+          rotation[5]!,
+          translation[1],
+          rotation[6]!,
+          rotation[7]!,
+          rotation[8]!,
+          translation[2],
+          0,
+          0,
+          0,
+          1,
         ],
-        timeCorrespondence: null
-      }
+        timeCorrespondence: null,
+      },
     };
   });
 }
 
 /** The rotation and translation that take a reference point into the camera's own frame. */
-function lookAt(eye: Vector3, target: Vector3): {rotation: number[]; translation: Vector3} {
+function lookAt(
+  eye: Vector3,
+  target: Vector3,
+): { rotation: number[]; translation: Vector3 } {
   const forward = normalize(subtract(target, eye));
   // y is downwards in reference coordinates, so down is the natural second axis.
   const down: Vector3 = [0, 1, 0];
   const right = normalize(cross(down, forward));
   const trueDown = cross(forward, right);
-  const rotation = [right[0], right[1], right[2], trueDown[0], trueDown[1], trueDown[2], forward[0], forward[1], forward[2]];
+  const rotation = [
+    right[0],
+    right[1],
+    right[2],
+    trueDown[0],
+    trueDown[1],
+    trueDown[2],
+    forward[0],
+    forward[1],
+    forward[2],
+  ];
   const translation: Vector3 = [
     -(rotation[0]! * eye[0] + rotation[1]! * eye[1] + rotation[2]! * eye[2]),
     -(rotation[3]! * eye[0] + rotation[4]! * eye[1] + rotation[5]! * eye[2]),
-    -(rotation[6]! * eye[0] + rotation[7]! * eye[1] + rotation[8]! * eye[2])
+    -(rotation[6]! * eye[0] + rotation[7]! * eye[1] + rotation[8]! * eye[2]),
   ];
-  return {rotation, translation};
+  return { rotation, translation };
 }
 
 /** Image coordinates, or nothing when the point is behind the camera or outside the frame. */
-function project(camera: SceneCamera, point: Vector3, options: SceneOptions): [number, number] | undefined {
+function project(
+  camera: SceneCamera,
+  point: Vector3,
+  options: SceneOptions,
+): [number, number] | undefined {
   const r = camera.rotation;
-  const x = r[0]! * point[0] + r[1]! * point[1] + r[2]! * point[2] + camera.translation[0];
-  const y = r[3]! * point[0] + r[4]! * point[1] + r[5]! * point[2] + camera.translation[1];
-  const z = r[6]! * point[0] + r[7]! * point[1] + r[8]! * point[2] + camera.translation[2];
+  const x =
+    r[0]! * point[0] +
+    r[1]! * point[1] +
+    r[2]! * point[2] +
+    camera.translation[0];
+  const y =
+    r[3]! * point[0] +
+    r[4]! * point[1] +
+    r[5]! * point[2] +
+    camera.translation[1];
+  const z =
+    r[6]! * point[0] +
+    r[7]! * point[1] +
+    r[8]! * point[2] +
+    camera.translation[2];
   if (z <= 0.2) return undefined;
-  const {intrinsics} = camera.service.model;
+  const { intrinsics } = camera.service.model;
   const u = intrinsics.fx * (x / z) + intrinsics.cx;
   const v = intrinsics.fy * (y / z) + intrinsics.cy;
-  if (u < 0 || v < 0 || u > options.imageWidth - 1 || v > options.imageHeight - 1) return undefined;
+  if (
+    u < 0 ||
+    v < 0 ||
+    u > options.imageWidth - 1 ||
+    v > options.imageHeight - 1
+  )
+    return undefined;
   return [u, v];
 }
 
@@ -276,32 +368,54 @@ function personPath(index: number, count: number): PersonPath {
   const lane = index - (count - 1) / 2;
   return {
     start: [lane * 1.2 - 1.5, HIP_HEIGHT, 3.2 + lane * 0.6],
-    velocity: [0.45 * (index % 2 === 0 ? 1 : -1), 0, 0.1 * (index % 3 === 0 ? 1 : -1)],
-    phase: index * 0.7
+    velocity: [
+      0.45 * (index % 2 === 0 ? 1 : -1),
+      0,
+      0.1 * (index % 3 === 0 ? 1 : -1),
+    ],
+    phase: index * 0.7,
   };
 }
 
 /** Joint positions at a moment: the walk moves the body, the arms and knees swing with the stride. */
-function jointsOf(path: PersonPath, seconds: number): Array<{id: Coco17KeypointId; position: Vector3}> {
+function jointsOf(
+  path: PersonPath,
+  seconds: number,
+): Array<{ id: Coco17KeypointId; position: Vector3 }> {
   const stride = Math.sin(2 * Math.PI * (seconds * 1.8 + path.phase));
-  const bob = Math.abs(Math.cos(2 * Math.PI * (seconds * 1.8 + path.phase))) * 0.03;
+  const bob =
+    Math.abs(Math.cos(2 * Math.PI * (seconds * 1.8 + path.phase))) * 0.03;
   const hips: Vector3 = [
     path.start[0] + path.velocity[0] * seconds,
     path.start[1] - bob,
-    path.start[2] + path.velocity[2] * seconds
+    path.start[2] + path.velocity[2] * seconds,
   ];
   return COCO_17_KEYPOINT_IDS.map((id) => {
     const offset = SKELETON[id];
-    const swing = id.endsWith('wrist') || id.endsWith('elbow') ? stride * 0.18 : id.endsWith('knee') || id.endsWith('ankle') ? -stride * 0.12 : 0;
+    const swing =
+      id.endsWith('wrist') || id.endsWith('elbow')
+        ? stride * 0.18
+        : id.endsWith('knee') || id.endsWith('ankle')
+          ? -stride * 0.12
+          : 0;
     const side = id.startsWith('left') ? 1 : -1;
     return {
       id,
-      position: [hips[0] + offset[0], hips[1] + offset[1], hips[2] + offset[2] + swing * side] as Vector3
+      position: [
+        hips[0] + offset[0],
+        hips[1] + offset[1],
+        hips[2] + offset[2] + swing * side,
+      ] as Vector3,
     };
   });
 }
 
-function isHidden(hiddenUntil: Map<string, number>, cameraId: string, personId: string, seconds: number): boolean {
+function isHidden(
+  hiddenUntil: Map<string, number>,
+  cameraId: string,
+  personId: string,
+  seconds: number,
+): boolean {
   const until = hiddenUntil.get(`${cameraId}/${personId}`);
   return until !== undefined && seconds < until;
 }
@@ -314,7 +428,7 @@ function cross(left: Vector3, right: Vector3): Vector3 {
   return [
     left[1] * right[2] - left[2] * right[1],
     left[2] * right[0] - left[0] * right[2],
-    left[0] * right[1] - left[1] * right[0]
+    left[0] * right[1] - left[1] * right[0],
   ];
 }
 

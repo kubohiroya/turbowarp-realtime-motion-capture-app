@@ -92,7 +92,7 @@ export class PoseMeter {
         windowInferences: status.inferences ?? 0,
         windowSkipped: status.skippedFrames ?? 0,
         inferenceFps: 0,
-        skippedFps: 0
+        skippedFps: 0,
       };
       this.cameras.set(cameraId, camera);
     }
@@ -101,14 +101,20 @@ export class PoseMeter {
     const capture = status.captureTimestampUs ?? 0;
     if (capture > 0) {
       if (capture !== previousCapture || camera.captureToResultMs === 0) {
-        camera.captureToResultMs = round1((this.host.pageTimeUs() - capture) / 1000);
+        camera.captureToResultMs = round1(
+          (this.host.pageTimeUs() - capture) / 1000,
+        );
       }
       this.roundCaptures.set(cameraId, capture);
     }
     const elapsed = now - camera.windowStartMs;
     if (elapsed >= WINDOW_MS) {
-      camera.inferenceFps = round1((((status.inferences ?? 0) - camera.windowInferences) * 1000) / elapsed);
-      camera.skippedFps = round1((((status.skippedFrames ?? 0) - camera.windowSkipped) * 1000) / elapsed);
+      camera.inferenceFps = round1(
+        (((status.inferences ?? 0) - camera.windowInferences) * 1000) / elapsed,
+      );
+      camera.skippedFps = round1(
+        (((status.skippedFrames ?? 0) - camera.windowSkipped) * 1000) / elapsed,
+      );
       camera.windowStartMs = now;
       camera.windowInferences = status.inferences ?? 0;
       camera.windowSkipped = status.skippedFrames ?? 0;
@@ -119,7 +125,10 @@ export class PoseMeter {
   public endCycle(): void {
     const now = this.host.nowMs();
     const captures = [...this.roundCaptures.values()];
-    this.captureSpreadMs = captures.length < 2 ? 0 : round1((Math.max(...captures) - Math.min(...captures)) / 1000);
+    this.captureSpreadMs =
+      captures.length < 2
+        ? 0
+        : round1((Math.max(...captures) - Math.min(...captures)) / 1000);
     this.roundCaptures = new Map();
     if (this.cycleWindowStartMs === undefined) {
       this.cycleWindowStartMs = now;
@@ -140,7 +149,8 @@ export class PoseMeter {
    * text that is not a frame with a capture time. The 3D service refuses frames older than its limit.
    */
   public frameAgeMs(frameJson: string): number {
-    const frame = parseStatus(frameJson) as {captureTimestampUs?: unknown} | undefined;
+    const frame = parseStatus(frameJson) as
+      { captureTimestampUs?: unknown } | undefined;
     const capture = Number(frame?.captureTimestampUs);
     if (!(capture > 0)) return -1;
     return round1((this.host.pageTimeUs() - capture) / 1000);
@@ -173,10 +183,10 @@ export class PoseMeter {
           skippedFps: camera.skippedFps,
           captureToResultMs: camera.captureToResultMs,
           frameTimeSource: camera.status.frameTimeSource ?? '',
-          persons: camera.status.persons ?? 0
+          persons: camera.status.persons ?? 0,
         })),
       cycleMs: this.cycleMs,
-      captureSpreadMs: this.captureSpreadMs
+      captureSpreadMs: this.captureSpreadMs,
     };
   }
 
@@ -187,7 +197,7 @@ export class PoseMeter {
     const cameras = measurement.cameras.map((camera) =>
       camera.state === 'error'
         ? `${camera.cameraId}: エラー ${camera.error}`
-        : `${camera.cameraId}: 推論${camera.inferenceMs}ms ${camera.inferenceFps}fps 撮影→結果${camera.captureToResultMs}ms ${camera.persons}人${sourceNote(camera.frameTimeSource)}`
+        : `${camera.cameraId}: 推論${camera.inferenceMs}ms ${camera.inferenceFps}fps 撮影→結果${camera.captureToResultMs}ms ${camera.persons}人${sourceNote(camera.frameTimeSource)}`,
     );
     return `1周${measurement.cycleMs}ms 撮影時刻のばらつき${measurement.captureSpreadMs}ms — ${cameras.join(' / ')}`;
   }
@@ -203,7 +213,9 @@ function parseStatus(text: string): PoseStatus | undefined {
   if (text.trim() === '') return undefined;
   try {
     const value: unknown = JSON.parse(text);
-    return typeof value === 'object' && value !== null && !Array.isArray(value) ? (value as PoseStatus) : undefined;
+    return typeof value === 'object' && value !== null && !Array.isArray(value)
+      ? (value as PoseStatus)
+      : undefined;
   } catch {
     return undefined;
   }
@@ -214,12 +226,13 @@ function round1(value: number): number {
 }
 
 export function createBrowserPoseMeterHost(): PoseMeterHost {
-  const now = () => (typeof performance === 'undefined' ? Date.now() : performance.now());
+  const now = () =>
+    typeof performance === 'undefined' ? Date.now() : performance.now();
   return {
     nowMs: now,
     pageTimeUs: () =>
       typeof performance === 'undefined'
         ? Date.now() * 1000
-        : Math.round((performance.timeOrigin + performance.now()) * 1000)
+        : Math.round((performance.timeOrigin + performance.now()) * 1000),
   };
 }

@@ -1,90 +1,127 @@
-import {createHash} from 'node:crypto';
+import { createHash } from 'node:crypto';
 
 import {
   readJson,
   type ExtensionManifest,
   type ReadinessExtension,
-  type ReadinessInventory
+  type ReadinessInventory,
 } from './repository-config.ts';
 
-const inventory = await readJson<ReadinessInventory>('config/extension-readiness.json');
+const inventory = await readJson<ReadinessInventory>(
+  'config/extension-readiness.json',
+);
 const errors: string[] = [];
 
 const duplicateValues = <T>(values: readonly T[]): T[] => [
-  ...new Set(values.filter((value, index) => values.indexOf(value) !== index))
+  ...new Set(values.filter((value, index) => values.indexOf(value) !== index)),
 ];
-const normalizeRecord = (record: Readonly<Record<string, string>>): Record<string, string> =>
-  Object.fromEntries(Object.entries(record).sort(([left], [right]) => left.localeCompare(right)));
+const normalizeRecord = (
+  record: Readonly<Record<string, string>>,
+): Record<string, string> =>
+  Object.fromEntries(
+    Object.entries(record).sort(([left], [right]) => left.localeCompare(right)),
+  );
 
 if (inventory.schemaVersion !== 1) {
   errors.push(`Unsupported schemaVersion: ${inventory.schemaVersion}`);
 }
 
 for (const field of ['role', 'repository', 'package', 'extensionId'] as const) {
-  for (const value of duplicateValues(inventory.extensions.map((extension) => extension[field]))) {
+  for (const value of duplicateValues(
+    inventory.extensions.map((extension) => extension[field]),
+  )) {
     errors.push(`Duplicate ${field}: ${value}`);
   }
 }
 
 const roles = new Set(inventory.extensions.map((extension) => extension.role));
-const repositories = new Set(inventory.extensions.map((extension) => extension.repository));
+const repositories = new Set(
+  inventory.extensions.map((extension) => extension.repository),
+);
 for (const [gate, requiredRoles] of Object.entries(inventory.readinessGates)) {
   for (const role of requiredRoles) {
-    if (!roles.has(role)) errors.push(`Gate ${gate} references unknown role: ${role}`);
+    if (!roles.has(role))
+      errors.push(`Gate ${gate} references unknown role: ${role}`);
   }
 }
 
 const candidateRepositories =
-  inventory.localImplementationCandidates?.map(({repository}) => repository) ?? [];
+  inventory.localImplementationCandidates?.map(
+    ({ repository }) => repository,
+  ) ?? [];
 for (const repository of duplicateValues(candidateRepositories)) {
   errors.push(`Duplicate local implementation candidate: ${repository}`);
 }
 for (const candidate of inventory.localImplementationCandidates ?? []) {
   if (!repositories.has(candidate.repository)) {
-    errors.push(`Local implementation candidate references unknown repository: ${candidate.repository}`);
+    errors.push(
+      `Local implementation candidate references unknown repository: ${candidate.repository}`,
+    );
   }
   if (!/^[a-f0-9]{40}$/.test(candidate.commit)) {
-    errors.push(`Local implementation candidate has an invalid commit: ${candidate.repository}`);
+    errors.push(
+      `Local implementation candidate has an invalid commit: ${candidate.repository}`,
+    );
   }
   if (candidate.published !== false) {
-    errors.push(`Local implementation candidate must remain unpublished: ${candidate.repository}`);
+    errors.push(
+      `Local implementation candidate must remain unpublished: ${candidate.repository}`,
+    );
   }
 }
 
 for (const extension of inventory.extensions) {
-  if (extension.version !== null && !/^\d+\.\d+\.\d+$/.test(extension.version)) {
+  if (
+    extension.version !== null &&
+    !/^\d+\.\d+\.\d+$/.test(extension.version)
+  ) {
     errors.push(`${extension.role} does not use an exact semver version`);
   }
   if ((extension.artifact === null) !== (extension.sha256 === null)) {
     errors.push(`${extension.role} must provide artifact and sha256 together`);
   }
   if (extension.status === 'ready' && extension.manifest === null) {
-    errors.push(`${extension.role} cannot be ready without a published manifest`);
+    errors.push(
+      `${extension.role} cannot be ready without a published manifest`,
+    );
   }
   if (extension.sha256 !== null && !/^[a-f0-9]{64}$/.test(extension.sha256)) {
     errors.push(`${extension.role} has an invalid sha256`);
   }
 
-  const operationCapabilities = extension.requiredOperations.map(({capability}) => capability);
+  const operationCapabilities = extension.requiredOperations.map(
+    ({ capability }) => capability,
+  );
   for (const capability of duplicateValues(operationCapabilities)) {
     errors.push(`${extension.role} has duplicate capability: ${capability}`);
   }
 
   for (const operation of extension.requiredOperations) {
-    if (operation.availability === 'ready' && !extension.blockContracts?.[operation.opcode]) {
-      errors.push(`${extension.role}/${operation.opcode} is ready but has no block contract`);
+    if (
+      operation.availability === 'ready' &&
+      !extension.blockContracts?.[operation.opcode]
+    ) {
+      errors.push(
+        `${extension.role}/${operation.opcode} is ready but has no block contract`,
+      );
     }
   }
 }
 
 if (process.argv.includes('--verify-network')) {
   for (const extension of inventory.extensions.filter(
-    (candidate): candidate is ReadinessExtension & {artifact: string; manifest: string | null} =>
-      candidate.artifact !== null
+    (
+      candidate,
+    ): candidate is ReadinessExtension & {
+      artifact: string;
+      manifest: string | null;
+    } => candidate.artifact !== null,
   )) {
     const response = await fetch(extension.artifact);
     if (!response.ok) {
-      errors.push(`${extension.role} artifact returned HTTP ${response.status}`);
+      errors.push(
+        `${extension.role} artifact returned HTTP ${response.status}`,
+      );
       continue;
     }
     const digest = createHash('sha256')
@@ -97,29 +134,44 @@ if (process.argv.includes('--verify-network')) {
     if (extension.manifest === null) continue;
     const manifestResponse = await fetch(extension.manifest);
     if (!manifestResponse.ok) {
-      errors.push(`${extension.role} manifest returned HTTP ${manifestResponse.status}`);
+      errors.push(
+        `${extension.role} manifest returned HTTP ${manifestResponse.status}`,
+      );
       continue;
     }
     const manifest = (await manifestResponse.json()) as ExtensionManifest;
     if (manifest.id !== extension.extensionId) {
       errors.push(`${extension.role} manifest ID mismatch: ${manifest.id}`);
     }
-    for (const operation of extension.requiredOperations.filter(({availability}) => availability === 'ready')) {
-      const published = manifest.blocks.find(({opcode}) => opcode === operation.opcode);
+    for (const operation of extension.requiredOperations.filter(
+      ({ availability }) => availability === 'ready',
+    )) {
+      const published = manifest.blocks.find(
+        ({ opcode }) => opcode === operation.opcode,
+      );
       const expected = extension.blockContracts[operation.opcode];
       if (expected === undefined) continue;
       if (!published) {
-        errors.push(`${extension.role}/${operation.opcode} is absent from the published manifest`);
+        errors.push(
+          `${extension.role}/${operation.opcode} is absent from the published manifest`,
+        );
         continue;
       }
       if (published.blockType.toLowerCase() !== expected.blockType) {
-        errors.push(`${extension.role}/${operation.opcode} block type does not match the published manifest`);
+        errors.push(
+          `${extension.role}/${operation.opcode} block type does not match the published manifest`,
+        );
       }
       const publishedArguments = Object.fromEntries(
-        published.arguments.map(({id, type}) => [id, type.toLowerCase()])
+        published.arguments.map(({ id, type }) => [id, type.toLowerCase()]),
       );
-      if (JSON.stringify(normalizeRecord(publishedArguments)) !== JSON.stringify(normalizeRecord(expected.arguments))) {
-        errors.push(`${extension.role}/${operation.opcode} arguments do not match the published manifest`);
+      if (
+        JSON.stringify(normalizeRecord(publishedArguments)) !==
+        JSON.stringify(normalizeRecord(expected.arguments))
+      ) {
+        errors.push(
+          `${extension.role}/${operation.opcode} arguments do not match the published manifest`,
+        );
       }
     }
   }
@@ -130,6 +182,6 @@ if (errors.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(
-    `Extension readiness inventory is valid (${inventory.extensions.length} extensions, ${Object.keys(inventory.readinessGates).length} gates).`
+    `Extension readiness inventory is valid (${inventory.extensions.length} extensions, ${Object.keys(inventory.readinessGates).length} gates).`,
   );
 }

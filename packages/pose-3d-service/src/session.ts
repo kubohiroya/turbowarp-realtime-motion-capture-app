@@ -13,7 +13,11 @@
  * is optional and why metrics say which figures they could compute.
  */
 
-import type {Coco17KeypointId, PoseFrame2D, ServiceConfiguration} from './contracts.ts';
+import type {
+  Coco17KeypointId,
+  PoseFrame2D,
+  ServiceConfiguration,
+} from './contracts.ts';
 
 export const SESSION_SCHEMA = 'twrmc/pose-3d-session';
 export const SESSION_VERSION = 1;
@@ -74,42 +78,69 @@ export function serializeSession(session: Session): string {
  * session recorded from a build with a newer document version still reports the same refusal here as
  * it would there.
  */
-export function parseSession(text: string): {ok: true; session: Session} | {ok: false; reason: string} {
+export function parseSession(
+  text: string,
+): { ok: true; session: Session } | { ok: false; reason: string } {
   let value: unknown;
   try {
     value = JSON.parse(text);
   } catch (error) {
-    return {ok: false, reason: `The session is not JSON: ${error instanceof Error ? error.message : String(error)}`};
+    return {
+      ok: false,
+      reason: `The session is not JSON: ${error instanceof Error ? error.message : String(error)}`,
+    };
   }
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-    return {ok: false, reason: 'A session must be an object.'};
+    return { ok: false, reason: 'A session must be an object.' };
   }
   const record = value as Record<string, unknown>;
-  if (record['schema'] !== SESSION_SCHEMA) return {ok: false, reason: `A session must have schema ${SESSION_SCHEMA}.`};
+  if (record['schema'] !== SESSION_SCHEMA)
+    return {
+      ok: false,
+      reason: `A session must have schema ${SESSION_SCHEMA}.`,
+    };
   if (record['version'] !== SESSION_VERSION) {
-    return {ok: false, reason: `Session version ${String(record['version'])} is not supported.`};
+    return {
+      ok: false,
+      reason: `Session version ${String(record['version'])} is not supported.`,
+    };
   }
-  if (typeof record['producer'] !== 'string') return {ok: false, reason: 'A session must name its producer.'};
-  if (typeof record['configuration'] !== 'object' || record['configuration'] === null) {
-    return {ok: false, reason: 'A session must carry the configuration it was recorded with.'};
+  if (typeof record['producer'] !== 'string')
+    return { ok: false, reason: 'A session must name its producer.' };
+  if (
+    typeof record['configuration'] !== 'object' ||
+    record['configuration'] === null
+  ) {
+    return {
+      ok: false,
+      reason: 'A session must carry the configuration it was recorded with.',
+    };
   }
   const events = record['events'];
-  if (!Array.isArray(events)) return {ok: false, reason: 'A session must carry an event list.'};
+  if (!Array.isArray(events))
+    return { ok: false, reason: 'A session must carry an event list.' };
   for (const [index, event] of events.entries()) {
-    if (typeof event !== 'object' || event === null) return {ok: false, reason: `Event ${index} is not an object.`};
+    if (typeof event !== 'object' || event === null)
+      return { ok: false, reason: `Event ${index} is not an object.` };
     const kind = (event as Record<string, unknown>)['type'];
     const atUs = (event as Record<string, unknown>)['atUs'];
     if (kind !== 'frame2d' && kind !== 'requestPose3d') {
-      return {ok: false, reason: `Event ${index} has an unknown type ${String(kind)}.`};
+      return {
+        ok: false,
+        reason: `Event ${index} has an unknown type ${String(kind)}.`,
+      };
     }
     if (typeof atUs !== 'number' || !Number.isFinite(atUs)) {
-      return {ok: false, reason: `Event ${index} needs a finite atUs.`};
+      return { ok: false, reason: `Event ${index} needs a finite atUs.` };
     }
-    if (kind === 'frame2d' && typeof (event as Record<string, unknown>)['cameraId'] !== 'string') {
-      return {ok: false, reason: `Event ${index} needs a cameraId.`};
+    if (
+      kind === 'frame2d' &&
+      typeof (event as Record<string, unknown>)['cameraId'] !== 'string'
+    ) {
+      return { ok: false, reason: `Event ${index} needs a cameraId.` };
     }
   }
-  return {ok: true, session: record as unknown as Session};
+  return { ok: true, session: record as unknown as Session };
 }
 
 /**
@@ -126,7 +157,7 @@ export class SessionRecorder {
   private configuration: ServiceConfiguration | undefined;
   private dropped = 0;
 
-  public constructor(options: {producer: string; limit?: number} ) {
+  public constructor(options: { producer: string; limit?: number }) {
     this.producer = options.producer;
     this.limit = options.limit ?? 20_000;
   }
@@ -138,11 +169,11 @@ export class SessionRecorder {
   }
 
   public frame(atUs: number, cameraId: string, frame: PoseFrame2D): void {
-    this.push({type: 'frame2d', atUs, cameraId, frame});
+    this.push({ type: 'frame2d', atUs, cameraId, frame });
   }
 
   public request(atUs: number): void {
-    this.push({type: 'requestPose3d', atUs});
+    this.push({ type: 'requestPose3d', atUs });
   }
 
   public eventCount(): number {
@@ -159,9 +190,12 @@ export class SessionRecorder {
     return {
       schema: SESSION_SCHEMA,
       version: SESSION_VERSION,
-      producer: this.dropped === 0 ? this.producer : `${this.producer} (${this.dropped} events dropped)`,
+      producer:
+        this.dropped === 0
+          ? this.producer
+          : `${this.producer} (${this.dropped} events dropped)`,
       configuration: this.configuration,
-      events: [...this.events]
+      events: [...this.events],
     };
   }
 

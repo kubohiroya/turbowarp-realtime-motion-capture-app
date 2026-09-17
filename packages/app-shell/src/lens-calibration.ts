@@ -1,4 +1,4 @@
-import type {ShellLocale} from './app-config.js';
+import type { ShellLocale } from './app-config.js';
 
 /**
  * Where the lens calibration app is served, relative to the application page.
@@ -20,7 +20,8 @@ const windowName = 'lens-calibration';
  * - `busy`: the calibration window is open for another camera. It is left alone: opening it again
  *   would throw away a calibration in progress.
  */
-export type LensCalibrationAppState = '' | 'open' | 'closed' | 'unavailable' | 'blocked' | 'busy';
+export type LensCalibrationAppState =
+  '' | 'open' | 'closed' | 'unavailable' | 'blocked' | 'busy';
 
 /**
  * The camera a calibration is for, when the app runs several.
@@ -41,10 +42,13 @@ export interface LensCalibrationRequest {
  * Only positive sizes are written, so a request with an unknown rate asks the calibration app for no
  * particular rate rather than for zero.
  */
-export function lensCalibrationRequestParameters(request: LensCalibrationRequest): [string, string][] {
+export function lensCalibrationRequestParameters(
+  request: LensCalibrationRequest,
+): [string, string][] {
   const parameters: [string, string][] = [['cameraDeviceId', request.deviceId]];
   const positive = (name: string, value: number) => {
-    if (Number.isFinite(value) && value > 0) parameters.push([name, String(value)]);
+    if (Number.isFinite(value) && value > 0)
+      parameters.push([name, String(value)]);
   };
   positive('cameraWidth', request.width);
   positive('cameraHeight', request.height);
@@ -53,7 +57,9 @@ export function lensCalibrationRequestParameters(request: LensCalibrationRequest
 }
 
 function requestKey(request: LensCalibrationRequest | undefined): string {
-  return request === undefined ? '' : JSON.stringify(lensCalibrationRequestParameters(request));
+  return request === undefined
+    ? ''
+    : JSON.stringify(lensCalibrationRequestParameters(request));
 }
 
 export interface LensCalibrationWindow {
@@ -94,7 +100,9 @@ export class LensCalibrationLauncher {
    * no calibration app beside it, and saying `unavailable` there is what sends the operator to the
    * profile file instead of to a window that could never report back.
    */
-  public async open(request?: LensCalibrationRequest): Promise<LensCalibrationAppState> {
+  public async open(
+    request?: LensCalibrationRequest,
+  ): Promise<LensCalibrationAppState> {
     const key = requestKey(request);
     if (this.window !== null && !this.window.closed) {
       if (key !== this.windowRequest) return this.settle('busy');
@@ -113,7 +121,10 @@ export class LensCalibrationLauncher {
 
   /** The state as of now. A window the operator closed reads `closed` without another block call. */
   public state(): LensCalibrationAppState {
-    if ((this.lastState === 'open' || this.lastState === 'busy') && (this.window === null || this.window.closed)) {
+    if (
+      (this.lastState === 'open' || this.lastState === 'busy') &&
+      (this.window === null || this.window.closed)
+    ) {
       this.lastState = 'closed';
     }
     return this.lastState;
@@ -150,19 +161,22 @@ interface ChooserLabels {
 }
 
 /** The files the chooser offers: camera_info YAML under the names it travels with, and JSON. */
-export const LENS_CALIBRATION_FILE_ACCEPT = '.yaml,.yml,.txt,.json,application/json,application/yaml,text/yaml,text/plain';
+export const LENS_CALIBRATION_FILE_ACCEPT =
+  '.yaml,.yml,.txt,.json,application/json,application/yaml,text/yaml,text/plain';
 
 const chooserLabels: Readonly<Record<ShellLocale, ChooserLabels>> = {
   en: {
-    title: 'Choose the lens calibration file for this camera: the ROS camera_info YAML the lens calibration app exports (saved as profile.txt), or profile JSON.',
+    title:
+      'Choose the lens calibration file for this camera: the ROS camera_info YAML the lens calibration app exports (saved as profile.txt), or profile JSON.',
     choose: 'Choose file',
-    cancel: 'Cancel'
+    cancel: 'Cancel',
   },
   ja: {
-    title: 'このカメラのレンズ校正ファイルを選んでください。レンズ校正アプリが書き出すROSのcamera_info YAML（profile.txtとして保存されます）か、プロファイルのJSONです。',
+    title:
+      'このカメラのレンズ校正ファイルを選んでください。レンズ校正アプリが書き出すROSのcamera_info YAML（profile.txtとして保存されます）か、プロファイルのJSONです。',
     choose: 'ファイルを選ぶ',
-    cancel: 'やめる'
-  }
+    cancel: 'やめる',
+  },
 };
 
 export interface FileChooserOptions {
@@ -178,8 +192,10 @@ export interface FileChooserOptions {
  * file dialog only from the operator's own click. The dialog supplies that click. Closing the picker
  * without a file keeps the dialog up, so the operator decides to give up rather than the browser.
  */
-export function chooseTextFileWithDialog(options: FileChooserOptions): Promise<string | null> {
-  const {document, mount, locale} = options;
+export function chooseTextFileWithDialog(
+  options: FileChooserOptions,
+): Promise<string | null> {
+  const { document, mount, locale } = options;
   const labels = chooserLabels[locale];
   return new Promise((resolve) => {
     const overlay = document.createElement('div');
@@ -193,7 +209,7 @@ export function chooseTextFileWithDialog(options: FileChooserOptions): Promise<s
       justifyContent: 'center',
       background: 'rgba(0, 0, 0, 0.55)',
       zIndex: '1000',
-      fontFamily: 'system-ui, sans-serif'
+      fontFamily: 'system-ui, sans-serif',
     });
 
     const panel = document.createElement('div');
@@ -205,12 +221,16 @@ export function chooseTextFileWithDialog(options: FileChooserOptions): Promise<s
       maxWidth: '420px',
       display: 'flex',
       flexDirection: 'column',
-      gap: '16px'
+      gap: '16px',
     });
 
     const title = document.createElement('p');
     title.textContent = labels.title;
-    Object.assign(title.style, {margin: '0', lineHeight: '1.5', fontSize: '16px'});
+    Object.assign(title.style, {
+      margin: '0',
+      lineHeight: '1.5',
+      fontSize: '16px',
+    });
 
     const input = document.createElement('input');
     input.type = 'file';
@@ -221,10 +241,19 @@ export function chooseTextFileWithDialog(options: FileChooserOptions): Promise<s
     input.hidden = true;
 
     const buttons = document.createElement('div');
-    Object.assign(buttons.style, {display: 'flex', gap: '8px', justifyContent: 'flex-end'});
+    Object.assign(buttons.style, {
+      display: 'flex',
+      gap: '8px',
+      justifyContent: 'flex-end',
+    });
     // Sized for an operator at a venue PC, not for a form: the stage is scaled to the window and the
     // browser's default button is a few pixels tall beside it.
-    const buttonStyle = {font: 'inherit', fontSize: '16px', padding: '8px 16px', borderRadius: '6px'};
+    const buttonStyle = {
+      font: 'inherit',
+      fontSize: '16px',
+      padding: '8px 16px',
+      borderRadius: '6px',
+    };
     const cancel = document.createElement('button');
     cancel.type = 'button';
     cancel.textContent = labels.cancel;
@@ -235,7 +264,7 @@ export function chooseTextFileWithDialog(options: FileChooserOptions): Promise<s
     Object.assign(choose.style, buttonStyle, {
       background: '#2f6f4f',
       color: '#ffffff',
-      border: '1px solid #2f6f4f'
+      border: '1px solid #2f6f4f',
     });
 
     let settled = false;
@@ -253,7 +282,7 @@ export function chooseTextFileWithDialog(options: FileChooserOptions): Promise<s
       if (file === undefined) return;
       file.text().then(
         (text) => finish(text),
-        () => finish(null)
+        () => finish(null),
       );
     });
 

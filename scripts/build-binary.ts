@@ -1,8 +1,12 @@
-import {execFile} from 'node:child_process';
-import {access, writeFile} from 'node:fs/promises';
-import {promisify} from 'node:util';
+import { execFile } from 'node:child_process';
+import { access, writeFile } from 'node:fs/promises';
+import { promisify } from 'node:util';
 
-import {readJson, repositoryRoot, type LocalHostConfig} from './repository-config.ts';
+import {
+  readJson,
+  repositoryRoot,
+  type LocalHostConfig,
+} from './repository-config.ts';
 
 const executeFile = promisify(execFile);
 const config = await readJson<LocalHostConfig>('config/local-host.json');
@@ -13,13 +17,17 @@ const config = await readJson<LocalHostConfig>('config/local-host.json');
  * `bun build --compile` ad-hoc signs what it produces, which is what macOS on Apple Silicon requires
  * to run an executable at all. It does not remove the Gatekeeper warning a downloaded file carries.
  */
-const targets = process.argv.slice(2).filter((argument) => argument.startsWith('--target='));
+const targets = process.argv
+  .slice(2)
+  .filter((argument) => argument.startsWith('--target='));
 
 async function requireBun(): Promise<string> {
-  const {stdout} = await executeFile('bun', ['--version']).catch(() => ({stdout: ''}));
+  const { stdout } = await executeFile('bun', ['--version']).catch(() => ({
+    stdout: '',
+  }));
   if (stdout.trim().length === 0) {
     throw new Error(
-      'bun is required to build the venue binary. Install it from https://bun.sh and try again.'
+      'bun is required to build the venue binary. Install it from https://bun.sh and try again.',
     );
   }
   return stdout.trim();
@@ -30,12 +38,21 @@ console.log(`bun ${version}`);
 
 const failures: string[] = [];
 
-for (const [app, {port, title, lensCalibration}] of Object.entries(config.apps)) {
+for (const [app, { port, title, lensCalibration }] of Object.entries(
+  config.apps,
+)) {
   const distUrl = new URL(`apps/${app}/dist/`, repositoryRoot);
   const playerName = `${app}-player.html`;
   const playerUrl = new URL(playerName, distUrl);
-  if (!(await access(playerUrl).then(() => true, () => false))) {
-    failures.push(`${app}: run \`pnpm run build:player\` first (${playerName} is missing)`);
+  if (
+    !(await access(playerUrl).then(
+      () => true,
+      () => false,
+    ))
+  ) {
+    failures.push(
+      `${app}: run \`pnpm run build:player\` first (${playerName} is missing)`,
+    );
     continue;
   }
 
@@ -48,9 +65,14 @@ for (const [app, {port, title, lensCalibration}] of Object.entries(config.apps))
   const calibrationName = `${app}-lens-calibration-player.html`;
   const withCalibration =
     lensCalibration !== undefined &&
-    (await access(new URL(calibrationName, distUrl)).then(() => true, () => false));
+    (await access(new URL(calibrationName, distUrl)).then(
+      () => true,
+      () => false,
+    ));
   if (lensCalibration !== undefined && !withCalibration) {
-    console.warn(`${app}: no lens calibration player, so the binary cannot open one`);
+    console.warn(
+      `${app}: no lens calibration player, so the binary cannot open one`,
+    );
   }
   await writeFile(
     entryUrl,
@@ -67,11 +89,12 @@ for (const [app, {port, title, lensCalibration}] of Object.entries(config.apps))
       `  player${withCalibration ? ',\n  lensCalibrationPlayer' : ''}\n` +
       `});\n` +
       `// A refused start has to reach the shell, or a script cannot tell it did not run.\n` +
-      `process.exitCode = outcome.code;\n`
+      `process.exitCode = outcome.code;\n`,
   );
 
   for (const target of targets.length > 0 ? targets : ['']) {
-    const suffix = target === '' ? '' : `-${target.slice('--target=bun-'.length)}`;
+    const suffix =
+      target === '' ? '' : `-${target.slice('--target=bun-'.length)}`;
     const outfile = new URL(`${app}${suffix}`, distUrl);
     const args = [
       'build',
@@ -79,14 +102,21 @@ for (const [app, {port, title, lensCalibration}] of Object.entries(config.apps))
       ...(target === '' ? [] : [target]),
       '--outfile',
       outfile.pathname,
-      entryUrl.pathname
+      entryUrl.pathname,
     ];
-    const {stderr} = await executeFile('bun', args, {maxBuffer: 32 * 1024 * 1024}).catch(
-      (error: {stderr?: string}) => ({stderr: error.stderr ?? 'bun build failed'})
+    const { stderr } = await executeFile('bun', args, {
+      maxBuffer: 32 * 1024 * 1024,
+    }).catch((error: { stderr?: string }) => ({
+      stderr: error.stderr ?? 'bun build failed',
+    }));
+    const built = await access(outfile).then(
+      () => true,
+      () => false,
     );
-    const built = await access(outfile).then(() => true, () => false);
     if (!built) {
-      failures.push(`${app}${suffix}: ${stderr.trim().split('\n').at(-1) ?? 'bun build failed'}`);
+      failures.push(
+        `${app}${suffix}: ${stderr.trim().split('\n').at(-1) ?? 'bun build failed'}`,
+      );
       continue;
     }
     console.log(`${app}${suffix}: built`);

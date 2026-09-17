@@ -12,7 +12,10 @@ export interface DialogHost {
 /** Above the time pattern overlay, which takes the top of the 32-bit range for itself. */
 const DIALOG_Z_INDEX = '2147483600';
 
-function overlay(document: Document): {root: HTMLElement; panel: HTMLElement} {
+function overlay(document: Document): {
+  root: HTMLElement;
+  panel: HTMLElement;
+} {
   const root = document.createElement('div');
   root.setAttribute('role', 'dialog');
   root.setAttribute('aria-modal', 'true');
@@ -24,7 +27,7 @@ function overlay(document: Document): {root: HTMLElement; panel: HTMLElement} {
     justifyContent: 'center',
     background: 'rgba(0, 0, 0, 0.6)',
     zIndex: DIALOG_Z_INDEX,
-    fontFamily: 'system-ui, sans-serif'
+    fontFamily: 'system-ui, sans-serif',
   });
   const panel = document.createElement('div');
   Object.assign(panel.style, {
@@ -37,14 +40,18 @@ function overlay(document: Document): {root: HTMLElement; panel: HTMLElement} {
     flexDirection: 'column',
     gap: '14px',
     fontSize: '16px',
-    lineHeight: '1.5'
+    lineHeight: '1.5',
   });
   root.appendChild(panel);
   document.body.appendChild(root);
-  return {root, panel};
+  return { root, panel };
 }
 
-function button(document: Document, label: string, primary: boolean): HTMLButtonElement {
+function button(
+  document: Document,
+  label: string,
+  primary: boolean,
+): HTMLButtonElement {
   const element = document.createElement('button');
   element.type = 'button';
   element.textContent = label;
@@ -52,7 +59,9 @@ function button(document: Document, label: string, primary: boolean): HTMLButton
     font: 'inherit',
     padding: '8px 16px',
     borderRadius: '6px',
-    ...(primary ? {background: '#2f6f4f', color: '#ffffff', border: '1px solid #2f6f4f'} : {})
+    ...(primary
+      ? { background: '#2f6f4f', color: '#ffffff', border: '1px solid #2f6f4f' }
+      : {}),
   });
   return element;
 }
@@ -60,7 +69,7 @@ function button(document: Document, label: string, primary: boolean): HTMLButton
 function paragraph(document: Document, text: string): HTMLElement {
   const element = document.createElement('p');
   element.textContent = text;
-  Object.assign(element.style, {margin: '0', whiteSpace: 'pre-wrap'});
+  Object.assign(element.style, { margin: '0', whiteSpace: 'pre-wrap' });
   return element;
 }
 
@@ -69,14 +78,18 @@ export function confirmWithDialog(
   host: DialogHost,
   message: string,
   confirmLabel: string,
-  cancelLabel: string
+  cancelLabel: string,
 ): Promise<boolean> {
   const document = host.document;
   if (document === null) return Promise.resolve(false);
   return new Promise((resolve) => {
-    const {root, panel} = overlay(document);
+    const { root, panel } = overlay(document);
     const buttons = document.createElement('div');
-    Object.assign(buttons.style, {display: 'flex', gap: '8px', justifyContent: 'flex-end'});
+    Object.assign(buttons.style, {
+      display: 'flex',
+      gap: '8px',
+      justifyContent: 'flex-end',
+    });
     const cancel = button(document, cancelLabel, false);
     const confirm = button(document, confirmLabel, true);
     const finish = (value: boolean) => {
@@ -119,11 +132,16 @@ export function parseFieldLayout(spec: string): FieldLayout {
   }
   labels.push(current.trim());
   separators.push('');
-  return {labels, separators};
+  return { labels, separators };
 }
 
-export function joinWithLayout(layout: FieldLayout, values: readonly string[]): string {
-  return values.map((value, index) => `${value}${layout.separators[index] ?? ''}`).join('');
+export function joinWithLayout(
+  layout: FieldLayout,
+  values: readonly string[],
+): string {
+  return values
+    .map((value, index) => `${value}${layout.separators[index] ?? ''}`)
+    .join('');
 }
 
 /** Values of a previous answer in the same layout, or empty strings where there are none. */
@@ -142,14 +160,14 @@ export function askNumbersWithDialog(
   title: string,
   spec: string,
   defaults: string,
-  labels: {readonly accept: string; readonly cancel: string}
+  labels: { readonly accept: string; readonly cancel: string },
 ): Promise<string | null> {
   const document = host.document;
   if (document === null) return Promise.resolve(null);
   const layout = parseFieldLayout(spec);
   const initial = defaultsFor(layout, defaults);
   return new Promise((resolve) => {
-    const {root, panel} = overlay(document);
+    const { root, panel } = overlay(document);
     panel.appendChild(paragraph(document, title));
 
     const grid = document.createElement('div');
@@ -157,7 +175,7 @@ export function askNumbersWithDialog(
       display: 'grid',
       gridTemplateColumns: 'auto 1fr',
       gap: '6px 12px',
-      alignItems: 'center'
+      alignItems: 'center',
     });
     const inputs = layout.labels.map((labelText, index) => {
       const label = document.createElement('label');
@@ -166,7 +184,7 @@ export function askNumbersWithDialog(
       input.type = 'number';
       input.setAttribute('step', 'any');
       input.value = initial[index] ?? '';
-      Object.assign(input.style, {font: 'inherit', padding: '4px 6px'});
+      Object.assign(input.style, { font: 'inherit', padding: '4px 6px' });
       grid.appendChild(label);
       grid.appendChild(input);
       return input;
@@ -174,11 +192,16 @@ export function askNumbersWithDialog(
     panel.appendChild(grid);
 
     const buttons = document.createElement('div');
-    Object.assign(buttons.style, {display: 'flex', gap: '8px', justifyContent: 'flex-end'});
+    Object.assign(buttons.style, {
+      display: 'flex',
+      gap: '8px',
+      justifyContent: 'flex-end',
+    });
     const cancel = button(document, labels.cancel, false);
     const accept = button(document, labels.accept, true);
     const values = () => inputs.map((input) => String(input.value).trim());
-    const complete = () => values().every((value) => value !== '' && Number.isFinite(Number(value)));
+    const complete = () =>
+      values().every((value) => value !== '' && Number.isFinite(Number(value)));
     const refresh = () => {
       accept.disabled = !complete();
     };

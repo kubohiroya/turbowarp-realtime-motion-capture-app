@@ -85,7 +85,9 @@ export class NetworkRouter {
   /** Milliseconds since the latest payload arrived, or -1 when none has. */
   public latestAgeMs(channel: string, peer: string): number {
     const entry = this.latest.get(channel)?.get(peer);
-    return entry === undefined ? -1 : Math.max(0, Math.round(this.host.nowMs() - entry.receivedAtMs));
+    return entry === undefined
+      ? -1
+      : Math.max(0, Math.round(this.host.nowMs() - entry.receivedAtMs));
   }
 
   /** The peers that have sent on a channel, sorted so a script can walk them in a stable order. */
@@ -109,15 +111,20 @@ export class NetworkRouter {
     }
     if (typeof envelope === 'object' && envelope !== null) {
       const record = envelope as Record<string, unknown>;
-      if (record['type'] === LATEST_DATA_TYPE && typeof record['peer'] === 'string') {
-        const channel = typeof record['channel'] === 'string' ? record['channel'] : 'default';
-        const peers = this.latest.get(channel) ?? new Map<string, LatestEntry>();
+      if (
+        record['type'] === LATEST_DATA_TYPE &&
+        typeof record['peer'] === 'string'
+      ) {
+        const channel =
+          typeof record['channel'] === 'string' ? record['channel'] : 'default';
+        const peers =
+          this.latest.get(channel) ?? new Map<string, LatestEntry>();
         this.latest.set(channel, peers);
         const previous = peers.get(record['peer']);
         peers.set(record['peer'], {
           payload: JSON.stringify(record['payload'] ?? null),
           count: (previous?.count ?? 0) + 1,
-          receivedAtMs: this.host.nowMs()
+          receivedAtMs: this.host.nowMs(),
         });
         return;
       }
@@ -156,7 +163,9 @@ export function createScratchNetworkRouterHost(): NetworkRouterHost {
       const table = primitives as Record<string, unknown>;
       const find = (opcode: string) => {
         const pattern = new RegExp(`(^|_)kubohiroyawebrtc_+${opcode}$`);
-        const key = Object.keys(table).find((candidate) => pattern.test(candidate));
+        const key = Object.keys(table).find((candidate) =>
+          pattern.test(candidate),
+        );
         const implementation = key === undefined ? undefined : table[key];
         return typeof implementation === 'function'
           ? (implementation as (args: Record<string, unknown>) => unknown)
@@ -167,10 +176,11 @@ export function createScratchNetworkRouterHost(): NetworkRouterHost {
       if (messageCount === undefined || nextMessage === undefined) return null;
       resolved = {
         messageCount: () => Number(messageCount({})) || 0,
-        nextMessage: () => String(nextMessage({}) ?? '')
+        nextMessage: () => String(nextMessage({}) ?? ''),
       };
       return resolved;
     },
-    nowMs: () => (typeof performance === 'undefined' ? Date.now() : performance.now())
+    nowMs: () =>
+      typeof performance === 'undefined' ? Date.now() : performance.now(),
   };
 }

@@ -10,24 +10,24 @@
 TurboWarp拡張`realtimemotioncapturepose3dservice`として埋め込まれ、サービスはその拡張が起動する専用Web Worker
 （ビルド時にインライン化）で動きます。
 
-| ファイル | 内容 |
-|---|---|
-| `src/contracts.ts` | interface v1（`twrmc/pose-3d-service` v1）、`twrmc/pose-frame-3d` v2、上限、エラーコード、検証、v1への変換 |
-| `src/service.ts` | サービス側。stub実装`stub-normal`／`stub-timeout`／`stub-invalid` |
-| `src/worker.ts` | Workerの入口 |
-| `src/client.ts` | fusion app側。送る前の検証、重複・古いフレームの除外、timeout、応答の検証、状態 |
-| `src/extension.ts`、`src/entry.ts` | TurboWarp拡張とWorkerの起動 |
+| ファイル                           | 内容                                                                                                       |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `src/contracts.ts`                 | interface v1（`twrmc/pose-3d-service` v1）、`twrmc/pose-frame-3d` v2、上限、エラーコード、検証、v1への変換 |
+| `src/service.ts`                   | サービス側。stub実装`stub-normal`／`stub-timeout`／`stub-invalid`                                          |
+| `src/worker.ts`                    | Workerの入口                                                                                               |
+| `src/client.ts`                    | fusion app側。送る前の検証、重複・古いフレームの除外、timeout、応答の検証、状態                            |
+| `src/extension.ts`、`src/entry.ts` | TurboWarp拡張とWorkerの起動                                                                                |
 
 ## interface v1
 
 すべてのメッセージが`interface: twrmc/pose-3d-service`、`version: 1`、`id`、`type`、`payload`を持ちます。
 
-| 方向 | type | payload |
-|---|---|---|
-| app → service | `configure` | `implementation`、`referenceId`、`cameras[]`（`cameraId`＝ペアリングのpeer名、歪みを含むcamera model、`cameraFromReference`、時刻対応） |
-| app → service | `frame2d` | `cameraId`と、受信した`twrmc/pose-frame-2d`（変更しない） |
-| app → service | `requestPose3d` | `timestampUs`（v1では`null`＝最新） |
-| service → app | `configured`／`accepted`／`pose3d`／`error` | 設定したカメラ、受理したsequence、`twrmc/pose-frame-3d` v2または`null`、エラーコードと理由 |
+| 方向          | type                                        | payload                                                                                                                                 |
+| ------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| app → service | `configure`                                 | `implementation`、`referenceId`、`cameras[]`（`cameraId`＝ペアリングのpeer名、歪みを含むcamera model、`cameraFromReference`、時刻対応） |
+| app → service | `frame2d`                                   | `cameraId`と、受信した`twrmc/pose-frame-2d`（変更しない）                                                                               |
+| app → service | `requestPose3d`                             | `timestampUs`（v1では`null`＝最新）                                                                                                     |
+| service → app | `configured`／`accepted`／`pose3d`／`error` | 設定したカメラ、受理したsequence、`twrmc/pose-frame-3d` v2または`null`、エラーコードと理由                                              |
 
 固定値：人数6、カメラ2〜8台、1メッセージ65,536バイト、configure timeout 2,000 ms、3D request timeout 100 ms、
 転送するフレームの経過時間500 ms。
@@ -58,13 +58,13 @@ TurboWarp拡張`realtimemotioncapturepose3dservice`として埋め込まれ、�
 
 3D推定の中身を作る前に、良し悪しを測る道具を用意します。段階3以降は、ここで決めた形式と指標で比べます。
 
-| ファイル | 内容 |
-|---|---|
-| `src/session.ts` | セッション（`twrmc/pose-3d-session` v1）。サービスに渡したものを渡した順に、時刻付きで持つ。合成データのときは正解も持つ。`SessionRecorder`は、実行中のアプリから記録するための入れ物（件数で上限を切り、古いものから捨てる） |
-| `src/synthetic.ts` | 合成シーン。seedから決まるので、同じ入力で何度でも測り直せる |
-| `src/replay.ts` | セッションを任意の実装へ流し込み、1メッセージごとの処理時間を測る。壁時計は待たないので、10秒のセッションはミリ秒で再生する |
-| `src/metrics.ts` | 正解との比較。件数を必ず添える |
-| `scripts/pose-3d-eval.ts` | CLI |
+| ファイル                  | 内容                                                                                                                                                                                                                          |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/session.ts`          | セッション（`twrmc/pose-3d-session` v1）。サービスに渡したものを渡した順に、時刻付きで持つ。合成データのときは正解も持つ。`SessionRecorder`は、実行中のアプリから記録するための入れ物（件数で上限を切り、古いものから捨てる） |
+| `src/synthetic.ts`        | 合成シーン。seedから決まるので、同じ入力で何度でも測り直せる                                                                                                                                                                  |
+| `src/replay.ts`           | セッションを任意の実装へ流し込み、1メッセージごとの処理時間を測る。壁時計は待たないので、10秒のセッションはミリ秒で再生する                                                                                                   |
+| `src/metrics.ts`          | 正解との比較。件数を必ず添える                                                                                                                                                                                                |
+| `scripts/pose-3d-eval.ts` | CLI                                                                                                                                                                                                                           |
 
 ### CLI
 
@@ -87,13 +87,13 @@ pnpm run pose3d:eval replay --session tmp/session.json --implementation stub-tim
 
 ### 指標
 
-| 指標 | 意味 |
-|---|---|
-| 処理時間 | 1メッセージあたりのサービス内の時間（p50／p95／最大） |
-| 人数の誤差 | 報告した人数と、2台以上のカメラが見ていた人数の差 |
-| 関節の誤差 | 対応付けた関節の3D距離（m）。`measured`と`constrained`だけを数える |
-| 関節の再現率 | 2台以上が見ていた関節のうち、位置を報告できた割合 |
-| 同定の切り替わり | 同じ人物の報告IDが変わった回数 |
+| 指標             | 意味                                                               |
+| ---------------- | ------------------------------------------------------------------ |
+| 処理時間         | 1メッセージあたりのサービス内の時間（p50／p95／最大）              |
+| 人数の誤差       | 報告した人数と、2台以上のカメラが見ていた人数の差                  |
+| 関節の誤差       | 対応付けた関節の3D距離（m）。`measured`と`constrained`だけを数える |
+| 関節の再現率     | 2台以上が見ていた関節のうち、位置を報告できた割合                  |
+| 同定の切り替わり | 同じ人物の報告IDが変わった回数                                     |
 
 正解の無いセッション（会場の記録）では、正解を要らない指標だけを出します。
 
@@ -101,10 +101,10 @@ pnpm run pose3d:eval replay --session tmp/session.json --implementation stub-tim
 
 10秒、seed 1、ノイズ1.5px。段階3以降は、同じ条件で比べます。
 
-| シーン | 処理時間 p50／p95 | 人数の誤差 平均 | 関節の誤差 p50／p95 | 再現率 | 同定の切り替わり |
-|---|---|---|---|---|---|
-| カメラ4台・3人 | 0.011／0.020 ms | 0 | 3.72／5.74 m | 1.00 | 13 |
-| カメラ8台・6人 | 0.018／0.029 ms | 0.39 | 4.28／9.21 m | 0.93 | 21 |
+| シーン         | 処理時間 p50／p95 | 人数の誤差 平均 | 関節の誤差 p50／p95 | 再現率 | 同定の切り替わり |
+| -------------- | ----------------- | --------------- | ------------------- | ------ | ---------------- |
+| カメラ4台・3人 | 0.011／0.020 ms   | 0               | 3.72／5.74 m        | 1.00   | 13               |
+| カメラ8台・6人 | 0.018／0.029 ms   | 0.39            | 4.28／9.21 m        | 0.93   | 21               |
 
 stubは固定の姿勢を並べるだけなので、関節の誤差が数メートルになるのは当然です。この表は、段階3以降の
 数値が「stubより良い」ことを言えるようにするためのものです。

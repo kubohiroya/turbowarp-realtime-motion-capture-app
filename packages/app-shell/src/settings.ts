@@ -16,7 +16,10 @@ export interface StorageLike {
   setItem(key: string, value: string): void;
 }
 
-export function createSettingsStore(prefix: string, storage: () => StorageLike | null): SettingsStore {
+export function createSettingsStore(
+  prefix: string,
+  storage: () => StorageLike | null,
+): SettingsStore {
   const qualified = (key: string) => `${prefix}:${key.trim()}`;
   return {
     get(key) {
@@ -33,7 +36,7 @@ export function createSettingsStore(prefix: string, storage: () => StorageLike |
       } catch {
         // Storage refused (private mode, quota): the setting simply is not remembered.
       }
-    }
+    },
   };
 }
 

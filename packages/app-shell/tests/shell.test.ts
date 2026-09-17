@@ -1,9 +1,9 @@
-import {describe, expect, it} from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-import {cameraAppConfig} from '../src/apps/camera.js';
-import {createMultiviewPoseShell, type ShellHost} from '../src/shell.js';
+import { cameraAppConfig } from '../src/apps/camera.js';
+import { createMultiviewPoseShell, type ShellHost } from '../src/shell.js';
 
-import {fakeDocument, fakeElement, type FakeElement} from './fake-dom.js';
+import { fakeDocument, fakeElement, type FakeElement } from './fake-dom.js';
 
 function collect(element: FakeElement): FakeElement[] {
   return [element, ...element.children.flatMap((child) => collect(child))];
@@ -15,14 +15,14 @@ function createHost(overrides: Partial<ShellHost> = {}) {
     document: fakeDocument(),
     resolveMount: () => mount as unknown as HTMLElement,
     resolveLocale: () => 'ja',
-    ...overrides
+    ...overrides,
   };
-  return {host, mount};
+  return { host, mount };
 }
 
 describe('createMultiviewPoseShell', () => {
   it('defers mounting until a block actually uses the shell', () => {
-    const {host, mount} = createHost();
+    const { host, mount } = createHost();
     const shell = createMultiviewPoseShell(cameraAppConfig, host);
 
     expect(shell.state()).toBe('unmounted');
@@ -34,7 +34,7 @@ describe('createMultiviewPoseShell', () => {
   });
 
   it('stays unmounted while the renderer has no stage container', () => {
-    const {host} = createHost({resolveMount: () => null});
+    const { host } = createHost({ resolveMount: () => null });
     const shell = createMultiviewPoseShell(cameraAppConfig, host);
 
     shell.showLoading('Starting', null);
@@ -45,9 +45,9 @@ describe('createMultiviewPoseShell', () => {
     const brokenDocument = {
       createElement() {
         throw new Error('no DOM');
-      }
+      },
     } as unknown as Document;
-    const {host} = createHost({document: brokenDocument});
+    const { host } = createHost({ document: brokenDocument });
     const shell = createMultiviewPoseShell(cameraAppConfig, host);
 
     expect(() => shell.showError('stopped', {})).not.toThrow();
@@ -55,12 +55,12 @@ describe('createMultiviewPoseShell', () => {
   });
 
   it('resolves the locale through the injected host', () => {
-    const {host} = createHost();
+    const { host } = createHost();
     expect(createMultiviewPoseShell(cameraAppConfig, host).locale).toBe('ja');
   });
 
   it('mounts the overlays when a notice is shown', () => {
-    const {host, mount} = createHost();
+    const { host, mount } = createHost();
     const shell = createMultiviewPoseShell(cameraAppConfig, host);
 
     shell.showNotice('two cameras are connected');
@@ -70,13 +70,17 @@ describe('createMultiviewPoseShell', () => {
   });
 
   it('separates a notice from a failure, so a heading never claims the wrong thing', () => {
-    const {host, mount} = createHost();
+    const { host, mount } = createHost();
     const shell = createMultiviewPoseShell(cameraAppConfig, host);
 
     shell.showNotice('two cameras are connected');
     const headings = () =>
       collect(mount)
-        .filter((element) => element.tagName === 'h1' && element.parentNode?.style['display'] !== 'none')
+        .filter(
+          (element) =>
+            element.tagName === 'h1' &&
+            element.parentNode?.style['display'] !== 'none',
+        )
         .map((element) => element.textContent);
 
     // A notice must not appear under the heading that says the application stopped.
@@ -85,7 +89,7 @@ describe('createMultiviewPoseShell', () => {
   });
 
   it('removes every mounted overlay on dispose', () => {
-    const {host, mount} = createHost();
+    const { host, mount } = createHost();
     const shell = createMultiviewPoseShell(cameraAppConfig, host);
     shell.showLoading('Starting', null);
     shell.dispose();
@@ -95,7 +99,7 @@ describe('createMultiviewPoseShell', () => {
   });
 
   it('does not mount again after dispose', () => {
-    const {host, mount} = createHost();
+    const { host, mount } = createHost();
     const shell = createMultiviewPoseShell(cameraAppConfig, host);
     shell.dispose();
     shell.showLoading('Starting', null);
@@ -103,7 +107,7 @@ describe('createMultiviewPoseShell', () => {
   });
 
   it('hides overlays that were never mounted without creating DOM', () => {
-    const {host, mount} = createHost();
+    const { host, mount } = createHost();
     const shell = createMultiviewPoseShell(cameraAppConfig, host);
     shell.hideLoading();
     shell.hideMessage();

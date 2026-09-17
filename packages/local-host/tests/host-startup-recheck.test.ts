@@ -1,11 +1,11 @@
-import {createServer} from 'node:net';
-import {mkdtemp, writeFile} from 'node:fs/promises';
-import {tmpdir} from 'node:os';
-import {join} from 'node:path';
+import { createServer } from 'node:net';
+import { mkdtemp, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import {startLocalHost, type StartedLocalHost} from '../src/host.ts';
+import { startLocalHost, type StartedLocalHost } from '../src/host.ts';
 
 /**
  * A watcher that never opens its watch, standing in for an operating system that drops the write.
@@ -16,18 +16,22 @@ import {startLocalHost, type StartedLocalHost} from '../src/host.ts';
  */
 vi.mock('@kubohiroya/turbowarp-local-preview', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@kubohiroya/turbowarp-local-preview')>();
+    await importOriginal<
+      typeof import('@kubohiroya/turbowarp-local-preview')
+    >();
   return {
     ...actual,
-    createStableSourceWatcher: (options: Parameters<typeof actual.createStableSourceWatcher>[0]) => {
+    createStableSourceWatcher: (
+      options: Parameters<typeof actual.createStableSourceWatcher>[0],
+    ) => {
       const watcher = actual.createStableSourceWatcher(options);
       return {
         sourcePath: watcher.sourcePath,
         start: () => undefined,
         publishNow: () => watcher.publishNow(),
-        close: () => watcher.close()
+        close: () => watcher.close(),
       };
-    }
+    },
   };
 });
 
@@ -46,7 +50,7 @@ async function freePort(): Promise<number> {
         reject(new Error('no port'));
         return;
       }
-      const {port} = address;
+      const { port } = address;
       server.close(() => resolve(port));
     });
   });
@@ -70,20 +74,23 @@ describe('startup re-reads', () => {
       title: 'Camera App',
       port: await freePort(),
       lockDirectory: join(directory, 'run'),
-      player: {html: playerHtml},
-      dsl: {projectRoot: directory, path}
+      player: { html: playerHtml },
+      dsl: { projectRoot: directory, path },
     });
     if (!result.started) throw new Error('did not start');
     running.push(result.host);
-    expect(result.host.dsl()).toMatchObject({source: 'performers: 1'});
+    expect(result.host.dsl()).toMatchObject({ source: 'performers: 1' });
 
     await writeFile(path, 'performers: 2');
 
     const deadline = Date.now() + 4000;
-    while (result.host.dsl()?.source !== 'performers: 2' && Date.now() < deadline) {
+    while (
+      result.host.dsl()?.source !== 'performers: 2' &&
+      Date.now() < deadline
+    ) {
       await new Promise((resolve) => setTimeout(resolve, 25));
     }
-    expect(result.host.dsl()).toMatchObject({source: 'performers: 2'});
+    expect(result.host.dsl()).toMatchObject({ source: 'performers: 2' });
   });
 
   it('stops re-reading once the host is stopped', async () => {
@@ -94,8 +101,8 @@ describe('startup re-reads', () => {
       title: 'Camera App',
       port: await freePort(),
       lockDirectory: join(directory, 'run'),
-      player: {html: playerHtml},
-      dsl: {projectRoot: directory, path}
+      player: { html: playerHtml },
+      dsl: { projectRoot: directory, path },
     });
     if (!result.started) throw new Error('did not start');
 
@@ -103,6 +110,6 @@ describe('startup re-reads', () => {
     await writeFile(path, 'performers: 2');
     await new Promise((resolve) => setTimeout(resolve, 2500));
 
-    expect(result.host.dsl()).toMatchObject({source: 'performers: 1'});
+    expect(result.host.dsl()).toMatchObject({ source: 'performers: 1' });
   });
 });

@@ -10,9 +10,9 @@
  * requests were answered, how many people were reported, and how long the service took.
  */
 
-import type {PoseFrame3DV2} from './contracts.ts';
-import type {ReplayResult} from './replay.ts';
-import type {Session, TruthFrame} from './session.ts';
+import type { PoseFrame3DV2 } from './contracts.ts';
+import type { ReplayResult } from './replay.ts';
+import type { Session, TruthFrame } from './session.ts';
 
 export interface Distribution {
   readonly count: number;
@@ -54,7 +54,10 @@ export interface TruthMetrics {
 /** A joint is triangulable when two cameras or more saw it; nothing else can be asked of a service. */
 const MINIMUM_CAMERAS = 2;
 
-export function evaluate(session: Session, replay: ReplayResult): EvaluationMetrics {
+export function evaluate(
+  session: Session,
+  replay: ReplayResult,
+): EvaluationMetrics {
   const base: EvaluationMetrics = {
     implementation: session.configuration.implementation,
     requests: replay.requests,
@@ -64,14 +67,17 @@ export function evaluate(session: Session, replay: ReplayResult): EvaluationMetr
     framesSent: replay.framesSent,
     framesAccepted: replay.framesAccepted,
     errors: replay.errors.length,
-    handleMs: distribution(replay.handleMs)
+    handleMs: distribution(replay.handleMs),
   };
   const truth = session.truth;
   if (!truth || truth.length === 0) return base;
-  return {...base, truth: truthMetrics(truth, replay)};
+  return { ...base, truth: truthMetrics(truth, replay) };
 }
 
-function truthMetrics(truth: readonly TruthFrame[], replay: ReplayResult): TruthMetrics {
+function truthMetrics(
+  truth: readonly TruthFrame[],
+  replay: ReplayResult,
+): TruthMetrics {
   const countErrors: number[] = [];
   const jointErrors: number[] = [];
   let recallable = 0;
@@ -88,7 +94,7 @@ function truthMetrics(truth: readonly TruthFrame[], replay: ReplayResult): Truth
     if (!truthFrame) continue;
     matchedFrames += 1;
     const expected = truthFrame.persons.filter((person) =>
-      person.joints.some((joint) => joint.cameraIds.length >= MINIMUM_CAMERAS)
+      person.joints.some((joint) => joint.cameraIds.length >= MINIMUM_CAMERAS),
     );
     countErrors.push(frame.persons.length - expected.length);
     for (const person of expected) {
@@ -99,14 +105,27 @@ function truthMetrics(truth: readonly TruthFrame[], replay: ReplayResult): Truth
     }
     for (const [truthPerson, reported] of matchPersons(expected, frame)) {
       const previous = lastReportedId.get(truthPerson.personId);
-      if (previous !== undefined && previous !== reported.personId) identitySwitches += 1;
+      if (previous !== undefined && previous !== reported.personId)
+        identitySwitches += 1;
       lastReportedId.set(truthPerson.personId, reported.personId);
       for (const joint of truthPerson.joints) {
         if (joint.cameraIds.length < MINIMUM_CAMERAS) continue;
-        const estimated = reported.joints.find((candidate) => candidate.id === joint.id);
-        if (!estimated || (estimated.state !== 'measured' && estimated.state !== 'constrained')) continue;
+        const estimated = reported.joints.find(
+          (candidate) => candidate.id === joint.id,
+        );
+        if (
+          !estimated ||
+          (estimated.state !== 'measured' && estimated.state !== 'constrained')
+        )
+          continue;
         recalled += 1;
-        jointErrors.push(Math.hypot(estimated.x - joint.x, estimated.y - joint.y, estimated.z - joint.z));
+        jointErrors.push(
+          Math.hypot(
+            estimated.x - joint.x,
+            estimated.y - joint.y,
+            estimated.z - joint.z,
+          ),
+        );
       }
     }
   }
@@ -116,7 +135,7 @@ function truthMetrics(truth: readonly TruthFrame[], replay: ReplayResult): Truth
     jointErrorMeters: distribution(jointErrors),
     jointRecall: recallable === 0 ? 0 : round4(recalled / recallable),
     identitySwitches,
-    matchedFrames
+    matchedFrames,
   };
 }
 
@@ -129,32 +148,48 @@ function truthMetrics(truth: readonly TruthFrame[], replay: ReplayResult): Truth
  */
 function matchPersons(
   expected: TruthFrame['persons'],
-  frame: PoseFrame3DV2
+  frame: PoseFrame3DV2,
 ): Array<[TruthFrame['persons'][number], PoseFrame3DV2['persons'][number]]> {
-  const pairs: Array<{distance: number; truth: TruthFrame['persons'][number]; reported: PoseFrame3DV2['persons'][number]}> = [];
+  const pairs: Array<{
+    distance: number;
+    truth: TruthFrame['persons'][number];
+    reported: PoseFrame3DV2['persons'][number];
+  }> = [];
   for (const truthPerson of expected) {
-    const truthCentre = centroid(truthPerson.joints.filter((joint) => joint.cameraIds.length >= MINIMUM_CAMERAS));
+    const truthCentre = centroid(
+      truthPerson.joints.filter(
+        (joint) => joint.cameraIds.length >= MINIMUM_CAMERAS,
+      ),
+    );
     if (!truthCentre) continue;
     for (const reported of frame.persons) {
-      const reportedCentre = centroid(reported.joints.filter((joint) => joint.state !== 'missing'));
+      const reportedCentre = centroid(
+        reported.joints.filter((joint) => joint.state !== 'missing'),
+      );
       if (!reportedCentre) continue;
       pairs.push({
         distance: Math.hypot(
           truthCentre[0] - reportedCentre[0],
           truthCentre[1] - reportedCentre[1],
-          truthCentre[2] - reportedCentre[2]
+          truthCentre[2] - reportedCentre[2],
         ),
         truth: truthPerson,
-        reported
+        reported,
       });
     }
   }
   pairs.sort((left, right) => left.distance - right.distance);
   const usedTruth = new Set<string>();
   const usedReported = new Set<string>();
-  const matches: Array<[TruthFrame['persons'][number], PoseFrame3DV2['persons'][number]]> = [];
+  const matches: Array<
+    [TruthFrame['persons'][number], PoseFrame3DV2['persons'][number]]
+  > = [];
   for (const pair of pairs) {
-    if (usedTruth.has(pair.truth.personId) || usedReported.has(pair.reported.personId)) continue;
+    if (
+      usedTruth.has(pair.truth.personId) ||
+      usedReported.has(pair.reported.personId)
+    )
+      continue;
     usedTruth.add(pair.truth.personId);
     usedReported.add(pair.reported.personId);
     matches.push([pair.truth, pair.reported]);
@@ -162,16 +197,30 @@ function matchPersons(
   return matches;
 }
 
-function centroid(joints: ReadonlyArray<{x: number; y: number; z: number}>): [number, number, number] | undefined {
+function centroid(
+  joints: ReadonlyArray<{ x: number; y: number; z: number }>,
+): [number, number, number] | undefined {
   if (joints.length === 0) return undefined;
   const sum = joints.reduce(
-    (total, joint) => [total[0] + joint.x, total[1] + joint.y, total[2] + joint.z] as [number, number, number],
-    [0, 0, 0] as [number, number, number]
+    (total, joint) =>
+      [total[0] + joint.x, total[1] + joint.y, total[2] + joint.z] as [
+        number,
+        number,
+        number,
+      ],
+    [0, 0, 0] as [number, number, number],
   );
-  return [sum[0] / joints.length, sum[1] / joints.length, sum[2] / joints.length];
+  return [
+    sum[0] / joints.length,
+    sum[1] / joints.length,
+    sum[2] / joints.length,
+  ];
 }
 
-function nearestTruth(truth: readonly TruthFrame[], timestampUs: number): TruthFrame | undefined {
+function nearestTruth(
+  truth: readonly TruthFrame[],
+  timestampUs: number,
+): TruthFrame | undefined {
   let best: TruthFrame | undefined;
   let bestDistance = Number.POSITIVE_INFINITY;
   for (const frame of truth) {
@@ -185,15 +234,19 @@ function nearestTruth(truth: readonly TruthFrame[], timestampUs: number): TruthF
 }
 
 export function distribution(values: readonly number[]): Distribution {
-  if (values.length === 0) return {count: 0, mean: 0, p50: 0, p95: 0, max: 0};
+  if (values.length === 0) return { count: 0, mean: 0, p50: 0, p95: 0, max: 0 };
   const sorted = [...values].sort((left, right) => left - right);
-  const at = (fraction: number) => sorted[Math.min(sorted.length - 1, Math.floor(fraction * sorted.length))] ?? 0;
+  const at = (fraction: number) =>
+    sorted[Math.min(sorted.length - 1, Math.floor(fraction * sorted.length))] ??
+    0;
   return {
     count: sorted.length,
-    mean: round4(values.reduce((total, value) => total + value, 0) / values.length),
+    mean: round4(
+      values.reduce((total, value) => total + value, 0) / values.length,
+    ),
     p50: round4(at(0.5)),
     p95: round4(at(0.95)),
-    max: round4(sorted[sorted.length - 1] ?? 0)
+    max: round4(sorted[sorted.length - 1] ?? 0),
   };
 }
 
@@ -203,7 +256,7 @@ export function formatMetrics(metrics: EvaluationMetrics): string {
     `implementation: ${metrics.implementation}`,
     `requests: ${metrics.requests} (answered ${metrics.answered}, empty ${metrics.empty}, unanswered ${metrics.unanswered})`,
     `frames: sent ${metrics.framesSent}, accepted ${metrics.framesAccepted}, errors ${metrics.errors}`,
-    `service time ms: p50 ${metrics.handleMs.p50}, p95 ${metrics.handleMs.p95}, max ${metrics.handleMs.max} (${metrics.handleMs.count} messages)`
+    `service time ms: p50 ${metrics.handleMs.p50}, p95 ${metrics.handleMs.p95}, max ${metrics.handleMs.max} (${metrics.handleMs.count} messages)`,
   ];
   if (metrics.truth) {
     lines.push(
@@ -211,7 +264,7 @@ export function formatMetrics(metrics: EvaluationMetrics): string {
       `person count error: mean ${metrics.truth.personCountError.mean}, max ${metrics.truth.personCountError.max}`,
       `joint error m: p50 ${metrics.truth.jointErrorMeters.p50}, p95 ${metrics.truth.jointErrorMeters.p95}, max ${metrics.truth.jointErrorMeters.max} (${metrics.truth.jointErrorMeters.count} joints)`,
       `joint recall: ${metrics.truth.jointRecall}`,
-      `identity switches: ${metrics.truth.identitySwitches}`
+      `identity switches: ${metrics.truth.identitySwitches}`,
     );
   }
   return lines.join('\n');

@@ -73,20 +73,23 @@ export function fakeElement(tagName: string): FakeElement {
       listeners.set(name, [...(listeners.get(name) ?? []), listener]);
     },
     removeEventListener(name: string, listener: Listener) {
-      listeners.set(name, (listeners.get(name) ?? []).filter((entry) => entry !== listener));
+      listeners.set(
+        name,
+        (listeners.get(name) ?? []).filter((entry) => entry !== listener),
+      );
     },
     click() {
       for (const listener of listeners.get('click') ?? []) {
-        listener({preventDefault() {}, stopPropagation() {}});
+        listener({ preventDefault() {}, stopPropagation() {} });
       }
-    }
+    },
   };
 }
 
 export function fakeDocument(): Document {
   return {
     body: fakeElement('body'),
-    createElement: (tagName: string) => fakeElement(tagName)
+    createElement: (tagName: string) => fakeElement(tagName),
   } as unknown as Document;
 }
 

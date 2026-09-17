@@ -10,13 +10,17 @@
  *     --cameras 4 --persons 3 --seconds 10 --implementation stub-normal
  */
 
-import {mkdir, readFile, writeFile} from 'node:fs/promises';
-import {dirname} from 'node:path';
-import {evaluate, formatMetrics} from '../src/metrics.ts';
-import {replaySession} from '../src/replay.ts';
-import {parseSession, serializeSession, type Session} from '../src/session.ts';
-import {generateScene, DEFAULT_SCENE} from '../src/synthetic.ts';
-import {IMPLEMENTATIONS, type ImplementationId} from '../src/contracts.ts';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { dirname } from 'node:path';
+import { evaluate, formatMetrics } from '../src/metrics.ts';
+import { replaySession } from '../src/replay.ts';
+import {
+  parseSession,
+  serializeSession,
+  type Session,
+} from '../src/session.ts';
+import { generateScene, DEFAULT_SCENE } from '../src/synthetic.ts';
+import { IMPLEMENTATIONS, type ImplementationId } from '../src/contracts.ts';
 
 const usage = `Usage:
   pose-3d-eval synthesize [--out <file>] [--seed n] [--cameras n] [--persons n] [--seconds n]
@@ -39,31 +43,56 @@ async function main(argv: readonly string[]): Promise<number> {
   }
 
   if (command === 'synthesize') {
-    const {session} = generateScene(sceneOptions(options));
-    await write(options['out'] ?? 'pose-3d-session.json', serializeSession(session));
-    console.log(`${session.events.length} events, ${session.truth?.length ?? 0} truth frames: ${options['out'] ?? 'pose-3d-session.json'}`);
+    const { session } = generateScene(sceneOptions(options));
+    await write(
+      options['out'] ?? 'pose-3d-session.json',
+      serializeSession(session),
+    );
+    console.log(
+      `${session.events.length} events, ${session.truth?.length ?? 0} truth frames: ${options['out'] ?? 'pose-3d-session.json'}`,
+    );
     return 0;
   }
 
-  const session = options['session'] ? await readSession(options['session']) : generateScene(sceneOptions(options)).session;
+  const session = options['session']
+    ? await readSession(options['session'])
+    : generateScene(sceneOptions(options)).session;
   const implementation = readImplementation(options['implementation']);
-  const replay = replaySession(session, implementation ? {implementation} : {});
+  const replay = replaySession(
+    session,
+    implementation ? { implementation } : {},
+  );
 
   if (command === 'replay') {
     const target = options['out'] ?? 'pose-3d-answers.json';
-    await write(target, JSON.stringify({producer: session.producer, implementation: implementation ?? session.configuration.implementation, answers: replay.answers}));
-    console.log(`${replay.answers.length} answers, ${replay.errors.length} errors: ${target}`);
+    await write(
+      target,
+      JSON.stringify({
+        producer: session.producer,
+        implementation: implementation ?? session.configuration.implementation,
+        answers: replay.answers,
+      }),
+    );
+    console.log(
+      `${replay.answers.length} answers, ${replay.errors.length} errors: ${target}`,
+    );
     return 0;
   }
 
   const metrics = evaluate(session, replay);
-  console.log(options['json'] === '' ? JSON.stringify(metrics, null, 2) : `${session.producer}\n${formatMetrics(metrics)}`);
+  console.log(
+    options['json'] === ''
+      ? JSON.stringify(metrics, null, 2)
+      : `${session.producer}\n${formatMetrics(metrics)}`,
+  );
   return 0;
 }
 
-function sceneOptions(options: Record<string, string>): Parameters<typeof generateScene>[0] {
+function sceneOptions(
+  options: Record<string, string>,
+): Parameters<typeof generateScene>[0] {
   const number = (name: string, key: keyof typeof DEFAULT_SCENE) =>
-    options[name] === undefined ? undefined : {[key]: Number(options[name])};
+    options[name] === undefined ? undefined : { [key]: Number(options[name]) };
   return {
     ...number('seed', 'seed'),
     ...number('cameras', 'cameras'),
@@ -72,14 +101,18 @@ function sceneOptions(options: Record<string, string>): Parameters<typeof genera
     ...number('frame-rate', 'frameRate'),
     ...number('noise-px', 'noisePx'),
     ...number('occlusion-rate', 'occlusionRate'),
-    ...number('identity-switch-rate', 'identitySwitchRate')
+    ...number('identity-switch-rate', 'identitySwitchRate'),
   };
 }
 
-function readImplementation(value: string | undefined): ImplementationId | undefined {
+function readImplementation(
+  value: string | undefined,
+): ImplementationId | undefined {
   if (value === undefined) return undefined;
   if (!IMPLEMENTATIONS.includes(value as ImplementationId)) {
-    throw new Error(`Unknown implementation ${value}. One of: ${IMPLEMENTATIONS.join(', ')}`);
+    throw new Error(
+      `Unknown implementation ${value}. One of: ${IMPLEMENTATIONS.join(', ')}`,
+    );
   }
   return value as ImplementationId;
 }
@@ -91,7 +124,7 @@ async function readSession(path: string): Promise<Session> {
 }
 
 async function write(path: string, text: string): Promise<void> {
-  await mkdir(dirname(path), {recursive: true});
+  await mkdir(dirname(path), { recursive: true });
   await writeFile(path, `${text}\n`);
 }
 

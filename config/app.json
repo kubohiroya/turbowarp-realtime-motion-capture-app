@@ -1,0 +1,70 @@
+{
+  "slug": "turbowarp-realtime-motion-capture-app",
+  "title": "TurboWarp Realtime Motion Capture Apps",
+  "summary": "複数のカメラで人物の2D姿勢を推定し、復元した3D姿勢を演出に利用する、TurboWarpベースのアプリケーションです。",
+  "modes": [
+    {
+      "id": "camera",
+      "label": "カメラ",
+      "description": "カメラに接続したPCで動かす。映像から最大6人の2D姿勢を推定し、PoseFrame2Dだけをfusion appへ送る。映像そのものは送らない。",
+      "sb3": "camera-app.sb3"
+    },
+    {
+      "id": "fusion",
+      "label": "統合",
+      "description": "統合PCで動かす。各camera appの2D姿勢を集約して3D姿勢へ統合し、アバターと演出を制御する。",
+      "sb3": "fusion-app.sb3"
+    },
+    {
+      "id": "local",
+      "label": "ローカル（1台構成）",
+      "description": "1台のPCに接続した複数のUSBカメラから3Dアバターまでを1つのSB3で通す。ペアリングを必要としない。",
+      "sb3": "local-app.sb3"
+    }
+  ],
+  "plannedFeatures": [
+    "3D推定の本体とアバター演出のblockスクリプトを実装する。",
+    "設定と演出DSLの永続化を実装する（方針は確定済み）。",
+    "ローカルホストを単体バイナリとして配布する。",
+    "会場機材でE2E検証を行い、v0.1.0を配布する。"
+  ],
+  "plannedDependencies": [
+    "realtime-motion-capture：frame alignment、人物対応付け、triangulation、3D solve。アプリ側では再実装しない。",
+    "camera-source：カメラ取得、lease、撮影条件と内部校正プロファイルの契約。",
+    "time-space-sync：時刻対応と共通基準への配置校正。",
+    "webrtc-qrcode-pairing／webrtc：QR搬送ペアリングとアプリ間接続。ローカル構成では使わない。",
+    "title-menu：タイトル画面、アプリメニュー、DSLファイル管理。",
+    "aframe／asset-manager：アバターと演出の描画、アセットの取り回し。"
+  ],
+  "en": {
+    "summary": "TurboWarp-based applications that estimate the 2D pose of people from several cameras and use the reconstructed 3D pose to drive a performance.",
+    "modes": {
+      "camera": {
+        "label": "Camera",
+        "description": "Runs on a PC connected to a camera. Estimates the 2D pose of up to 6 people from the video and sends only PoseFrame2D to the fusion app, never the video itself."
+      },
+      "fusion": {
+        "label": "Fusion",
+        "description": "Runs on the fusion PC. Aggregates the 2D poses from every camera app into a 3D pose and drives the avatar and the performance."
+      },
+      "local": {
+        "label": "Local (single PC)",
+        "description": "Carries several USB cameras on one PC through to 3D avatars inside a single SB3. Requires no pairing."
+      }
+    },
+    "plannedFeatures": [
+      "Implement the 3D estimation itself and the block scripts for the avatar performance.",
+      "Implement persistence for settings and the performance DSL (the design is settled).",
+      "Distribute the local host as a single binary.",
+      "Verify end to end on venue hardware and release v0.1.0."
+    ],
+    "plannedDependencies": [
+      "realtime-motion-capture: frame alignment, person association, triangulation, and the 3D solve. Not reimplemented in this app.",
+      "camera-source: camera acquisition, lease, capture conditions, and the contract for the intrinsic calibration profile.",
+      "time-space-sync: optical time correspondence and placement calibration against a common reference.",
+      "webrtc-qrcode-pairing / webrtc: QR-carried pairing and the connection between apps. Unused in the local configuration.",
+      "title-menu: title screen, application menu, and DSL file management.",
+      "aframe / asset-manager: avatar and performance rendering, and asset handling."
+    ]
+  }
+}

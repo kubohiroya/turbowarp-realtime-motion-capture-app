@@ -23,7 +23,7 @@ declare module '@turbowarp/packager' {
     autoplay: boolean;
     /** Embedded extensions to keep. Anything absent here is removed without a warning. */
     extensions: string[];
-    custom: {js: string; css: string};
+    custom: { js: string; css: string };
     [key: string]: unknown;
   }
 
@@ -41,7 +41,7 @@ declare module '@turbowarp/packager' {
 
   function loadProject(
     data: Uint8Array,
-    progress?: (type: string, a: number, b: number) => void
+    progress?: (type: string, a: number, b: number) => void,
   ): Promise<LoadedProject>;
 
   const packagerDefault: {
@@ -50,6 +50,11 @@ declare module '@turbowarp/packager' {
   };
 
   export default packagerDefault;
-  export {Packager, loadProject};
-  export type {LoadedProject, PackagerAnalysis, PackagerOptions, PackagerResult};
+  export { Packager, loadProject };
+  export type {
+    LoadedProject,
+    PackagerAnalysis,
+    PackagerOptions,
+    PackagerResult,
+  };
 }
