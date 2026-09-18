@@ -27,9 +27,15 @@ importers:
       eslint:
         specifier: 9.39.5
         version: 9.39.5
+      jsqr:
+        specifier: 1.4.0
+        version: 1.4.0
       prettier:
         specifier: 3.9.6
         version: 3.9.6
+      qrcode:
+        specifier: 1.5.4
+        version: 1.5.4
       typescript:
         specifier: 5.9.3
         version: 5.9.3
