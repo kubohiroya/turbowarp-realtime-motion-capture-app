@@ -64,11 +64,15 @@ const predictionLeadMs = 0;
 /** Joint and person confidence below which a bone keeps its last rotation. */
 const confidence = 0.3;
 /**
- * Where the avatars stand in front of A-Frame's default camera, which looks down -Z from 1.6 m.
- * Kalidokit places the hips from the screen, so this lifts them to standing height and moves them
- * back into view; it is not the venue position the 3D service measured.
+ * Each avatar stands where the 3D service measured its performer's hips. The joints arrive in the
+ * avatars' axes and the world root puts them at (x, -y, -z) in the scene, the same transform the
+ * stage uses for the projected pattern and the audience camera, so no offset is needed.
  */
-const rigJson = JSON.stringify({ rootScale: 1, rootOffset: [0, 0.95, -2] });
+const rigJson = JSON.stringify({
+  root: 'world',
+  rootScale: 1,
+  rootOffset: [0, 0, 0],
+});
 
 /**
  * The demo avatar, carried in the project so the fusion app shows something without a network or a

@@ -3020,7 +3020,7 @@
               1,
               [
                 10,
-                "{\"rootScale\":1,\"rootOffset\":[0,0.95,-2]}"
+                "{\"root\":\"world\",\"rootScale\":1,\"rootOffset\":[0,0,0]}"
               ]
             ]
           },
@@ -30444,7 +30444,7 @@
               1,
               [
                 10,
-                "{\"rootScale\":1,\"rootOffset\":[0,0.95,-2]}"
+                "{\"root\":\"world\",\"rootScale\":1,\"rootOffset\":[0,0,0]}"
               ]
             ]
           },
