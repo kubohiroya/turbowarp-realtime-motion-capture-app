@@ -12,7 +12,7 @@
 
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
-import { gunzipSync, gzipSync } from 'node:zlib';
+import { constants, gunzipSync, gzipSync } from 'node:zlib';
 import { evaluate, formatMetrics } from '../src/metrics.ts';
 import { replaySession } from '../src/replay.ts';
 import {
@@ -122,8 +122,11 @@ function readImplementation(
 /** Reads a session, unpacking it when it is a finished recording from a venue. */
 async function readSession(path: string): Promise<Session> {
   const bytes = await readFile(path);
+  // A take still running, or one a crash cut short, has no trailer; read it as far as it got.
   const text = path.endsWith('.gz')
-    ? gunzipSync(bytes).toString('utf8')
+    ? gunzipSync(bytes, { finishFlush: constants.Z_SYNC_FLUSH }).toString(
+        'utf8',
+      )
     : bytes.toString('utf8');
   const parsed = parseSession(text);
   if (!parsed.ok) throw new Error(`${path}: ${parsed.reason}`);
