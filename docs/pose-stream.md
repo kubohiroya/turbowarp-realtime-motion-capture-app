@@ -97,5 +97,9 @@ fusion appの「動作状況を見る」は、カメラごとの受信件数、�
     `__TWMP_POSE_MODEL__`に置くこと、ホストがtoken付きの要求にだけ`model.json`とweightを返すこと
     （無ければ401）を確認した。`embedded`では、ページがモデル本体とweight 3つを持ち、ホストは配信しない
     ことを確認した。
+  - 拡張0.6.0を埋め込んだ`local`のcamera appで、ページから姿勢推定のpipelineを開始し、WebGPUを初期化した
+    うえで、モデルを会場のホストの`model.json`とweight 3つだけから読み込み（TF Hubへの要求は無し）、
+    カメラの取得まで進むことを確認した（ブラウザペインはカメラを許可しないため、そこで
+    `camera-unavailable`で止まる）。
   - 単体バイナリへの同梱（`build:binary`）は、この環境にBunが無いため未確認。
 - 未確認：実カメラでの推論と精度、実際のFPSと推論時間、別PC間の帯域とbackpressure。
