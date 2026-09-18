@@ -159,7 +159,7 @@ describe('a recording written while it is taken', () => {
     const { replay, files, taking } = setup();
     replay.startRecording(JSON.stringify(configuration));
     await settle();
-    expect(taking()).toMatch(/^taking-.*\.jsonl$/u);
+    expect(taking()).toMatch(/^taking-.*\.jsonl\.gz$/u);
     expect(linesOf(files.get(taking()) ?? '')[0]).toMatchObject({
       type: 'header',
       version: 2,
@@ -549,7 +549,7 @@ describe('recording names', () => {
 
   it('names a take being written after the time it started', () => {
     expect(workingFileName(1_789_000_000_000_000)).toMatch(
-      /^taking-\d{4}-\d{2}-\d{2}T[\d-]+\.jsonl$/u,
+      /^taking-\d{4}-\d{2}-\d{2}T[\d-]+\.jsonl\.gz$/u,
     );
   });
 });

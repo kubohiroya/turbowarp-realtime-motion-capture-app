@@ -2,11 +2,11 @@
  * How long a recording can run, measured rather than guessed (#36, DEBUG_POSE_REPLAY).
  *
  * A venue take is minutes long, and what stops it is not obvious from the code: the frames go over
- * HTTP to the venue host, land in a file, and are compressed when the take ends. This drives that
+ * HTTP to the venue host and into a compression stream the host keeps open for the take. This drives that
  * path with frames shaped exactly as the camera app sends them — full precision coordinates, COCO-17,
  * the pose frame's own envelope — and reports what it cost: how long an append takes, how fast the
- * file grows, how long the compression and the read back take, and where the host's size limit lands
- * in minutes.
+ * file grows on disk, how long finishing and reading back take, and where the host's size limit
+ * lands in minutes.
  *
  * It measures the recording path, not the cameras: nothing here runs MoveNet or opens a camera, so
  * the inference cost and the timing of real hardware are not in these figures. What is in them is
@@ -192,7 +192,7 @@ async function main(argv: readonly string[]): Promise<number> {
   const token = new URL(host.url).searchParams.get('token') ?? '';
   const route = (query: string) =>
     `${host.origin}/recordings?token=${token}${query}`;
-  const working = 'measure-taking.jsonl';
+  const working = 'measure-taking.jsonl.gz';
   const finished = 'measure-take.jsonl.gz';
 
   const random = seeded(1);
@@ -236,6 +236,7 @@ async function main(argv: readonly string[]): Promise<number> {
 
   let written = 0;
   let refusedAt = 0;
+  let rawBytes = headerLine.length;
   for (let index = 0; index < frameCount; index += 1) {
     const camera = index % options.cameras;
     const step = Math.floor(index / options.cameras);
@@ -254,10 +255,8 @@ async function main(argv: readonly string[]): Promise<number> {
     });
     lines.push(line);
     if (lines.length >= options.batch) {
-      const answer = await post(
-        `&name=${working}&mode=append`,
-        `${lines.join('\n')}\n`,
-      );
+      const body = `${lines.join('\n')}\n`;
+      const answer = await post(`&name=${working}&mode=append`, body);
       appendTimes.push(answer.took);
       // The host refuses the batch that would pass its limit: the take stops there, as it does in
       // the app, and everything already written stays.
@@ -266,17 +265,19 @@ async function main(argv: readonly string[]): Promise<number> {
         break;
       }
       written += lines.length;
+      rawBytes += body.length;
       lines = [];
     }
   }
   if (refusedAt === 0 && lines.length > 0) {
-    const answer = await post(
-      `&name=${working}&mode=append`,
-      `${lines.join('\n')}\n`,
-    );
+    const body = `${lines.join('\n')}\n`;
+    const answer = await post(`&name=${working}&mode=append`, body);
     appendTimes.push(answer.took);
     if (answer.status === 413) refusedAt = written;
-    else written += lines.length;
+    else {
+      written += lines.length;
+      rawBytes += body.length;
+    }
   }
   const writeSeconds = (performance.now() - wallStart) / 1000;
   const onDisk = (await stat(join(recordings, working))).size;
@@ -302,10 +303,12 @@ async function main(argv: readonly string[]): Promise<number> {
   }
 
   const sorted = [...appendTimes].sort((left, right) => left - right);
-  const perFrame = onDisk / written;
+  const perFrame = rawBytes / written;
+  const perFrameOnDisk = onDisk / written;
   const framesPerSecond = options.cameras * options.fps;
+  // The host counts what the disk holds, which is the compressed size.
   const limitMinutes =
-    MAXIMUM_RECORDING_BYTES / perFrame / framesPerSecond / 60;
+    MAXIMUM_RECORDING_BYTES / perFrameOnDisk / framesPerSecond / 60;
   const report = {
     cameras: options.cameras,
     fps: options.fps,
@@ -317,15 +320,15 @@ async function main(argv: readonly string[]): Promise<number> {
     stoppedByLimit: refusedAt > 0,
     eventsReadBack: parsed.session.events.length,
     bytesPerFrame: Math.round(perFrame),
-    uncompressedMB: Math.round(megabytes(onDisk) * 100) / 100,
+    uncompressedMB: Math.round(megabytes(rawBytes) * 100) / 100,
     compressedMB: Math.round(megabytes(compressed) * 100) / 100,
-    ratio: Math.round((onDisk / compressed) * 10) / 10,
+    ratio: Math.round((rawBytes / compressed) * 10) / 10,
     appends: appendTimes.length,
     appendMedianMs: milliseconds(quantile(sorted, 0.5)),
     appendP95Ms: milliseconds(quantile(sorted, 0.95)),
     appendMaxMs: milliseconds(sorted[sorted.length - 1] ?? 0),
     writeSeconds: Math.round(writeSeconds * 10) / 10,
-    compressMs: Math.round(compressMs),
+    finishMs: Math.round(compressMs),
     readMs: Math.round(readMs),
     parseMs: Math.round(parseMs),
     parsedHeapMB: Math.round(megabytes(Math.max(0, parsedHeap)) * 10) / 10,
@@ -339,10 +342,10 @@ async function main(argv: readonly string[]): Promise<number> {
       [
         `${report.cameras} cameras x ${report.fps} fps x ${report.persons} persons${report.digits > 0 ? ` rounded to ${report.digits} decimals` : ''}, ${report.minutes} minutes of movement`,
         `  frames         ${report.frames} written of ${report.asked} asked${report.stoppedByLimit ? ' (the host stopped the take at its limit)' : ''}, ${report.eventsReadBack} read back`,
-        `  size           ${report.bytesPerFrame} B/frame, ${report.uncompressedMB} MB written, ${report.compressedMB} MB kept (${report.ratio}x)`,
+        `  size           ${report.bytesPerFrame} B/frame, ${report.uncompressedMB} MB of lines, ${report.compressedMB} MB on disk (${report.ratio}x)`,
         `  append         ${report.appends} requests, median ${report.appendMedianMs} ms, p95 ${report.appendP95Ms} ms, max ${report.appendMaxMs} ms`,
         `  writing        ${report.writeSeconds} s of wall clock for ${report.minutes} minutes of movement`,
-        `  finishing      ${report.compressMs} ms to compress`,
+        `  finishing      ${report.finishMs} ms (the take was compressed as it ran)`,
         `  reading back   ${report.readMs} ms to fetch, ${report.parseMs} ms to parse, ${report.parsedHeapMB} MB held`,
         `  size limit     ${report.limitMinutes} minutes at this rate (${Math.round(megabytes(MAXIMUM_RECORDING_BYTES))} MB)`,
       ].join('\n'),

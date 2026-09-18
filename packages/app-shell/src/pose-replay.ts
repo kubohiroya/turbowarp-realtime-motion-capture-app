@@ -20,7 +20,8 @@
  * JSON object per line: a header, then the frames and measurements in the order they happened. That
  * is what lets a take be written while it is being taken — the page holds a few lines rather than the
  * whole session, and a recording interrupted by a crash or a closed lid keeps the part that was
- * taken. The host compresses it when it is finished, which is about a sixth of the size.
+ * taken. The host writes it into a compression stream as it arrives, so the disk holds about a third
+ * of the raw size from the first frame on, and finishing a take is a rename.
  *
  * Version 1 — a single JSON document — is still read, so recordings taken before this still replay.
  */
@@ -52,7 +53,7 @@ export interface RecordingStorePort {
   start(name: string, line: string): Promise<void>;
   /** Adds lines to a recording that is being taken. */
   append(name: string, lines: string): Promise<void>;
-  /** Compresses the finished recording under its final name and removes the working one. */
+  /** Closes the take's compression stream and gives it its final name. */
   finish(name: string, to: string): Promise<void>;
 }
 
@@ -751,7 +752,7 @@ export function workingFileName(pageTimeUs: number): string {
     .toISOString()
     .replace(/[:.]/gu, '-')
     .replace(/Z$/u, '');
-  return `taking-${stamp}.jsonl`;
+  return `taking-${stamp}.jsonl.gz`;
 }
 
 /** A limit the operator left out, or typed as zero or nonsense, is no limit. */

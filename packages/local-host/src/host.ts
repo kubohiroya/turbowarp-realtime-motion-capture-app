@@ -193,6 +193,12 @@ async function serve(
 ): Promise<LocalHostResult> {
   let published: DslPublication | null = null;
   let host: LoopbackPreviewHost | undefined;
+  // Kept, rather than built inside the route table, so stopping the host closes the takes it is
+  // writing: a take left open would lose the lines still in its compressor.
+  const recordings =
+    options.recordingsDirectory === undefined
+      ? null
+      : createRecordingsRoute({ directory: options.recordingsDirectory });
 
   host = await createLoopbackPreviewHost({
     title: options.title,
@@ -203,13 +209,7 @@ async function serve(
       ...(lensCalibrationHtml === null
         ? {}
         : { [lensCalibrationPath]: () => htmlResponse(lensCalibrationHtml) }),
-      ...(options.recordingsDirectory === undefined
-        ? {}
-        : {
-            [recordingsPath]: createRecordingsRoute({
-              directory: options.recordingsDirectory,
-            }),
-          }),
+      ...(recordings === null ? {} : { [recordingsPath]: recordings }),
     },
     /**
      * The host does not flush the event stream until it writes, so a page that connects before any
@@ -253,6 +253,7 @@ async function serve(
         rechecks?.cancel();
         await watcher?.close();
         await host?.close();
+        await recordings?.close();
         await lock.release();
       },
     },
