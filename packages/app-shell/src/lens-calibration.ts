@@ -179,14 +179,14 @@ const chooserLabels: Readonly<Record<ShellLocale, ChooserLabels>> = {
   },
 };
 
-export interface FileChooserOptions {
+export interface FileChooserOptions<T = string> {
   readonly document: Document;
   readonly mount: HTMLElement;
   readonly locale: ShellLocale;
   /** What the picker offers. Defaults to the lens calibration's own files. */
   readonly accept?: string;
-  /** How the chosen file becomes text. Defaults to reading it as text. */
-  readonly read?: (file: File) => Promise<string>;
+  /** What the chosen file becomes. Defaults to its text. */
+  readonly read?: (file: File) => Promise<T>;
 }
 
 /**
@@ -196,9 +196,9 @@ export interface FileChooserOptions {
  * file dialog only from the operator's own click. The dialog supplies that click. Closing the picker
  * without a file keeps the dialog up, so the operator decides to give up rather than the browser.
  */
-export function chooseTextFileWithDialog(
-  options: FileChooserOptions,
-): Promise<string | null> {
+export function chooseTextFileWithDialog<T = string>(
+  options: FileChooserOptions<T>,
+): Promise<T | null> {
   const { document, mount, locale } = options;
   const labels = chooserLabels[locale];
   return new Promise((resolve) => {
@@ -275,7 +275,7 @@ export function chooseTextFileWithDialog(
     });
 
     let settled = false;
-    const finish = (value: string | null) => {
+    const finish = (value: T | null) => {
       if (settled) return;
       settled = true;
       overlay.remove();
@@ -287,7 +287,9 @@ export function chooseTextFileWithDialog(
     input.addEventListener('change', () => {
       const file = input.files?.[0];
       if (file === undefined) return;
-      const read = options.read ?? ((chosen: File) => chosen.text());
+      const read =
+        options.read ??
+        ((chosen: File) => chosen.text() as unknown as Promise<T>);
       read(file).then(
         (text) => finish(text),
         () => finish(null),

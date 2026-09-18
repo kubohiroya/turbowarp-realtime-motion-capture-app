@@ -1,6 +1,6 @@
 import { createServer, type Server } from 'node:net';
 import { mkdtemp, readFile, stat, writeFile } from 'node:fs/promises';
-import { gunzipSync } from 'node:zlib';
+import { constants, gunzipSync } from 'node:zlib';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -54,6 +54,13 @@ async function start(
   if (!result.started) throw new Error(`host did not start: ${result.reason}`);
   running.push(result.host);
   return result.host;
+}
+
+/** What a reader sees after unpacking a compressed recording, as far as it goes. */
+async function linesFrom(response: Response): Promise<string> {
+  return gunzipSync(Buffer.from(await response.arrayBuffer()), {
+    finishFlush: constants.Z_SYNC_FLUSH,
+  }).toString('utf8');
 }
 
 /** The token travels in the query, as it does for every other route. */
@@ -250,7 +257,8 @@ describe('a recording written while it is taken', () => {
       .join('');
     const running = await fetch(route(host, taking));
     expect(running.status).toBe(200);
-    expect(await running.text()).toBe(expected);
+    expect(running.headers.get('content-type')).toBe('application/gzip');
+    expect(await linesFrom(running)).toBe(expected);
 
     const finished = await post(
       host,
@@ -269,7 +277,7 @@ describe('a recording written while it is taken', () => {
       ).toString('utf8'),
     ).toBe(expected);
     expect(
-      await (await fetch(route(host, '&name=walk-1.jsonl.gz'))).text(),
+      await linesFrom(await fetch(route(host, '&name=walk-1.jsonl.gz'))),
     ).toBe(expected);
 
     const listed = (await (await fetch(route(host))).json()) as {
@@ -293,9 +301,10 @@ describe('a recording written while it is taken', () => {
     expect(() => gunzipSync(bytes)).toThrow();
     await writeFile(join(recordingsDirectory, 'cut.jsonl.gz'), bytes);
 
+    // Served as stored; the reader unpacks it as far as it goes.
     const read = await fetch(route(host, '&name=cut.jsonl.gz'));
     expect(read.status).toBe(200);
-    expect(await read.text()).toBe(
+    expect(await linesFrom(read)).toBe(
       `${header}\n${frameLine(1)}\n${frameLine(2)}\n`,
     );
   });
@@ -385,9 +394,9 @@ describe('a recording written while it is taken', () => {
     const read = await recordings(
       new Request('http://host/recordings?name=taking.jsonl.gz'),
     );
-    expect((await read.text()).startsWith(`${header}\n${frameLine(0)}\n`)).toBe(
-      true,
-    );
+    expect(
+      (await linesFrom(read)).startsWith(`${header}\n${frameLine(0)}\n`),
+    ).toBe(true);
     await recordings.close();
   });
 

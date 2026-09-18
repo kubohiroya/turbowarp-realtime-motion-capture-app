@@ -21,7 +21,7 @@ import { PoseMeter, createBrowserPoseMeterHost } from './pose-meter.js';
 import {
   PoseReplay,
   createBrowserRecordingStore,
-  readRecordingFile,
+  recordingFileSource,
   RECORDING_FILE_ACCEPT,
   saveTextFileInBrowser,
 } from './pose-replay.js';
@@ -93,7 +93,7 @@ function createPoseReplayHost(locale: ShellLocale) {
             mount: document.body,
             locale,
             accept: RECORDING_FILE_ACCEPT,
-            read: readRecordingFile,
+            read: recordingFileSource,
           }),
     saveFile: saveTextFileInBrowser,
   };

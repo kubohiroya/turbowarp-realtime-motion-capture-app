@@ -20,18 +20,11 @@
  * pass over the recording to compress it, because it was compressed as it was taken.
  */
 
-import { createWriteStream, type WriteStream } from 'node:fs';
-import {
-  appendFile,
-  mkdir,
-  readdir,
-  readFile,
-  rename,
-  rm,
-  stat,
-} from 'node:fs/promises';
+import { createReadStream, createWriteStream, type WriteStream } from 'node:fs';
+import { appendFile, mkdir, readdir, rename, rm, stat } from 'node:fs/promises';
 import { join } from 'node:path';
-import { constants, createGzip, gunzipSync, type Gzip } from 'node:zlib';
+import { Readable } from 'node:stream';
+import { constants, createGzip, type Gzip } from 'node:zlib';
 
 /** Path the recordings are served from, next to the application on the same origin. */
 export const recordingsPath = '/recordings';
@@ -158,19 +151,6 @@ async function closeTake(take: OpenTake): Promise<void> {
   });
 }
 
-/**
- * Reads a recording's lines, whether or not the take that wrote it was finished.
- *
- * A take still running, or one a crash cut short, has no trailer: `Z_SYNC_FLUSH` tells the
- * decompressor to hand back everything up to the last flush instead of refusing the file for ending
- * early. That is the whole point of flushing as the take runs.
- */
-function linesOf(bytes: Buffer): string {
-  return gunzipSync(bytes, { finishFlush: constants.Z_SYNC_FLUSH }).toString(
-    'utf8',
-  );
-}
-
 export interface RecordingsRoute {
   (request: Request): Promise<Response>;
   /** Closes every take still being written. Called when the host stops. */
@@ -188,8 +168,8 @@ export interface RecordingStoreOptions {
 /**
  * The `/recordings` route.
  *
- * `GET` without a name lists what is there; `GET` with one returns its lines, unpacked here so a
- * take that is still running or was cut short reads as far as it got. `POST` takes a recording as it
+ * `GET` without a name lists what is there; `GET` with one streams the file as it is stored, and the
+ * reader unpacks a compressed one. `POST` takes a recording as it
  * runs: `mode=start` opens the compression stream with the header line, `mode=append` adds lines,
  * and `mode=finish` closes the stream and renames the file to its final name. `PUT` writes a whole
  * uncompressed recording at once. `DELETE` removes one. The directory is created on the first write
@@ -228,26 +208,27 @@ export function createRecordingsRoute(
       return json(200, { recordings: await list(directory) });
     }
     if (request.method === 'GET') {
-      const bytes = await readFile(join(directory, name as string)).catch(
-        () => null,
-      );
-      if (bytes === null) return json(404, { error: 'not-found', name });
-      let text: string;
-      try {
-        text = (name as string).endsWith('.gz')
-          ? linesOf(bytes)
-          : bytes.toString('utf8');
-      } catch {
-        return json(422, { error: 'unreadable', name });
-      }
-      return new Response(text, {
-        headers: {
-          'Content-Type': (name as string).endsWith('.json')
-            ? 'application/json; charset=utf-8'
-            : 'application/x-ndjson; charset=utf-8',
-          'Cache-Control': 'no-store',
+      const path = join(directory, name as string);
+      const info = await stat(path).catch(() => null);
+      if (!info?.isFile()) return json(404, { error: 'not-found', name });
+      // Served as it is stored, and streamed from the disk: a long take is hundreds of megabytes of
+      // lines, and neither this process nor the page should hold them all at once. A compressed
+      // recording is unpacked by the reader, which is also what lets it read a take that is still
+      // being written, or one a crash cut short, as far as it got.
+      return new Response(
+        Readable.toWeb(createReadStream(path)) as ReadableStream<Uint8Array>,
+        {
+          headers: {
+            'Content-Type': (name as string).endsWith('.gz')
+              ? 'application/gzip'
+              : (name as string).endsWith('.json')
+                ? 'application/json; charset=utf-8'
+                : 'application/x-ndjson; charset=utf-8',
+            'Content-Length': String(info.size),
+            'Cache-Control': 'no-store',
+          },
         },
-      });
+      );
     }
     if (request.method === 'POST') {
       if (name === null) return json(400, { error: 'name-required' });

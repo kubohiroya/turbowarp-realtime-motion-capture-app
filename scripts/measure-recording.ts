@@ -22,6 +22,7 @@ import { createServer } from 'node:net';
 import { mkdtemp, rm, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { constants, gunzipSync } from 'node:zlib';
 
 import { startLocalHost } from '../packages/local-host/src/host.ts';
 import { parseSession } from '../packages/pose-3d-service/src/session.ts';
@@ -288,7 +289,11 @@ async function main(argv: readonly string[]): Promise<number> {
   const compressed = (await stat(join(recordings, finished))).size;
 
   const readAt = performance.now();
-  const text = await (await fetch(route(`&name=${finished}`))).text();
+  // Served as stored; unpacked here, as the page does with its own decompressor.
+  const text = gunzipSync(
+    Buffer.from(await (await fetch(route(`&name=${finished}`))).arrayBuffer()),
+    { finishFlush: constants.Z_SYNC_FLUSH },
+  ).toString('utf8');
   const readMs = performance.now() - readAt;
   // Indicative only: the collector may run between the two readings, so a fall is reported as zero.
   const beforeParse = process.memoryUsage().heapUsed;
