@@ -248,6 +248,13 @@ pidは再利用されうるので、生死だけでは足りません。**lock�
 ポートを用意せずに全分岐を動かせます。既定の実装そのものは、実際にポートをlistenするテストで
 確認します。
 
+テストは会場のアプリと干渉しません。どのテストも、空いているポートと、テストごとに作る一時ディレクトリの
+run lock・録画置き場を使います（`runLocalHostCli`と`startLocalHost`の`lockDirectory`／
+`recordingsDirectory`）。そのため、同じPCでカメラアプリが既定のポートとrun lockで動いていても、
+`pnpm check`は成功し、動いているアプリのlockを読むことも書き換えることもありません
+（`packages/local-host/tests/cli.test.ts`の「isolation from an application the operator has running」）。
+会場で動くアプリは、これまでどおり固定のポートと既定のrun lockを使います。
+
 ### 運用者による上書き
 
 会場のPCで別のソフトウェアと衝突する可能性はあるため、CLIフラグか環境変数での上書き経路は用意
