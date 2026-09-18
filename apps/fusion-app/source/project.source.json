@@ -132,6 +132,22 @@
           "avatar audience axis",
           ""
         ],
+        "variable:performance-dsl": [
+          "performance DSL",
+          ""
+        ],
+        "variable:performance-dsl-draft": [
+          "performance DSL draft",
+          ""
+        ],
+        "variable:avatar-start-slot": [
+          "avatar start slot",
+          0
+        ],
+        "variable:avatar-end-slot": [
+          "avatar end slot",
+          0
+        ],
         "variable:replay-running": [
           "replay running",
           "false"
@@ -5845,12 +5861,12 @@
         },
         "s4b2": {
           "opcode": "turbowarpaframe_setAttribute",
-          "next": null,
+          "next": "s4b3",
           "parent": "s4b1",
           "inputs": {
             "SELECTOR": [
               3,
-              "s4b3",
+              "s4b4",
               [
                 10,
                 ""
@@ -5875,7 +5891,7 @@
           "shadow": false,
           "topLevel": false
         },
-        "s4b3": {
+        "s4b4": {
           "opcode": "operator_join",
           "next": null,
           "parent": "s4b2",
@@ -5889,7 +5905,7 @@
             ],
             "STRING2": [
               3,
-              "s4b4",
+              "s4b5",
               [
                 10,
                 ""
@@ -5900,11 +5916,1171 @@
           "shadow": false,
           "topLevel": false
         },
-        "s4b4": {
+        "s4b5": {
           "opcode": "turbowarpaframe_eventTargetId",
           "next": null,
-          "parent": "s4b3",
+          "parent": "s4b4",
           "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b3": {
+          "opcode": "control_if",
+          "next": null,
+          "parent": "s4b2",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s4b6"
+            ],
+            "SUBSTACK": [
+              2,
+              "s4b8"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b6": {
+          "opcode": "operator_not",
+          "next": null,
+          "parent": "s4b3",
+          "inputs": {
+            "OPERAND": [
+              2,
+              "s4b7"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b7": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s4b6",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              [
+                12,
+                "performance DSL",
+                "variable:performance-dsl"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b8": {
+          "opcode": "data_setvariableto",
+          "next": "s4b9",
+          "parent": "s4b3",
+          "inputs": {
+            "VALUE": [
+              1,
+              [
+                4,
+                "0"
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "avatar start slot",
+              "variable:avatar-start-slot"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b9": {
+          "opcode": "data_setvariableto",
+          "next": "s4b10",
+          "parent": "s4b8",
+          "inputs": {
+            "VALUE": [
+              1,
+              [
+                4,
+                "1"
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "avatar index",
+              "variable:avatar-index"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b10": {
+          "opcode": "control_repeat",
+          "next": "s4b11",
+          "parent": "s4b9",
+          "inputs": {
+            "TIMES": [
+              1,
+              [
+                4,
+                "6"
+              ]
+            ],
+            "SUBSTACK": [
+              2,
+              "s4b12"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b12": {
+          "opcode": "control_if",
+          "next": "s4b13",
+          "parent": "s4b10",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s4b14"
+            ],
+            "SUBSTACK": [
+              2,
+              "s4b17"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b14": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s4b12",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s4b15",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              3,
+              "s4b16",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b15": {
+          "opcode": "turbowarpaframe_eventTargetId",
+          "next": null,
+          "parent": "s4b14",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b16": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s4b14",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "avatar-"
+              ]
+            ],
+            "STRING2": [
+              3,
+              [
+                12,
+                "avatar index",
+                "variable:avatar-index"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b17": {
+          "opcode": "data_setvariableto",
+          "next": null,
+          "parent": "s4b12",
+          "inputs": {
+            "VALUE": [
+              3,
+              [
+                12,
+                "avatar index",
+                "variable:avatar-index"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "avatar start slot",
+              "variable:avatar-start-slot"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b13": {
+          "opcode": "data_changevariableby",
+          "next": null,
+          "parent": "s4b12",
+          "inputs": {
+            "VALUE": [
+              1,
+              [
+                4,
+                "1"
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "avatar index",
+              "variable:avatar-index"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b11": {
+          "opcode": "control_if",
+          "next": null,
+          "parent": "s4b10",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s4b18"
+            ],
+            "SUBSTACK": [
+              2,
+              "s4b20"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b18": {
+          "opcode": "operator_not",
+          "next": null,
+          "parent": "s4b11",
+          "inputs": {
+            "OPERAND": [
+              2,
+              "s4b19"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b19": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s4b18",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              [
+                12,
+                "avatar start slot",
+                "variable:avatar-start-slot"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                4,
+                "0"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b20": {
+          "opcode": "control_if",
+          "next": "s4b21",
+          "parent": "s4b11",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s4b22"
+            ],
+            "SUBSTACK": [
+              2,
+              "s4b31"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b22": {
+          "opcode": "operator_contains",
+          "next": null,
+          "parent": "s4b20",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s4b23",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s4b25",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b23": {
+          "opcode": "kubohiroyarealtimemotioncapture_avatarExpressionNames",
+          "next": null,
+          "parent": "s4b22",
+          "inputs": {
+            "PERSON_ID": [
+              3,
+              "s4b24",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b24": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s4b23",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "slot-"
+              ]
+            ],
+            "STRING2": [
+              3,
+              [
+                12,
+                "avatar start slot",
+                "variable:avatar-start-slot"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b25": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s4b22",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "\""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s4b26",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b26": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s4b25",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s4b27",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "\""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b27": {
+          "opcode": "realtimemotioncapturefusionshell_jsonValueAt",
+          "next": null,
+          "parent": "s4b26",
+          "inputs": {
+            "JSON": [
+              3,
+              [
+                12,
+                "performance DSL",
+                "variable:performance-dsl"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "PATH": [
+              3,
+              "s4b28",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b28": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s4b27",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "performers."
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s4b29",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b29": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s4b28",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s4b30",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                ".recognitionStartEffect"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b30": {
+          "opcode": "operator_subtract",
+          "next": null,
+          "parent": "s4b29",
+          "inputs": {
+            "NUM1": [
+              3,
+              [
+                12,
+                "avatar start slot",
+                "variable:avatar-start-slot"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "NUM2": [
+              1,
+              [
+                4,
+                "1"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b31": {
+          "opcode": "kubohiroyarealtimemotioncapture_setAvatarExpression",
+          "next": null,
+          "parent": "s4b20",
+          "inputs": {
+            "NAME": [
+              3,
+              "s4b32",
+              [
+                10,
+                ""
+              ]
+            ],
+            "WEIGHT": [
+              1,
+              [
+                4,
+                "1"
+              ]
+            ],
+            "PERSON_ID": [
+              3,
+              "s4b36",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b32": {
+          "opcode": "realtimemotioncapturefusionshell_jsonValueAt",
+          "next": null,
+          "parent": "s4b31",
+          "inputs": {
+            "JSON": [
+              3,
+              [
+                12,
+                "performance DSL",
+                "variable:performance-dsl"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "PATH": [
+              3,
+              "s4b33",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b33": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s4b32",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "performers."
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s4b34",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b34": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s4b33",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s4b35",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                ".recognitionStartEffect"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b35": {
+          "opcode": "operator_subtract",
+          "next": null,
+          "parent": "s4b34",
+          "inputs": {
+            "NUM1": [
+              3,
+              [
+                12,
+                "avatar start slot",
+                "variable:avatar-start-slot"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "NUM2": [
+              1,
+              [
+                4,
+                "1"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b36": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s4b31",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "slot-"
+              ]
+            ],
+            "STRING2": [
+              3,
+              [
+                12,
+                "avatar start slot",
+                "variable:avatar-start-slot"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b21": {
+          "opcode": "control_if",
+          "next": null,
+          "parent": "s4b20",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s4b37"
+            ],
+            "SUBSTACK": [
+              2,
+              "s4b46"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b37": {
+          "opcode": "operator_contains",
+          "next": null,
+          "parent": "s4b21",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s4b38",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s4b40",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b38": {
+          "opcode": "kubohiroyarealtimemotioncapture_avatarExpressionNames",
+          "next": null,
+          "parent": "s4b37",
+          "inputs": {
+            "PERSON_ID": [
+              3,
+              "s4b39",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b39": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s4b38",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "slot-"
+              ]
+            ],
+            "STRING2": [
+              3,
+              [
+                12,
+                "avatar start slot",
+                "variable:avatar-start-slot"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b40": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s4b37",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "\""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s4b41",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b41": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s4b40",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s4b42",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "\""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b42": {
+          "opcode": "realtimemotioncapturefusionshell_jsonValueAt",
+          "next": null,
+          "parent": "s4b41",
+          "inputs": {
+            "JSON": [
+              3,
+              [
+                12,
+                "performance DSL",
+                "variable:performance-dsl"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "PATH": [
+              3,
+              "s4b43",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b43": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s4b42",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "performers."
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s4b44",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b44": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s4b43",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s4b45",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                ".recognitionEndEffect"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b45": {
+          "opcode": "operator_subtract",
+          "next": null,
+          "parent": "s4b44",
+          "inputs": {
+            "NUM1": [
+              3,
+              [
+                12,
+                "avatar start slot",
+                "variable:avatar-start-slot"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "NUM2": [
+              1,
+              [
+                4,
+                "1"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b46": {
+          "opcode": "kubohiroyarealtimemotioncapture_setAvatarExpression",
+          "next": null,
+          "parent": "s4b21",
+          "inputs": {
+            "NAME": [
+              3,
+              "s4b47",
+              [
+                10,
+                ""
+              ]
+            ],
+            "WEIGHT": [
+              1,
+              [
+                4,
+                "0"
+              ]
+            ],
+            "PERSON_ID": [
+              3,
+              "s4b51",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b47": {
+          "opcode": "realtimemotioncapturefusionshell_jsonValueAt",
+          "next": null,
+          "parent": "s4b46",
+          "inputs": {
+            "JSON": [
+              3,
+              [
+                12,
+                "performance DSL",
+                "variable:performance-dsl"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "PATH": [
+              3,
+              "s4b48",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b48": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s4b47",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "performers."
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s4b49",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b49": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s4b48",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s4b50",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                ".recognitionEndEffect"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b50": {
+          "opcode": "operator_subtract",
+          "next": null,
+          "parent": "s4b49",
+          "inputs": {
+            "NUM1": [
+              3,
+              [
+                12,
+                "avatar start slot",
+                "variable:avatar-start-slot"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "NUM2": [
+              1,
+              [
+                4,
+                "1"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s4b51": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s4b46",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "slot-"
+              ]
+            ],
+            "STRING2": [
+              3,
+              [
+                12,
+                "avatar start slot",
+                "variable:avatar-start-slot"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
           "fields": {},
           "shadow": false,
           "topLevel": false
@@ -5933,16 +7109,16 @@
           "shadow": false,
           "topLevel": true,
           "x": 2400,
-          "y": 248
+          "y": 448
         },
         "s5b2": {
           "opcode": "turbowarpaframe_setAttribute",
-          "next": null,
+          "next": "s5b3",
           "parent": "s5b1",
           "inputs": {
             "SELECTOR": [
               3,
-              "s5b3",
+              "s5b4",
               [
                 10,
                 ""
@@ -5967,7 +7143,7 @@
           "shadow": false,
           "topLevel": false
         },
-        "s5b3": {
+        "s5b4": {
           "opcode": "operator_join",
           "next": null,
           "parent": "s5b2",
@@ -5981,7 +7157,7 @@
             ],
             "STRING2": [
               3,
-              "s5b4",
+              "s5b5",
               [
                 10,
                 ""
@@ -5992,11 +7168,1171 @@
           "shadow": false,
           "topLevel": false
         },
-        "s5b4": {
+        "s5b5": {
           "opcode": "turbowarpaframe_eventTargetId",
           "next": null,
-          "parent": "s5b3",
+          "parent": "s5b4",
           "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b3": {
+          "opcode": "control_if",
+          "next": null,
+          "parent": "s5b2",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b6"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b8"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b6": {
+          "opcode": "operator_not",
+          "next": null,
+          "parent": "s5b3",
+          "inputs": {
+            "OPERAND": [
+              2,
+              "s5b7"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b7": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s5b6",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              [
+                12,
+                "performance DSL",
+                "variable:performance-dsl"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b8": {
+          "opcode": "data_setvariableto",
+          "next": "s5b9",
+          "parent": "s5b3",
+          "inputs": {
+            "VALUE": [
+              1,
+              [
+                4,
+                "0"
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "avatar end slot",
+              "variable:avatar-end-slot"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b9": {
+          "opcode": "data_setvariableto",
+          "next": "s5b10",
+          "parent": "s5b8",
+          "inputs": {
+            "VALUE": [
+              1,
+              [
+                4,
+                "1"
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "avatar index",
+              "variable:avatar-index"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b10": {
+          "opcode": "control_repeat",
+          "next": "s5b11",
+          "parent": "s5b9",
+          "inputs": {
+            "TIMES": [
+              1,
+              [
+                4,
+                "6"
+              ]
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b12"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b12": {
+          "opcode": "control_if",
+          "next": "s5b13",
+          "parent": "s5b10",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b14"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b17"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b14": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s5b12",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s5b15",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              3,
+              "s5b16",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b15": {
+          "opcode": "turbowarpaframe_eventTargetId",
+          "next": null,
+          "parent": "s5b14",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b16": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b14",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "avatar-"
+              ]
+            ],
+            "STRING2": [
+              3,
+              [
+                12,
+                "avatar index",
+                "variable:avatar-index"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b17": {
+          "opcode": "data_setvariableto",
+          "next": null,
+          "parent": "s5b12",
+          "inputs": {
+            "VALUE": [
+              3,
+              [
+                12,
+                "avatar index",
+                "variable:avatar-index"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "avatar end slot",
+              "variable:avatar-end-slot"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b13": {
+          "opcode": "data_changevariableby",
+          "next": null,
+          "parent": "s5b12",
+          "inputs": {
+            "VALUE": [
+              1,
+              [
+                4,
+                "1"
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "avatar index",
+              "variable:avatar-index"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b11": {
+          "opcode": "control_if",
+          "next": null,
+          "parent": "s5b10",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b18"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b20"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b18": {
+          "opcode": "operator_not",
+          "next": null,
+          "parent": "s5b11",
+          "inputs": {
+            "OPERAND": [
+              2,
+              "s5b19"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b19": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s5b18",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              [
+                12,
+                "avatar end slot",
+                "variable:avatar-end-slot"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                4,
+                "0"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b20": {
+          "opcode": "control_if",
+          "next": "s5b21",
+          "parent": "s5b11",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b22"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b31"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b22": {
+          "opcode": "operator_contains",
+          "next": null,
+          "parent": "s5b20",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b23",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s5b25",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b23": {
+          "opcode": "kubohiroyarealtimemotioncapture_avatarExpressionNames",
+          "next": null,
+          "parent": "s5b22",
+          "inputs": {
+            "PERSON_ID": [
+              3,
+              "s5b24",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b24": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b23",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "slot-"
+              ]
+            ],
+            "STRING2": [
+              3,
+              [
+                12,
+                "avatar end slot",
+                "variable:avatar-end-slot"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b25": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b22",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "\""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s5b26",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b26": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b25",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b27",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "\""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b27": {
+          "opcode": "realtimemotioncapturefusionshell_jsonValueAt",
+          "next": null,
+          "parent": "s5b26",
+          "inputs": {
+            "JSON": [
+              3,
+              [
+                12,
+                "performance DSL",
+                "variable:performance-dsl"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "PATH": [
+              3,
+              "s5b28",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b28": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b27",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "performers."
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s5b29",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b29": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b28",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b30",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                ".recognitionStartEffect"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b30": {
+          "opcode": "operator_subtract",
+          "next": null,
+          "parent": "s5b29",
+          "inputs": {
+            "NUM1": [
+              3,
+              [
+                12,
+                "avatar end slot",
+                "variable:avatar-end-slot"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "NUM2": [
+              1,
+              [
+                4,
+                "1"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b31": {
+          "opcode": "kubohiroyarealtimemotioncapture_setAvatarExpression",
+          "next": null,
+          "parent": "s5b20",
+          "inputs": {
+            "NAME": [
+              3,
+              "s5b32",
+              [
+                10,
+                ""
+              ]
+            ],
+            "WEIGHT": [
+              1,
+              [
+                4,
+                "0"
+              ]
+            ],
+            "PERSON_ID": [
+              3,
+              "s5b36",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b32": {
+          "opcode": "realtimemotioncapturefusionshell_jsonValueAt",
+          "next": null,
+          "parent": "s5b31",
+          "inputs": {
+            "JSON": [
+              3,
+              [
+                12,
+                "performance DSL",
+                "variable:performance-dsl"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "PATH": [
+              3,
+              "s5b33",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b33": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b32",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "performers."
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s5b34",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b34": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b33",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b35",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                ".recognitionStartEffect"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b35": {
+          "opcode": "operator_subtract",
+          "next": null,
+          "parent": "s5b34",
+          "inputs": {
+            "NUM1": [
+              3,
+              [
+                12,
+                "avatar end slot",
+                "variable:avatar-end-slot"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "NUM2": [
+              1,
+              [
+                4,
+                "1"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b36": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b31",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "slot-"
+              ]
+            ],
+            "STRING2": [
+              3,
+              [
+                12,
+                "avatar end slot",
+                "variable:avatar-end-slot"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b21": {
+          "opcode": "control_if",
+          "next": null,
+          "parent": "s5b20",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s5b37"
+            ],
+            "SUBSTACK": [
+              2,
+              "s5b46"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b37": {
+          "opcode": "operator_contains",
+          "next": null,
+          "parent": "s5b21",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b38",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s5b40",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b38": {
+          "opcode": "kubohiroyarealtimemotioncapture_avatarExpressionNames",
+          "next": null,
+          "parent": "s5b37",
+          "inputs": {
+            "PERSON_ID": [
+              3,
+              "s5b39",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b39": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b38",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "slot-"
+              ]
+            ],
+            "STRING2": [
+              3,
+              [
+                12,
+                "avatar end slot",
+                "variable:avatar-end-slot"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b40": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b37",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "\""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s5b41",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b41": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b40",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b42",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "\""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b42": {
+          "opcode": "realtimemotioncapturefusionshell_jsonValueAt",
+          "next": null,
+          "parent": "s5b41",
+          "inputs": {
+            "JSON": [
+              3,
+              [
+                12,
+                "performance DSL",
+                "variable:performance-dsl"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "PATH": [
+              3,
+              "s5b43",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b43": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b42",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "performers."
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s5b44",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b44": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b43",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b45",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                ".recognitionEndEffect"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b45": {
+          "opcode": "operator_subtract",
+          "next": null,
+          "parent": "s5b44",
+          "inputs": {
+            "NUM1": [
+              3,
+              [
+                12,
+                "avatar end slot",
+                "variable:avatar-end-slot"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "NUM2": [
+              1,
+              [
+                4,
+                "1"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b46": {
+          "opcode": "kubohiroyarealtimemotioncapture_setAvatarExpression",
+          "next": null,
+          "parent": "s5b21",
+          "inputs": {
+            "NAME": [
+              3,
+              "s5b47",
+              [
+                10,
+                ""
+              ]
+            ],
+            "WEIGHT": [
+              1,
+              [
+                4,
+                "1"
+              ]
+            ],
+            "PERSON_ID": [
+              3,
+              "s5b51",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b47": {
+          "opcode": "realtimemotioncapturefusionshell_jsonValueAt",
+          "next": null,
+          "parent": "s5b46",
+          "inputs": {
+            "JSON": [
+              3,
+              [
+                12,
+                "performance DSL",
+                "variable:performance-dsl"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "PATH": [
+              3,
+              "s5b48",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b48": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b47",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "performers."
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s5b49",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b49": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b48",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s5b50",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                ".recognitionEndEffect"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b50": {
+          "opcode": "operator_subtract",
+          "next": null,
+          "parent": "s5b49",
+          "inputs": {
+            "NUM1": [
+              3,
+              [
+                12,
+                "avatar end slot",
+                "variable:avatar-end-slot"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "NUM2": [
+              1,
+              [
+                4,
+                "1"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s5b51": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s5b46",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "slot-"
+              ]
+            ],
+            "STRING2": [
+              3,
+              [
+                12,
+                "avatar end slot",
+                "variable:avatar-end-slot"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
           "fields": {},
           "shadow": false,
           "topLevel": false
@@ -11295,12 +13631,12 @@
         },
         "s11b2": {
           "opcode": "realtimemotioncapturefusionshell_showAppNotice",
-          "next": null,
+          "next": "s11b3",
           "parent": "s11b1",
           "inputs": {
             "MESSAGE": [
               3,
-              "s11b3",
+              "s11b6",
               [
                 10,
                 ""
@@ -11311,7 +13647,7 @@
           "shadow": false,
           "topLevel": false
         },
-        "s11b3": {
+        "s11b6": {
           "opcode": "operator_join",
           "next": null,
           "parent": "s11b2",
@@ -11325,7 +13661,7 @@
             ],
             "STRING2": [
               3,
-              "s11b4",
+              "s11b7",
               [
                 10,
                 ""
@@ -11336,12 +13672,554 @@
           "shadow": false,
           "topLevel": false
         },
-        "s11b4": {
+        "s11b7": {
           "opcode": "kubohiroyaturbowarptitlemenu_openedDslName",
           "next": null,
-          "parent": "s11b3",
+          "parent": "s11b6",
           "inputs": {},
           "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b3": {
+          "opcode": "data_setvariableto",
+          "next": "s11b4",
+          "parent": "s11b2",
+          "inputs": {
+            "VALUE": [
+              3,
+              "s11b8",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "performance DSL draft",
+              "variable:performance-dsl-draft"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b8": {
+          "opcode": "kubohiroyayamljson_renderJson",
+          "next": null,
+          "parent": "s11b3",
+          "inputs": {
+            "FRAGMENT": [
+              3,
+              "s11b9",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b9": {
+          "opcode": "kubohiroyayamljson_parseText",
+          "next": null,
+          "parent": "s11b8",
+          "inputs": {
+            "TEXT": [
+              3,
+              "s11b10",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {
+            "FORMAT": [
+              "auto",
+              null
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b10": {
+          "opcode": "kubohiroyaturbowarptitlemenu_openedDslSource",
+          "next": null,
+          "parent": "s11b9",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b4": {
+          "opcode": "control_if_else",
+          "next": "s11b5",
+          "parent": "s11b3",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s11b11"
+            ],
+            "SUBSTACK": [
+              2,
+              "s11b13"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s11b16"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b11": {
+          "opcode": "operator_not",
+          "next": null,
+          "parent": "s11b4",
+          "inputs": {
+            "OPERAND": [
+              2,
+              "s11b12"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b12": {
+          "opcode": "kubohiroyayamljson_lastParseSucceeded",
+          "next": null,
+          "parent": "s11b11",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b13": {
+          "opcode": "realtimemotioncapturefusionshell_showAppNotice",
+          "next": null,
+          "parent": "s11b4",
+          "inputs": {
+            "MESSAGE": [
+              3,
+              "s11b14",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b14": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s11b13",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "演出ファイルを読めませんでした: "
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s11b15",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b15": {
+          "opcode": "kubohiroyayamljson_lastParseDiagnostic",
+          "next": null,
+          "parent": "s11b14",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b16": {
+          "opcode": "control_if_else",
+          "next": null,
+          "parent": "s11b4",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s11b17"
+            ],
+            "SUBSTACK": [
+              2,
+              "s11b18"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s11b30"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b17": {
+          "opcode": "kubohiroyarealtimemotioncapture_protocolJsonValid",
+          "next": null,
+          "parent": "s11b16",
+          "inputs": {
+            "JSON": [
+              3,
+              [
+                12,
+                "performance DSL draft",
+                "variable:performance-dsl-draft"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b18": {
+          "opcode": "kubohiroyarealtimemotioncapture_decodeProtocolJson",
+          "next": "s11b19",
+          "parent": "s11b16",
+          "inputs": {
+            "JSON": [
+              3,
+              [
+                12,
+                "performance DSL draft",
+                "variable:performance-dsl-draft"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b19": {
+          "opcode": "control_if_else",
+          "next": null,
+          "parent": "s11b18",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s11b20"
+            ],
+            "SUBSTACK": [
+              2,
+              "s11b22"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s11b27"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b20": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s11b19",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s11b21",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "twrmc/performance-dsl"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b21": {
+          "opcode": "kubohiroyarealtimemotioncapture_protocolSchema",
+          "next": null,
+          "parent": "s11b20",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b22": {
+          "opcode": "data_setvariableto",
+          "next": "s11b23",
+          "parent": "s11b19",
+          "inputs": {
+            "VALUE": [
+              3,
+              [
+                12,
+                "performance DSL draft",
+                "variable:performance-dsl-draft"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "performance DSL",
+              "variable:performance-dsl"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b23": {
+          "opcode": "realtimemotioncapturefusionshell_showAppNotice",
+          "next": null,
+          "parent": "s11b22",
+          "inputs": {
+            "MESSAGE": [
+              3,
+              "s11b24",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b24": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s11b23",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "演出ファイルを使います。演者: "
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s11b25",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b25": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s11b24",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s11b26",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "人"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b26": {
+          "opcode": "realtimemotioncapturefusionshell_jsonValueAt",
+          "next": null,
+          "parent": "s11b25",
+          "inputs": {
+            "JSON": [
+              3,
+              [
+                12,
+                "performance DSL",
+                "variable:performance-dsl"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "PATH": [
+              1,
+              [
+                10,
+                "performers.length"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b27": {
+          "opcode": "realtimemotioncapturefusionshell_showAppNotice",
+          "next": null,
+          "parent": "s11b19",
+          "inputs": {
+            "MESSAGE": [
+              3,
+              "s11b28",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b28": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s11b27",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "演出ファイルではありません（twrmc/performance-dslではなく）: "
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s11b29",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b29": {
+          "opcode": "kubohiroyarealtimemotioncapture_protocolSchema",
+          "next": null,
+          "parent": "s11b28",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b30": {
+          "opcode": "realtimemotioncapturefusionshell_showAppNotice",
+          "next": null,
+          "parent": "s11b16",
+          "inputs": {
+            "MESSAGE": [
+              3,
+              "s11b31",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b31": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s11b30",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "演出ファイルが正しくありません: "
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s11b32",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b32": {
+          "opcode": "kubohiroyarealtimemotioncapture_protocolErrorMessage",
+          "next": null,
+          "parent": "s11b31",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s11b5": {
+          "opcode": "data_setvariableto",
+          "next": null,
+          "parent": "s11b4",
+          "inputs": {
+            "VALUE": [
+              1,
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "performance DSL draft",
+              "variable:performance-dsl-draft"
+            ]
+          },
           "shadow": false,
           "topLevel": false
         },

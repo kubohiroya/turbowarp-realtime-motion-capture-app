@@ -34,12 +34,16 @@ import { pose3dService } from './pose-3d.ts';
  * its slot holds a recognized person and hidden otherwise, on the recognition events the avatar
  * blocks emit.
  *
- * Connecting Performance DSL effects to expressions is not done here: the DSL is not loaded by the
- * fusion app yet.
+ * A Performance DSL the operator opens gives each avatar, in slot order, the recognition start and
+ * end effects of the performer at the same place in its list; an effect whose name is an
+ * expression of the VRM is shown with that expression. Slot order stands in for the performer
+ * until performers are identified (glow sticks).
  */
 
 export const aframe = 'turbowarpaframe';
 export const motionCapture = 'kubohiroyarealtimemotioncapture';
+const yamlJson = 'kubohiroyayamljson';
+const performanceDslSchema = 'twrmc/performance-dsl';
 
 export const avatarSlotCount = 6;
 /** How long a slot waits for its person before another person may take it. */
@@ -84,6 +88,14 @@ export const avatarReferences = () => ({
     'avatar audience axis',
     'variable:avatar-audience-axis',
   ),
+  dsl: namedReference('performance DSL', 'variable:performance-dsl'),
+  dslDraft: namedReference(
+    'performance DSL draft',
+    'variable:performance-dsl-draft',
+  ),
+  /** One set per recognition hat, since the two may run at once. */
+  startSlot: namedReference('avatar start slot', 'variable:avatar-start-slot'),
+  endSlot: namedReference('avatar end slot', 'variable:avatar-end-slot'),
 });
 
 export type AvatarReferences = ReturnType<typeof avatarReferences>;
@@ -94,6 +106,10 @@ export const avatarVariables = (r: AvatarReferences) => ({
   [r.stage.id]: [r.stage.name, ''],
   [r.upAxis.id]: [r.upAxis.name, ''],
   [r.audienceAxis.id]: [r.audienceAxis.name, ''],
+  [r.dsl.id]: [r.dsl.name, ''],
+  [r.dslDraft.id]: [r.dslDraft.name, ''],
+  [r.startSlot.id]: [r.startSlot.name, 0],
+  [r.endSlot.id]: [r.endSlot.name, 0],
 });
 
 const aframeBlock = (
@@ -357,12 +373,20 @@ export class AvatarSteps {
 /**
  * Shows an avatar when its person is recognized and hides it when they are lost. The avatar blocks
  * emit these events on the avatar's node, and the A-Frame hat matches them by the avatars' class.
+ * With a Performance DSL open, each also shows the performer's start or end effect as an
+ * expression, when the VRM has one of that name.
  */
-export function avatarVisibilityScripts(position: {
-  x: number;
-  y: number;
-}): Script[] {
-  const toggle = (event: string, visible: boolean, y: number) =>
+export function avatarVisibilityScripts(
+  shell: string,
+  r: AvatarReferences,
+  position: { x: number; y: number },
+): Script[] {
+  const toggle = (
+    event: string,
+    recognized: boolean,
+    slot: NamedReference,
+    y: number,
+  ) =>
     script({ x: position.x, y }, [
       aframeBlock('whenEventOnSelector', {
         TYPE: text(event),
@@ -373,12 +397,170 @@ export function avatarVisibilityScripts(position: {
           join(text('#'), reporter(aframeBlock('eventTargetId'))),
         ),
         NAME: text('visible'),
-        VALUE: text(String(visible)),
+        VALUE: text(String(recognized)),
       }),
+      ifThen(not(equals(variable(r.dsl), text(''))), [
+        ...effectSteps(shell, r, slot, recognized),
+      ]),
     ]);
   return [
-    toggle('twmp-recognition-start', true, position.y),
-    toggle('twmp-recognition-end', false, position.y + 200),
+    toggle('twmp-recognition-start', true, r.startSlot, position.y),
+    toggle('twmp-recognition-end', false, r.endSlot, position.y + 400),
+  ];
+}
+
+/**
+ * Sets the start effect to 1 and the end effect to 0 on recognition, and the other way round when
+ * the person is lost. The avatar is hidden when lost, so the end effect shows only if a later
+ * change keeps it visible for a while.
+ */
+function effectSteps(
+  shell: string,
+  r: AvatarReferences,
+  slot: NamedReference,
+  recognized: boolean,
+): BlockNode[] {
+  const target = () => reporter(aframeBlock('eventTargetId'));
+  const personId = () => numbered('slot-', slot);
+  const effect = (field: string) =>
+    reporter(
+      block(`${shell}_jsonValueAt`, {
+        JSON: variable(r.dsl),
+        PATH: reporter(
+          join(
+            text('performers.'),
+            reporter(
+              join(
+                reporter(
+                  block('operator_subtract', {
+                    NUM1: variable(slot),
+                    NUM2: number(1),
+                  }),
+                ),
+                text(`.${field}`),
+              ),
+            ),
+          ),
+        ),
+      }),
+    );
+  const express = (field: string, weight: number): BlockNode =>
+    ifThen(
+      block('operator_contains', {
+        STRING1: reporter(
+          avatarBlock('avatarExpressionNames', { PERSON_ID: personId() }),
+        ),
+        STRING2: reporter(
+          join(text('"'), reporter(join(effect(field), text('"')))),
+        ),
+      }),
+      [
+        avatarBlock('setAvatarExpression', {
+          NAME: effect(field),
+          WEIGHT: number(weight),
+          PERSON_ID: personId(),
+        }),
+      ],
+    );
+  return [
+    // The avatar's slot is the number in its node ID, avatar-N.
+    setVariable(slot, number(0)),
+    setVariable(r.index, number(1)),
+    repeat(number(avatarSlotCount), [
+      ifThen(equals(target(), numbered('avatar-', r.index)), [
+        setVariable(slot, variable(r.index)),
+      ]),
+      changeVariable(r.index, 1),
+    ]),
+    ifThen(not(equals(variable(slot), number(0))), [
+      express('recognitionStartEffect', recognized ? 1 : 0),
+      express('recognitionEndEffect', recognized ? 0 : 1),
+    ]),
+  ];
+}
+
+/**
+ * Reads the Performance DSL the operator opened: YAML or JSON, checked as `twrmc/performance-dsl`
+ * by the motion capture extension's contract codec. Only a valid one replaces the one in use.
+ */
+export function performanceDslLoadSteps(
+  shell: string,
+  titleMenu: string,
+  r: AvatarReferences,
+): BlockNode[] {
+  const notice = (label: string, detail: InputValue) =>
+    block(`${shell}_showAppNotice`, {
+      MESSAGE: reporter(join(text(label), detail)),
+    });
+  return [
+    setVariable(
+      r.dslDraft,
+      reporter(
+        block(`${yamlJson}_renderJson`, {
+          FRAGMENT: reporter(
+            block(
+              `${yamlJson}_parseText`,
+              { TEXT: reporter(block(`${titleMenu}_openedDslSource`)) },
+              { FORMAT: 'auto' },
+            ),
+          ),
+        }),
+      ),
+    ),
+    ifElse(
+      not(block(`${yamlJson}_lastParseSucceeded`)),
+      [
+        notice(
+          '演出ファイルを読めませんでした: ',
+          reporter(block(`${yamlJson}_lastParseDiagnostic`)),
+        ),
+      ],
+      [
+        // Validation reports a bad document; decoding one would throw.
+        ifElse(
+          avatarBlock('protocolJsonValid', { JSON: variable(r.dslDraft) }),
+          [
+            avatarBlock('decodeProtocolJson', { JSON: variable(r.dslDraft) }),
+            ifElse(
+              equals(
+                reporter(avatarBlock('protocolSchema')),
+                text(performanceDslSchema),
+              ),
+              [
+                setVariable(r.dsl, variable(r.dslDraft)),
+                notice(
+                  '演出ファイルを使います。演者: ',
+                  reporter(
+                    join(
+                      reporter(
+                        block(`${shell}_jsonValueAt`, {
+                          JSON: variable(r.dsl),
+                          PATH: text('performers.length'),
+                        }),
+                      ),
+                      text('人'),
+                    ),
+                  ),
+                ),
+              ],
+              [
+                notice(
+                  `演出ファイルではありません（${performanceDslSchema}ではなく）: `,
+                  reporter(avatarBlock('protocolSchema')),
+                ),
+              ],
+            ),
+          ],
+          [
+            notice(
+              '演出ファイルが正しくありません: ',
+              reporter(avatarBlock('protocolErrorMessage')),
+            ),
+          ],
+        ),
+      ],
+    ),
+    setVariable(r.dslDraft, text('')),
   ];
 }
 

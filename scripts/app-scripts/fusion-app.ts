@@ -67,6 +67,7 @@ import {
   avatarVisibilityScripts,
   chooseAvatarAxesSteps,
   chooseAvatarVrmSteps,
+  performanceDslLoadSteps,
 } from './avatar.ts';
 
 const shell = 'realtimemotioncapturefusionshell';
@@ -294,7 +295,7 @@ export const fusionAppScripts: readonly Script[] = [
   }),
 
   /** Shows each avatar while its person is recognized. */
-  ...avatarVisibilityScripts({ x: 2400, y: 48 }),
+  ...avatarVisibilityScripts(shell, avatarRefs, { x: 2400, y: 48 }),
 
   script({ x: 2400, y: 500 }, [
     block(
@@ -348,8 +349,8 @@ export const fusionAppScripts: readonly Script[] = [
   ]),
 
   /**
-   * A DSL is announced by the extension, not polled for. The source is read here so a later script
-   * can validate it; nothing consumes it yet.
+   * A DSL is announced by the extension, not polled for. A valid Performance DSL gives the avatars
+   * their effects (see avatarVisibilityScripts).
    */
   script({ x: 48, y: 480 }, [
     block(`${titleMenu}_whenDslSourceOpened`),
@@ -359,6 +360,7 @@ export const fusionAppScripts: readonly Script[] = [
         block(`${titleMenu}_openedDslName`),
       ),
     }),
+    ...performanceDslLoadSteps(shell, titleMenu, avatarRefs),
   ]),
 
   script({ x: 48, y: 660 }, [
