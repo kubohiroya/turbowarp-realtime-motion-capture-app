@@ -55,8 +55,8 @@ importers:
         specifier: 0.3.0
         version: 0.3.0(@kubohiroya/turbowarp-camera-source@0.13.0)
       '@kubohiroya/turbowarp-realtime-motion-capture':
-        specifier: 0.4.0
-        version: 0.4.0(@kubohiroya/turbowarp-aframe@0.4.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.13.0))(@kubohiroya/turbowarp-webrtc@0.4.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))
+        specifier: 0.5.0
+        version: 0.5.0(@kubohiroya/turbowarp-aframe@0.5.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.13.0))(@kubohiroya/turbowarp-webrtc@0.4.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))
       '@kubohiroya/turbowarp-time-space-sync':
         specifier: 0.2.0
         version: 0.2.0
@@ -73,8 +73,8 @@ importers:
   apps/fusion-app:
     devDependencies:
       '@kubohiroya/turbowarp-aframe':
-        specifier: 0.4.0
-        version: 0.4.0
+        specifier: 0.5.0
+        version: 0.5.0
       '@kubohiroya/turbowarp-asset-manager':
         specifier: 0.16.0
         version: 0.16.0
@@ -88,8 +88,8 @@ importers:
         specifier: 0.3.0
         version: 0.3.0(@kubohiroya/turbowarp-camera-source@0.13.0)
       '@kubohiroya/turbowarp-realtime-motion-capture':
-        specifier: 0.4.0
-        version: 0.4.0(@kubohiroya/turbowarp-aframe@0.4.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.13.0))(@kubohiroya/turbowarp-webrtc@0.4.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))
+        specifier: 0.5.0
+        version: 0.5.0(@kubohiroya/turbowarp-aframe@0.5.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.13.0))(@kubohiroya/turbowarp-webrtc@0.4.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))
       '@kubohiroya/turbowarp-time-space-sync':
         specifier: 0.2.0
         version: 0.2.0
@@ -115,8 +115,8 @@ importers:
         specifier: 0.4.0
         version: 0.4.0
       '@kubohiroya/turbowarp-realtime-motion-capture':
-        specifier: 0.4.0
-        version: 0.4.0(@kubohiroya/turbowarp-aframe@0.4.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.13.0))(@kubohiroya/turbowarp-webrtc@0.4.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))
+        specifier: 0.5.0
+        version: 0.5.0(@kubohiroya/turbowarp-aframe@0.5.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.13.0))(@kubohiroya/turbowarp-webrtc@0.4.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))
       '@kubohiroya/turbowarp-time-space-sync':
         specifier: 0.2.0
         version: 0.2.0
@@ -281,8 +281,8 @@ packages:
     engines: {node: '>=22.12.0'}
     hasBin: true
 
-  '@kubohiroya/turbowarp-aframe@0.4.0':
-    resolution: {integrity: sha512-HAWO9dSnQy0vUTGPIW1eHl2UZBv1uQ0u73XQyLhjm6/vF4TgoCShsbVxUphx54dSfo7WymFBNWVqTZfjiAGX5w==}
+  '@kubohiroya/turbowarp-aframe@0.5.0':
+    resolution: {integrity: sha512-N+ORS+/nSf5T5grrAFhoruWzVngqKIt7GQASh7381ZkDlNZpAXgvJaGNKfYcZdH2JpfYuMiJI/YBK1Ch7LKEaw==}
     engines: {node: '>=22.18.0'}
 
   '@kubohiroya/turbowarp-app-shell@0.2.0':
@@ -318,11 +318,11 @@ packages:
     resolution: {integrity: sha512-9s4yoRvfvs/Yoo7rx0TJFawBZv3cN+W9ABV8NCJQ1qgckzRlyAW1v2qMvpzPNogtP1N5ztYMAN1gkuJdbuPq/A==}
     engines: {node: '>=22'}
 
-  '@kubohiroya/turbowarp-realtime-motion-capture@0.4.0':
-    resolution: {integrity: sha512-gafesaqo4va3WNvMRWg0p9qqMUDZqmrvTMeDIzH+HWC0m8sQjHMwMjRlQ3HjR3EokSZvNd6QSBy2h3gdc6t4Dg==}
+  '@kubohiroya/turbowarp-realtime-motion-capture@0.5.0':
+    resolution: {integrity: sha512-vDxzTTj3GERwQBI+SZKTqGlGnHfTSzvung+PGzTBt0wqecdmAohV2bPLlexqNBPqT7tGZs1BKfXVayrN9yhRdw==}
     engines: {node: '>=22.18.0'}
     peerDependencies:
-      '@kubohiroya/turbowarp-aframe': 0.4.0
+      '@kubohiroya/turbowarp-aframe': 0.5.0
       '@kubohiroya/turbowarp-jsqr': 0.3.0
       '@kubohiroya/turbowarp-webrtc': 0.3.0
     peerDependenciesMeta:
@@ -1700,7 +1700,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@kubohiroya/turbowarp-aframe@0.4.0': {}
+  '@kubohiroya/turbowarp-aframe@0.5.0': {}
 
   '@kubohiroya/turbowarp-app-shell@0.2.0': {}
 
@@ -1720,7 +1720,7 @@ snapshots:
 
   '@kubohiroya/turbowarp-local-preview@0.1.1': {}
 
-  '@kubohiroya/turbowarp-realtime-motion-capture@0.4.0(@kubohiroya/turbowarp-aframe@0.4.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.13.0))(@kubohiroya/turbowarp-webrtc@0.4.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))':
+  '@kubohiroya/turbowarp-realtime-motion-capture@0.5.0(@kubohiroya/turbowarp-aframe@0.5.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.13.0))(@kubohiroya/turbowarp-webrtc@0.4.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))':
     dependencies:
       '@kubohiroya/turbowarp-camera-source': 0.7.0
       '@kubohiroya/turbowarp-time-space-sync': 0.1.0
@@ -1733,7 +1733,7 @@ snapshots:
       kalidokit: 1.1.5
       qrcode: 1.5.4
     optionalDependencies:
-      '@kubohiroya/turbowarp-aframe': 0.4.0
+      '@kubohiroya/turbowarp-aframe': 0.5.0
       '@kubohiroya/turbowarp-jsqr': 0.3.0(@kubohiroya/turbowarp-camera-source@0.13.0)
       '@kubohiroya/turbowarp-webrtc': 0.4.0
     transitivePeerDependencies:

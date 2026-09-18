@@ -7,12 +7,12 @@
     "check": "node ../../scripts/ensure-source-directories.ts fusion-app && sb3-toolchain check source"
   },
   "devDependencies": {
-    "@kubohiroya/turbowarp-aframe": "0.4.0",
+    "@kubohiroya/turbowarp-aframe": "0.5.0",
     "@kubohiroya/turbowarp-asset-manager": "0.16.0",
     "@kubohiroya/turbowarp-camera-source": "0.13.0",
     "@kubohiroya/turbowarp-diagnostic-overlay": "0.4.0",
     "@kubohiroya/turbowarp-jsqr": "0.3.0",
-    "@kubohiroya/turbowarp-realtime-motion-capture": "0.4.0",
+    "@kubohiroya/turbowarp-realtime-motion-capture": "0.5.0",
     "@kubohiroya/turbowarp-time-space-sync": "0.2.0",
     "@kubohiroya/turbowarp-title-menu": "0.2.2",
     "@kubohiroya/turbowarp-webrtc": "0.4.0",
