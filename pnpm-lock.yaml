@@ -114,6 +114,9 @@ importers:
 
   apps/local-app:
     devDependencies:
+      '@kubohiroya/turbowarp-aframe':
+        specifier: 0.5.0
+        version: 0.5.0
       '@kubohiroya/turbowarp-camera-source':
         specifier: 0.13.0
         version: 0.13.0
