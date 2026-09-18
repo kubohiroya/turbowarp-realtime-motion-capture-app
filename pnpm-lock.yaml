@@ -73,8 +73,8 @@ importers:
         specifier: 0.4.0
         version: 0.4.0
       '@kubohiroya/turbowarp-webrtc-qrcode-pairing':
-        specifier: 0.2.1
-        version: 0.2.1(@kubohiroya/turbowarp-camera-source@0.13.0)(@kubohiroya/turbowarp-jsqr@0.4.0(@kubohiroya/turbowarp-camera-source@0.13.0)(@types/emscripten@0.0.34))(@kubohiroya/turbowarp-webrtc@0.4.0)
+        specifier: 0.2.2
+        version: 0.2.2(@kubohiroya/turbowarp-camera-source@0.13.0)(@kubohiroya/turbowarp-jsqr@0.4.0(@kubohiroya/turbowarp-camera-source@0.13.0)(@types/emscripten@0.0.34))(@kubohiroya/turbowarp-webrtc@0.4.0)
 
   apps/fusion-app:
     devDependencies:
@@ -106,8 +106,8 @@ importers:
         specifier: 0.4.0
         version: 0.4.0
       '@kubohiroya/turbowarp-webrtc-qrcode-pairing':
-        specifier: 0.2.1
-        version: 0.2.1(@kubohiroya/turbowarp-camera-source@0.13.0)(@kubohiroya/turbowarp-jsqr@0.4.0(@kubohiroya/turbowarp-camera-source@0.13.0)(@types/emscripten@0.0.34))(@kubohiroya/turbowarp-webrtc@0.4.0)
+        specifier: 0.2.2
+        version: 0.2.2(@kubohiroya/turbowarp-camera-source@0.13.0)(@kubohiroya/turbowarp-jsqr@0.4.0(@kubohiroya/turbowarp-camera-source@0.13.0)(@types/emscripten@0.0.34))(@kubohiroya/turbowarp-webrtc@0.4.0)
       '@kubohiroya/turbowarp-yaml-json':
         specifier: 0.3.0
         version: 0.3.0
@@ -364,8 +364,8 @@ packages:
     resolution: {integrity: sha512-pMGQb328eJFrMf6J8CodSk9v46j5Twx15sKSu/RUox07ep8ci7YRrRl+BIz0Q+wtskVT50LISx1SBnnCCSxiPw==}
     engines: {node: '>=22'}
 
-  '@kubohiroya/turbowarp-webrtc-qrcode-pairing@0.2.1':
-    resolution: {integrity: sha512-hH2DzdzSEN57uAhHeojQkP+UXNR1ejij+MGZDSVL9JMpSE6d5jbzoNZB2h5moHJuGf/Lm6IkeXYDdEA0Xf/r7A==}
+  '@kubohiroya/turbowarp-webrtc-qrcode-pairing@0.2.2':
+    resolution: {integrity: sha512-yiCVySKt29rlOTw7rigq6G1CA88N1ESci25kZd+NPunjr3SgiyynxSwxzV9fm7csXOUeB0nA2BnbQvo0CBO4LQ==}
     engines: {node: '>=22.18.0'}
     peerDependencies:
       '@kubohiroya/turbowarp-camera-source': 0.5.0
@@ -1818,7 +1818,7 @@ snapshots:
     dependencies:
       '@kubohiroya/turbowarp-app-shell': 0.2.0
 
-  '@kubohiroya/turbowarp-webrtc-qrcode-pairing@0.2.1(@kubohiroya/turbowarp-camera-source@0.13.0)(@kubohiroya/turbowarp-jsqr@0.4.0(@kubohiroya/turbowarp-camera-source@0.13.0)(@types/emscripten@0.0.34))(@kubohiroya/turbowarp-webrtc@0.4.0)':
+  '@kubohiroya/turbowarp-webrtc-qrcode-pairing@0.2.2(@kubohiroya/turbowarp-camera-source@0.13.0)(@kubohiroya/turbowarp-jsqr@0.4.0(@kubohiroya/turbowarp-camera-source@0.13.0)(@types/emscripten@0.0.34))(@kubohiroya/turbowarp-webrtc@0.4.0)':
     dependencies:
       '@kubohiroya/qrcode-structured-append': 0.1.0
     optionalDependencies:

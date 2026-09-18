@@ -97,9 +97,9 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-webrtc-qrcode-pairing",
-        "version": "0.2.1",
+        "version": "0.2.2",
         "artifact": "dist/webrtc-qrcode-pairing.js",
-        "integrity": "sha256-xXAOT8qYzFb+FLV6RL5U6Po8cvH/ipvCRuwVc7K/sFE=",
+        "integrity": "sha256-FYAxUNWZDsmFJEwRn5QH6OdtgB5AnH/M4xFghUizdBQ=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyawebrtcqrcodepairing.manifest.json",

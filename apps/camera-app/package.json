@@ -14,6 +14,6 @@
     "@kubohiroya/turbowarp-time-space-sync": "0.2.0",
     "@kubohiroya/turbowarp-title-menu": "0.2.2",
     "@kubohiroya/turbowarp-webrtc": "0.4.0",
-    "@kubohiroya/turbowarp-webrtc-qrcode-pairing": "0.2.1"
+    "@kubohiroya/turbowarp-webrtc-qrcode-pairing": "0.2.2"
   }
 }
