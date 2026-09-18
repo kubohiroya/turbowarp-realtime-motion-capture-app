@@ -111,6 +111,9 @@ export const setVariable = (
 export const add = (left: InputValue, right: InputValue): BlockNode =>
   block('operator_add', { NUM1: left, NUM2: right });
 
+export const subtract = (left: InputValue, right: InputValue): BlockNode =>
+  block('operator_subtract', { NUM1: left, NUM2: right });
+
 export const modulo = (left: InputValue, right: InputValue): BlockNode =>
   block('operator_mod', { NUM1: left, NUM2: right });
 

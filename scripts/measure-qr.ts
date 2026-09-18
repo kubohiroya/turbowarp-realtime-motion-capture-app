@@ -5,23 +5,28 @@
  * off a phone held up to its camera. Neither image is a clean scan: the code is small in the frame,
  * blurred by focus and motion, washed out by a projector in a lit room, seen at an angle, and noisy.
  * This renders the code the way a camera would see it under those conditions and decodes it with the
- * same decoder the apps use (jsQR), with the code built by the same encoder and error correction
- * level the pairing extension uses (qrcode, level M). What it reports is the smallest size, in
- * pixels per module and in pixels across, at which each condition still reads.
+ * same decoder the apps use (zxing-cpp, which turbowarp-jsqr 0.4.0 wraps), with the codes built the
+ * way the pairing extension builds them: one Structured Append sequence per message, from
+ * `@kubohiroya/qrcode-structured-append`, capped at a QR version, level M. What it reports, per
+ * version cap, is how many codes a message takes and the smallest size, in pixels per module and in
+ * pixels across, at which each condition still reads one of them.
  *
  * It measures the decoder against a model of the optics, not a camera: a real lens, sensor and
  * projector are for `docs/qr-pairing.md`'s procedure. What this gives is the size to aim for.
  *
  *   node --experimental-strip-types scripts/measure-qr.ts
- *   node --experimental-strip-types scripts/measure-qr.ts --length 1457 --level M --parts 1,2,3,4
+ *   node --experimental-strip-types scripts/measure-qr.ts --length 1457 --level M --versions 15,20,40
  *
  * `--frame 1920x1080` for a 1080p camera, `--turn n` (degrees, default 5) and `--noise n` (fraction
  * of full scale, default 0.01) for the camera's own imperfections, `--clean` for the ideal condition
  * alone, `--json` for the figures.
  */
 
-import jsQR from 'jsqr';
-import QRCode from 'qrcode';
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+
+import { createStructuredAppend } from '@kubohiroya/qrcode-structured-append';
+import { prepareZXingModule, readBarcodes } from 'zxing-wasm/reader';
 
 type Level = 'L' | 'M' | 'Q' | 'H';
 
@@ -35,10 +40,16 @@ let WIDTH = 1280;
 let HEIGHT = 720;
 /** The pairing extension keeps the quiet zone, four modules each side. */
 const QUIET = 4;
-/** The envelope header each part carries, from the pairing extension's own accounting. */
-const ENVELOPE = 362;
+/**
+ * The header line a pairing message carries in front of the code (`twqr/2`): protocol, session,
+ * peers, kind, message ID, reply-to, timestamp, length and hash. About 300 characters.
+ */
+const HEADER =
+  'twqr/2\n{"sessionId":"00000000-0000-4000-8000-000000000000","senderPeerId":"fusion","targetPeerId":"camera-1","kind":"offer","messageId":"00000000-0000-4000-8000-000000000000.AAAAAAAAAAAA","replyTo":"","createdAt":1789000000000,"messageLength":1457,"messageHash":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}\n';
 
-function options(argv: readonly string[]) {
+function options(input: readonly string[]) {
+  // `pnpm run measure:qr -- --json` passes the `--` through.
+  const argv = input.filter((argument) => argument !== '--');
   const values: Record<string, string> = {};
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index]!;
@@ -60,13 +71,14 @@ function options(argv: readonly string[]) {
     // The camera's frame, and the two things every camera image has: a slight turn, and noise.
     frame: values['frame'] ?? '1280x720',
     turnDegrees: Number(values['turn'] ?? 5),
-    // About 2.5 grey levels: what a webcam's own processing leaves on a projected white area. jsQR's
-    // binarizer reads much more than this in a flat area as texture, so it is its own sweep.
+    // About 2.5 grey levels: what a webcam's own processing leaves on a projected white area. Raise it
+    // to see how much noise a dim venue, and a camera turning its gain up, costs.
     noise: Number(values['noise'] ?? 0.01),
-    parts: (values['parts'] ?? '1,2,3,4')
+    // The pairing extension caps offers at 15 and answers at 20; 40 is one code for the whole offer.
+    versions: (values['versions'] ?? '15,20,40')
       .split(',')
       .map(Number)
-      .filter((value) => value > 0),
+      .filter((value) => Number.isInteger(value) && value >= 1 && value <= 40),
     json: 'json' in values,
   };
 }
@@ -92,17 +104,15 @@ function seeded(seed: number): () => number {
   };
 }
 
-/** Text of a part's length, shaped like the envelope: JSON around a base64url payload. */
-function partText(length: number, random: () => number): string {
+/** A pairing message of the given code length: the header line, then a base64url-like code. */
+function messageText(length: number, random: () => number): string {
   const alphabet =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
-  const head = '{"protocol":"twqr/1","kind":"offer","partIndex":0,"payload":"';
-  const tail = '"}';
-  const body = Array.from(
-    { length: Math.max(1, length - head.length - tail.length) },
+  const code = Array.from(
+    { length: Math.max(1, length) },
     () => alphabet[Math.floor(random() * alphabet.length)],
   ).join('');
-  return `${head}${body}${tail}`;
+  return `${HEADER}${code}`;
 }
 
 /**
@@ -201,10 +211,35 @@ function blur(image: Float32Array, sigma: number): Float32Array {
   return pass(pass(image, true), false);
 }
 
-function decodes(
+/** Node has no ImageData; the decoder only reads these fields. */
+class ImageDataLike {
+  public readonly colorSpace = 'srgb';
+  public readonly data: Uint8ClampedArray;
+  public readonly width: number;
+  public readonly height: number;
+  public constructor(data: Uint8ClampedArray, width: number, height: number) {
+    this.data = data;
+    this.width = width;
+    this.height = height;
+  }
+}
+(globalThis as { ImageData?: unknown }).ImageData ??= ImageDataLike;
+
+const require = createRequire(import.meta.url);
+await prepareZXingModule({
+  overrides: {
+    wasmBinary: readFileSync(
+      require.resolve('zxing-wasm/reader/zxing_reader.wasm'),
+    ).buffer,
+  },
+  fireImmediately: true,
+});
+
+/** Whether the decoder reads the code as the expected symbol of the sequence, and how long it took. */
+async function decodes(
   image: Float32Array,
-  text: string,
-): { ok: boolean; ms: number } {
+  expected: { readonly index: number; readonly bytes: Uint8Array },
+): Promise<{ ok: boolean; ms: number }> {
   const rgba = new Uint8ClampedArray(WIDTH * HEIGHT * 4);
   for (let index = 0; index < image.length; index += 1) {
     const level = Math.round(Math.min(1, Math.max(0, image[index]!)) * 255);
@@ -214,8 +249,19 @@ function decodes(
     rgba[index * 4 + 3] = 255;
   }
   const at = performance.now();
-  const result = jsQR(rgba, WIDTH, HEIGHT);
-  return { ok: result?.data === text, ms: performance.now() - at };
+  // The same options turbowarp-jsqr reads camera frames with.
+  const [result] = await readBarcodes(
+    new ImageData(rgba, WIDTH, HEIGHT) as never,
+    { formats: ['QRCode'], tryHarder: true, maxNumberOfSymbols: 1 },
+  );
+  const ms = performance.now() - at;
+  const ok =
+    result !== undefined &&
+    result.isValid &&
+    result.sequenceIndex === expected.index &&
+    result.bytes.length === expected.bytes.length &&
+    result.bytes.every((byte, index) => byte === expected.bytes[index]);
+  return { ok, ms };
 }
 
 const PX_PER_MODULE = [2, 2.5, 3, 3.5, 4, 5, 6, 8];
@@ -229,43 +275,72 @@ for (const contrast of clean ? [1] : [1, 0.5, 0.25]) {
 }
 
 const random = seeded(1);
-const payload = settings.length - ENVELOPE;
+const message = messageText(settings.length, random);
 const report = [];
-for (const parts of settings.parts) {
-  const length =
-    parts === 1 ? settings.length : ENVELOPE + Math.ceil(payload / parts);
-  const text = partText(length, random);
-  const symbol = QRCode.create(text, { errorCorrectionLevel: settings.level });
-  const total = symbol.modules.size + QUIET * 2;
-  const rows = [];
+for (const maxVersion of settings.versions) {
+  const symbols = createStructuredAppend(message, {
+    level: settings.level,
+    maxVersion,
+  });
+  // The shares are balanced, so every code of a sequence has the same version; the first stands
+  // for them all.
+  const symbol = symbols[0]!;
+  const modules = {
+    size: symbol.size,
+    get: (row: number, column: number) => symbol.isDark(column, row),
+  };
+  const total = symbol.size + QUIET * 2;
+  const rows: (Condition & {
+    pxPerModule: number | null;
+    codeWidthPx: number | null;
+    sizesRead: number;
+    sizesTried: number;
+    readAt: number[];
+  })[] = [];
   const decodeTimes: number[] = [];
   for (const condition of CONDITIONS) {
-    // From the largest size that fits down, stopping at the first that fails: the answer is the
-    // smallest size below which nothing is tried, so every size above it read.
-    let smallest: number | null = null;
-    for (const px of [...PX_PER_MODULE].sort((left, right) => right - left)) {
+    // Every size that fits. A decoder can miss at one size and read at the next, so the sizes that
+    // read are kept, not only the smallest: the smallest says how small a code can get, the count
+    // how dependable that is.
+    const read: number[] = [];
+    const tried: number[] = [];
+    for (const px of PX_PER_MODULE) {
       if (total * px > HEIGHT * 0.95) continue;
-      const outcome = decodes(
-        render(symbol.modules, px, condition, random),
-        text,
+      tried.push(px);
+      const outcome = await decodes(
+        render(modules, px, condition, random),
+        symbol,
       );
       decodeTimes.push(outcome.ms);
-      if (!outcome.ok) break;
-      smallest = px;
+      if (outcome.ok) read.push(px);
     }
+    const smallest = read[0] ?? null;
     rows.push({
       ...condition,
       pxPerModule: smallest,
       codeWidthPx: smallest === null ? null : Math.round(smallest * total),
+      sizesRead: read.length,
+      sizesTried: tried.length,
+      readAt: read,
     });
   }
   decodeTimes.sort((left, right) => left - right);
+  // How many of the conditions read at each size: the size to aim for is where this is high.
+  const bySize = PX_PER_MODULE.filter((px) => total * px <= HEIGHT * 0.95).map(
+    (px) => ({
+      pxPerModule: px,
+      codeWidthPx: Math.round(px * total),
+      conditionsRead: rows.filter((row) => row.readAt.includes(px)).length,
+    }),
+  );
   report.push({
-    parts,
-    partLength: length,
+    maxVersion,
+    codes: symbols.length,
+    messageLength: message.length,
     level: settings.level,
     version: symbol.version,
-    modules: symbol.modules.size,
+    modules: symbol.size,
+    bySize,
     withQuietZone: total,
     decodeMedianMs: Math.round(
       decodeTimes[Math.floor(decodeTimes.length / 2)] ?? 0,
@@ -290,14 +365,17 @@ if (settings.json) {
 } else {
   for (const entry of report) {
     console.log(
-      `\n${entry.parts} part(s) of ${entry.partLength} characters, level ${entry.level}: version ${entry.version}, ${entry.modules} modules (${entry.withQuietZone} with quiet zone), decode ${entry.decodeMedianMs} ms in a ${WIDTH}x${HEIGHT} frame`,
+      `\nversion cap ${entry.maxVersion}: ${entry.codes} code(s) for ${entry.messageLength} characters, level ${entry.level}: version ${entry.version}, ${entry.modules} modules (${entry.withQuietZone} with quiet zone), decode ${entry.decodeMedianMs} ms in a ${WIDTH}x${HEIGHT} frame`,
+    );
+    console.log(
+      `  conditions read, of ${CONDITIONS.length}, by size: ${entry.bySize.map((size) => `${size.pxPerModule} px/module (${size.codeWidthPx} px) ${size.conditionsRead}`).join(', ')}`,
     );
     console.log('  contrast  blur  tilt   smallest that reads');
     for (const row of entry.rows) {
       const size =
         row.pxPerModule === null
           ? `does not read at any size that fits ${HEIGHT} px`
-          : `${row.pxPerModule} px/module, ${row.codeWidthPx} px across (${Math.round(((row.codeWidthPx ?? 0) / HEIGHT) * 100)}% of the frame height)`;
+          : `${row.pxPerModule} px/module, ${row.codeWidthPx} px across (${Math.round(((row.codeWidthPx ?? 0) / HEIGHT) * 100)}% of the frame height); ${row.sizesRead} of ${row.sizesTried} sizes read`;
       console.log(
         `  ${String(row.contrast).padEnd(8)}  ${String(row.blurPx).padEnd(4)}  ${String(row.tiltDegrees).padEnd(4)}°  ${size}`,
       );

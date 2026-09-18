@@ -11,6 +11,7 @@ import {
 } from '../../packages/sb3-script/src/blocks.ts';
 import {
   add,
+  broadcastMessage,
   changeVariable,
   equals,
   greaterThan,
@@ -22,17 +23,22 @@ import {
   or,
   repeatUntil,
   setVariable,
+  subtract,
   wait,
   waitUntil,
+  whenBroadcastReceived,
 } from '../../packages/sb3-script/src/standard.ts';
 
 /**
  * The QR courier pairing steps both applications share (M-07, issue #7).
  *
  * The fusion app is the hub: it projects the offer and reads the answer a courier carries on a phone.
- * The camera app reads the offer and shows its answer. Transport — parts, hashes, peers, timeouts —
- * belongs to `turbowarp-webrtc-qrcode-pairing`; these scripts only put its parts on screen, turn the
- * operator's button presses into steps, and say what happened.
+ * The camera app reads the offer and shows its answer. Transport — the Structured Append codes,
+ * hashes, peers, timeouts — belongs to `turbowarp-webrtc-qrcode-pairing`; these scripts only put its
+ * codes on screen, turn the operator's button presses into steps, and say what each read was.
+ *
+ * The offer's codes cycle by themselves, because the camera app keeps reading and takes them in any
+ * order. The answer's codes wait for the operator, because a person photographs each one.
  *
  * Both projects have no sprite, so a part is shown through the app shell's QR panel from the data
  * URI the pairing extension renders, rather than on a sprite skin.
@@ -61,6 +67,14 @@ export interface PairingReferences {
   readonly waited: NamedReference;
   /** Set by the application's message dispatcher when the other side's test message arrives. */
   readonly linkTest: NamedReference;
+  /** Tenths of a second the current code has been on screen, when the codes cycle by themselves. */
+  readonly shownTicks: NamedReference;
+  /** `true` while a camera scan runs, which is how long the read report keeps reporting. */
+  readonly scanning: NamedReference;
+  /** The extension's read count last reported, so each new read is reported once. */
+  readonly readsSeen: NamedReference;
+  /** Starts the read report beside a scan, which blocks the script that runs it. */
+  readonly readReport: NamedReference;
 }
 
 export const pairingReferences = (): PairingReferences => ({
@@ -76,6 +90,19 @@ export const pairingReferences = (): PairingReferences => ({
   step: namedReference('pairing step', 'variable:pairing-step'),
   waited: namedReference('pairing test wait', 'variable:pairing-test-wait'),
   linkTest: namedReference('link test message', 'variable:link-test-message'),
+  shownTicks: namedReference(
+    'pairing QR shown ticks',
+    'variable:pairing-qr-shown-ticks',
+  ),
+  scanning: namedReference('pairing scanning', 'variable:pairing-scanning'),
+  readsSeen: namedReference(
+    'pairing QR reads seen',
+    'variable:pairing-qr-reads-seen',
+  ),
+  readReport: namedReference(
+    'pairing QR read report',
+    'broadcast:pairing-qr-read-report',
+  ),
 });
 
 export const pairingVariables = (
@@ -88,6 +115,13 @@ export const pairingVariables = (
   [references.step.id]: [references.step.name, ''],
   [references.waited.id]: [references.waited.name, 0],
   [references.linkTest.id]: [references.linkTest.name, ''],
+  [references.shownTicks.id]: [references.shownTicks.name, 0],
+  [references.scanning.id]: [references.scanning.name, 'false'],
+  [references.readsSeen.id]: [references.readsSeen.name, 0],
+});
+
+export const pairingBroadcasts = (references: PairingReferences) => ({
+  [references.readReport.id]: references.readReport.name,
 });
 
 export const concatenate = (
@@ -197,23 +231,59 @@ export class PairingSteps {
   }
 
   /**
-   * Shows the parts one at a time and waits for the operator.
+   * Shows the codes one at a time.
    *
-   * One part stays up until the operator asks for the next, because the person photographing a
-   * projection needs each code to hold still. The wait ends on a connection, on an ended exchange,
-   * or on a button this script treats as a step, which it leaves in the step variable.
+   * With `cycleSeconds`, each code stays up that long and the next follows by itself, round and
+   * round, for a camera that keeps reading. Without it, a code stays up until the operator asks for
+   * the next, because the person photographing a screen needs each code to hold still. The wait
+   * ends on a connection, on an ended exchange, or on a button this script treats as a step, which
+   * it leaves in the step variable.
    */
   public presentParts(
     kind: string | InputValue,
     instruction: string,
     buttons: readonly string[],
     stopOn: BlockNode,
+    cycleSeconds?: number,
   ): BlockNode[] {
-    const { partIndex, pressesSeen, step } = this.references;
+    const { partIndex, pressesSeen, step, shownTicks } = this.references;
     const pressed = (label: string) =>
       equals(reporter(block(`${this.shell}_lastQrImageButton`)), text(label));
+    const advance = [
+      setVariable(
+        partIndex,
+        reporter(
+          add(
+            reporter(
+              modulo(
+                variable(partIndex),
+                this.pairingValue('pairingQrPartCount'),
+              ),
+            ),
+            number(1),
+          ),
+        ),
+      ),
+      setVariable(shownTicks, number(0)),
+      this.showPart(kind, instruction, buttons),
+    ];
+    // Ticks are tenths of a second: the loop below waits 0.1 s a turn.
+    const cycle =
+      cycleSeconds === undefined
+        ? []
+        : [
+            changeVariable(shownTicks, 1),
+            ifThen(
+              greaterThan(
+                variable(shownTicks),
+                number(Math.round(cycleSeconds * 10) - 1),
+              ),
+              advance,
+            ),
+          ];
     return [
       setVariable(partIndex, number(1)),
+      setVariable(shownTicks, number(0)),
       setVariable(step, text('')),
       setVariable(
         pressesSeen,
@@ -233,40 +303,108 @@ export class PairingSteps {
                 pressesSeen,
                 reporter(block(`${this.shell}_qrImageButtonPresses`)),
               ),
-              ifElse(
-                pressed(pairingButtons.next),
-                [
-                  setVariable(
-                    partIndex,
-                    reporter(
-                      add(
-                        reporter(
-                          modulo(
-                            variable(partIndex),
-                            this.pairingValue('pairingQrPartCount'),
-                          ),
-                        ),
-                        number(1),
-                      ),
-                    ),
-                  ),
-                  this.showPart(kind, instruction, buttons),
-                ],
-                [
-                  ifThen(pressed(pairingButtons.readAnswer), [
-                    setVariable(step, text('read-answer')),
-                  ]),
-                  ifThen(pressed(pairingButtons.cancel), [
-                    setVariable(step, text('cancel')),
-                  ]),
-                ],
-              ),
+              ifElse(pressed(pairingButtons.next), advance, [
+                ifThen(pressed(pairingButtons.readAnswer), [
+                  setVariable(step, text('read-answer')),
+                ]),
+                ifThen(pressed(pairingButtons.cancel), [
+                  setVariable(step, text('cancel')),
+                ]),
+              ]),
             ],
           ),
+          ...cycle,
           wait(0.1),
         ],
       ),
       block(`${this.shell}_hideQrImage`),
+    ];
+  }
+
+  /**
+   * Reads codes from a camera while the read report says what each read was.
+   *
+   * The scan block holds its script until the sequence is complete, so the report runs beside it
+   * in the script `readReportScript` returns, for as long as the scanning flag is up.
+   */
+  public scanWithReport(cameraId: InputValue): BlockNode[] {
+    const { scanning, readReport } = this.references;
+    return [
+      setVariable(scanning, text('true')),
+      broadcastMessage(readReport),
+      this.pairing('scanPairingQrFromCamera', { CAMERA_ID: cameraId }),
+      setVariable(scanning, text('false')),
+    ];
+  }
+
+  /**
+   * Says what the latest code read was, once per read, as one line that each read replaces.
+   *
+   * A camera reads the code in front of it many times a second, so a repeat is only noted, and a
+   * code of another pairing is a warning that changes nothing.
+   */
+  public readReportScript(): BlockNode[] {
+    const { scanning, readsSeen, readReport } = this.references;
+    const reads = this.pairingValue('pairingReadCount');
+    const lastRead = (result: string) =>
+      equals(this.pairingValue('pairingLastRead'), text(result));
+    const remaining = reporter(
+      subtract(
+        this.pairingValue('pairingRequiredParts'),
+        this.pairingValue('pairingReceivedParts'),
+      ),
+    );
+    const detail = this.pairingValue('pairingLastReadDetail');
+    const progress = (opening: string) =>
+      ifElse(
+        greaterThan(remaining, number(0)),
+        [
+          this.notice(
+            concatenate(
+              text(opening),
+              detail,
+              text('）。あと '),
+              remaining,
+              text(' 枚です。'),
+            ),
+          ),
+        ],
+        [
+          this.notice(
+            concatenate(text(opening), detail, text('）。全部そろいました。')),
+          ),
+        ],
+      );
+    return [
+      whenBroadcastReceived(readReport),
+      setVariable(readsSeen, reads),
+      repeatUntil(equals(variable(scanning), text('false')), [
+        ifThen(greaterThan(reads, variable(readsSeen)), [
+          setVariable(readsSeen, reads),
+          ifElse(
+            lastRead('foreign'),
+            [
+              this.notice(
+                concatenate(
+                  text(
+                    '注意: 別のペアリングのQRコードを読んだため、無視しました（',
+                  ),
+                  detail,
+                  text('）。'),
+                ),
+              ),
+            ],
+            [
+              ifElse(
+                lastRead('duplicate'),
+                [progress('このQRコードは読み取り済みです（')],
+                [progress('QRコードを読み取りました（')],
+              ),
+            ],
+          ),
+        ]),
+        wait(0.1),
+      ]),
     ];
   }
 
