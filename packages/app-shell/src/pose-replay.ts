@@ -15,12 +15,23 @@
  * file. Where no host serves them — a bare SB3 in TurboWarp — the operator saves and opens the file
  * themselves.
  *
- * The format is `twrmc/pose-3d-session` v1, the same one the 3D service's evaluation tool replays, so
- * a recording taken at a venue can be measured offline without being converted first.
+ * The format is `twrmc/pose-3d-session`, the same one the 3D service's evaluation tool replays, so a
+ * recording taken at a venue can be measured offline without being converted first. Version 2 is one
+ * JSON object per line: a header, then the frames and measurements in the order they happened. That
+ * is what lets a take be written while it is being taken — the page holds a few lines rather than the
+ * whole session, and a recording interrupted by a crash or a closed lid keeps the part that was
+ * taken. The host compresses it when it is finished, which is about a sixth of the size.
+ *
+ * Version 1 — a single JSON document — is still read, so recordings taken before this still replay.
  */
 
 export const RECORDING_SCHEMA = 'twrmc/pose-3d-session';
-export const RECORDING_VERSION = 1;
+export const RECORDING_VERSION = 2;
+/** The single-document format this one grew out of. Read, never written. */
+export const LEGACY_RECORDING_VERSION = 1;
+/** Lines are sent in batches: one request per frame would spend the take talking to the host. */
+const FLUSH_LINES = 32;
+const FLUSH_BYTES = 32 * 1024;
 /** Kept equal to `recordingsPath` in `packages/local-host/src/recordings.ts`. */
 export const recordingsRoute = '/recordings';
 
@@ -37,6 +48,12 @@ export interface RecordingStorePort {
   list(): Promise<RecordingEntry[]>;
   read(name: string): Promise<string>;
   write(name: string, text: string): Promise<void>;
+  /** Opens a recording with its header line, replacing anything under that name. */
+  start(name: string, line: string): Promise<void>;
+  /** Adds lines to a recording that is being taken. */
+  append(name: string, lines: string): Promise<void>;
+  /** Compresses the finished recording under its final name and removes the working one. */
+  finish(name: string, to: string): Promise<void>;
 }
 
 export interface PoseReplayHost {
@@ -60,11 +77,13 @@ export type RecordingState = 'idle' | 'recording' | 'recorded';
 export type ReplayState = 'idle' | 'playing' | 'ended';
 
 /**
- * How long a recording may be, in events.
+ * How long a recording may be, in events, when it is held in the page.
  *
- * A pose frame is a few kilobytes, so this is a few hundred megabytes at worst and about twenty
- * minutes of four cameras at 30 fps. Beyond it the oldest events go, and the recording says so: a
- * recorder that stopped silently would leave the operator believing they had the take.
+ * Only a page with no host to write to holds one: there the recording lives in memory until the
+ * operator saves it, so it has to stop growing somewhere. Beyond this the oldest events go, and the
+ * recording says so — a recorder that stopped silently would leave the operator believing they had
+ * the take. Where a host serves the page, the recording is written as it is taken and this does not
+ * apply; the host's own size limit does.
  */
 const MAXIMUM_EVENTS = 150_000;
 
@@ -81,7 +100,15 @@ export class PoseReplay {
   private fps = 0;
   private lastCaptureUs = new Map<string, number>();
   private firstCaptureUs = 0;
+  private latestCaptureUs = 0;
   private thinned = 0;
+  private cameras = new Set<string>();
+  /** The file the take is being written to, or an empty string when it is held in the page. */
+  private workingName = '';
+  private pendingLines: string[] = [];
+  private pendingBytes = 0;
+  /** Writes are chained rather than raced: the lines have to reach the file in the order taken. */
+  private writing: Promise<void> = Promise.resolve();
   private session:
     | {
         configuration: Record<string, unknown>;
@@ -107,7 +134,12 @@ export class PoseReplay {
    * Starts a recording, with the configuration the poses were estimated under.
    *
    * The configuration is what makes a recording replayable rather than merely readable: without the
-   * cameras' models and placement, the 2D poses in it cannot be turned back into 3D.
+   * cameras' models and placement, the 2D poses in it cannot be turned back into 3D. It is written
+   * first, as the header line, so a take interrupted half way is still a recording.
+   *
+   * Where a host serves this page the take is written to it as it happens, under a working name; the
+   * operator names it when they save it, and the host compresses it then. Where no host serves the
+   * page, the take is held here until it is saved.
    */
   public startRecording(
     configurationJson: string,
@@ -124,12 +156,28 @@ export class PoseReplay {
     this.dropped = 0;
     this.thinned = 0;
     this.recordedFrames = 0;
+    this.cameras = new Set();
     this.lastCaptureUs = new Map();
     this.firstCaptureUs = 0;
+    this.latestCaptureUs = 0;
     this.maxSeconds = positive(options.maxSeconds);
     this.fps = positive(options.fps);
+    this.pendingLines = [];
+    this.pendingBytes = 0;
+    this.workingName = '';
     this.recordingState = 'recording';
     this.error = '';
+    if (!this.host.store.available()) return;
+    const working = workingFileName(this.host.pageTimeUs());
+    this.workingName = working;
+    const header = `${JSON.stringify({
+      type: 'header',
+      schema: RECORDING_SCHEMA,
+      version: RECORDING_VERSION,
+      producer: 'debug-pose-replay',
+      configuration,
+    })}\n`;
+    this.enqueue(() => this.host.store.start(working, header));
   }
 
   /**
@@ -158,8 +206,10 @@ export class PoseReplay {
       this.stopRecording();
       return;
     }
+    const previous = this.lastCaptureUs.get(cameraId);
+    // The same frame offered twice is the camera's newest one, asked for again, not new movement.
+    if (previous === capture) return;
     if (this.fps > 0) {
-      const previous = this.lastCaptureUs.get(cameraId);
       // A tenth of a period of slack, so a camera delivering exactly at the asked rate is not halved
       // by a frame that arrives a fraction early, while a faster camera is still thinned to the rate.
       if (
@@ -171,23 +221,15 @@ export class PoseReplay {
       }
     }
     this.lastCaptureUs.set(cameraId, capture);
-    const last = this.events[this.events.length - 1];
-    if (
-      last?.cameraId === cameraId &&
-      Number(last.frame['captureTimestampUs']) === capture
-    )
-      return;
-    this.events.push({
+    this.latestCaptureUs = Math.max(this.latestCaptureUs, capture);
+    this.cameras.add(cameraId);
+    this.recordedFrames += 1;
+    this.write({
       type: 'frame2d',
       atUs: this.host.pageTimeUs(),
       cameraId,
       frame,
     });
-    this.recordedFrames += 1;
-    if (this.events.length > MAXIMUM_EVENTS) {
-      this.events.splice(0, this.events.length - MAXIMUM_EVENTS);
-      this.dropped += 1;
-    }
   }
 
   /**
@@ -198,44 +240,51 @@ export class PoseReplay {
     const payload = parseObject(payloadJson);
     if (!payload) return;
     this.spaceTime.set(cameraId, payload);
+    if (this.recordingState !== 'recording' || this.workingName === '') return;
+    this.line(JSON.stringify({ type: 'spaceTime', cameraId, payload }));
   }
 
   public stopRecording(): void {
     if (this.recordingState !== 'recording') return;
-    this.recordingState = this.events.length > 0 ? 'recorded' : 'idle';
+    this.flush();
+    this.recordingState = this.recordedFrames > 0 ? 'recorded' : 'idle';
   }
 
   public recordingStateName(): RecordingState {
     return this.recordingState;
   }
 
-  /** The recording as a session document, or an empty string when nothing has been recorded. */
-  public recordingJson(): string {
+  /**
+   * The recording as session lines, or an empty string when it is being written to the host instead.
+   *
+   * Only a page holding its own take has anything to give here; where a host is writing the lines,
+   * the file on the host is the recording.
+   */
+  public recordingText(): string {
     if (!this.configuration || this.events.length === 0) return '';
-    return JSON.stringify({
-      schema: RECORDING_SCHEMA,
-      version: RECORDING_VERSION,
-      producer:
-        this.dropped === 0
-          ? 'debug-camera-replay'
-          : `debug-camera-replay (${this.dropped} events dropped)`,
-      configuration: this.configuration,
-      ...(this.spaceTime.size === 0
-        ? {}
-        : {
-            spaceTime: [...this.spaceTime.entries()].map(
-              ([cameraId, payload]) => ({ cameraId, payload }),
-            ),
-          }),
-      events: this.events,
-    });
+    const lines = [
+      JSON.stringify({
+        type: 'header',
+        schema: RECORDING_SCHEMA,
+        version: RECORDING_VERSION,
+        producer:
+          this.dropped === 0
+            ? 'debug-pose-replay'
+            : `debug-pose-replay (${this.dropped} events dropped)`,
+        configuration: this.configuration,
+      }),
+      ...[...this.spaceTime.entries()].map(([cameraId, payload]) =>
+        JSON.stringify({ type: 'spaceTime', cameraId, payload }),
+      ),
+      ...this.events.map((event) => JSON.stringify(event)),
+    ];
+    return `${lines.join('\n')}\n`;
   }
 
   public recordingSummary(): string {
-    if (this.recordingState === 'idle' && this.events.length === 0)
+    if (this.recordingState === 'idle' && this.recordedFrames === 0)
       return '録画していません。';
     const seconds = Math.round(this.spanUs() / 100_000) / 10;
-    const cameras = new Set(this.events.map((event) => event.cameraId)).size;
     const state = this.recordingState === 'recording' ? '録画中' : '録画済み';
     const asked = [
       this.maxSeconds > 0 ? `${this.maxSeconds}秒まで` : '',
@@ -245,7 +294,7 @@ export class PoseReplay {
     const thinned = this.thinned === 0 ? '' : `（間引き${this.thinned}件）`;
     const dropped =
       this.dropped === 0 ? '' : `（古い${this.dropped}件を捨てました）`;
-    return `${state}: ${cameras}台 / ${this.recordedFrames}フレーム / ${seconds}秒${limits}${thinned}${dropped}`;
+    return `${state}: ${this.cameras.size}台 / ${this.recordedFrames}フレーム / ${seconds}秒${limits}${thinned}${dropped}`;
   }
 
   // Files -------------------------------------------------------------------
@@ -253,16 +302,30 @@ export class PoseReplay {
   /**
    * Keeps the recording under a name.
    *
-   * Written to the venue host when this page is served by one, so every application on the PC can
-   * replay it; handed to the operator as a file when it is not.
+   * A take written to the venue host is compressed there under this name, so every application on
+   * the PC can replay it. A take held in the page is handed to the operator as a file.
    */
   public async save(name: string): Promise<void> {
-    const text = this.recordingJson();
+    if (this.workingName !== '') {
+      if (this.recordedFrames === 0) {
+        this.error = '保存できる録画がありません。';
+        return;
+      }
+      const working = this.workingName;
+      const target = recordingFileName(name);
+      this.flush();
+      this.enqueue(() => this.host.store.finish(working, target));
+      await this.settled();
+      if (this.error === '') this.workingName = '';
+      return;
+    }
+    const text = this.recordingText();
     if (text === '') {
       this.error = '保存できる録画がありません。';
       return;
     }
-    const fileName = recordingFileName(name);
+    // Held in the page, so it is handed over uncompressed: compressing is the host's part.
+    const fileName = recordingFileName(name).replace(/\.gz$/u, '');
     if (!this.host.store.available()) {
       this.host.saveFile(fileName, text);
       this.error = '';
@@ -307,13 +370,62 @@ export class PoseReplay {
     this.open(text, name.trim() === '' ? 'ファイル' : recordingFileName(name));
   }
 
-  /** Takes a recording that is already in hand. Refuses anything it could not replay. */
+  /**
+   * Takes a recording that is already in hand, in either format. Refuses anything it could not
+   * replay.
+   *
+   * A line that cannot be read is skipped rather than refused: a take interrupted mid-line is a
+   * recording of everything before that line, which is exactly what it is for.
+   */
   public open(text: string, name: string): void {
+    const header = firstObject(text);
+    if (header?.['type'] === 'header') {
+      this.openLines(text, name, header);
+      return;
+    }
+    this.openDocument(text, name);
+  }
+
+  private openLines(
+    text: string,
+    name: string,
+    header: Record<string, unknown>,
+  ): void {
+    if (
+      header['schema'] !== RECORDING_SCHEMA ||
+      header['version'] !== RECORDING_VERSION
+    ) {
+      this.error = `録画として読めません（${RECORDING_SCHEMA} v${RECORDING_VERSION}）。`;
+      return;
+    }
+    const configuration = header['configuration'];
+    if (typeof configuration !== 'object' || configuration === null) {
+      this.error = '録画に設定がありません。';
+      return;
+    }
+    const frames = new Map<string, RecordedFrame[]>();
+    const spaceTime = new Map<string, Record<string, unknown>>();
+    for (const line of text.split('\n')) {
+      if (line.trim() === '') continue;
+      const record = parseObject(line);
+      if (!record) continue;
+      if (record['type'] === 'spaceTime') this.takeSpaceTime(record, spaceTime);
+      if (record['type'] === 'frame2d') this.takeFrame(record, frames);
+    }
+    this.adopt(
+      configuration as Record<string, unknown>,
+      frames,
+      spaceTime,
+      name,
+    );
+  }
+
+  private openDocument(text: string, name: string): void {
     const document = parseObject(text);
     if (
       !document ||
       document['schema'] !== RECORDING_SCHEMA ||
-      document['version'] !== RECORDING_VERSION
+      document['version'] !== LEGACY_RECORDING_VERSION
     ) {
       this.error = `録画として読めません（${RECORDING_SCHEMA} v${RECORDING_VERSION}）。`;
       return;
@@ -331,28 +443,75 @@ export class PoseReplay {
     const frames = new Map<string, RecordedFrame[]>();
     for (const event of events) {
       if (typeof event !== 'object' || event === null) continue;
-      const record = event as Record<string, unknown>;
-      if (record['type'] !== 'frame2d') continue;
-      const frame = record['frame'];
-      const cameraId = record['cameraId'];
-      if (
-        typeof cameraId !== 'string' ||
-        typeof frame !== 'object' ||
-        frame === null
-      )
-        continue;
-      const capture = Number(
-        (frame as Record<string, unknown>)['captureTimestampUs'],
-      );
-      if (!(capture > 0)) continue;
-      const list = frames.get(cameraId) ?? [];
-      list.push({
-        type: 'frame2d',
-        atUs: Number(record['atUs']) || capture,
-        cameraId,
-        frame: frame as Record<string, unknown>,
-      });
-      frames.set(cameraId, list);
+      this.takeFrame(event as Record<string, unknown>, frames);
+    }
+    const spaceTime = new Map<string, Record<string, unknown>>();
+    for (const entry of Array.isArray(document['spaceTime'])
+      ? document['spaceTime']
+      : []) {
+      if (typeof entry !== 'object' || entry === null) continue;
+      this.takeSpaceTime(entry as Record<string, unknown>, spaceTime);
+    }
+    this.adopt(
+      configuration as Record<string, unknown>,
+      frames,
+      spaceTime,
+      name,
+    );
+  }
+
+  private takeFrame(
+    record: Record<string, unknown>,
+    frames: Map<string, RecordedFrame[]>,
+  ): void {
+    if (record['type'] !== 'frame2d') return;
+    const frame = record['frame'];
+    const cameraId = record['cameraId'];
+    if (
+      typeof cameraId !== 'string' ||
+      typeof frame !== 'object' ||
+      frame === null
+    )
+      return;
+    const capture = Number(
+      (frame as Record<string, unknown>)['captureTimestampUs'],
+    );
+    if (!(capture > 0)) return;
+    const list = frames.get(cameraId) ?? [];
+    list.push({
+      type: 'frame2d',
+      atUs: Number(record['atUs']) || capture,
+      cameraId,
+      frame: frame as Record<string, unknown>,
+    });
+    frames.set(cameraId, list);
+  }
+
+  private takeSpaceTime(
+    record: Record<string, unknown>,
+    into: Map<string, Record<string, unknown>>,
+  ): void {
+    const cameraId = record['cameraId'];
+    const payload = record['payload'];
+    if (
+      typeof cameraId !== 'string' ||
+      typeof payload !== 'object' ||
+      payload === null
+    ) {
+      return;
+    }
+    into.set(cameraId, payload as Record<string, unknown>);
+  }
+
+  private adopt(
+    configuration: Record<string, unknown>,
+    frames: Map<string, RecordedFrame[]>,
+    spaceTime: Map<string, Record<string, unknown>>,
+    name: string,
+  ): void {
+    if (frames.size === 0) {
+      this.error = '録画にフレームがありません。';
+      return;
     }
     let earliest = Number.POSITIVE_INFINITY;
     let latest = 0;
@@ -361,38 +520,75 @@ export class PoseReplay {
       earliest = Math.min(earliest, captureOf(list[0]!));
       latest = Math.max(latest, captureOf(list[list.length - 1]!));
     }
-    if (frames.size === 0) {
-      this.error = '録画にフレームがありません。';
-      return;
-    }
-    const spaceTime = new Map<string, Record<string, unknown>>();
-    for (const entry of Array.isArray(document['spaceTime'])
-      ? document['spaceTime']
-      : []) {
-      if (typeof entry !== 'object' || entry === null) continue;
-      const record = entry as Record<string, unknown>;
-      const cameraId = record['cameraId'];
-      const payload = record['payload'];
-      if (
-        typeof cameraId !== 'string' ||
-        typeof payload !== 'object' ||
-        payload === null
-      ) {
-        continue;
-      }
-      spaceTime.set(cameraId, payload as Record<string, unknown>);
-    }
-    this.session = {
-      configuration: configuration as Record<string, unknown>,
-      frames,
-      spaceTime,
-    };
+    this.session = { configuration, frames, spaceTime };
     this.sessionName = name;
     this.originStartUs = earliest;
     this.durationUs = Math.max(0, latest - earliest);
     this.replayState = 'idle';
     this.cursor = new Map();
     this.error = '';
+  }
+
+  // Writing -----------------------------------------------------------------
+
+  /** Keeps the event: sent to the host as it is taken, or held here when there is no host. */
+  private write(event: RecordedFrame): void {
+    if (this.workingName !== '') {
+      this.line(JSON.stringify(event));
+      return;
+    }
+    this.events.push(event);
+    if (this.events.length > MAXIMUM_EVENTS) {
+      this.events.splice(0, this.events.length - MAXIMUM_EVENTS);
+      this.dropped += 1;
+    }
+  }
+
+  private line(line: string): void {
+    this.pendingLines.push(line);
+    this.pendingBytes += line.length + 1;
+    if (
+      this.pendingLines.length >= FLUSH_LINES ||
+      this.pendingBytes >= FLUSH_BYTES
+    ) {
+      this.flush();
+    }
+  }
+
+  private flush(): void {
+    if (this.pendingLines.length === 0 || this.workingName === '') return;
+    const body = `${this.pendingLines.join('\n')}\n`;
+    const working = this.workingName;
+    this.pendingLines = [];
+    this.pendingBytes = 0;
+    this.enqueue(() => this.host.store.append(working, body));
+  }
+
+  /**
+   * Runs the writes one after another, and stops the take on the first one that fails.
+   *
+   * A recording that cannot be written is not a recording, and carrying on would leave the operator
+   * watching a counter rise over a file that is missing the middle of the take.
+   */
+  private enqueue(write: () => Promise<void>): void {
+    this.writing = this.writing.then(async () => {
+      if (this.error !== '' && this.workingName === '') return;
+      try {
+        await write();
+      } catch (error) {
+        this.error = messageOf(error);
+        this.pendingLines = [];
+        this.pendingBytes = 0;
+        if (this.recordingState === 'recording') {
+          this.recordingState = this.recordedFrames > 0 ? 'recorded' : 'idle';
+        }
+      }
+    });
+  }
+
+  /** Waits for the writes in flight, for the steps that need the file to be complete. */
+  private async settled(): Promise<void> {
+    await this.writing;
   }
 
   // Replay ------------------------------------------------------------------
@@ -517,10 +713,8 @@ export class PoseReplay {
   }
 
   private spanUs(): number {
-    if (this.events.length === 0) return 0;
-    const first = captureOf(this.events[0]!);
-    const last = captureOf(this.events[this.events.length - 1]!);
-    return Math.max(0, last - first);
+    if (this.firstCaptureUs === 0 || this.latestCaptureUs === 0) return 0;
+    return Math.max(0, this.latestCaptureUs - this.firstCaptureUs);
   }
 }
 
@@ -528,14 +722,36 @@ function captureOf(event: RecordedFrame): number {
   return Number(event.frame['captureTimestampUs']) || 0;
 }
 
-/** A name the venue host will accept, from whatever the operator typed. */
+/**
+ * A name the venue host will accept, from whatever the operator typed.
+ *
+ * A name that already carries one of the recording extensions keeps it — that is how a name picked
+ * from the host's own list is read back. Anything else becomes a finished recording's name.
+ */
 export function recordingFileName(name: string): string {
-  const trimmed = name.trim().replace(/\.json$/iu, '');
+  const trimmed = name.trim();
+  const known = /\.(?:json|jsonl|jsonl\.gz)$/iu.exec(trimmed);
+  const extension = known === null ? '.jsonl.gz' : known[0].toLowerCase();
   const safe = trimmed
+    .slice(0, trimmed.length - (known?.[0].length ?? 0))
     .replace(/[^A-Za-z0-9._-]/gu, '-')
     .replace(/^[^A-Za-z0-9]+/u, '')
-    .slice(0, 59);
-  return `${safe === '' ? 'recording' : safe}.json`;
+    .slice(0, 64 - extension.length);
+  return `${safe === '' ? 'recording' : safe}${extension}`;
+}
+
+/**
+ * The name a take is written under while it runs.
+ *
+ * It carries the time it started, so two takes never collide and an interrupted one can be found
+ * afterwards by when it was taken.
+ */
+export function workingFileName(pageTimeUs: number): string {
+  const stamp = new Date(Math.round(pageTimeUs / 1000))
+    .toISOString()
+    .replace(/[:.]/gu, '-')
+    .replace(/Z$/u, '');
+  return `taking-${stamp}.jsonl`;
 }
 
 /** A limit the operator left out, or typed as zero or nonsense, is no limit. */
@@ -543,6 +759,12 @@ function positive(value: number | undefined): number {
   return typeof value === 'number' && Number.isFinite(value) && value > 0
     ? value
     : 0;
+}
+
+/** The first line of a recording, when it has one that reads as an object. */
+function firstObject(text: string): Record<string, unknown> | undefined {
+  const first = text.split('\n', 1)[0] ?? '';
+  return parseObject(first);
 }
 
 function parseObject(text: string): Record<string, unknown> | undefined {
@@ -599,7 +821,54 @@ export function createBrowserRecordingStore(): RecordingStorePort {
           `録画 ${name} を保存できません（${response.status}）。`,
         );
     },
+    async start(name, line) {
+      await post(`${url(name)}&mode=start`, line, name, '始められません');
+    },
+    async append(name, lines) {
+      await post(`${url(name)}&mode=append`, lines, name, '書き足せません');
+    },
+    async finish(name, to) {
+      await post(
+        `${url(name)}&mode=finish&to=${encodeURIComponent(to)}`,
+        '',
+        to,
+        '保存できません',
+      );
+    },
   };
+}
+
+async function post(
+  target: string,
+  body: string,
+  name: string,
+  what: string,
+): Promise<void> {
+  const response = await fetch(target, { method: 'POST', body });
+  if (response.ok) return;
+  // The size limit is the one an operator meets, so it is named rather than numbered.
+  if (response.status === 413) {
+    throw new Error(`録画 ${name} が大きくなりすぎました。`);
+  }
+  throw new Error(`録画 ${name} を${what}（${response.status}）。`);
+}
+
+/** The files the recording chooser offers: session lines, compressed or not, and v1 documents. */
+export const RECORDING_FILE_ACCEPT =
+  '.jsonl,.gz,.json,application/x-ndjson,application/gzip,application/json';
+
+/**
+ * Reads a recording the operator chose, compressed or not.
+ *
+ * A finished recording is gzip on disk, and a file opened from disk arrives without the transport
+ * that would have unpacked it, so it is unpacked here. The two magic bytes decide, not the name: a
+ * recording copied from a venue may have been renamed on the way.
+ */
+export async function readRecordingFile(file: File): Promise<string> {
+  const head = new Uint8Array(await file.slice(0, 2).arrayBuffer());
+  if (head[0] !== 0x1f || head[1] !== 0x8b) return await file.text();
+  const lines = file.stream().pipeThrough(new DecompressionStream('gzip'));
+  return await new Response(lines).text();
 }
 
 /** Hands the operator a file, for a page with no host to keep it on. */

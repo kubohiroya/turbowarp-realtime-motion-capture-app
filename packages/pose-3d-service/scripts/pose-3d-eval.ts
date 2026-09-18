@@ -12,6 +12,7 @@
 
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
+import { gunzipSync, gzipSync } from 'node:zlib';
 import { evaluate, formatMetrics } from '../src/metrics.ts';
 import { replaySession } from '../src/replay.ts';
 import {
@@ -23,12 +24,13 @@ import { generateScene, DEFAULT_SCENE } from '../src/synthetic.ts';
 import { IMPLEMENTATIONS, type ImplementationId } from '../src/contracts.ts';
 
 const usage = `Usage:
-  pose-3d-eval synthesize [--out <file>] [--seed n] [--cameras n] [--persons n] [--seconds n]
+  pose-3d-eval synthesize [--out <file>.jsonl[.gz]] [--seed n] [--cameras n] [--persons n] [--seconds n]
                           [--frame-rate n] [--noise-px n] [--occlusion-rate n] [--identity-switch-rate n]
   pose-3d-eval replay --session <file> [--implementation ${IMPLEMENTATIONS.join('|')}] [--out <file>]
   pose-3d-eval evaluate [--session <file>] [--implementation ...] [--json] [same scene options]
 
-Without --session, evaluate generates a scene with the options given.`;
+Sessions are read as JSONL (v2) or as the single JSON document v1 wrote, compressed when the name
+ends in .gz. Without --session, evaluate generates a scene with the options given.`;
 
 async function main(argv: readonly string[]): Promise<number> {
   const command = argv[0];
@@ -45,11 +47,11 @@ async function main(argv: readonly string[]): Promise<number> {
   if (command === 'synthesize') {
     const { session } = generateScene(sceneOptions(options));
     await write(
-      options['out'] ?? 'pose-3d-session.json',
+      options['out'] ?? 'pose-3d-session.jsonl',
       serializeSession(session),
     );
     console.log(
-      `${session.events.length} events, ${session.truth?.length ?? 0} truth frames: ${options['out'] ?? 'pose-3d-session.json'}`,
+      `${session.events.length} events, ${session.truth?.length ?? 0} truth frames: ${options['out'] ?? 'pose-3d-session.jsonl'}`,
     );
     return 0;
   }
@@ -117,15 +119,22 @@ function readImplementation(
   return value as ImplementationId;
 }
 
+/** Reads a session, unpacking it when it is a finished recording from a venue. */
 async function readSession(path: string): Promise<Session> {
-  const parsed = parseSession(await readFile(path, 'utf8'));
+  const bytes = await readFile(path);
+  const text = path.endsWith('.gz')
+    ? gunzipSync(bytes).toString('utf8')
+    : bytes.toString('utf8');
+  const parsed = parseSession(text);
   if (!parsed.ok) throw new Error(`${path}: ${parsed.reason}`);
   return parsed.session;
 }
 
+/** Writes what was asked for: compressed when the name says so, as the venue host's files are. */
 async function write(path: string, text: string): Promise<void> {
   await mkdir(dirname(path), { recursive: true });
-  await writeFile(path, `${text}\n`);
+  const body = text.endsWith('\n') ? text : `${text}\n`;
+  await writeFile(path, path.endsWith('.gz') ? gzipSync(body) : body);
 }
 
 /** `--name value` and `--flag`, which is all this tool needs. */

@@ -2,7 +2,9 @@ import { describe, expect, it, vi } from 'vitest';
 
 import {
   PoseReplay,
+  readRecordingFile,
   recordingFileName,
+  workingFileName,
   type PoseReplayHost,
   type RecordingEntry,
 } from '../src/pose-replay.js';
@@ -33,11 +35,22 @@ function setup(
     available?: boolean;
     files?: Record<string, string>;
     chosen?: string | null;
+    /** Makes the host refuse every write after this many, as a full disk or a long take would. */
+    failAfterWrites?: number;
   } = {},
 ) {
   const clock = { us: 1_000_000_000 };
   const files = new Map(Object.entries(options.files ?? {}));
   const saved: Array<{ name: string; text: string }> = [];
+  let writes = 0;
+  const refuseWhenAsked = () => {
+    writes += 1;
+    if (
+      options.failAfterWrites !== undefined &&
+      writes > options.failAfterWrites
+    )
+      throw new Error('録画 taking.jsonl が大きくなりすぎました。');
+  };
   const host: PoseReplayHost = {
     pageTimeUs: () => clock.us,
     store: {
@@ -57,16 +70,46 @@ function setup(
       write: async (name, text) => {
         files.set(name, text);
       },
+      start: async (name, line) => {
+        refuseWhenAsked();
+        files.set(name, line);
+      },
+      append: async (name, lines) => {
+        refuseWhenAsked();
+        files.set(name, `${files.get(name) ?? ''}${lines}`);
+      },
+      finish: async (name, to) => {
+        refuseWhenAsked();
+        files.set(to, files.get(name) ?? '');
+        files.delete(name);
+      },
     },
     chooseFile: vi.fn(async () => options.chosen ?? null),
     saveFile: (name, text) => saved.push({ name, text }),
   };
-  return { replay: new PoseReplay(host), clock, files, saved, host };
+  const taking = () =>
+    [...files.keys()].find((name) => name.startsWith('taking-')) ?? '';
+  return { replay: new PoseReplay(host), clock, files, saved, host, taking };
+}
+
+/** Lets the writes in flight reach the host, as a turn of the event loop would. */
+const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+/** The lines of a recording, as objects. */
+function linesOf(text: string): Array<Record<string, unknown>> {
+  return text
+    .split('\n')
+    .filter((line) => line.trim() !== '')
+    .map((line) => JSON.parse(line) as Record<string, unknown>);
+}
+
+function framesOf(text: string): Array<Record<string, unknown>> {
+  return linesOf(text).filter((line) => line['type'] === 'frame2d');
 }
 
 describe('recording', () => {
   it('records frames under the configuration they were estimated with', () => {
-    const { replay } = setup();
+    const { replay } = setup({ available: false });
     replay.startRecording(JSON.stringify(configuration));
     replay.recordFrame('cam-1', frame('cam-1', 1_000_000_000, 0));
     replay.recordFrame('cam-2', frame('cam-2', 1_000_010_000, 0));
@@ -75,32 +118,30 @@ describe('recording', () => {
     replay.recordFrame('cam-1', frame('cam-1', 1_000_033_000, 1));
     replay.stopRecording();
 
-    const session = JSON.parse(replay.recordingJson());
-    expect(session).toMatchObject({
+    const lines = linesOf(replay.recordingText());
+    expect(lines[0]).toMatchObject({
+      type: 'header',
       schema: 'twrmc/pose-3d-session',
-      version: 1,
+      version: 2,
       configuration,
     });
-    expect(session.events).toHaveLength(3);
-    expect(session.events[0]).toMatchObject({
-      type: 'frame2d',
-      cameraId: 'cam-1',
-    });
+    expect(lines.slice(1)).toHaveLength(3);
+    expect(lines[1]).toMatchObject({ type: 'frame2d', cameraId: 'cam-1' });
     expect(replay.recordingStateName()).toBe('recorded');
     expect(replay.recordingSummary()).toContain('2台');
   });
 
   it('refuses to start without a configuration, because such a recording cannot be replayed', () => {
-    const { replay } = setup();
+    const { replay } = setup({ available: false });
     replay.startRecording('');
     expect(replay.recordingStateName()).toBe('idle');
     expect(replay.errorMessage()).toContain('設定');
     replay.recordFrame('cam-1', frame('cam-1', 1));
-    expect(replay.recordingJson()).toBe('');
+    expect(replay.recordingText()).toBe('');
   });
 
   it('ignores anything that is not a frame with a capture time', () => {
-    const { replay } = setup();
+    const { replay } = setup({ available: false });
     replay.startRecording(JSON.stringify(configuration));
     replay.recordFrame('cam-1', '');
     replay.recordFrame('cam-1', 'not json');
@@ -108,14 +149,90 @@ describe('recording', () => {
       'cam-1',
       JSON.stringify({ schema: 'twrmc/pose-frame-2d' }),
     );
-    expect(replay.recordingJson()).toBe('');
+    expect(replay.recordingText()).toBe('');
     expect(replay.recordingSummary()).toContain('録画中: 0台');
+  });
+});
+
+describe('a recording written while it is taken', () => {
+  it('opens the file with its header and adds the frames as they come', async () => {
+    const { replay, files, taking } = setup();
+    replay.startRecording(JSON.stringify(configuration));
+    await settle();
+    expect(taking()).toMatch(/^taking-.*\.jsonl$/u);
+    expect(linesOf(files.get(taking()) ?? '')[0]).toMatchObject({
+      type: 'header',
+      version: 2,
+    });
+
+    // Lines go in batches; by forty frames the first batch has reached the host.
+    for (let index = 0; index < 40; index += 1) {
+      replay.recordFrame(
+        'cam-1',
+        frame('cam-1', 1_000_000_000 + index * 33_333, index),
+      );
+    }
+    await settle();
+    expect(framesOf(files.get(taking()) ?? '').length).toBeGreaterThanOrEqual(
+      32,
+    );
+
+    replay.recordSpaceTime('cam-1', JSON.stringify({ status: 'measured' }));
+    replay.stopRecording();
+    await settle();
+    const taken = files.get(taking()) ?? '';
+    expect(framesOf(taken)).toHaveLength(40);
+    expect(linesOf(taken).some((line) => line['type'] === 'spaceTime')).toBe(
+      true,
+    );
+  });
+
+  it('is kept under the operator’s name, compressed, when it is saved', async () => {
+    const { replay, files } = setup();
+    replay.startRecording(JSON.stringify(configuration));
+    replay.recordFrame('cam-1', frame('cam-1', 1_000_000_000));
+    replay.stopRecording();
+    await replay.save('Take 1');
+    expect([...files.keys()]).toEqual(['Take-1.jsonl.gz']);
+    expect(replay.errorMessage()).toBe('');
+  });
+
+  it('is readable as far as it got when the take is interrupted', async () => {
+    const { replay, files, taking } = setup();
+    replay.startRecording(JSON.stringify(configuration));
+    for (let index = 0; index < 40; index += 1) {
+      replay.recordFrame(
+        'cam-1',
+        frame('cam-1', 1_000_000_000 + index * 33_333, index),
+      );
+    }
+    await settle();
+    // Nothing is saved: the page is closed. What reached the host is still a recording.
+    const partial = `${files.get(taking()) ?? ''}{"type":"frame2d","atUs":`;
+    const { replay: other } = setup();
+    other.open(partial, 'taking.jsonl');
+    expect(other.errorMessage()).toBe('');
+    expect(other.loadedCamerasJson()).toBe('["cam-1"]');
+  });
+
+  it('stops the take and says so when the host will not take any more', async () => {
+    const { replay } = setup({ failAfterWrites: 1 });
+    replay.startRecording(JSON.stringify(configuration));
+    for (let index = 0; index < 40; index += 1) {
+      replay.recordFrame(
+        'cam-1',
+        frame('cam-1', 1_000_000_000 + index * 33_333, index),
+      );
+    }
+    await settle();
+    expect(replay.errorMessage()).toContain('大きくなりすぎました');
+    expect(replay.recordingStateName()).toBe('recorded');
   });
 });
 
 describe('recording limits', () => {
   it('keeps at most the asked frames a second, per camera', () => {
-    const { replay } = setup();
+    const { replay } = setup({ available: false });
     replay.startRecording(JSON.stringify(configuration), { fps: 10 });
     // 30 fps arriving, 10 fps asked for: one in three is kept, per camera.
     for (let index = 0; index < 30; index += 1) {
@@ -123,11 +240,9 @@ describe('recording limits', () => {
       replay.recordFrame('cam-1', frame('cam-1', capture, index));
       replay.recordFrame('cam-2', frame('cam-2', capture, index));
     }
-    const session = JSON.parse(replay.recordingJson());
+    const events = framesOf(replay.recordingText());
     const perCamera = (cameraId: string) =>
-      session.events.filter(
-        (event: { cameraId: string }) => event.cameraId === cameraId,
-      ).length;
+      events.filter((event) => event['cameraId'] === cameraId).length;
     expect(perCamera('cam-1')).toBe(10);
     expect(perCamera('cam-2')).toBe(10);
     expect(replay.recordingSummary()).toContain('10fpsまで');
@@ -135,7 +250,7 @@ describe('recording limits', () => {
   });
 
   it('stops itself once the asked length has been recorded', () => {
-    const { replay } = setup();
+    const { replay } = setup({ available: false });
     replay.startRecording(JSON.stringify(configuration), { maxSeconds: 2 });
     for (let index = 0; index < 120; index += 1) {
       replay.recordFrame(
@@ -144,18 +259,20 @@ describe('recording limits', () => {
       );
     }
     expect(replay.recordingStateName()).toBe('recorded');
-    const session = JSON.parse(replay.recordingJson());
-    expect(session.events).toHaveLength(61);
-    const captures = session.events.map(
-      (event: { frame: { captureTimestampUs: number } }) =>
-        event.frame.captureTimestampUs,
+    const events = framesOf(replay.recordingText());
+    expect(events).toHaveLength(61);
+    const captures = events.map(
+      (event) =>
+        (event['frame'] as { captureTimestampUs: number }).captureTimestampUs,
     );
-    expect(captures[captures.length - 1] - captures[0]).toBeLessThan(2_000_000);
+    expect(captures[captures.length - 1]! - captures[0]!).toBeLessThan(
+      2_000_000,
+    );
     expect(replay.recordingSummary()).toContain('2秒まで');
   });
 
   it('records everything when no limit is asked for', () => {
-    const { replay } = setup();
+    const { replay } = setup({ available: false });
     replay.startRecording(JSON.stringify(configuration), {
       maxSeconds: 0,
       fps: -1,
@@ -166,12 +283,12 @@ describe('recording limits', () => {
         frame('cam-1', 1_000_000_000 + index * 33_333, index),
       );
     }
-    expect(JSON.parse(replay.recordingJson()).events).toHaveLength(20);
+    expect(framesOf(replay.recordingText())).toHaveLength(20);
     expect(replay.recordingSummary()).not.toContain('指定');
   });
 
   it('judges the limits on the frames, not on the page clock', () => {
-    const { replay, clock } = setup();
+    const { replay, clock } = setup({ available: false });
     replay.startRecording(JSON.stringify(configuration), {
       maxSeconds: 1,
       fps: 5,
@@ -185,27 +302,18 @@ describe('recording limits', () => {
       );
     }
     expect(replay.recordingStateName()).toBe('recorded');
-    expect(JSON.parse(replay.recordingJson()).events).toHaveLength(5);
+    expect(framesOf(replay.recordingText())).toHaveLength(5);
   });
 });
 
 describe('keeping and loading recordings', () => {
-  it('writes to the venue host when one serves this page', async () => {
-    const { replay, files } = setup();
-    replay.startRecording(JSON.stringify(configuration));
-    replay.recordFrame('cam-1', frame('cam-1', 1_000_000_000));
-    await replay.save('Take 1');
-    expect([...files.keys()]).toEqual(['Take-1.json']);
-    expect(replay.errorMessage()).toBe('');
-  });
-
-  it('hands the operator a file when no host serves the page', async () => {
+  it('hands the operator a file, uncompressed, when no host serves the page', async () => {
     const { replay, saved } = setup({ available: false });
     replay.startRecording(JSON.stringify(configuration));
     replay.recordFrame('cam-1', frame('cam-1', 1_000_000_000));
     await replay.save('');
-    expect(saved[0]?.name).toBe('recording.json');
-    expect(JSON.parse(saved[0]?.text ?? '{}').events).toHaveLength(1);
+    expect(saved[0]?.name).toBe('recording.jsonl');
+    expect(framesOf(saved[0]?.text ?? '')).toHaveLength(1);
   });
 
   it('says why it could not save or load', async () => {
@@ -213,15 +321,15 @@ describe('keeping and loading recordings', () => {
     await replay.save('take-1');
     expect(replay.errorMessage()).toContain('保存できる録画がありません');
     await replay.load('missing');
-    expect(replay.errorMessage()).toContain('missing.json');
+    expect(replay.errorMessage()).toContain('missing.jsonl.gz');
   });
 
   it('lists what the host keeps, and nothing when it keeps none', async () => {
     const { replay } = setup({
-      files: { 'take-1.json': '{}', 'take-2.json': '{}' },
+      files: { 'take-1.jsonl.gz': '{}', 'take-2.json': '{}' },
     });
     expect((await replay.listRecordings()).map((entry) => entry.name)).toEqual([
-      'take-1.json',
+      'take-1.jsonl.gz',
       'take-2.json',
     ]);
     const { replay: without } = setup({ available: false });
@@ -249,6 +357,73 @@ describe('keeping and loading recordings', () => {
     expect(replay.loadedCamerasJson()).toBe('["cam-1"]');
     expect(replay.loadedConfigurationJson()).toBe(
       JSON.stringify(configuration),
+    );
+  });
+
+  it('reads a recording taken as lines, with its measurements', () => {
+    const { replay } = setup();
+    const text = [
+      JSON.stringify({
+        type: 'header',
+        schema: 'twrmc/pose-3d-session',
+        version: 2,
+        producer: 'debug-pose-replay',
+        configuration,
+      }),
+      JSON.stringify({
+        type: 'spaceTime',
+        cameraId: 'cam-1',
+        payload: { status: 'measured' },
+      }),
+      JSON.stringify({
+        type: 'frame2d',
+        atUs: 1,
+        cameraId: 'cam-1',
+        frame: JSON.parse(frame('cam-1', 1_000_000_000)),
+      }),
+      JSON.stringify({
+        type: 'frame2d',
+        atUs: 2,
+        cameraId: 'cam-2',
+        frame: JSON.parse(frame('cam-2', 1_000_050_000)),
+      }),
+    ].join('\n');
+    replay.open(text, 'take-1.jsonl.gz');
+    expect(replay.errorMessage()).toBe('');
+    expect(replay.loadedCamerasJson()).toBe('["cam-1","cam-2"]');
+    expect(replay.replayDurationMs()).toBe(50);
+    expect(JSON.parse(replay.spaceTimePayloadJson('cam-1'))).toEqual({
+      status: 'measured',
+    });
+  });
+
+  it('unpacks a compressed recording the operator opened from disk', async () => {
+    const text = [
+      JSON.stringify({
+        type: 'header',
+        schema: 'twrmc/pose-3d-session',
+        version: 2,
+        producer: 'debug-pose-replay',
+        configuration,
+      }),
+      JSON.stringify({
+        type: 'frame2d',
+        atUs: 1,
+        cameraId: 'cam-1',
+        frame: JSON.parse(frame('cam-1', 1_000_000_000)),
+      }),
+    ].join('\n');
+    const gzip = new Blob([text])
+      .stream()
+      .pipeThrough(new CompressionStream('gzip'));
+    const compressed = new File(
+      [await new Response(gzip).blob()],
+      'take-1.jsonl.gz',
+    );
+    expect(await readRecordingFile(compressed)).toBe(text);
+    // A recording that was never compressed opens the same way.
+    expect(await readRecordingFile(new File([text], 'take-1.jsonl'))).toBe(
+      text,
     );
   });
 
@@ -360,10 +535,21 @@ describe('replaying', () => {
 
 describe('recording names', () => {
   it('turns whatever the operator typed into a name the host accepts', () => {
-    expect(recordingFileName('Take 1')).toBe('Take-1.json');
-    expect(recordingFileName('take-1.json')).toBe('take-1.json');
-    expect(recordingFileName('  ')).toBe('recording.json');
-    expect(recordingFileName('../escape')).toBe('escape.json');
+    expect(recordingFileName('Take 1')).toBe('Take-1.jsonl.gz');
+    expect(recordingFileName('  ')).toBe('recording.jsonl.gz');
+    expect(recordingFileName('../escape')).toBe('escape.jsonl.gz');
     expect(recordingFileName('a'.repeat(80)).length).toBeLessThanOrEqual(64);
+  });
+
+  it('keeps a name that already names a recording, so the host’s own list reads back', () => {
+    expect(recordingFileName('take-1.jsonl.gz')).toBe('take-1.jsonl.gz');
+    expect(recordingFileName('take-1.jsonl')).toBe('take-1.jsonl');
+    expect(recordingFileName('take-1.json')).toBe('take-1.json');
+  });
+
+  it('names a take being written after the time it started', () => {
+    expect(workingFileName(1_789_000_000_000_000)).toMatch(
+      /^taking-\d{4}-\d{2}-\d{2}T[\d-]+\.jsonl$/u,
+    );
   });
 });

@@ -110,21 +110,25 @@ fusion appのページ内で動いていたもので、いまはサービスのW
 
 3D推定の中身を作る前に、良し悪しを測る道具を用意します。段階3以降は、ここで決めた形式と指標で比べます。
 
-| ファイル                  | 内容                                                                                                                                                                                                                          |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/session.ts`          | セッション（`twrmc/pose-3d-session` v1）。サービスに渡したものを渡した順に、時刻付きで持つ。合成データのときは正解も持つ。`SessionRecorder`は、実行中のアプリから記録するための入れ物（件数で上限を切り、古いものから捨てる） |
-| `src/synthetic.ts`        | 合成シーン。seedから決まるので、同じ入力で何度でも測り直せる                                                                                                                                                                  |
-| `src/replay.ts`           | セッションを任意の実装へ流し込み、1メッセージごとの処理時間を測る。壁時計は待たないので、10秒のセッションはミリ秒で再生する                                                                                                   |
-| `src/metrics.ts`          | 正解との比較。件数を必ず添える                                                                                                                                                                                                |
-| `scripts/pose-3d-eval.ts` | CLI                                                                                                                                                                                                                           |
+| ファイル                  | 内容                                                                                                                                                                                                                                                     |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/session.ts`          | セッション（`twrmc/pose-3d-session` v2はJSONL、v1の単一JSONも読む）。サービスに渡したものを渡した順に、時刻付きで持つ。合成データのときは正解も持つ。`SessionRecorder`は、実行中のアプリから記録するための入れ物（件数で上限を切り、古いものから捨てる） |
+| `src/synthetic.ts`        | 合成シーン。seedから決まるので、同じ入力で何度でも測り直せる                                                                                                                                                                                             |
+| `src/replay.ts`           | セッションを任意の実装へ流し込み、1メッセージごとの処理時間を測る。壁時計は待たないので、10秒のセッションはミリ秒で再生する                                                                                                                              |
+| `src/metrics.ts`          | 正解との比較。件数を必ず添える                                                                                                                                                                                                                           |
+| `scripts/pose-3d-eval.ts` | CLI                                                                                                                                                                                                                                                      |
 
 ### CLI
 
 ```
 pnpm run pose3d:eval evaluate --cameras 4 --persons 3 --seconds 10
-pnpm run pose3d:eval synthesize --out tmp/session.json --seed 2
-pnpm run pose3d:eval replay --session tmp/session.json --implementation stub-timeout
+pnpm run pose3d:eval synthesize --out tmp/session.jsonl --seed 2
+pnpm run pose3d:eval replay --session tmp/session.jsonl --implementation stub-timeout
+pnpm run pose3d:eval evaluate --session ~/multiview-pose-recordings/take-1.jsonl.gz
 ```
+
+`--session`は、JSONL（v2）でも単一JSON（v1）でも読み、名前が`.gz`で終われば展開します。会場の録画を
+そのまま渡せます。`--out`も同じで、`.gz`で終わる名前なら圧縮して書きます。
 
 `--session`を渡さなければ、その場で合成シーンを作って評価します。`evaluate`に`--json`を付けると、
 そのままIssueに貼れるJSONを出します。

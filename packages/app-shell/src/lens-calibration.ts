@@ -183,6 +183,10 @@ export interface FileChooserOptions {
   readonly document: Document;
   readonly mount: HTMLElement;
   readonly locale: ShellLocale;
+  /** What the picker offers. Defaults to the lens calibration's own files. */
+  readonly accept?: string;
+  /** How the chosen file becomes text. Defaults to reading it as text. */
+  readonly read?: (file: File) => Promise<string>;
 }
 
 /**
@@ -237,7 +241,10 @@ export function chooseTextFileWithDialog(
     // The lens calibration app exports a ROS camera_info YAML document, and TurboWarp saves a list
     // export as `.txt`; an operator may have renamed it to `.yaml` for ROS tools. JSON is still read.
     // Camera Source decides which it is from the text, so the filter only has to let each through.
-    input.setAttribute('accept', LENS_CALIBRATION_FILE_ACCEPT);
+    input.setAttribute(
+      'accept',
+      options.accept ?? LENS_CALIBRATION_FILE_ACCEPT,
+    );
     input.hidden = true;
 
     const buttons = document.createElement('div');
@@ -280,7 +287,8 @@ export function chooseTextFileWithDialog(
     input.addEventListener('change', () => {
       const file = input.files?.[0];
       if (file === undefined) return;
-      file.text().then(
+      const read = options.read ?? ((chosen: File) => chosen.text());
+      read(file).then(
         (text) => finish(text),
         () => finish(null),
       );

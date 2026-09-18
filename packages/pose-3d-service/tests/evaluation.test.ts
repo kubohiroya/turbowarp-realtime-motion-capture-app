@@ -320,6 +320,50 @@ describe('sessions', () => {
     expect(parsed.session.truth).toHaveLength(60);
   });
 
+  it('writes one object a line, the header first', () => {
+    const { session } = scene();
+    const lines = serializeSession(session)
+      .split('\n')
+      .filter((line) => line !== '');
+    expect(JSON.parse(lines[0] ?? '{}')).toMatchObject({
+      type: 'header',
+      schema: 'twrmc/pose-3d-session',
+      version: 2,
+      producer: session.producer,
+    });
+    expect(lines).toHaveLength(
+      1 + session.events.length + (session.truth?.length ?? 0),
+    );
+    expect(JSON.parse(lines[1] ?? '{}')).toMatchObject({ type: 'frame2d' });
+  });
+
+  it('still reads the single document sessions were written as before', () => {
+    const { session } = scene();
+    const parsed = parseSession(
+      JSON.stringify({
+        schema: 'twrmc/pose-3d-session',
+        version: 1,
+        producer: 'venue',
+        configuration: session.configuration,
+        events: session.events.slice(0, 5),
+      }),
+    );
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(parsed.session.events).toHaveLength(5);
+    expect(parsed.session.producer).toBe('venue');
+  });
+
+  it('replays a take that was cut off mid-line, as far as it got', () => {
+    const { session } = scene();
+    const lines = serializeSession(session).split('\n');
+    const cut = `${lines.slice(0, 4).join('\n')}\n{"type":"frame2d","atUs":`;
+    const parsed = parseSession(cut);
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(parsed.session.events).toHaveLength(3);
+  });
+
   it('refuses what it cannot replay', () => {
     const reasons = [
       parseSession('not json'),
