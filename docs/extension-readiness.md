@@ -37,9 +37,9 @@ extension pin、配布artifactを所有する。`turbowarp-realtime-motion-captu
 | WebRTC                | `@kubohiroya/turbowarp-webrtc@0.3.0`                  | Ready                 | latest-data pose channel、backpressure、clock sync、frame latency reportまで揃った |
 | DSL values/schema     | `@kubohiroya/turbowarp-yaml-json@0.3.0`               | Ready                 | 外部DSL textのsafe parseとJSON Schema検証が揃った                                  |
 | Assets/animation      | `@kubohiroya/turbowarp-asset-manager@0.16.0`          | Ready                 | block API manifestを配布済み。app asset manifestは未確定                           |
-| 3D scene              | `@kubohiroya/turbowarp-aframe@0.4.0`                  | Ready                 | scene capability v2（VRM）を公開済み。A-Frame 1.8.0をjsDelivrからSRI付きで読み込む |
+| 3D scene              | `@kubohiroya/turbowarp-aframe@0.5.0`                  | Ready                 | scene capability v2（VRMのボーンと表情）。A-Frame 1.8.0をjsDelivrからSRI付きで読込 |
 | Diagnostics           | `@kubohiroya/turbowarp-diagnostic-overlay@0.4.0`      | Ready                 | block API manifestを配布済み。app readiness payloadは未確定                        |
-| Motion capture blocks | `@kubohiroya/turbowarp-realtime-motion-capture@0.4.0` | Ready                 | 101 block。avatar retargetはcapability v2でVRMを動かす                             |
+| Motion capture blocks | `@kubohiroya/turbowarp-realtime-motion-capture@0.5.0` | Ready                 | 103 block。personにbindしたVRMのボーンと表情を動かす                               |
 
 すべての固定artifactは`node scripts/check-extension-readiness.ts --verify-network`で公開bundleと
 manifestに照合済みです。release build自体はnetwork accessなしで、commit済みartifactだけを使用します。

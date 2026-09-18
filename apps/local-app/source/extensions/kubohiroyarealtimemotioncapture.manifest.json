@@ -32,6 +32,16 @@
       "arguments": []
     },
     {
+      "opcode": "avatarExpressionNames",
+      "blockType": "REPORTER",
+      "arguments": [
+        {
+          "id": "PERSON_ID",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
       "opcode": "avatarRetargetError",
       "blockType": "REPORTER",
       "arguments": []
@@ -534,6 +544,24 @@
       "opcode": "resetAvatarRetarget",
       "blockType": "COMMAND",
       "arguments": []
+    },
+    {
+      "opcode": "setAvatarExpression",
+      "blockType": "COMMAND",
+      "arguments": [
+        {
+          "id": "NAME",
+          "type": "STRING"
+        },
+        {
+          "id": "PERSON_ID",
+          "type": "STRING"
+        },
+        {
+          "id": "WEIGHT",
+          "type": "NUMBER"
+        }
+      ]
     },
     {
       "opcode": "setFrameSyncDisplayRefresh",
