@@ -21,7 +21,12 @@ export const localAppConfig: AppShellAppConfig = {
   blockIconURI:
     'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCI+PHJlY3QgeD0iNCIgeT0iMTIiIHdpZHRoPSIzMCIgaGVpZ2h0PSIyNCIgcng9IjQiIGZpbGw9IiM0Qzk3RkYiLz48cGF0aCBkPSJNMzQgMjJsMTAtNnYxNmwtMTAtNnoiIGZpbGw9IiMyRTZGRDkiLz48Y2lyY2xlIGN4PSIxOSIgY3k9IjI0IiByPSI3IiBmaWxsPSIjRkZGRkZGIi8+PC9zdmc+',
   // avatarRetargetV1: the avatars that follow the 3D output (#36 stage 6), as in the fusion app.
-  featureFlags: ['webgpuMoveNetMultiPose', 'avatarRetargetV1'],
+  // protocolV1Codec: validating the Performance DSL that gives those avatars their effects.
+  featureFlags: [
+    'webgpuMoveNetMultiPose',
+    'protocolV1Codec',
+    'avatarRetargetV1',
+  ],
   cameraGrid: true,
   lensCalibration: true,
   timeSpaceSync: true,

@@ -1257,7 +1257,8 @@
       "sha256": "ee7c8fb7b966417a09e015704b045deda3cc7a1a3275db68fcc4a10139ad80b8",
       "status": "ready",
       "embeddedIn": [
-        "fusion-app"
+        "fusion-app",
+        "local-app"
       ],
       "requiredOperations": [
         {

@@ -59,6 +59,7 @@ import {
   avatarVisibilityScripts,
   chooseAvatarAxesSteps,
   chooseAvatarVrmSteps,
+  performanceDslLoadSteps,
 } from './avatar.ts';
 
 /** The application flag that turns recording and replay on. Off in a venue build. */
@@ -133,6 +134,7 @@ const action = {
   start3d: 'start3d',
   stop3d: 'stop3d',
   chooseAvatarVrm: 'chooseAvatarVrm',
+  dslFiles: 'dslFiles',
   chooseAvatarAxes: 'chooseAvatarAxes',
   startRecording: 'startRecording',
   stopRecording: 'stopRecording',
@@ -469,6 +471,7 @@ const baseMenu = (): BlockNode[] => [
       addMenu(action.stop3d, text('3D推定を止める')),
       addMenu(action.chooseAvatarVrm, text('アバターのVRMを指定する')),
       addMenu(action.chooseAvatarAxes, text('アバターの向きを設定する')),
+      addMenu(action.dslFiles, text('演出ファイルを選ぶ')),
     ],
   ),
   ifThen(shellBlock('appFeatureEnabled', { FEATURE: text(replayFlag) }), [
@@ -1373,6 +1376,32 @@ export const localAppScripts: readonly Script[] = [
     ),
     ...chooseAvatarVrmSteps(shell),
     block(`${titleMenu}_showMenu`),
+  ]),
+
+  /**
+   * The Performance DSL, as in the fusion app: picked from the title menu's files, parsed with
+   * turbowarp-yaml-json and checked against the contract. A valid one gives the avatars their
+   * performers' effects (see avatarVisibilityScripts); anything else is reported and the previous
+   * DSL stays.
+   */
+  script({ x: 5000, y: 1400 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.dslFiles },
+    ),
+    block(`${titleMenu}_showDslFiles`),
+  ]),
+
+  script({ x: 5000, y: 1700 }, [
+    block(`${titleMenu}_whenDslSourceOpened`),
+    notice(
+      concatenate(
+        text('読み込んだ演出ファイル: '),
+        reporter(block(`${titleMenu}_openedDslName`)),
+      ),
+    ),
+    ...performanceDslLoadSteps(shell, titleMenu, avatarRefs),
   ]),
 
   script({ x: 5000, y: 1000 }, [

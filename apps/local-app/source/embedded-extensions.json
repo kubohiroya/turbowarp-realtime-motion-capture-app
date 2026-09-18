@@ -69,6 +69,26 @@
       }
     },
     {
+      "id": "kubohiroyayamljson",
+      "path": "extensions/kubohiroyayamljson.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-yaml-json",
+        "version": "0.3.0",
+        "artifact": "dist/turbowarp-yaml-json.js",
+        "integrity": "sha256-7nyPt7lmQXoJ4BVwSwRd7aPMehoyddto/MShATmtgLg=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/kubohiroyayamljson.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-Qq4cpaZxCfDgIvxjgqtPITuRiVCZrHjwyurD4PIVFWc="
+        }
+      }
+    },
+    {
       "id": "kubohiroyarealtimemotioncapture",
       "path": "extensions/kubohiroyarealtimemotioncapture.js",
       "mediaType": "text/javascript",
@@ -145,6 +165,7 @@
         "kubohiroyaturbowarptitlemenu",
         "kubohiroyacamerasource",
         "kubohiroyatimespacesync",
+        "kubohiroyayamljson",
         "kubohiroyarealtimemotioncapture",
         "turbowarpaframe",
         "realtimemotioncapturepose3dservice",
