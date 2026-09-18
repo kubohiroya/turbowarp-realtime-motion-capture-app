@@ -22,10 +22,15 @@ import { createServer } from 'node:net';
 import { mkdtemp, rm, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { constants, gunzipSync } from 'node:zlib';
+import { Readable } from 'node:stream';
+import type { ReadableStream as NodeReadableStream } from 'node:stream/web';
+import { constants, createGunzip } from 'node:zlib';
 
 import { startLocalHost } from '../packages/local-host/src/host.ts';
-import { parseSession } from '../packages/pose-3d-service/src/session.ts';
+import {
+  parseSessionHeader,
+  parseSessionLine,
+} from '../packages/pose-3d-service/src/session.ts';
 import { MAXIMUM_RECORDING_BYTES } from '../packages/local-host/src/recordings.ts';
 
 const COCO_17 = [
@@ -170,6 +175,99 @@ function quantile(sorted: readonly number[], fraction: number): number {
 const megabytes = (bytes: number) => bytes / (1024 * 1024);
 const milliseconds = (value: number) => Math.round(value * 100) / 100;
 
+/** Heap is sampled after this much text has gone by, rather than on every chunk. */
+const HEAP_SAMPLE_CHARACTERS = 1024 * 1024;
+
+/**
+ * Fetches a finished recording and reads it back line by line, as the page does (#54).
+ *
+ * A recording at the host's limit unpacks to more than V8 can hold as one string (512 MB on disk is
+ * about 1.7 GB of lines), so the body is unpacked as it arrives and each line is read by the same
+ * rules `parseSession` applies, then dropped: only the count is kept.
+ *
+ * Fetching, unpacking and parsing are interleaved, so the figures are split by where the time went:
+ * `parseMs` is the time spent inside the line parser, and `readMs` the rest of the wall clock —
+ * fetching, unpacking, decoding and splitting into lines. `heapGrowth` is the most the heap grew above
+ * where it started while reading, sampled every megabyte of text; since nothing is kept, it is the
+ * reader's working set, not the size of the parsed recording. Indicative only: the collector runs when
+ * it likes, and a fall is reported as zero.
+ */
+async function readBackRecording(url: string): Promise<
+  | {
+      ok: true;
+      events: number;
+      readMs: number;
+      parseMs: number;
+      heapGrowth: number;
+    }
+  | { ok: false; reason: string }
+> {
+  const startedAt = performance.now();
+  const heapBefore = process.memoryUsage().heapUsed;
+  let heapPeak = heapBefore;
+  let sinceSample = 0;
+  let parseMs = 0;
+  let lineNumber = 0;
+  let events = 0;
+  let ended = false;
+  let failure: string | undefined;
+
+  const readLine = (line: string) => {
+    lineNumber += 1;
+    const at = performance.now();
+    if (lineNumber === 1) {
+      const header = parseSessionHeader(line);
+      if (!header.ok) failure = header.reason;
+    } else {
+      const read = parseSessionLine(line, lineNumber);
+      if (read.kind === 'end') ended = true;
+      else if (read.kind === 'failed') failure = read.reason;
+      else if (read.kind === 'event') events += 1;
+    }
+    parseMs += performance.now() - at;
+  };
+
+  const response = await fetch(url);
+  if (!response.ok || response.body === null)
+    return { ok: false, reason: `the host answered ${response.status}` };
+  // Served as stored; unpacked here, as the page does with its own decompressor.
+  const text = Readable.fromWeb(
+    response.body as unknown as NodeReadableStream<Uint8Array>,
+  )
+    .pipe(createGunzip({ finishFlush: constants.Z_SYNC_FLUSH }))
+    .setEncoding('utf8');
+  let carry = '';
+  for await (const chunk of text as AsyncIterable<string>) {
+    const lines = `${carry}${chunk}`.split('\n');
+    carry = lines.pop() ?? '';
+    for (const line of lines) {
+      readLine(line);
+      if (ended || failure !== undefined) break;
+    }
+    if (ended || failure !== undefined) {
+      text.destroy();
+      break;
+    }
+    sinceSample += chunk.length;
+    if (sinceSample >= HEAP_SAMPLE_CHARACTERS) {
+      sinceSample = 0;
+      heapPeak = Math.max(heapPeak, process.memoryUsage().heapUsed);
+    }
+  }
+  if (!ended && failure === undefined && carry !== '') readLine(carry);
+  heapPeak = Math.max(heapPeak, process.memoryUsage().heapUsed);
+  if (failure !== undefined) return { ok: false, reason: failure };
+  if (lineNumber === 0) return { ok: false, reason: 'the recording is empty' };
+  const totalMs = performance.now() - startedAt;
+  return {
+    ok: true,
+    events,
+    readMs: totalMs - parseMs,
+    parseMs,
+    heapGrowth: heapPeak - heapBefore,
+  };
+}
+
 async function main(argv: readonly string[]): Promise<number> {
   const options = parseOptions(argv);
   const directory = await mkdtemp(join(tmpdir(), 'measure-recording-'));
@@ -288,21 +386,9 @@ async function main(argv: readonly string[]): Promise<number> {
   ).took;
   const compressed = (await stat(join(recordings, finished))).size;
 
-  const readAt = performance.now();
-  // Served as stored; unpacked here, as the page does with its own decompressor.
-  const text = gunzipSync(
-    Buffer.from(await (await fetch(route(`&name=${finished}`))).arrayBuffer()),
-    { finishFlush: constants.Z_SYNC_FLUSH },
-  ).toString('utf8');
-  const readMs = performance.now() - readAt;
-  // Indicative only: the collector may run between the two readings, so a fall is reported as zero.
-  const beforeParse = process.memoryUsage().heapUsed;
-  const parseAt = performance.now();
-  const parsed = parseSession(text);
-  const parseMs = performance.now() - parseAt;
-  const parsedHeap = process.memoryUsage().heapUsed - beforeParse;
-  if (!parsed.ok) {
-    console.error(`The recording did not read back: ${parsed.reason}`);
+  const readBack = await readBackRecording(route(`&name=${finished}`));
+  if (!readBack.ok) {
+    console.error(`The recording did not read back: ${readBack.reason}`);
     await host.stop();
     return 1;
   }
@@ -323,7 +409,7 @@ async function main(argv: readonly string[]): Promise<number> {
     frames: written,
     asked: frameCount,
     stoppedByLimit: refusedAt > 0,
-    eventsReadBack: parsed.session.events.length,
+    eventsReadBack: readBack.events,
     bytesPerFrame: Math.round(perFrame),
     uncompressedMB: Math.round(megabytes(rawBytes) * 100) / 100,
     compressedMB: Math.round(megabytes(compressed) * 100) / 100,
@@ -334,9 +420,9 @@ async function main(argv: readonly string[]): Promise<number> {
     appendMaxMs: milliseconds(sorted[sorted.length - 1] ?? 0),
     writeSeconds: Math.round(writeSeconds * 10) / 10,
     finishMs: Math.round(compressMs),
-    readMs: Math.round(readMs),
-    parseMs: Math.round(parseMs),
-    parsedHeapMB: Math.round(megabytes(Math.max(0, parsedHeap)) * 10) / 10,
+    readMs: Math.round(readBack.readMs),
+    parseMs: Math.round(readBack.parseMs),
+    parsedHeapMB: Math.round(megabytes(readBack.heapGrowth) * 10) / 10,
     limitMinutes: Math.round(limitMinutes),
   };
 
@@ -351,7 +437,7 @@ async function main(argv: readonly string[]): Promise<number> {
         `  append         ${report.appends} requests, median ${report.appendMedianMs} ms, p95 ${report.appendP95Ms} ms, max ${report.appendMaxMs} ms`,
         `  writing        ${report.writeSeconds} s of wall clock for ${report.minutes} minutes of movement`,
         `  finishing      ${report.finishMs} ms (the take was compressed as it ran)`,
-        `  reading back   ${report.readMs} ms to fetch, ${report.parseMs} ms to parse, ${report.parsedHeapMB} MB held`,
+        `  reading back   ${report.readMs} ms to fetch, ${report.parseMs} ms to parse, ${report.parsedHeapMB} MB of heap at most`,
         `  size limit     ${report.limitMinutes} minutes at this rate (${Math.round(megabytes(MAXIMUM_RECORDING_BYTES))} MB)`,
       ].join('\n'),
     );

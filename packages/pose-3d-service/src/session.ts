@@ -103,34 +103,34 @@ export function parseSession(
   text: string,
 ): { ok: true; session: Session } | { ok: false; reason: string } {
   const first = text.split('\n', 1)[0] ?? '';
-  let header: unknown;
-  try {
-    header = JSON.parse(first);
-  } catch {
-    header = undefined;
-  }
-  if (
-    typeof header === 'object' &&
-    header !== null &&
-    (header as Record<string, unknown>)['type'] === 'header'
-  ) {
-    return parseSessionLines(text, header as Record<string, unknown>);
-  }
+  if (isSessionHeaderLine(first)) return parseSessionLines(text);
   return parseSessionDocument(text);
 }
 
+/** Whether a first line is the header of a session written as lines, whatever it says. */
+function isSessionHeaderLine(line: string): boolean {
+  const record = parseRecord(line);
+  return record !== undefined && record['type'] === 'header';
+}
+
+/** What a session's header line says, and what it is recorded with. */
+export interface SessionHeader {
+  readonly producer: string;
+  readonly configuration: Session['configuration'];
+}
+
 /**
- * Reads a session written as lines.
+ * Reads the header line of a session written as lines, refusing anything it cannot replay.
  *
- * A line that cannot be read ends the session there rather than failing it: a recording interrupted
- * mid-line is a recording of everything before that line, and refusing it would throw away the take
- * to keep the format tidy. Everything before the broken line is replayed, and the caller is told
- * nothing, because a truncated take is what it looks like.
+ * With `parseSessionLine`, this is the whole of `parseSession` for version 2, one line at a time, so a
+ * recording too large to hold as one string is read by the same rules as one that is not.
  */
-function parseSessionLines(
-  text: string,
-  header: Record<string, unknown>,
-): { ok: true; session: Session } | { ok: false; reason: string } {
+export function parseSessionHeader(
+  line: string,
+): { ok: true; header: SessionHeader } | { ok: false; reason: string } {
+  const header = parseRecord(line);
+  if (header === undefined || header['type'] !== 'header')
+    return { ok: false, reason: 'A session must start with its header.' };
   if (header['schema'] !== SESSION_SCHEMA)
     return {
       ok: false,
@@ -153,37 +153,89 @@ function parseSessionLines(
       reason: 'A session must carry the configuration it was recorded with.',
     };
   }
+  return {
+    ok: true,
+    header: {
+      producer: header['producer'],
+      configuration: header['configuration'] as Session['configuration'],
+    },
+  };
+}
+
+/** One line after the header, as `parseSessionLine` reads it. */
+export type SessionLine =
+  | { readonly kind: 'event'; readonly event: SessionEvent }
+  | { readonly kind: 'truth'; readonly truth: TruthFrame }
+  | { readonly kind: 'other' }
+  | { readonly kind: 'end' }
+  | { readonly kind: 'failed'; readonly reason: string };
+
+/**
+ * Reads one line after the header.
+ *
+ * `end` is a line that cannot be read: the session ends there rather than failing, because a
+ * recording interrupted mid-line is a recording of everything before that line, and refusing it would
+ * throw away the take to keep the format tidy. `other` is a blank line or a kind of line the service
+ * does not replay (a camera's space-time measurement, say). `lineNumber` counts from 1, the header
+ * being line 1, and is what a refusal names.
+ */
+export function parseSessionLine(
+  line: string,
+  lineNumber: number,
+): SessionLine {
+  if (line.trim() === '') return { kind: 'other' };
+  const record = parseRecord(line);
+  if (record === undefined) return { kind: 'end' };
+  const kind = record['type'];
+  if (kind === 'truth')
+    return { kind: 'truth', truth: record as unknown as TruthFrame };
+  if (kind !== 'frame2d' && kind !== 'requestPose3d') return { kind: 'other' };
+  const failure = eventFailure(record, lineNumber);
+  if (failure !== undefined) return { kind: 'failed', reason: failure };
+  return { kind: 'event', event: record as unknown as SessionEvent };
+}
+
+/** A line as a JSON object, or nothing when it is not one. */
+function parseRecord(line: string): Record<string, unknown> | undefined {
+  let value: unknown;
+  try {
+    value = JSON.parse(line);
+  } catch {
+    return undefined;
+  }
+  if (typeof value !== 'object' || value === null || Array.isArray(value))
+    return undefined;
+  return value as Record<string, unknown>;
+}
+
+/**
+ * Reads a session written as lines.
+ *
+ * Everything before a broken line is replayed, and the caller is told nothing, because a truncated
+ * take is what it looks like.
+ */
+function parseSessionLines(
+  text: string,
+): { ok: true; session: Session } | { ok: false; reason: string } {
+  const lines = text.split('\n');
+  const header = parseSessionHeader(lines[0] ?? '');
+  if (!header.ok) return header;
   const events: SessionEvent[] = [];
   const truth: TruthFrame[] = [];
-  const lines = text.split('\n');
-  for (const [index, line] of lines.entries()) {
-    if (index === 0 || line.trim() === '') continue;
-    let value: unknown;
-    try {
-      value = JSON.parse(line);
-    } catch {
-      break;
-    }
-    if (typeof value !== 'object' || value === null || Array.isArray(value))
-      break;
-    const record = value as Record<string, unknown>;
-    const kind = record['type'];
-    if (kind === 'truth') {
-      truth.push(record as unknown as TruthFrame);
-      continue;
-    }
-    if (kind !== 'frame2d' && kind !== 'requestPose3d') continue;
-    const failure = eventFailure(record, index + 1);
-    if (failure !== undefined) return { ok: false, reason: failure };
-    events.push(record as unknown as SessionEvent);
+  for (let index = 1; index < lines.length; index += 1) {
+    const read = parseSessionLine(lines[index] ?? '', index + 1);
+    if (read.kind === 'end') break;
+    if (read.kind === 'failed') return { ok: false, reason: read.reason };
+    if (read.kind === 'event') events.push(read.event);
+    else if (read.kind === 'truth') truth.push(read.truth);
   }
   return {
     ok: true,
     session: {
       schema: SESSION_SCHEMA,
       version: SESSION_VERSION,
-      producer: header['producer'],
-      configuration: header['configuration'] as Session['configuration'],
+      producer: header.header.producer,
+      configuration: header.header.configuration,
       events,
       ...(truth.length === 0 ? {} : { truth }),
     },
