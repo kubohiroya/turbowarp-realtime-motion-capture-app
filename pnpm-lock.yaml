@@ -67,8 +67,8 @@ importers:
         specifier: 0.2.0
         version: 0.2.0
       '@kubohiroya/turbowarp-title-menu':
-        specifier: 0.2.2
-        version: 0.2.2
+        specifier: 0.2.3
+        version: 0.2.3
       '@kubohiroya/turbowarp-webrtc':
         specifier: 0.4.0
         version: 0.4.0
@@ -100,8 +100,8 @@ importers:
         specifier: 0.2.0
         version: 0.2.0
       '@kubohiroya/turbowarp-title-menu':
-        specifier: 0.2.2
-        version: 0.2.2
+        specifier: 0.2.3
+        version: 0.2.3
       '@kubohiroya/turbowarp-webrtc':
         specifier: 0.4.0
         version: 0.4.0
@@ -130,8 +130,8 @@ importers:
         specifier: 0.2.0
         version: 0.2.0
       '@kubohiroya/turbowarp-title-menu':
-        specifier: 0.2.2
-        version: 0.2.2
+        specifier: 0.2.3
+        version: 0.2.3
       '@kubohiroya/turbowarp-yaml-json':
         specifier: 0.3.0
         version: 0.3.0
@@ -305,6 +305,10 @@ packages:
     resolution: {integrity: sha512-sYt1KBEEm00biA0kjhO+1OkpSO9qb6UI++bXZvtYDQ+2sLMKM1c7vGFD8cEQsLy51cx0vSM8PUufiqb2dIwnQw==}
     engines: {node: '>=22'}
 
+  '@kubohiroya/turbowarp-app-shell@0.2.1':
+    resolution: {integrity: sha512-xq6y3Cx7b0VGR0xTOJII8nekh6XRP0kSVPeZ+7qgODaCoIDVHy3w8/mtYIBFZxJYcHsfDnWvjqqEtpqJsM6R1g==}
+    engines: {node: '>=22'}
+
   '@kubohiroya/turbowarp-asset-manager@0.16.0':
     resolution: {integrity: sha512-8mNAi+eOVKKGz/i+aqxVPd3Wbg6s0VJvKiYqObsqmi5a6DDIYMOO7sUntZeSowNstL+YiKBC4qm9DXxxC3dhkg==}
     engines: {node: '>=22.18.0'}
@@ -366,8 +370,8 @@ packages:
     resolution: {integrity: sha512-aahqgZwGxkFhVAbQh57sicQ0GyM9sX4EbmwW84HSNPYR7kBxytEmyQ9FNuSh28jfdAInSV+1dpXJRJOSXPjvwA==}
     engines: {node: '>=22.18.0'}
 
-  '@kubohiroya/turbowarp-title-menu@0.2.2':
-    resolution: {integrity: sha512-pMGQb328eJFrMf6J8CodSk9v46j5Twx15sKSu/RUox07ep8ci7YRrRl+BIz0Q+wtskVT50LISx1SBnnCCSxiPw==}
+  '@kubohiroya/turbowarp-title-menu@0.2.3':
+    resolution: {integrity: sha512-mhAntajDtZBLAH7iRRlq/1FK5A9pOVKSfxnkm9zs6iy9e9NRkUeVzq0RAZrkSz93CDsP0moFps/4e1W+16p7eQ==}
     engines: {node: '>=22'}
 
   '@kubohiroya/turbowarp-webrtc-qrcode-pairing@0.2.3':
@@ -1744,6 +1748,8 @@ snapshots:
 
   '@kubohiroya/turbowarp-app-shell@0.2.0': {}
 
+  '@kubohiroya/turbowarp-app-shell@0.2.1': {}
+
   '@kubohiroya/turbowarp-asset-manager@0.16.0': {}
 
   '@kubohiroya/turbowarp-camera-source@0.13.0': {}
@@ -1820,9 +1826,9 @@ snapshots:
     dependencies:
       '@kubohiroya/turbowarp-camera-source': 0.7.0
 
-  '@kubohiroya/turbowarp-title-menu@0.2.2':
+  '@kubohiroya/turbowarp-title-menu@0.2.3':
     dependencies:
-      '@kubohiroya/turbowarp-app-shell': 0.2.0
+      '@kubohiroya/turbowarp-app-shell': 0.2.1
 
   '@kubohiroya/turbowarp-webrtc-qrcode-pairing@0.2.3(@kubohiroya/turbowarp-camera-source@0.13.0)(@kubohiroya/turbowarp-jsqr@0.4.0(@kubohiroya/turbowarp-camera-source@0.13.0)(@types/emscripten@0.0.34))(@kubohiroya/turbowarp-webrtc@0.4.0)':
     dependencies:
