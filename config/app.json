@@ -23,7 +23,7 @@
     }
   ],
   "plannedFeatures": [
-    "時間方向の人物同定と、演出DSLのエフェクトをアバターに表すblockスクリプトを実装する。",
+    "骨格の制約と平滑化、演出DSLのエフェクトをアバターに表すblockスクリプトを実装する。",
     "設定と演出DSLの永続化を実装する（方針は確定済み）。",
     "ローカルホストを単体バイナリとして配布する。",
     "会場機材でE2E検証を行い、v0.1.0を配布する。"
@@ -53,7 +53,7 @@
       }
     },
     "plannedFeatures": [
-      "Implement identity over time, and the block scripts that show Performance DSL effects on the avatars.",
+      "Implement skeleton constraints and smoothing, and the block scripts that show Performance DSL effects on the avatars.",
       "Implement persistence for settings and the performance DSL (the design is settled).",
       "Distribute the local host as a single binary.",
       "Verify end to end on venue hardware and release v0.1.0."

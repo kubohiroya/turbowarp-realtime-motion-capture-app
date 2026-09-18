@@ -162,12 +162,20 @@ export interface Joint3D {
   readonly cameraIds: readonly string[];
 }
 
+/** A 2D person a 3D person was fused from: the camera and that camera's tracking ID. */
+export interface PersonView {
+  readonly cameraId: string;
+  readonly trackingId: string;
+}
+
 export interface PoseFrame3DPerson {
   readonly personId: string;
   readonly confidence: number;
   readonly identitySource: 'geometry' | 'glow-stick' | 'tracking-id' | 'stub';
   readonly meanReprojectionErrorPx: number | null;
   readonly joints: readonly Joint3D[];
+  /** The 2D persons this person was fused from, for pairing them with their views. */
+  readonly views?: readonly PersonView[];
 }
 
 export interface PoseFrame3DV2 {
@@ -498,6 +506,24 @@ export function validatePoseFrame3D(value: unknown): Validation<PoseFrame3DV2> {
         'meanReprojectionErrorPx must be null or non-negative.',
       );
     }
+    const views = person['views'];
+    if (
+      views !== undefined &&
+      !(
+        Array.isArray(views) &&
+        views.every(
+          (view) =>
+            isObject(view) &&
+            typeof view['cameraId'] === 'string' &&
+            typeof view['trackingId'] === 'string',
+        )
+      )
+    ) {
+      return fail(
+        'invalid-response',
+        'views must list {cameraId, trackingId} strings.',
+      );
+    }
     const joints = person['joints'];
     if (
       !Array.isArray(joints) ||
@@ -601,16 +627,6 @@ export function validateResponse(value: unknown): Validation<ServiceResponse> {
  * was not measured or constrained keeps its place with score 0, so a consumer that reads version 1
  * cannot take a prediction for a measurement.
  */
-/**
- * The person ID fusion-v0 gives a person: the camera and tracker that saw them first, in the
- * contract's identifier alphabet, which a tracking ID from a detector need not respect.
- */
-export function personIdOf(cameraId: string, trackingId: string): string {
-  return `${cameraId}.${trackingId}`
-    .replace(/[^A-Za-z0-9._-]/gu, '_')
-    .slice(0, 64);
-}
-
 export function toPoseFrame3DV1(frame: PoseFrame3DV2): unknown {
   const persons = frame.persons.flatMap((person) => {
     const cameraIds = [
