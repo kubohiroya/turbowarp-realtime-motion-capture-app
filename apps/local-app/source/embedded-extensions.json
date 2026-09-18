@@ -89,6 +89,26 @@
       }
     },
     {
+      "id": "turbowarpaframe",
+      "path": "extensions/turbowarpaframe.js",
+      "mediaType": "text/javascript",
+      "parameters": [],
+      "encoding": "base64",
+      "source": {
+        "provider": "npm",
+        "package": "@kubohiroya/turbowarp-aframe",
+        "version": "0.5.0",
+        "artifact": "dist/turbowarp-aframe.js",
+        "integrity": "sha256-fzDhMLuPM+3ZQVE11NvIgmi1VKDTkWrzXsN2wbolJ4o=",
+        "apiManifest": {
+          "artifact": "dist/extension-manifest.json",
+          "path": "extensions/turbowarpaframe.manifest.json",
+          "formatVersion": 1,
+          "integrity": "sha256-jqxTn4rGi3ggfkPrySiDTWa2lJltuKzeR9kWs0ZSmIo="
+        }
+      }
+    },
+    {
       "id": "realtimemotioncapturepose3dservice",
       "path": "extensions/realtimemotioncapturepose3dservice.js",
       "mediaType": "text/javascript",
@@ -126,6 +146,7 @@
         "kubohiroyacamerasource",
         "kubohiroyatimespacesync",
         "kubohiroyarealtimemotioncapture",
+        "turbowarpaframe",
         "realtimemotioncapturepose3dservice",
         "kubohiroyadiagnosticoverlay"
       ]

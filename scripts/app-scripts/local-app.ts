@@ -52,6 +52,14 @@ import {
   pose3dService,
   pose3dStatusText,
 } from './pose-3d.ts';
+import {
+  AvatarSteps,
+  avatarReferences,
+  avatarVariables,
+  avatarVisibilityScripts,
+  chooseAvatarAxesSteps,
+  chooseAvatarVrmSteps,
+} from './avatar.ts';
 
 /** The application flag that turns recording and replay on. Off in a venue build. */
 const replayFlag = 'debugPoseReplayV1';
@@ -124,6 +132,8 @@ const action = {
   calibrateSpaceTime: 'calibrateSpaceTime',
   start3d: 'start3d',
   stop3d: 'stop3d',
+  chooseAvatarVrm: 'chooseAvatarVrm',
+  chooseAvatarAxes: 'chooseAvatarAxes',
   startRecording: 'startRecording',
   stopRecording: 'stopRecording',
   chooseRecording: 'chooseRecording',
@@ -187,6 +197,13 @@ const spaceTimeDelays = namedReference(
 );
 /** `true` while each pose round is also forwarded to the 3D service. */
 const pose3dEnabled = namedReference('3D enabled', 'variable:3d-enabled');
+/**
+ * #36 stage 6: the fusion app's avatars, on the same page. They follow the 3D output — set up when
+ * the 3D service is, turned after each 3D request, removed when it stops — and stand against the
+ * projected pattern the space-time calibration measured.
+ */
+const avatarRefs = avatarReferences();
+const avatar = new AvatarSteps(shell, avatarRefs, spaceTime.corners);
 const replayCamera = namedReference('replay camera', 'variable:replay-camera');
 const replayIndex = namedReference('replay index', 'variable:replay-index');
 const replayFrame = namedReference('replay frame', 'variable:replay-frame');
@@ -229,6 +246,7 @@ export const localAppStageData = {
     [spaceTimeMeasurement.id]: [spaceTimeMeasurement.name, ''],
     [spaceTimeDelays.id]: [spaceTimeDelays.name, ''],
     [pose3dEnabled.id]: [pose3dEnabled.name, 'false'],
+    ...avatarVariables(avatarRefs),
     [replayCamera.id]: [replayCamera.name, ''],
     [replayIndex.id]: [replayIndex.name, 0],
     [replayFrame.id]: [replayFrame.name, ''],
@@ -449,6 +467,8 @@ const baseMenu = (): BlockNode[] => [
     [
       addMenu(action.start3d, text('3D推定を始める')),
       addMenu(action.stop3d, text('3D推定を止める')),
+      addMenu(action.chooseAvatarVrm, text('アバターのVRMを指定する')),
+      addMenu(action.chooseAvatarAxes, text('アバターの向きを設定する')),
     ],
   ),
   ifThen(shellBlock('appFeatureEnabled', { FEATURE: text(replayFlag) }), [
@@ -495,6 +515,7 @@ const invalidateCalibration = (): BlockNode[] => [
   setVariable(spaceTime.ready, text('false')),
   ifThen(equals(variable(pose3dEnabled), text('true')), [
     setVariable(pose3dEnabled, text('false')),
+    ...avatar.stop(),
     serviceBlock('stopService'),
   ]),
 ];
@@ -964,6 +985,7 @@ export const localAppScripts: readonly Script[] = [
                   shellBlock('endPoseRound'),
                   ifThen(equals(variable(pose3dEnabled), text('true')), [
                     serviceBlock('requestPose3d'),
+                    ...avatar.frame(),
                   ]),
                   ifThen(
                     greaterThan(
@@ -988,6 +1010,7 @@ export const localAppScripts: readonly Script[] = [
                               notice(
                                 concatenate(
                                   pose3dStatusText(shell),
+                                  avatar.status(),
                                   text(' — 姿勢推定 '),
                                   shellValue('poseMeasurementSummary'),
                                 ),
@@ -1311,6 +1334,8 @@ export const localAppScripts: readonly Script[] = [
               ],
               [
                 setVariable(pose3dEnabled, text('true')),
+                ...avatar.setup(),
+                shellBlock('hideAppLoading'),
                 ifElse(
                   equals(variable(poseRunning), text('true')),
                   [
@@ -1337,6 +1362,29 @@ export const localAppScripts: readonly Script[] = [
     block(`${titleMenu}_showMenu`),
   ]),
 
+  /** #36 stage 6: shows each avatar while its person is recognized. */
+  ...avatarVisibilityScripts(shell, avatarRefs, { x: 5000, y: 48 }),
+
+  script({ x: 5000, y: 600 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.chooseAvatarVrm },
+    ),
+    ...chooseAvatarVrmSteps(shell),
+    block(`${titleMenu}_showMenu`),
+  ]),
+
+  script({ x: 5000, y: 1000 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.chooseAvatarAxes },
+    ),
+    ...chooseAvatarAxesSteps(shell),
+    block(`${titleMenu}_showMenu`),
+  ]),
+
   script({ x: 3800, y: 1600 }, [
     block(
       `${titleMenu}_whenAppMenuActionSelected`,
@@ -1347,6 +1395,7 @@ export const localAppScripts: readonly Script[] = [
       equals(variable(pose3dEnabled), text('true')),
       [
         setVariable(pose3dEnabled, text('false')),
+        ...avatar.stop(),
         serviceBlock('stopService'),
         notice(text('3D推定を止めました。姿勢推定は続けています。')),
       ],
@@ -1583,7 +1632,11 @@ export const localAppScripts: readonly Script[] = [
             shellBlock('hideAppLoading'),
             ifElse(
               equals(reporter(serviceBlock('serviceState')), text('ready')),
-              [setVariable(pose3dEnabled, text('true'))],
+              [
+                setVariable(pose3dEnabled, text('true')),
+                ...avatar.setup(),
+                shellBlock('hideAppLoading'),
+              ],
               [
                 setVariable(pose3dEnabled, text('false')),
                 error(
@@ -1647,6 +1700,7 @@ export const localAppScripts: readonly Script[] = [
           ),
           ifThen(equals(variable(pose3dEnabled), text('true')), [
             serviceBlock('requestPose3d'),
+            ...avatar.frame(),
           ]),
           ifThen(
             greaterThan(
@@ -1670,6 +1724,7 @@ export const localAppScripts: readonly Script[] = [
                       shellValue('replayDurationMs'),
                       text(' ms — '),
                       pose3dStatusText(shell),
+                      avatar.status(),
                     ),
                   ),
                 ],
@@ -1691,6 +1746,7 @@ export const localAppScripts: readonly Script[] = [
         ]),
         ifThen(equals(variable(pose3dEnabled), text('true')), [
           setVariable(pose3dEnabled, text('false')),
+          ...avatar.stop(),
           serviceBlock('stopService'),
         ]),
         notice(text('録画の再生が終わりました。')),
