@@ -21,3 +21,7 @@ apps/*/dist/
 .claude/
 .playwright-mcp/
 .serena/
+
+# The MoveNet model, 9.7 MB. config/pose-model.json pins every file's SHA-256 and
+# `pnpm run fetch:pose-model` reproduces it from TF Hub.
+models/

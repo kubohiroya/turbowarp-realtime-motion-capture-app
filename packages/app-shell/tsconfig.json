@@ -17,6 +17,8 @@
     "tests",
     "vite.camera.config.ts",
     "vite.fusion.config.ts",
-    "vite.local.config.ts"
+    "vite.local.config.ts",
+    "pose-model-files.ts",
+    "pose-model-plugin.ts"
   ]
 }

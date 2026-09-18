@@ -1,11 +1,11 @@
 {
   "formatVersion": 1,
   "state": "candidate",
-  "sourceIdentity": "sha256:f361c4411e1e95615f133a4adf6e58d56f7d77cad24a9cf6d3e86d55904b25a4",
+  "sourceIdentity": "sha256:a116e9a883e3b7bc06c287d40e09cb89e13572e353fb2087863cd08cc883ba94",
   "artifact": {
     "filename": "local-app.sb3",
-    "sha256": "1fbfcd3c14741d806cf842f6b2d44c435a8b404175052b1a63945aafaf650bd2",
-    "size": 6661773
+    "sha256": "7bf8caa7753105bb933ff3e39989b88b016cd5bf1f5e471d46e04a3fa2a74226",
+    "size": 6660439
   },
   "publication": {}
 }
