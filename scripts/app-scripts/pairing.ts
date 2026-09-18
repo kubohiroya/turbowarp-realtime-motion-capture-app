@@ -11,14 +11,18 @@ import {
 } from '../../packages/sb3-script/src/blocks.ts';
 import {
   add,
+  and,
   broadcastMessage,
   changeVariable,
+  daysSince2000,
   equals,
   greaterThan,
   ifElse,
   ifThen,
   join,
+  lessThan,
   modulo,
+  multiply,
   not,
   or,
   repeatUntil,
@@ -67,8 +71,10 @@ export interface PairingReferences {
   readonly waited: NamedReference;
   /** Set by the application's message dispatcher when the other side's test message arrives. */
   readonly linkTest: NamedReference;
-  /** Tenths of a second the current code has been on screen, when the codes cycle by themselves. */
-  readonly shownTicks: NamedReference;
+  /** When the current code went on screen, in seconds, when the codes cycle by themselves. */
+  readonly shownAt: NamedReference;
+  /** When the read report last replaced its line, in seconds. */
+  readonly reportedAt: NamedReference;
   /** `true` while a camera scan runs, which is how long the read report keeps reporting. */
   readonly scanning: NamedReference;
   /** The extension's read count last reported, so each new read is reported once. */
@@ -90,9 +96,13 @@ export const pairingReferences = (): PairingReferences => ({
   step: namedReference('pairing step', 'variable:pairing-step'),
   waited: namedReference('pairing test wait', 'variable:pairing-test-wait'),
   linkTest: namedReference('link test message', 'variable:link-test-message'),
-  shownTicks: namedReference(
-    'pairing QR shown ticks',
-    'variable:pairing-qr-shown-ticks',
+  shownAt: namedReference(
+    'pairing QR shown at',
+    'variable:pairing-qr-shown-at',
+  ),
+  reportedAt: namedReference(
+    'pairing QR reported at',
+    'variable:pairing-qr-reported-at',
   ),
   scanning: namedReference('pairing scanning', 'variable:pairing-scanning'),
   readsSeen: namedReference(
@@ -115,7 +125,8 @@ export const pairingVariables = (
   [references.step.id]: [references.step.name, ''],
   [references.waited.id]: [references.waited.name, 0],
   [references.linkTest.id]: [references.linkTest.name, ''],
-  [references.shownTicks.id]: [references.shownTicks.name, 0],
+  [references.shownAt.id]: [references.shownAt.name, 0],
+  [references.reportedAt.id]: [references.reportedAt.name, 0],
   [references.scanning.id]: [references.scanning.name, 'false'],
   [references.readsSeen.id]: [references.readsSeen.name, 0],
 });
@@ -123,6 +134,20 @@ export const pairingVariables = (
 export const pairingBroadcasts = (references: PairingReferences) => ({
   [references.readReport.id]: references.readReport.name,
 });
+
+/** The wall clock in seconds. Waits in a loop run a frame long, so time is read, not counted. */
+const secondsNow = (): InputValue =>
+  reporter(multiply(reporter(daysSince2000()), number(86_400)));
+
+/** Seconds since a time `secondsNow` gave. */
+const secondsSince = (since: NamedReference): InputValue =>
+  reporter(subtract(secondsNow(), variable(since)));
+
+/**
+ * How long a status line stays before a repeat or a foreign read replaces it. A camera reads the
+ * code in front of it several times a second, and a new code's line must stay long enough to read.
+ */
+const REPORT_HOLD_SECONDS = 1.5;
 
 export const concatenate = (
   first: InputValue,
@@ -246,7 +271,7 @@ export class PairingSteps {
     stopOn: BlockNode,
     cycleSeconds?: number,
   ): BlockNode[] {
-    const { partIndex, pressesSeen, step, shownTicks } = this.references;
+    const { partIndex, pressesSeen, step, shownAt } = this.references;
     const pressed = (label: string) =>
       equals(reporter(block(`${this.shell}_lastQrImageButton`)), text(label));
     const advance = [
@@ -264,26 +289,21 @@ export class PairingSteps {
           ),
         ),
       ),
-      setVariable(shownTicks, number(0)),
+      setVariable(shownAt, secondsNow()),
       this.showPart(kind, instruction, buttons),
     ];
-    // Ticks are tenths of a second: the loop below waits 0.1 s a turn.
     const cycle =
       cycleSeconds === undefined
         ? []
         : [
-            changeVariable(shownTicks, 1),
             ifThen(
-              greaterThan(
-                variable(shownTicks),
-                number(Math.round(cycleSeconds * 10) - 1),
-              ),
+              not(lessThan(secondsSince(shownAt), number(cycleSeconds))),
               advance,
             ),
           ];
     return [
       setVariable(partIndex, number(1)),
-      setVariable(shownTicks, number(0)),
+      setVariable(shownAt, secondsNow()),
       setVariable(step, text('')),
       setVariable(
         pressesSeen,
@@ -325,7 +345,9 @@ export class PairingSteps {
    * Reads codes from a camera while the read report says what each read was.
    *
    * The scan block holds its script until the sequence is complete, so the report runs beside it
-   * in the script `readReportScript` returns, for as long as the scanning flag is up.
+   * in the script `readReportScript` returns, for as long as the scanning flag is up. The line that
+   * says the sequence is complete is written here, after the scan, because the report may already
+   * have stopped by the time the last read would reach it.
    */
   public scanWithReport(cameraId: InputValue): BlockNode[] {
     const { scanning, readReport } = this.references;
@@ -334,17 +356,34 @@ export class PairingSteps {
       broadcastMessage(readReport),
       this.pairing('scanPairingQrFromCamera', { CAMERA_ID: cameraId }),
       setVariable(scanning, text('false')),
+      ifThen(
+        and(
+          not(this.ended()),
+          greaterThan(this.pairingValue('pairingRequiredParts'), number(0)),
+        ),
+        [
+          this.notice(
+            concatenate(
+              text('QRコードを全部読み取りました（'),
+              this.pairingValue('pairingRequiredParts'),
+              text(' 枚）。'),
+            ),
+          ),
+        ],
+      ),
     ];
   }
 
   /**
-   * Says what the latest code read was, once per read, as one line that each read replaces.
+   * Says what the latest code read was, as one line that later reads replace.
    *
-   * A camera reads the code in front of it many times a second, so a repeat is only noted, and a
-   * code of another pairing is a warning that changes nothing.
+   * A camera reads the code in front of it several times a second, so a new code's line would be
+   * gone before anyone read it if every read replaced it. A newly received code always takes the
+   * line; a repeat, or a code of another pairing, only once the line has stood for
+   * `REPORT_HOLD_SECONDS`. A code of another pairing is a warning that changes nothing.
    */
   public readReportScript(): BlockNode[] {
-    const { scanning, readsSeen, readReport } = this.references;
+    const { scanning, readsSeen, readReport, reportedAt } = this.references;
     const reads = this.pairingValue('pairingReadCount');
     const lastRead = (result: string) =>
       equals(this.pairingValue('pairingLastRead'), text(result));
@@ -355,53 +394,54 @@ export class PairingSteps {
       ),
     );
     const detail = this.pairingValue('pairingLastReadDetail');
-    const progress = (opening: string) =>
+    const show = (message: InputValue): BlockNode[] => [
+      this.notice(message),
+      setVariable(reportedAt, secondsNow()),
+    ];
+    const progress = (opening: string): BlockNode[] => [
       ifElse(
         greaterThan(remaining, number(0)),
-        [
-          this.notice(
-            concatenate(
-              text(opening),
-              detail,
-              text('）。あと '),
-              remaining,
-              text(' 枚です。'),
-            ),
+        show(
+          concatenate(
+            text(opening),
+            detail,
+            text('）。あと '),
+            remaining,
+            text(' 枚です。'),
           ),
-        ],
-        [
-          this.notice(
-            concatenate(text(opening), detail, text('）。全部そろいました。')),
-          ),
-        ],
-      );
+        ),
+        show(
+          concatenate(text(opening), detail, text('）。全部そろいました。')),
+        ),
+      ),
+    ];
+    const held = not(
+      lessThan(secondsSince(reportedAt), number(REPORT_HOLD_SECONDS)),
+    );
     return [
       whenBroadcastReceived(readReport),
       setVariable(readsSeen, reads),
+      setVariable(reportedAt, number(0)),
       repeatUntil(equals(variable(scanning), text('false')), [
         ifThen(greaterThan(reads, variable(readsSeen)), [
           setVariable(readsSeen, reads),
-          ifElse(
-            lastRead('foreign'),
-            [
-              this.notice(
-                concatenate(
-                  text(
-                    '注意: 別のペアリングのQRコードを読んだため、無視しました（',
-                  ),
-                  detail,
-                  text('）。'),
-                ),
-              ),
-            ],
-            [
+          ifElse(lastRead('accepted'), progress('QRコードを読み取りました（'), [
+            ifThen(held, [
               ifElse(
                 lastRead('duplicate'),
-                [progress('このQRコードは読み取り済みです（')],
-                [progress('QRコードを読み取りました（')],
+                progress('このQRコードは読み取り済みです（'),
+                show(
+                  concatenate(
+                    text(
+                      '注意: 別のペアリングのQRコードを読んだため、無視しました（',
+                    ),
+                    detail,
+                    text('）。'),
+                  ),
+                ),
               ),
-            ],
-          ),
+            ]),
+          ]),
         ]),
         wait(0.1),
       ]),

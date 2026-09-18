@@ -18,8 +18,9 @@
  *   node --experimental-strip-types scripts/measure-qr.ts --length 1457 --level M --versions 15,20,40
  *
  * `--frame 1920x1080` for a 1080p camera, `--turn n` (degrees, default 5) and `--noise n` (fraction
- * of full scale, default 0.01) for the camera's own imperfections, `--clean` for the ideal condition
- * alone, `--json` for the figures.
+ * of full scale, default 0.01) for the camera's own imperfections, `--clean` for the ideal image
+ * alone (full contrast, no blur, no tilt, and no turn or noise unless given), `--json` for the
+ * figures.
  */
 
 import { readFileSync } from 'node:fs';
@@ -70,10 +71,11 @@ function options(input: readonly string[]) {
     level,
     // The camera's frame, and the two things every camera image has: a slight turn, and noise.
     frame: values['frame'] ?? '1280x720',
-    turnDegrees: Number(values['turn'] ?? 5),
+    // `--clean` is the ideal image: no turn and no noise unless asked for, besides the one condition.
+    turnDegrees: Number(values['turn'] ?? ('clean' in values ? 0 : 5)),
     // About 2.5 grey levels: what a webcam's own processing leaves on a projected white area. Raise it
     // to see how much noise a dim venue, and a camera turning its gain up, costs.
-    noise: Number(values['noise'] ?? 0.01),
+    noise: Number(values['noise'] ?? ('clean' in values ? 0 : 0.01)),
     // The pairing extension caps offers at 15 and answers at 20; 40 is one code for the whole offer.
     versions: (values['versions'] ?? '15,20,40')
       .split(',')

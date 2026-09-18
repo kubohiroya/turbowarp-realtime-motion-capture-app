@@ -76,8 +76,12 @@
           "link test message",
           ""
         ],
-        "variable:pairing-qr-shown-ticks": [
-          "pairing QR shown ticks",
+        "variable:pairing-qr-shown-at": [
+          "pairing QR shown at",
+          0
+        ],
+        "variable:pairing-qr-reported-at": [
+          "pairing QR reported at",
           0
         ],
         "variable:pairing-scanning": [
@@ -12108,31 +12112,17 @@
           "topLevel": false
         },
         "s19b23": {
-          "opcode": "control_wait_until",
+          "opcode": "control_if",
           "next": "s19b24",
           "parent": "s19b22",
           "inputs": {
             "CONDITION": [
               2,
-              "s19b25"
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b25": {
-          "opcode": "operator_or",
-          "next": null,
-          "parent": "s19b23",
-          "inputs": {
-            "OPERAND1": [
-              2,
               "s19b26"
             ],
-            "OPERAND2": [
+            "SUBSTACK": [
               2,
-              "s19b28"
+              "s19b38"
             ]
           },
           "fields": {},
@@ -12140,24 +12130,17 @@
           "topLevel": false
         },
         "s19b26": {
-          "opcode": "operator_equals",
+          "opcode": "operator_and",
           "next": null,
-          "parent": "s19b25",
+          "parent": "s19b23",
           "inputs": {
             "OPERAND1": [
-              3,
-              "s19b27",
-              [
-                10,
-                ""
-              ]
+              2,
+              "s19b27"
             ],
             "OPERAND2": [
-              1,
-              [
-                10,
-                "answer-ready"
-              ]
+              2,
+              "s19b36"
             ]
           },
           "fields": {},
@@ -12165,21 +12148,13 @@
           "topLevel": false
         },
         "s19b27": {
-          "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
+          "opcode": "operator_not",
           "next": null,
           "parent": "s19b26",
           "inputs": {
-            "SESSION": [
-              3,
-              [
-                12,
-                "pairing session",
-                "variable:pairing-session"
-              ],
-              [
-                10,
-                ""
-              ]
+            "OPERAND": [
+              2,
+              "s19b28"
             ]
           },
           "fields": {},
@@ -12189,7 +12164,7 @@
         "s19b28": {
           "opcode": "operator_or",
           "next": null,
-          "parent": "s19b25",
+          "parent": "s19b27",
           "inputs": {
             "OPERAND1": [
               2,
@@ -12197,7 +12172,7 @@
             ],
             "OPERAND2": [
               2,
-              "s19b37"
+              "s19b31"
             ]
           },
           "fields": {},
@@ -12205,31 +12180,13 @@
           "topLevel": false
         },
         "s19b29": {
-          "opcode": "operator_or",
+          "opcode": "operator_equals",
           "next": null,
           "parent": "s19b28",
           "inputs": {
             "OPERAND1": [
-              2,
-              "s19b30"
-            ],
-            "OPERAND2": [
-              2,
-              "s19b32"
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b30": {
-          "opcode": "operator_equals",
-          "next": null,
-          "parent": "s19b29",
-          "inputs": {
-            "OPERAND1": [
               3,
-              "s19b31",
+              "s19b30",
               [
                 10,
                 ""
@@ -12247,10 +12204,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b31": {
+        "s19b30": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
           "next": null,
-          "parent": "s19b30",
+          "parent": "s19b29",
           "inputs": {
             "SESSION": [
               3,
@@ -12269,32 +12226,32 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b32": {
+        "s19b31": {
           "opcode": "operator_or",
           "next": null,
-          "parent": "s19b29",
+          "parent": "s19b28",
           "inputs": {
             "OPERAND1": [
               2,
-              "s19b33"
+              "s19b32"
             ],
             "OPERAND2": [
               2,
-              "s19b35"
+              "s19b34"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s19b33": {
+        "s19b32": {
           "opcode": "operator_equals",
           "next": null,
-          "parent": "s19b32",
+          "parent": "s19b31",
           "inputs": {
             "OPERAND1": [
               3,
-              "s19b34",
+              "s19b33",
               [
                 10,
                 ""
@@ -12312,10 +12269,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b34": {
+        "s19b33": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
           "next": null,
-          "parent": "s19b33",
+          "parent": "s19b32",
           "inputs": {
             "SESSION": [
               3,
@@ -12334,14 +12291,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b35": {
+        "s19b34": {
           "opcode": "operator_equals",
           "next": null,
-          "parent": "s19b32",
+          "parent": "s19b31",
           "inputs": {
             "OPERAND1": [
               3,
-              "s19b36",
+              "s19b35",
               [
                 10,
                 ""
@@ -12359,10 +12316,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b36": {
+        "s19b35": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
           "next": null,
-          "parent": "s19b35",
+          "parent": "s19b34",
           "inputs": {
             "SESSION": [
               3,
@@ -12381,10 +12338,125 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b37": {
-          "opcode": "kubohiroyawebrtcqrcodepairing_isPairingConnected",
+        "s19b36": {
+          "opcode": "operator_gt",
           "next": null,
-          "parent": "s19b28",
+          "parent": "s19b26",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s19b37",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                4,
+                "0"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b37": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingRequiredParts",
+          "next": null,
+          "parent": "s19b36",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b38": {
+          "opcode": "realtimemotioncapturecamerashell_showAppNotice",
+          "next": null,
+          "parent": "s19b23",
+          "inputs": {
+            "MESSAGE": [
+              3,
+              "s19b39",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b39": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s19b38",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s19b40",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                " 枚）。"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b40": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s19b39",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "QRコードを全部読み取りました（"
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s19b41",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b41": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingRequiredParts",
+          "next": null,
+          "parent": "s19b40",
           "inputs": {
             "SESSION": [
               3,
@@ -12404,104 +12476,13 @@
           "topLevel": false
         },
         "s19b24": {
-          "opcode": "control_if_else",
-          "next": null,
+          "opcode": "control_wait_until",
+          "next": "s19b25",
           "parent": "s19b23",
           "inputs": {
             "CONDITION": [
               2,
-              "s19b38"
-            ],
-            "SUBSTACK": [
-              2,
-              "s19b46"
-            ],
-            "SUBSTACK2": [
-              2,
-              "s19b57"
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b38": {
-          "opcode": "operator_or",
-          "next": null,
-          "parent": "s19b24",
-          "inputs": {
-            "OPERAND1": [
-              2,
-              "s19b39"
-            ],
-            "OPERAND2": [
-              2,
-              "s19b41"
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b39": {
-          "opcode": "operator_equals",
-          "next": null,
-          "parent": "s19b38",
-          "inputs": {
-            "OPERAND1": [
-              3,
-              "s19b40",
-              [
-                10,
-                ""
-              ]
-            ],
-            "OPERAND2": [
-              1,
-              [
-                10,
-                "cancelled"
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b40": {
-          "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
-          "next": null,
-          "parent": "s19b39",
-          "inputs": {
-            "SESSION": [
-              3,
-              [
-                12,
-                "pairing session",
-                "variable:pairing-session"
-              ],
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b41": {
-          "opcode": "operator_or",
-          "next": null,
-          "parent": "s19b38",
-          "inputs": {
-            "OPERAND1": [
-              2,
               "s19b42"
-            ],
-            "OPERAND2": [
-              2,
-              "s19b44"
             ]
           },
           "fields": {},
@@ -12509,13 +12490,31 @@
           "topLevel": false
         },
         "s19b42": {
+          "opcode": "operator_or",
+          "next": null,
+          "parent": "s19b24",
+          "inputs": {
+            "OPERAND1": [
+              2,
+              "s19b43"
+            ],
+            "OPERAND2": [
+              2,
+              "s19b45"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b43": {
           "opcode": "operator_equals",
           "next": null,
-          "parent": "s19b41",
+          "parent": "s19b42",
           "inputs": {
             "OPERAND1": [
               3,
-              "s19b43",
+              "s19b44",
               [
                 10,
                 ""
@@ -12525,29 +12524,7 @@
               1,
               [
                 10,
-                "expired"
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b43": {
-          "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
-          "next": null,
-          "parent": "s19b42",
-          "inputs": {
-            "SESSION": [
-              3,
-              [
-                12,
-                "pairing session",
-                "variable:pairing-session"
-              ],
-              [
-                10,
-                ""
+                "answer-ready"
               ]
             ]
           },
@@ -12556,34 +12533,9 @@
           "topLevel": false
         },
         "s19b44": {
-          "opcode": "operator_equals",
-          "next": null,
-          "parent": "s19b41",
-          "inputs": {
-            "OPERAND1": [
-              3,
-              "s19b45",
-              [
-                10,
-                ""
-              ]
-            ],
-            "OPERAND2": [
-              1,
-              [
-                10,
-                "failed"
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b45": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
           "next": null,
-          "parent": "s19b44",
+          "parent": "s19b43",
           "inputs": {
             "SESSION": [
               3,
@@ -12602,22 +12554,36 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b46": {
-          "opcode": "control_if_else",
+        "s19b45": {
+          "opcode": "operator_or",
           "next": null,
-          "parent": "s19b24",
+          "parent": "s19b42",
           "inputs": {
-            "CONDITION": [
+            "OPERAND1": [
+              2,
+              "s19b46"
+            ],
+            "OPERAND2": [
+              2,
+              "s19b54"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b46": {
+          "opcode": "operator_or",
+          "next": null,
+          "parent": "s19b45",
+          "inputs": {
+            "OPERAND1": [
               2,
               "s19b47"
             ],
-            "SUBSTACK": [
+            "OPERAND2": [
               2,
               "s19b49"
-            ],
-            "SUBSTACK2": [
-              2,
-              "s19b50"
             ]
           },
           "fields": {},
@@ -12672,9 +12638,411 @@
           "topLevel": false
         },
         "s19b49": {
-          "opcode": "realtimemotioncapturecamerashell_showAppNotice",
+          "opcode": "operator_or",
           "next": null,
           "parent": "s19b46",
+          "inputs": {
+            "OPERAND1": [
+              2,
+              "s19b50"
+            ],
+            "OPERAND2": [
+              2,
+              "s19b52"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b50": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s19b49",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s19b51",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "expired"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b51": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
+          "next": null,
+          "parent": "s19b50",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b52": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s19b49",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s19b53",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "failed"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b53": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
+          "next": null,
+          "parent": "s19b52",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b54": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_isPairingConnected",
+          "next": null,
+          "parent": "s19b45",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b25": {
+          "opcode": "control_if_else",
+          "next": null,
+          "parent": "s19b24",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s19b55"
+            ],
+            "SUBSTACK": [
+              2,
+              "s19b63"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s19b74"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b55": {
+          "opcode": "operator_or",
+          "next": null,
+          "parent": "s19b25",
+          "inputs": {
+            "OPERAND1": [
+              2,
+              "s19b56"
+            ],
+            "OPERAND2": [
+              2,
+              "s19b58"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b56": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s19b55",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s19b57",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "cancelled"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b57": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
+          "next": null,
+          "parent": "s19b56",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b58": {
+          "opcode": "operator_or",
+          "next": null,
+          "parent": "s19b55",
+          "inputs": {
+            "OPERAND1": [
+              2,
+              "s19b59"
+            ],
+            "OPERAND2": [
+              2,
+              "s19b61"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b59": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s19b58",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s19b60",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "expired"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b60": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
+          "next": null,
+          "parent": "s19b59",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b61": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s19b58",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s19b62",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "failed"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b62": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
+          "next": null,
+          "parent": "s19b61",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b63": {
+          "opcode": "control_if_else",
+          "next": null,
+          "parent": "s19b25",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s19b64"
+            ],
+            "SUBSTACK": [
+              2,
+              "s19b66"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s19b67"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b64": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s19b63",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s19b65",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "cancelled"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b65": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
+          "next": null,
+          "parent": "s19b64",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b66": {
+          "opcode": "realtimemotioncapturecamerashell_showAppNotice",
+          "next": null,
+          "parent": "s19b63",
           "inputs": {
             "MESSAGE": [
               1,
@@ -12688,14 +13056,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b50": {
+        "s19b67": {
           "opcode": "realtimemotioncapturecamerashell_showAppError",
           "next": null,
-          "parent": "s19b46",
+          "parent": "s19b63",
           "inputs": {
             "MESSAGE": [
               3,
-              "s19b51",
+              "s19b68",
               [
                 10,
                 ""
@@ -12713,14 +13081,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b51": {
+        "s19b68": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s19b50",
+          "parent": "s19b67",
           "inputs": {
             "STRING1": [
               3,
-              "s19b52",
+              "s19b69",
               [
                 10,
                 ""
@@ -12738,14 +13106,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b52": {
+        "s19b69": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s19b51",
+          "parent": "s19b68",
           "inputs": {
             "STRING1": [
               3,
-              "s19b53",
+              "s19b70",
               [
                 10,
                 ""
@@ -12753,7 +13121,7 @@
             ],
             "STRING2": [
               3,
-              "s19b56",
+              "s19b73",
               [
                 10,
                 ""
@@ -12764,14 +13132,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b53": {
+        "s19b70": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s19b52",
+          "parent": "s19b69",
           "inputs": {
             "STRING1": [
               3,
-              "s19b54",
+              "s19b71",
               [
                 10,
                 ""
@@ -12789,10 +13157,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b54": {
+        "s19b71": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s19b53",
+          "parent": "s19b70",
           "inputs": {
             "STRING1": [
               1,
@@ -12803,7 +13171,7 @@
             ],
             "STRING2": [
               3,
-              "s19b55",
+              "s19b72",
               [
                 10,
                 ""
@@ -12814,10 +13182,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b55": {
+        "s19b72": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingErrorMessage",
           "next": null,
-          "parent": "s19b54",
+          "parent": "s19b71",
           "inputs": {
             "SESSION": [
               3,
@@ -12836,10 +13204,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b56": {
+        "s19b73": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingError",
           "next": null,
-          "parent": "s19b52",
+          "parent": "s19b69",
           "inputs": {
             "SESSION": [
               3,
@@ -12858,10 +13226,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b57": {
+        "s19b74": {
           "opcode": "data_setvariableto",
-          "next": "s19b58",
-          "parent": "s19b24",
+          "next": "s19b75",
+          "parent": "s19b25",
           "inputs": {
             "VALUE": [
               1,
@@ -12880,32 +13248,67 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b58": {
+        "s19b75": {
           "opcode": "data_setvariableto",
-          "next": "s19b59",
-          "parent": "s19b57",
+          "next": "s19b76",
+          "parent": "s19b74",
           "inputs": {
             "VALUE": [
-              1,
+              3,
+              "s19b82",
               [
-                4,
-                "0"
+                10,
+                ""
               ]
             ]
           },
           "fields": {
             "VARIABLE": [
-              "pairing QR shown ticks",
-              "variable:pairing-qr-shown-ticks"
+              "pairing QR shown at",
+              "variable:pairing-qr-shown-at"
             ]
           },
           "shadow": false,
           "topLevel": false
         },
-        "s19b59": {
+        "s19b82": {
+          "opcode": "operator_multiply",
+          "next": null,
+          "parent": "s19b75",
+          "inputs": {
+            "NUM1": [
+              3,
+              "s19b83",
+              [
+                10,
+                ""
+              ]
+            ],
+            "NUM2": [
+              1,
+              [
+                4,
+                "86400"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b83": {
+          "opcode": "sensing_dayssince2000",
+          "next": null,
+          "parent": "s19b82",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b76": {
           "opcode": "data_setvariableto",
-          "next": "s19b60",
-          "parent": "s19b58",
+          "next": "s19b77",
+          "parent": "s19b75",
           "inputs": {
             "VALUE": [
               1,
@@ -12924,14 +13327,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b60": {
+        "s19b77": {
           "opcode": "data_setvariableto",
-          "next": "s19b61",
-          "parent": "s19b59",
+          "next": "s19b78",
+          "parent": "s19b76",
           "inputs": {
             "VALUE": [
               3,
-              "s19b65",
+              "s19b84",
               [
                 10,
                 ""
@@ -12947,23 +13350,23 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b65": {
+        "s19b84": {
           "opcode": "realtimemotioncapturecamerashell_qrImageButtonPresses",
           "next": null,
-          "parent": "s19b60",
+          "parent": "s19b77",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s19b61": {
+        "s19b78": {
           "opcode": "realtimemotioncapturecamerashell_showQrImage",
-          "next": "s19b62",
-          "parent": "s19b60",
+          "next": "s19b79",
+          "parent": "s19b77",
           "inputs": {
             "IMAGE": [
               3,
-              "s19b66",
+              "s19b85",
               [
                 10,
                 ""
@@ -12971,7 +13374,7 @@
             ],
             "CAPTION": [
               3,
-              "s19b67",
+              "s19b86",
               [
                 10,
                 ""
@@ -12989,10 +13392,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b66": {
+        "s19b85": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingQrPartDataUri",
           "next": null,
-          "parent": "s19b61",
+          "parent": "s19b78",
           "inputs": {
             "SESSION": [
               3,
@@ -13023,14 +13426,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b67": {
+        "s19b86": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s19b61",
+          "parent": "s19b78",
           "inputs": {
             "STRING1": [
               3,
-              "s19b68",
+              "s19b87",
               [
                 10,
                 ""
@@ -13048,14 +13451,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b68": {
+        "s19b87": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s19b67",
+          "parent": "s19b86",
           "inputs": {
             "STRING1": [
               3,
-              "s19b69",
+              "s19b88",
               [
                 10,
                 ""
@@ -13063,7 +13466,7 @@
             ],
             "STRING2": [
               3,
-              "s19b72",
+              "s19b91",
               [
                 10,
                 ""
@@ -13074,14 +13477,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b69": {
+        "s19b88": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s19b68",
+          "parent": "s19b87",
           "inputs": {
             "STRING1": [
               3,
-              "s19b70",
+              "s19b89",
               [
                 10,
                 ""
@@ -13099,14 +13502,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b70": {
+        "s19b89": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s19b69",
+          "parent": "s19b88",
           "inputs": {
             "STRING1": [
               3,
-              "s19b71",
+              "s19b90",
               [
                 10,
                 ""
@@ -13129,10 +13532,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b71": {
+        "s19b90": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s19b70",
+          "parent": "s19b89",
           "inputs": {
             "STRING1": [
               1,
@@ -13153,151 +13556,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b72": {
+        "s19b91": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingQrPartCount",
           "next": null,
-          "parent": "s19b68",
-          "inputs": {
-            "SESSION": [
-              3,
-              [
-                12,
-                "pairing session",
-                "variable:pairing-session"
-              ],
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b62": {
-          "opcode": "control_repeat_until",
-          "next": "s19b63",
-          "parent": "s19b61",
-          "inputs": {
-            "CONDITION": [
-              2,
-              "s19b73"
-            ],
-            "SUBSTACK": [
-              2,
-              "s19b86"
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b73": {
-          "opcode": "operator_or",
-          "next": null,
-          "parent": "s19b62",
-          "inputs": {
-            "OPERAND1": [
-              2,
-              "s19b74"
-            ],
-            "OPERAND2": [
-              2,
-              "s19b75"
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b74": {
-          "opcode": "kubohiroyawebrtcqrcodepairing_isPairingConnected",
-          "next": null,
-          "parent": "s19b73",
-          "inputs": {
-            "SESSION": [
-              3,
-              [
-                12,
-                "pairing session",
-                "variable:pairing-session"
-              ],
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b75": {
-          "opcode": "operator_or",
-          "next": null,
-          "parent": "s19b73",
-          "inputs": {
-            "OPERAND1": [
-              2,
-              "s19b76"
-            ],
-            "OPERAND2": [
-              2,
-              "s19b84"
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b76": {
-          "opcode": "operator_or",
-          "next": null,
-          "parent": "s19b75",
-          "inputs": {
-            "OPERAND1": [
-              2,
-              "s19b77"
-            ],
-            "OPERAND2": [
-              2,
-              "s19b79"
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b77": {
-          "opcode": "operator_equals",
-          "next": null,
-          "parent": "s19b76",
-          "inputs": {
-            "OPERAND1": [
-              3,
-              "s19b78",
-              [
-                10,
-                ""
-              ]
-            ],
-            "OPERAND2": [
-              1,
-              [
-                10,
-                "cancelled"
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b78": {
-          "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
-          "next": null,
-          "parent": "s19b77",
+          "parent": "s19b87",
           "inputs": {
             "SESSION": [
               3,
@@ -13317,31 +13579,172 @@
           "topLevel": false
         },
         "s19b79": {
-          "opcode": "operator_or",
-          "next": null,
-          "parent": "s19b76",
+          "opcode": "control_repeat_until",
+          "next": "s19b80",
+          "parent": "s19b78",
           "inputs": {
-            "OPERAND1": [
+            "CONDITION": [
               2,
-              "s19b80"
+              "s19b92"
             ],
-            "OPERAND2": [
+            "SUBSTACK": [
               2,
-              "s19b82"
+              "s19b105"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s19b80": {
-          "opcode": "operator_equals",
+        "s19b92": {
+          "opcode": "operator_or",
           "next": null,
           "parent": "s19b79",
           "inputs": {
             "OPERAND1": [
+              2,
+              "s19b93"
+            ],
+            "OPERAND2": [
+              2,
+              "s19b94"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b93": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_isPairingConnected",
+          "next": null,
+          "parent": "s19b92",
+          "inputs": {
+            "SESSION": [
               3,
-              "s19b81",
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b94": {
+          "opcode": "operator_or",
+          "next": null,
+          "parent": "s19b92",
+          "inputs": {
+            "OPERAND1": [
+              2,
+              "s19b95"
+            ],
+            "OPERAND2": [
+              2,
+              "s19b103"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b95": {
+          "opcode": "operator_or",
+          "next": null,
+          "parent": "s19b94",
+          "inputs": {
+            "OPERAND1": [
+              2,
+              "s19b96"
+            ],
+            "OPERAND2": [
+              2,
+              "s19b98"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b96": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s19b95",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s19b97",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "cancelled"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b97": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
+          "next": null,
+          "parent": "s19b96",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b98": {
+          "opcode": "operator_or",
+          "next": null,
+          "parent": "s19b95",
+          "inputs": {
+            "OPERAND1": [
+              2,
+              "s19b99"
+            ],
+            "OPERAND2": [
+              2,
+              "s19b101"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b99": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s19b98",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s19b100",
               [
                 10,
                 ""
@@ -13359,10 +13762,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b81": {
+        "s19b100": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
           "next": null,
-          "parent": "s19b80",
+          "parent": "s19b99",
           "inputs": {
             "SESSION": [
               3,
@@ -13381,14 +13784,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b82": {
+        "s19b101": {
           "opcode": "operator_equals",
           "next": null,
-          "parent": "s19b79",
+          "parent": "s19b98",
           "inputs": {
             "OPERAND1": [
               3,
-              "s19b83",
+              "s19b102",
               [
                 10,
                 ""
@@ -13406,10 +13809,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b83": {
+        "s19b102": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
           "next": null,
-          "parent": "s19b82",
+          "parent": "s19b101",
           "inputs": {
             "SESSION": [
               3,
@@ -13428,24 +13831,24 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b84": {
+        "s19b103": {
           "opcode": "operator_not",
           "next": null,
-          "parent": "s19b75",
+          "parent": "s19b94",
           "inputs": {
             "OPERAND": [
               2,
-              "s19b85"
+              "s19b104"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s19b85": {
+        "s19b104": {
           "opcode": "operator_equals",
           "next": null,
-          "parent": "s19b84",
+          "parent": "s19b103",
           "inputs": {
             "OPERAND1": [
               3,
@@ -13471,32 +13874,32 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b86": {
+        "s19b105": {
           "opcode": "control_if",
-          "next": "s19b87",
-          "parent": "s19b62",
+          "next": "s19b106",
+          "parent": "s19b79",
           "inputs": {
             "CONDITION": [
               2,
-              "s19b88"
+              "s19b107"
             ],
             "SUBSTACK": [
               2,
-              "s19b90"
+              "s19b109"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s19b88": {
+        "s19b107": {
           "opcode": "operator_gt",
           "next": null,
-          "parent": "s19b86",
+          "parent": "s19b105",
           "inputs": {
             "OPERAND1": [
               3,
-              "s19b89",
+              "s19b108",
               [
                 10,
                 ""
@@ -13519,23 +13922,23 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b89": {
+        "s19b108": {
           "opcode": "realtimemotioncapturecamerashell_qrImageButtonPresses",
           "next": null,
-          "parent": "s19b88",
+          "parent": "s19b107",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s19b90": {
+        "s19b109": {
           "opcode": "data_setvariableto",
-          "next": "s19b91",
-          "parent": "s19b86",
+          "next": "s19b110",
+          "parent": "s19b105",
           "inputs": {
             "VALUE": [
               3,
-              "s19b92",
+              "s19b111",
               [
                 10,
                 ""
@@ -13551,45 +13954,45 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b92": {
+        "s19b111": {
           "opcode": "realtimemotioncapturecamerashell_qrImageButtonPresses",
           "next": null,
-          "parent": "s19b90",
+          "parent": "s19b109",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s19b91": {
+        "s19b110": {
           "opcode": "control_if_else",
           "next": null,
-          "parent": "s19b90",
+          "parent": "s19b109",
           "inputs": {
             "CONDITION": [
               2,
-              "s19b93"
+              "s19b112"
             ],
             "SUBSTACK": [
               2,
-              "s19b95"
+              "s19b114"
             ],
             "SUBSTACK2": [
               2,
-              "s19b108"
+              "s19b129"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s19b93": {
+        "s19b112": {
           "opcode": "operator_equals",
           "next": null,
-          "parent": "s19b91",
+          "parent": "s19b110",
           "inputs": {
             "OPERAND1": [
               3,
-              "s19b94",
+              "s19b113",
               [
                 10,
                 ""
@@ -13607,23 +14010,23 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b94": {
+        "s19b113": {
           "opcode": "realtimemotioncapturecamerashell_lastQrImageButton",
           "next": null,
-          "parent": "s19b93",
+          "parent": "s19b112",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s19b95": {
+        "s19b114": {
           "opcode": "data_setvariableto",
-          "next": "s19b96",
-          "parent": "s19b91",
+          "next": "s19b115",
+          "parent": "s19b110",
           "inputs": {
             "VALUE": [
               3,
-              "s19b98",
+              "s19b117",
               [
                 10,
                 ""
@@ -13639,14 +14042,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b98": {
+        "s19b117": {
           "opcode": "operator_add",
           "next": null,
-          "parent": "s19b95",
+          "parent": "s19b114",
           "inputs": {
             "NUM1": [
               3,
-              "s19b99",
+              "s19b118",
               [
                 10,
                 ""
@@ -13664,10 +14067,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b99": {
+        "s19b118": {
           "opcode": "operator_mod",
           "next": null,
-          "parent": "s19b98",
+          "parent": "s19b117",
           "inputs": {
             "NUM1": [
               3,
@@ -13683,7 +14086,7 @@
             ],
             "NUM2": [
               3,
-              "s19b100",
+              "s19b119",
               [
                 10,
                 ""
@@ -13694,10 +14097,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b100": {
+        "s19b119": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingQrPartCount",
           "next": null,
-          "parent": "s19b99",
+          "parent": "s19b118",
           "inputs": {
             "SESSION": [
               3,
@@ -13716,36 +14119,71 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b96": {
+        "s19b115": {
           "opcode": "data_setvariableto",
-          "next": "s19b97",
-          "parent": "s19b95",
+          "next": "s19b116",
+          "parent": "s19b114",
           "inputs": {
             "VALUE": [
-              1,
+              3,
+              "s19b120",
               [
-                4,
-                "0"
+                10,
+                ""
               ]
             ]
           },
           "fields": {
             "VARIABLE": [
-              "pairing QR shown ticks",
-              "variable:pairing-qr-shown-ticks"
+              "pairing QR shown at",
+              "variable:pairing-qr-shown-at"
             ]
           },
           "shadow": false,
           "topLevel": false
         },
-        "s19b97": {
+        "s19b120": {
+          "opcode": "operator_multiply",
+          "next": null,
+          "parent": "s19b115",
+          "inputs": {
+            "NUM1": [
+              3,
+              "s19b121",
+              [
+                10,
+                ""
+              ]
+            ],
+            "NUM2": [
+              1,
+              [
+                4,
+                "86400"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b121": {
+          "opcode": "sensing_dayssince2000",
+          "next": null,
+          "parent": "s19b120",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b116": {
           "opcode": "realtimemotioncapturecamerashell_showQrImage",
           "next": null,
-          "parent": "s19b96",
+          "parent": "s19b115",
           "inputs": {
             "IMAGE": [
               3,
-              "s19b101",
+              "s19b122",
               [
                 10,
                 ""
@@ -13753,7 +14191,7 @@
             ],
             "CAPTION": [
               3,
-              "s19b102",
+              "s19b123",
               [
                 10,
                 ""
@@ -13771,10 +14209,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b101": {
+        "s19b122": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingQrPartDataUri",
           "next": null,
-          "parent": "s19b97",
+          "parent": "s19b116",
           "inputs": {
             "SESSION": [
               3,
@@ -13805,14 +14243,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b102": {
+        "s19b123": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s19b97",
+          "parent": "s19b116",
           "inputs": {
             "STRING1": [
               3,
-              "s19b103",
+              "s19b124",
               [
                 10,
                 ""
@@ -13830,14 +14268,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b103": {
+        "s19b124": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s19b102",
+          "parent": "s19b123",
           "inputs": {
             "STRING1": [
               3,
-              "s19b104",
+              "s19b125",
               [
                 10,
                 ""
@@ -13845,7 +14283,7 @@
             ],
             "STRING2": [
               3,
-              "s19b107",
+              "s19b128",
               [
                 10,
                 ""
@@ -13856,14 +14294,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b104": {
+        "s19b125": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s19b103",
+          "parent": "s19b124",
           "inputs": {
             "STRING1": [
               3,
-              "s19b105",
+              "s19b126",
               [
                 10,
                 ""
@@ -13881,14 +14319,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b105": {
+        "s19b126": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s19b104",
+          "parent": "s19b125",
           "inputs": {
             "STRING1": [
               3,
-              "s19b106",
+              "s19b127",
               [
                 10,
                 ""
@@ -13911,10 +14349,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b106": {
+        "s19b127": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s19b105",
+          "parent": "s19b126",
           "inputs": {
             "STRING1": [
               1,
@@ -13935,338 +14373,8 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b107": {
+        "s19b128": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingQrPartCount",
-          "next": null,
-          "parent": "s19b103",
-          "inputs": {
-            "SESSION": [
-              3,
-              [
-                12,
-                "pairing session",
-                "variable:pairing-session"
-              ],
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b108": {
-          "opcode": "control_if",
-          "next": "s19b109",
-          "parent": "s19b91",
-          "inputs": {
-            "CONDITION": [
-              2,
-              "s19b110"
-            ],
-            "SUBSTACK": [
-              2,
-              "s19b112"
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b110": {
-          "opcode": "operator_equals",
-          "next": null,
-          "parent": "s19b108",
-          "inputs": {
-            "OPERAND1": [
-              3,
-              "s19b111",
-              [
-                10,
-                ""
-              ]
-            ],
-            "OPERAND2": [
-              1,
-              [
-                10,
-                "Answerを読み取る"
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b111": {
-          "opcode": "realtimemotioncapturecamerashell_lastQrImageButton",
-          "next": null,
-          "parent": "s19b110",
-          "inputs": {},
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b112": {
-          "opcode": "data_setvariableto",
-          "next": null,
-          "parent": "s19b108",
-          "inputs": {
-            "VALUE": [
-              1,
-              [
-                10,
-                "read-answer"
-              ]
-            ]
-          },
-          "fields": {
-            "VARIABLE": [
-              "pairing step",
-              "variable:pairing-step"
-            ]
-          },
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b109": {
-          "opcode": "control_if",
-          "next": null,
-          "parent": "s19b108",
-          "inputs": {
-            "CONDITION": [
-              2,
-              "s19b113"
-            ],
-            "SUBSTACK": [
-              2,
-              "s19b115"
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b113": {
-          "opcode": "operator_equals",
-          "next": null,
-          "parent": "s19b109",
-          "inputs": {
-            "OPERAND1": [
-              3,
-              "s19b114",
-              [
-                10,
-                ""
-              ]
-            ],
-            "OPERAND2": [
-              1,
-              [
-                10,
-                "やめる"
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b114": {
-          "opcode": "realtimemotioncapturecamerashell_lastQrImageButton",
-          "next": null,
-          "parent": "s19b113",
-          "inputs": {},
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b115": {
-          "opcode": "data_setvariableto",
-          "next": null,
-          "parent": "s19b109",
-          "inputs": {
-            "VALUE": [
-              1,
-              [
-                10,
-                "cancel"
-              ]
-            ]
-          },
-          "fields": {
-            "VARIABLE": [
-              "pairing step",
-              "variable:pairing-step"
-            ]
-          },
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b87": {
-          "opcode": "control_wait",
-          "next": null,
-          "parent": "s19b86",
-          "inputs": {
-            "DURATION": [
-              1,
-              [
-                4,
-                "0.1"
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b63": {
-          "opcode": "realtimemotioncapturecamerashell_hideQrImage",
-          "next": "s19b64",
-          "parent": "s19b62",
-          "inputs": {},
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b64": {
-          "opcode": "control_if_else",
-          "next": null,
-          "parent": "s19b63",
-          "inputs": {
-            "CONDITION": [
-              2,
-              "s19b116"
-            ],
-            "SUBSTACK": [
-              2,
-              "s19b117"
-            ],
-            "SUBSTACK2": [
-              2,
-              "s19b141"
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b116": {
-          "opcode": "kubohiroyawebrtcqrcodepairing_isPairingConnected",
-          "next": null,
-          "parent": "s19b64",
-          "inputs": {
-            "SESSION": [
-              3,
-              [
-                12,
-                "pairing session",
-                "variable:pairing-session"
-              ],
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b117": {
-          "opcode": "kubohiroyawebrtcqrcodepairing_endPairingQrDisplay",
-          "next": "s19b118",
-          "parent": "s19b64",
-          "inputs": {
-            "SESSION": [
-              3,
-              [
-                12,
-                "pairing session",
-                "variable:pairing-session"
-              ],
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b118": {
-          "opcode": "realtimemotioncapturecamerashell_showAppNotice",
-          "next": "s19b119",
-          "parent": "s19b117",
-          "inputs": {
-            "MESSAGE": [
-              3,
-              "s19b123",
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b123": {
-          "opcode": "operator_join",
-          "next": null,
-          "parent": "s19b118",
-          "inputs": {
-            "STRING1": [
-              3,
-              "s19b124",
-              [
-                10,
-                ""
-              ]
-            ],
-            "STRING2": [
-              1,
-              [
-                10,
-                "）。テストメッセージを送受信しています。"
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b124": {
-          "opcode": "operator_join",
-          "next": null,
-          "parent": "s19b123",
-          "inputs": {
-            "STRING1": [
-              1,
-              [
-                10,
-                "接続しました（相手: "
-              ]
-            ],
-            "STRING2": [
-              3,
-              "s19b125",
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s19b125": {
-          "opcode": "kubohiroyawebrtcqrcodepairing_pairingRemotePeer",
           "next": null,
           "parent": "s19b124",
           "inputs": {
@@ -14287,10 +14395,340 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b119": {
+        "s19b129": {
+          "opcode": "control_if",
+          "next": "s19b130",
+          "parent": "s19b110",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s19b131"
+            ],
+            "SUBSTACK": [
+              2,
+              "s19b133"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b131": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s19b129",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s19b132",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "Answerを読み取る"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b132": {
+          "opcode": "realtimemotioncapturecamerashell_lastQrImageButton",
+          "next": null,
+          "parent": "s19b131",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b133": {
+          "opcode": "data_setvariableto",
+          "next": null,
+          "parent": "s19b129",
+          "inputs": {
+            "VALUE": [
+              1,
+              [
+                10,
+                "read-answer"
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "pairing step",
+              "variable:pairing-step"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b130": {
+          "opcode": "control_if",
+          "next": null,
+          "parent": "s19b129",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s19b134"
+            ],
+            "SUBSTACK": [
+              2,
+              "s19b136"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b134": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s19b130",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s19b135",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "やめる"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b135": {
+          "opcode": "realtimemotioncapturecamerashell_lastQrImageButton",
+          "next": null,
+          "parent": "s19b134",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b136": {
+          "opcode": "data_setvariableto",
+          "next": null,
+          "parent": "s19b130",
+          "inputs": {
+            "VALUE": [
+              1,
+              [
+                10,
+                "cancel"
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "pairing step",
+              "variable:pairing-step"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b106": {
+          "opcode": "control_wait",
+          "next": null,
+          "parent": "s19b105",
+          "inputs": {
+            "DURATION": [
+              1,
+              [
+                4,
+                "0.1"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b80": {
+          "opcode": "realtimemotioncapturecamerashell_hideQrImage",
+          "next": "s19b81",
+          "parent": "s19b79",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b81": {
+          "opcode": "control_if_else",
+          "next": null,
+          "parent": "s19b80",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s19b137"
+            ],
+            "SUBSTACK": [
+              2,
+              "s19b138"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s19b162"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b137": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_isPairingConnected",
+          "next": null,
+          "parent": "s19b81",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b138": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_endPairingQrDisplay",
+          "next": "s19b139",
+          "parent": "s19b81",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b139": {
+          "opcode": "realtimemotioncapturecamerashell_showAppNotice",
+          "next": "s19b140",
+          "parent": "s19b138",
+          "inputs": {
+            "MESSAGE": [
+              3,
+              "s19b144",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b144": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s19b139",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s19b145",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "）。テストメッセージを送受信しています。"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b145": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s19b144",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "接続しました（相手: "
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s19b146",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b146": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingRemotePeer",
+          "next": null,
+          "parent": "s19b145",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s19b140": {
           "opcode": "kubohiroyawebrtc_broadcastNetworkMessage",
-          "next": "s19b120",
-          "parent": "s19b118",
+          "next": "s19b141",
+          "parent": "s19b139",
           "inputs": {
             "MESSAGE": [
               1,
@@ -14315,7 +14753,7 @@
             ],
             "PEER": [
               3,
-              "s19b126",
+              "s19b147",
               [
                 10,
                 ""
@@ -14326,10 +14764,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b126": {
+        "s19b147": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingRemotePeer",
           "next": null,
-          "parent": "s19b119",
+          "parent": "s19b140",
           "inputs": {
             "SESSION": [
               3,
@@ -14348,10 +14786,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b120": {
+        "s19b141": {
           "opcode": "data_setvariableto",
-          "next": "s19b121",
-          "parent": "s19b119",
+          "next": "s19b142",
+          "parent": "s19b140",
           "inputs": {
             "VALUE": [
               1,
@@ -14370,60 +14808,60 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b121": {
+        "s19b142": {
           "opcode": "control_repeat_until",
-          "next": "s19b122",
-          "parent": "s19b120",
+          "next": "s19b143",
+          "parent": "s19b141",
           "inputs": {
             "CONDITION": [
               2,
-              "s19b127"
+              "s19b148"
             ],
             "SUBSTACK": [
               2,
-              "s19b131"
+              "s19b152"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s19b127": {
+        "s19b148": {
           "opcode": "operator_or",
           "next": null,
-          "parent": "s19b121",
+          "parent": "s19b142",
           "inputs": {
             "OPERAND1": [
               2,
-              "s19b128"
+              "s19b149"
             ],
             "OPERAND2": [
               2,
-              "s19b130"
+              "s19b151"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s19b128": {
+        "s19b149": {
           "opcode": "operator_not",
           "next": null,
-          "parent": "s19b127",
+          "parent": "s19b148",
           "inputs": {
             "OPERAND": [
               2,
-              "s19b129"
+              "s19b150"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s19b129": {
+        "s19b150": {
           "opcode": "operator_equals",
           "next": null,
-          "parent": "s19b128",
+          "parent": "s19b149",
           "inputs": {
             "OPERAND1": [
               3,
@@ -14449,10 +14887,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b130": {
+        "s19b151": {
           "opcode": "operator_gt",
           "next": null,
-          "parent": "s19b127",
+          "parent": "s19b148",
           "inputs": {
             "OPERAND1": [
               3,
@@ -14478,10 +14916,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b131": {
+        "s19b152": {
           "opcode": "control_wait",
-          "next": "s19b132",
-          "parent": "s19b121",
+          "next": "s19b153",
+          "parent": "s19b142",
           "inputs": {
             "DURATION": [
               1,
@@ -14495,10 +14933,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b132": {
+        "s19b153": {
           "opcode": "data_changevariableby",
           "next": null,
-          "parent": "s19b131",
+          "parent": "s19b152",
           "inputs": {
             "VALUE": [
               1,
@@ -14517,46 +14955,46 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b122": {
+        "s19b143": {
           "opcode": "control_if_else",
           "next": null,
-          "parent": "s19b121",
+          "parent": "s19b142",
           "inputs": {
             "CONDITION": [
               2,
-              "s19b133"
+              "s19b154"
             ],
             "SUBSTACK": [
               2,
-              "s19b135"
+              "s19b156"
             ],
             "SUBSTACK2": [
               2,
-              "s19b140"
+              "s19b161"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s19b133": {
+        "s19b154": {
           "opcode": "operator_not",
           "next": null,
-          "parent": "s19b122",
+          "parent": "s19b143",
           "inputs": {
             "OPERAND": [
               2,
-              "s19b134"
+              "s19b155"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s19b134": {
+        "s19b155": {
           "opcode": "operator_equals",
           "next": null,
-          "parent": "s19b133",
+          "parent": "s19b154",
           "inputs": {
             "OPERAND1": [
               3,
@@ -14582,14 +15020,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b135": {
+        "s19b156": {
           "opcode": "realtimemotioncapturecamerashell_showAppNotice",
           "next": null,
-          "parent": "s19b122",
+          "parent": "s19b143",
           "inputs": {
             "MESSAGE": [
               3,
-              "s19b136",
+              "s19b157",
               [
                 10,
                 ""
@@ -14600,14 +15038,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b136": {
+        "s19b157": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s19b135",
+          "parent": "s19b156",
           "inputs": {
             "STRING1": [
               3,
-              "s19b137",
+              "s19b158",
               [
                 10,
                 ""
@@ -14630,14 +15068,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b137": {
+        "s19b158": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s19b136",
+          "parent": "s19b157",
           "inputs": {
             "STRING1": [
               3,
-              "s19b138",
+              "s19b159",
               [
                 10,
                 ""
@@ -14655,10 +15093,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b138": {
+        "s19b159": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s19b137",
+          "parent": "s19b158",
           "inputs": {
             "STRING1": [
               1,
@@ -14669,7 +15107,7 @@
             ],
             "STRING2": [
               3,
-              "s19b139",
+              "s19b160",
               [
                 10,
                 ""
@@ -14680,10 +15118,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b139": {
+        "s19b160": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingRemotePeer",
           "next": null,
-          "parent": "s19b138",
+          "parent": "s19b159",
           "inputs": {
             "SESSION": [
               3,
@@ -14702,10 +15140,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b140": {
+        "s19b161": {
           "opcode": "realtimemotioncapturecamerashell_showAppError",
           "next": null,
-          "parent": "s19b122",
+          "parent": "s19b143",
           "inputs": {
             "MESSAGE": [
               1,
@@ -14726,32 +15164,32 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b141": {
+        "s19b162": {
           "opcode": "control_if_else",
           "next": null,
-          "parent": "s19b64",
+          "parent": "s19b81",
           "inputs": {
             "CONDITION": [
               2,
-              "s19b142"
+              "s19b163"
             ],
             "SUBSTACK": [
               2,
-              "s19b143"
+              "s19b164"
             ],
             "SUBSTACK2": [
               2,
-              "s19b146"
+              "s19b167"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s19b142": {
+        "s19b163": {
           "opcode": "operator_equals",
           "next": null,
-          "parent": "s19b141",
+          "parent": "s19b162",
           "inputs": {
             "OPERAND1": [
               3,
@@ -14777,10 +15215,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b143": {
+        "s19b164": {
           "opcode": "kubohiroyawebrtcqrcodepairing_cancelPairing",
-          "next": "s19b144",
-          "parent": "s19b141",
+          "next": "s19b165",
+          "parent": "s19b162",
           "inputs": {
             "SESSION": [
               3,
@@ -14799,19 +15237,19 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b144": {
+        "s19b165": {
           "opcode": "realtimemotioncapturecamerashell_hideQrImage",
-          "next": "s19b145",
-          "parent": "s19b143",
+          "next": "s19b166",
+          "parent": "s19b164",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s19b145": {
+        "s19b166": {
           "opcode": "realtimemotioncapturecamerashell_showAppNotice",
           "next": null,
-          "parent": "s19b144",
+          "parent": "s19b165",
           "inputs": {
             "MESSAGE": [
               1,
@@ -14825,36 +15263,36 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b146": {
+        "s19b167": {
           "opcode": "control_if_else",
           "next": null,
-          "parent": "s19b141",
+          "parent": "s19b162",
           "inputs": {
             "CONDITION": [
               2,
-              "s19b147"
+              "s19b168"
             ],
             "SUBSTACK": [
               2,
-              "s19b149"
+              "s19b170"
             ],
             "SUBSTACK2": [
               2,
-              "s19b150"
+              "s19b171"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s19b147": {
+        "s19b168": {
           "opcode": "operator_equals",
           "next": null,
-          "parent": "s19b146",
+          "parent": "s19b167",
           "inputs": {
             "OPERAND1": [
               3,
-              "s19b148",
+              "s19b169",
               [
                 10,
                 ""
@@ -14872,10 +15310,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b148": {
+        "s19b169": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingPhase",
           "next": null,
-          "parent": "s19b147",
+          "parent": "s19b168",
           "inputs": {
             "SESSION": [
               3,
@@ -14894,10 +15332,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b149": {
+        "s19b170": {
           "opcode": "realtimemotioncapturecamerashell_showAppNotice",
           "next": null,
-          "parent": "s19b146",
+          "parent": "s19b167",
           "inputs": {
             "MESSAGE": [
               1,
@@ -14911,14 +15349,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b150": {
+        "s19b171": {
           "opcode": "realtimemotioncapturecamerashell_showAppError",
           "next": null,
-          "parent": "s19b146",
+          "parent": "s19b167",
           "inputs": {
             "MESSAGE": [
               3,
-              "s19b151",
+              "s19b172",
               [
                 10,
                 ""
@@ -14936,14 +15374,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b151": {
+        "s19b172": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s19b150",
+          "parent": "s19b171",
           "inputs": {
             "STRING1": [
               3,
-              "s19b152",
+              "s19b173",
               [
                 10,
                 ""
@@ -14961,14 +15399,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b152": {
+        "s19b173": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s19b151",
+          "parent": "s19b172",
           "inputs": {
             "STRING1": [
               3,
-              "s19b153",
+              "s19b174",
               [
                 10,
                 ""
@@ -14976,7 +15414,7 @@
             ],
             "STRING2": [
               3,
-              "s19b156",
+              "s19b177",
               [
                 10,
                 ""
@@ -14987,14 +15425,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b153": {
+        "s19b174": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s19b152",
+          "parent": "s19b173",
           "inputs": {
             "STRING1": [
               3,
-              "s19b154",
+              "s19b175",
               [
                 10,
                 ""
@@ -15012,10 +15450,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b154": {
+        "s19b175": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s19b153",
+          "parent": "s19b174",
           "inputs": {
             "STRING1": [
               1,
@@ -15026,7 +15464,7 @@
             ],
             "STRING2": [
               3,
-              "s19b155",
+              "s19b176",
               [
                 10,
                 ""
@@ -15037,10 +15475,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b155": {
+        "s19b176": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingErrorMessage",
           "next": null,
-          "parent": "s19b154",
+          "parent": "s19b175",
           "inputs": {
             "SESSION": [
               3,
@@ -15059,10 +15497,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s19b156": {
+        "s19b177": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingError",
           "next": null,
-          "parent": "s19b152",
+          "parent": "s19b173",
           "inputs": {
             "SESSION": [
               3,
@@ -15113,7 +15551,7 @@
           "inputs": {
             "VALUE": [
               3,
-              "s20b4",
+              "s20b5",
               [
                 10,
                 ""
@@ -15129,7 +15567,7 @@
           "shadow": false,
           "topLevel": false
         },
-        "s20b4": {
+        "s20b5": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingReadCount",
           "next": null,
           "parent": "s20b2",
@@ -15152,27 +15590,49 @@
           "topLevel": false
         },
         "s20b3": {
+          "opcode": "data_setvariableto",
+          "next": "s20b4",
+          "parent": "s20b2",
+          "inputs": {
+            "VALUE": [
+              1,
+              [
+                4,
+                "0"
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "pairing QR reported at",
+              "variable:pairing-qr-reported-at"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b4": {
           "opcode": "control_repeat_until",
           "next": null,
-          "parent": "s20b2",
+          "parent": "s20b3",
           "inputs": {
             "CONDITION": [
               2,
-              "s20b5"
+              "s20b6"
             ],
             "SUBSTACK": [
               2,
-              "s20b6"
+              "s20b7"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s20b5": {
+        "s20b6": {
           "opcode": "operator_equals",
           "next": null,
-          "parent": "s20b3",
+          "parent": "s20b4",
           "inputs": {
             "OPERAND1": [
               3,
@@ -15198,32 +15658,32 @@
           "shadow": false,
           "topLevel": false
         },
-        "s20b6": {
+        "s20b7": {
           "opcode": "control_if",
-          "next": "s20b7",
-          "parent": "s20b3",
+          "next": "s20b8",
+          "parent": "s20b4",
           "inputs": {
             "CONDITION": [
               2,
-              "s20b8"
+              "s20b9"
             ],
             "SUBSTACK": [
               2,
-              "s20b10"
+              "s20b11"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s20b8": {
+        "s20b9": {
           "opcode": "operator_gt",
           "next": null,
-          "parent": "s20b6",
+          "parent": "s20b7",
           "inputs": {
             "OPERAND1": [
               3,
-              "s20b9",
+              "s20b10",
               [
                 10,
                 ""
@@ -15246,55 +15706,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s20b9": {
-          "opcode": "kubohiroyawebrtcqrcodepairing_pairingReadCount",
-          "next": null,
-          "parent": "s20b8",
-          "inputs": {
-            "SESSION": [
-              3,
-              [
-                12,
-                "pairing session",
-                "variable:pairing-session"
-              ],
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
         "s20b10": {
-          "opcode": "data_setvariableto",
-          "next": "s20b11",
-          "parent": "s20b6",
-          "inputs": {
-            "VALUE": [
-              3,
-              "s20b12",
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {
-            "VARIABLE": [
-              "pairing QR reads seen",
-              "variable:pairing-qr-reads-seen"
-            ]
-          },
-          "shadow": false,
-          "topLevel": false
-        },
-        "s20b12": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingReadCount",
           "next": null,
-          "parent": "s20b10",
+          "parent": "s20b9",
           "inputs": {
             "SESSION": [
               3,
@@ -15314,56 +15729,32 @@
           "topLevel": false
         },
         "s20b11": {
-          "opcode": "control_if_else",
-          "next": null,
-          "parent": "s20b10",
+          "opcode": "data_setvariableto",
+          "next": "s20b12",
+          "parent": "s20b7",
           "inputs": {
-            "CONDITION": [
-              2,
-              "s20b13"
-            ],
-            "SUBSTACK": [
-              2,
-              "s20b15"
-            ],
-            "SUBSTACK2": [
-              2,
-              "s20b19"
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s20b13": {
-          "opcode": "operator_equals",
-          "next": null,
-          "parent": "s20b11",
-          "inputs": {
-            "OPERAND1": [
+            "VALUE": [
               3,
-              "s20b14",
+              "s20b13",
               [
                 10,
                 ""
               ]
-            ],
-            "OPERAND2": [
-              1,
-              [
-                10,
-                "foreign"
-              ]
             ]
           },
-          "fields": {},
+          "fields": {
+            "VARIABLE": [
+              "pairing QR reads seen",
+              "variable:pairing-qr-reads-seen"
+            ]
+          },
           "shadow": false,
           "topLevel": false
         },
-        "s20b14": {
-          "opcode": "kubohiroyawebrtcqrcodepairing_pairingLastRead",
+        "s20b13": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingReadCount",
           "next": null,
-          "parent": "s20b13",
+          "parent": "s20b11",
           "inputs": {
             "SESSION": [
               3,
@@ -15382,14 +15773,65 @@
           "shadow": false,
           "topLevel": false
         },
-        "s20b15": {
-          "opcode": "realtimemotioncapturecamerashell_showAppNotice",
+        "s20b12": {
+          "opcode": "control_if_else",
           "next": null,
           "parent": "s20b11",
           "inputs": {
-            "MESSAGE": [
+            "CONDITION": [
+              2,
+              "s20b14"
+            ],
+            "SUBSTACK": [
+              2,
+              "s20b16"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s20b40"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b14": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s20b12",
+          "inputs": {
+            "OPERAND1": [
               3,
-              "s20b16",
+              "s20b15",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "accepted"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b15": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingLastRead",
+          "next": null,
+          "parent": "s20b14",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
               [
                 10,
                 ""
@@ -15401,24 +15843,21 @@
           "topLevel": false
         },
         "s20b16": {
-          "opcode": "operator_join",
+          "opcode": "control_if_else",
           "next": null,
-          "parent": "s20b15",
+          "parent": "s20b12",
           "inputs": {
-            "STRING1": [
-              3,
-              "s20b17",
-              [
-                10,
-                ""
-              ]
+            "CONDITION": [
+              2,
+              "s20b17"
             ],
-            "STRING2": [
-              1,
-              [
-                10,
-                "）。"
-              ]
+            "SUBSTACK": [
+              2,
+              "s20b21"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s20b33"
             ]
           },
           "fields": {},
@@ -15426,23 +15865,23 @@
           "topLevel": false
         },
         "s20b17": {
-          "opcode": "operator_join",
+          "opcode": "operator_gt",
           "next": null,
           "parent": "s20b16",
           "inputs": {
-            "STRING1": [
-              1,
-              [
-                10,
-                "注意: 別のペアリングのQRコードを読んだため、無視しました（"
-              ]
-            ],
-            "STRING2": [
+            "OPERAND1": [
               3,
               "s20b18",
               [
                 10,
                 ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                4,
+                "0"
               ]
             ]
           },
@@ -15451,9 +15890,35 @@
           "topLevel": false
         },
         "s20b18": {
-          "opcode": "kubohiroyawebrtcqrcodepairing_pairingLastReadDetail",
+          "opcode": "operator_subtract",
           "next": null,
           "parent": "s20b17",
+          "inputs": {
+            "NUM1": [
+              3,
+              "s20b19",
+              [
+                10,
+                ""
+              ]
+            ],
+            "NUM2": [
+              3,
+              "s20b20",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b19": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingRequiredParts",
+          "next": null,
+          "parent": "s20b18",
           "inputs": {
             "SESSION": [
               3,
@@ -15472,46 +15937,21 @@
           "shadow": false,
           "topLevel": false
         },
-        "s20b19": {
-          "opcode": "control_if_else",
-          "next": null,
-          "parent": "s20b11",
-          "inputs": {
-            "CONDITION": [
-              2,
-              "s20b20"
-            ],
-            "SUBSTACK": [
-              2,
-              "s20b22"
-            ],
-            "SUBSTACK2": [
-              2,
-              "s20b40"
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
         "s20b20": {
-          "opcode": "operator_equals",
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingReceivedParts",
           "next": null,
-          "parent": "s20b19",
+          "parent": "s20b18",
           "inputs": {
-            "OPERAND1": [
+            "SESSION": [
               3,
-              "s20b21",
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
               [
                 10,
                 ""
-              ]
-            ],
-            "OPERAND2": [
-              1,
-              [
-                10,
-                "duplicate"
               ]
             ]
           },
@@ -15520,9 +15960,198 @@
           "topLevel": false
         },
         "s20b21": {
-          "opcode": "kubohiroyawebrtcqrcodepairing_pairingLastRead",
+          "opcode": "realtimemotioncapturecamerashell_showAppNotice",
+          "next": "s20b22",
+          "parent": "s20b16",
+          "inputs": {
+            "MESSAGE": [
+              3,
+              "s20b23",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b23": {
+          "opcode": "operator_join",
           "next": null,
-          "parent": "s20b20",
+          "parent": "s20b21",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s20b24",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                " 枚です。"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b24": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s20b23",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s20b25",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s20b28",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b25": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s20b24",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s20b26",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "）。あと "
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b26": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s20b25",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "QRコードを読み取りました（"
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s20b27",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b27": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingLastReadDetail",
+          "next": null,
+          "parent": "s20b26",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b28": {
+          "opcode": "operator_subtract",
+          "next": null,
+          "parent": "s20b24",
+          "inputs": {
+            "NUM1": [
+              3,
+              "s20b29",
+              [
+                10,
+                ""
+              ]
+            ],
+            "NUM2": [
+              3,
+              "s20b30",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b29": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingRequiredParts",
+          "next": null,
+          "parent": "s20b28",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b30": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingReceivedParts",
+          "next": null,
+          "parent": "s20b28",
           "inputs": {
             "SESSION": [
               3,
@@ -15542,234 +16171,46 @@
           "topLevel": false
         },
         "s20b22": {
-          "opcode": "control_if_else",
+          "opcode": "data_setvariableto",
           "next": null,
-          "parent": "s20b19",
+          "parent": "s20b21",
           "inputs": {
-            "CONDITION": [
-              2,
-              "s20b23"
-            ],
-            "SUBSTACK": [
-              2,
-              "s20b27"
-            ],
-            "SUBSTACK2": [
-              2,
-              "s20b36"
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s20b23": {
-          "opcode": "operator_gt",
-          "next": null,
-          "parent": "s20b22",
-          "inputs": {
-            "OPERAND1": [
-              3,
-              "s20b24",
-              [
-                10,
-                ""
-              ]
-            ],
-            "OPERAND2": [
-              1,
-              [
-                4,
-                "0"
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s20b24": {
-          "opcode": "operator_subtract",
-          "next": null,
-          "parent": "s20b23",
-          "inputs": {
-            "NUM1": [
-              3,
-              "s20b25",
-              [
-                10,
-                ""
-              ]
-            ],
-            "NUM2": [
-              3,
-              "s20b26",
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s20b25": {
-          "opcode": "kubohiroyawebrtcqrcodepairing_pairingRequiredParts",
-          "next": null,
-          "parent": "s20b24",
-          "inputs": {
-            "SESSION": [
-              3,
-              [
-                12,
-                "pairing session",
-                "variable:pairing-session"
-              ],
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s20b26": {
-          "opcode": "kubohiroyawebrtcqrcodepairing_pairingReceivedParts",
-          "next": null,
-          "parent": "s20b24",
-          "inputs": {
-            "SESSION": [
-              3,
-              [
-                12,
-                "pairing session",
-                "variable:pairing-session"
-              ],
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s20b27": {
-          "opcode": "realtimemotioncapturecamerashell_showAppNotice",
-          "next": null,
-          "parent": "s20b22",
-          "inputs": {
-            "MESSAGE": [
-              3,
-              "s20b28",
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s20b28": {
-          "opcode": "operator_join",
-          "next": null,
-          "parent": "s20b27",
-          "inputs": {
-            "STRING1": [
-              3,
-              "s20b29",
-              [
-                10,
-                ""
-              ]
-            ],
-            "STRING2": [
-              1,
-              [
-                10,
-                " 枚です。"
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s20b29": {
-          "opcode": "operator_join",
-          "next": null,
-          "parent": "s20b28",
-          "inputs": {
-            "STRING1": [
-              3,
-              "s20b30",
-              [
-                10,
-                ""
-              ]
-            ],
-            "STRING2": [
-              3,
-              "s20b33",
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s20b30": {
-          "opcode": "operator_join",
-          "next": null,
-          "parent": "s20b29",
-          "inputs": {
-            "STRING1": [
+            "VALUE": [
               3,
               "s20b31",
               [
                 10,
                 ""
               ]
-            ],
-            "STRING2": [
-              1,
-              [
-                10,
-                "）。あと "
-              ]
             ]
           },
-          "fields": {},
+          "fields": {
+            "VARIABLE": [
+              "pairing QR reported at",
+              "variable:pairing-qr-reported-at"
+            ]
+          },
           "shadow": false,
           "topLevel": false
         },
         "s20b31": {
-          "opcode": "operator_join",
+          "opcode": "operator_multiply",
           "next": null,
-          "parent": "s20b30",
+          "parent": "s20b22",
           "inputs": {
-            "STRING1": [
-              1,
-              [
-                10,
-                "このQRコードは読み取り済みです（"
-              ]
-            ],
-            "STRING2": [
+            "NUM1": [
               3,
               "s20b32",
               [
                 10,
                 ""
+              ]
+            ],
+            "NUM2": [
+              1,
+              [
+                4,
+                "86400"
               ]
             ]
           },
@@ -15778,41 +16219,20 @@
           "topLevel": false
         },
         "s20b32": {
-          "opcode": "kubohiroyawebrtcqrcodepairing_pairingLastReadDetail",
+          "opcode": "sensing_dayssince2000",
           "next": null,
           "parent": "s20b31",
-          "inputs": {
-            "SESSION": [
-              3,
-              [
-                12,
-                "pairing session",
-                "variable:pairing-session"
-              ],
-              [
-                10,
-                ""
-              ]
-            ]
-          },
+          "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
         "s20b33": {
-          "opcode": "operator_subtract",
-          "next": null,
-          "parent": "s20b29",
+          "opcode": "realtimemotioncapturecamerashell_showAppNotice",
+          "next": "s20b34",
+          "parent": "s20b16",
           "inputs": {
-            "NUM1": [
-              3,
-              "s20b34",
-              [
-                10,
-                ""
-              ]
-            ],
-            "NUM2": [
+            "MESSAGE": [
               3,
               "s20b35",
               [
@@ -15825,76 +16245,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s20b34": {
-          "opcode": "kubohiroyawebrtcqrcodepairing_pairingRequiredParts",
-          "next": null,
-          "parent": "s20b33",
-          "inputs": {
-            "SESSION": [
-              3,
-              [
-                12,
-                "pairing session",
-                "variable:pairing-session"
-              ],
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
         "s20b35": {
-          "opcode": "kubohiroyawebrtcqrcodepairing_pairingReceivedParts",
-          "next": null,
-          "parent": "s20b33",
-          "inputs": {
-            "SESSION": [
-              3,
-              [
-                12,
-                "pairing session",
-                "variable:pairing-session"
-              ],
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s20b36": {
-          "opcode": "realtimemotioncapturecamerashell_showAppNotice",
-          "next": null,
-          "parent": "s20b22",
-          "inputs": {
-            "MESSAGE": [
-              3,
-              "s20b37",
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s20b37": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s20b36",
+          "parent": "s20b33",
           "inputs": {
             "STRING1": [
               3,
-              "s20b38",
+              "s20b36",
               [
                 10,
                 ""
@@ -15912,21 +16270,21 @@
           "shadow": false,
           "topLevel": false
         },
-        "s20b38": {
+        "s20b36": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s20b37",
+          "parent": "s20b35",
           "inputs": {
             "STRING1": [
               1,
               [
                 10,
-                "このQRコードは読み取り済みです（"
+                "QRコードを読み取りました（"
               ]
             ],
             "STRING2": [
               3,
-              "s20b39",
+              "s20b37",
               [
                 10,
                 ""
@@ -15937,10 +16295,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s20b39": {
+        "s20b37": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingLastReadDetail",
           "next": null,
-          "parent": "s20b38",
+          "parent": "s20b36",
           "inputs": {
             "SESSION": [
               3,
@@ -15959,10 +16317,67 @@
           "shadow": false,
           "topLevel": false
         },
-        "s20b40": {
-          "opcode": "control_if_else",
+        "s20b34": {
+          "opcode": "data_setvariableto",
           "next": null,
-          "parent": "s20b19",
+          "parent": "s20b33",
+          "inputs": {
+            "VALUE": [
+              3,
+              "s20b38",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "pairing QR reported at",
+              "variable:pairing-qr-reported-at"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b38": {
+          "opcode": "operator_multiply",
+          "next": null,
+          "parent": "s20b34",
+          "inputs": {
+            "NUM1": [
+              3,
+              "s20b39",
+              [
+                10,
+                ""
+              ]
+            ],
+            "NUM2": [
+              1,
+              [
+                4,
+                "86400"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b39": {
+          "opcode": "sensing_dayssince2000",
+          "next": null,
+          "parent": "s20b38",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b40": {
+          "opcode": "control_if",
+          "next": null,
+          "parent": "s20b12",
           "inputs": {
             "CONDITION": [
               2,
@@ -15970,11 +16385,7 @@
             ],
             "SUBSTACK": [
               2,
-              "s20b45"
-            ],
-            "SUBSTACK2": [
-              2,
-              "s20b54"
+              "s20b46"
             ]
           },
           "fields": {},
@@ -15982,13 +16393,207 @@
           "topLevel": false
         },
         "s20b41": {
-          "opcode": "operator_gt",
+          "opcode": "operator_not",
           "next": null,
           "parent": "s20b40",
           "inputs": {
+            "OPERAND": [
+              2,
+              "s20b42"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b42": {
+          "opcode": "operator_lt",
+          "next": null,
+          "parent": "s20b41",
+          "inputs": {
             "OPERAND1": [
               3,
-              "s20b42",
+              "s20b43",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                4,
+                "1.5"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b43": {
+          "opcode": "operator_subtract",
+          "next": null,
+          "parent": "s20b42",
+          "inputs": {
+            "NUM1": [
+              3,
+              "s20b44",
+              [
+                10,
+                ""
+              ]
+            ],
+            "NUM2": [
+              3,
+              [
+                12,
+                "pairing QR reported at",
+                "variable:pairing-qr-reported-at"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b44": {
+          "opcode": "operator_multiply",
+          "next": null,
+          "parent": "s20b43",
+          "inputs": {
+            "NUM1": [
+              3,
+              "s20b45",
+              [
+                10,
+                ""
+              ]
+            ],
+            "NUM2": [
+              1,
+              [
+                4,
+                "86400"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b45": {
+          "opcode": "sensing_dayssince2000",
+          "next": null,
+          "parent": "s20b44",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b46": {
+          "opcode": "control_if_else",
+          "next": null,
+          "parent": "s20b40",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s20b47"
+            ],
+            "SUBSTACK": [
+              2,
+              "s20b49"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s20b73"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b47": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s20b46",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s20b48",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "duplicate"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b48": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingLastRead",
+          "next": null,
+          "parent": "s20b47",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b49": {
+          "opcode": "control_if_else",
+          "next": null,
+          "parent": "s20b46",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s20b50"
+            ],
+            "SUBSTACK": [
+              2,
+              "s20b54"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s20b66"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b50": {
+          "opcode": "operator_gt",
+          "next": null,
+          "parent": "s20b49",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s20b51",
               [
                 10,
                 ""
@@ -16006,221 +16611,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s20b42": {
-          "opcode": "operator_subtract",
-          "next": null,
-          "parent": "s20b41",
-          "inputs": {
-            "NUM1": [
-              3,
-              "s20b43",
-              [
-                10,
-                ""
-              ]
-            ],
-            "NUM2": [
-              3,
-              "s20b44",
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s20b43": {
-          "opcode": "kubohiroyawebrtcqrcodepairing_pairingRequiredParts",
-          "next": null,
-          "parent": "s20b42",
-          "inputs": {
-            "SESSION": [
-              3,
-              [
-                12,
-                "pairing session",
-                "variable:pairing-session"
-              ],
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s20b44": {
-          "opcode": "kubohiroyawebrtcqrcodepairing_pairingReceivedParts",
-          "next": null,
-          "parent": "s20b42",
-          "inputs": {
-            "SESSION": [
-              3,
-              [
-                12,
-                "pairing session",
-                "variable:pairing-session"
-              ],
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s20b45": {
-          "opcode": "realtimemotioncapturecamerashell_showAppNotice",
-          "next": null,
-          "parent": "s20b40",
-          "inputs": {
-            "MESSAGE": [
-              3,
-              "s20b46",
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s20b46": {
-          "opcode": "operator_join",
-          "next": null,
-          "parent": "s20b45",
-          "inputs": {
-            "STRING1": [
-              3,
-              "s20b47",
-              [
-                10,
-                ""
-              ]
-            ],
-            "STRING2": [
-              1,
-              [
-                10,
-                " 枚です。"
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s20b47": {
-          "opcode": "operator_join",
-          "next": null,
-          "parent": "s20b46",
-          "inputs": {
-            "STRING1": [
-              3,
-              "s20b48",
-              [
-                10,
-                ""
-              ]
-            ],
-            "STRING2": [
-              3,
-              "s20b51",
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s20b48": {
-          "opcode": "operator_join",
-          "next": null,
-          "parent": "s20b47",
-          "inputs": {
-            "STRING1": [
-              3,
-              "s20b49",
-              [
-                10,
-                ""
-              ]
-            ],
-            "STRING2": [
-              1,
-              [
-                10,
-                "）。あと "
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s20b49": {
-          "opcode": "operator_join",
-          "next": null,
-          "parent": "s20b48",
-          "inputs": {
-            "STRING1": [
-              1,
-              [
-                10,
-                "QRコードを読み取りました（"
-              ]
-            ],
-            "STRING2": [
-              3,
-              "s20b50",
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s20b50": {
-          "opcode": "kubohiroyawebrtcqrcodepairing_pairingLastReadDetail",
-          "next": null,
-          "parent": "s20b49",
-          "inputs": {
-            "SESSION": [
-              3,
-              [
-                12,
-                "pairing session",
-                "variable:pairing-session"
-              ],
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
         "s20b51": {
           "opcode": "operator_subtract",
           "next": null,
-          "parent": "s20b47",
+          "parent": "s20b50",
           "inputs": {
             "NUM1": [
               3,
@@ -16289,40 +16683,15 @@
         },
         "s20b54": {
           "opcode": "realtimemotioncapturecamerashell_showAppNotice",
-          "next": null,
-          "parent": "s20b40",
+          "next": "s20b55",
+          "parent": "s20b49",
           "inputs": {
             "MESSAGE": [
-              3,
-              "s20b55",
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s20b55": {
-          "opcode": "operator_join",
-          "next": null,
-          "parent": "s20b54",
-          "inputs": {
-            "STRING1": [
               3,
               "s20b56",
               [
                 10,
                 ""
-              ]
-            ],
-            "STRING2": [
-              1,
-              [
-                10,
-                "）。全部そろいました。"
               ]
             ]
           },
@@ -16333,18 +16702,44 @@
         "s20b56": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s20b55",
+          "parent": "s20b54",
           "inputs": {
             "STRING1": [
+              3,
+              "s20b57",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
               1,
               [
                 10,
-                "QRコードを読み取りました（"
+                " 枚です。"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b57": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s20b56",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s20b58",
+              [
+                10,
+                ""
               ]
             ],
             "STRING2": [
               3,
-              "s20b57",
+              "s20b61",
               [
                 10,
                 ""
@@ -16355,10 +16750,60 @@
           "shadow": false,
           "topLevel": false
         },
-        "s20b57": {
+        "s20b58": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s20b57",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s20b59",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "）。あと "
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b59": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s20b58",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "このQRコードは読み取り済みです（"
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s20b60",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b60": {
           "opcode": "kubohiroyawebrtcqrcodepairing_pairingLastReadDetail",
           "next": null,
-          "parent": "s20b56",
+          "parent": "s20b59",
           "inputs": {
             "SESSION": [
               3,
@@ -16377,10 +16822,431 @@
           "shadow": false,
           "topLevel": false
         },
-        "s20b7": {
+        "s20b61": {
+          "opcode": "operator_subtract",
+          "next": null,
+          "parent": "s20b57",
+          "inputs": {
+            "NUM1": [
+              3,
+              "s20b62",
+              [
+                10,
+                ""
+              ]
+            ],
+            "NUM2": [
+              3,
+              "s20b63",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b62": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingRequiredParts",
+          "next": null,
+          "parent": "s20b61",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b63": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingReceivedParts",
+          "next": null,
+          "parent": "s20b61",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b55": {
+          "opcode": "data_setvariableto",
+          "next": null,
+          "parent": "s20b54",
+          "inputs": {
+            "VALUE": [
+              3,
+              "s20b64",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "pairing QR reported at",
+              "variable:pairing-qr-reported-at"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b64": {
+          "opcode": "operator_multiply",
+          "next": null,
+          "parent": "s20b55",
+          "inputs": {
+            "NUM1": [
+              3,
+              "s20b65",
+              [
+                10,
+                ""
+              ]
+            ],
+            "NUM2": [
+              1,
+              [
+                4,
+                "86400"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b65": {
+          "opcode": "sensing_dayssince2000",
+          "next": null,
+          "parent": "s20b64",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b66": {
+          "opcode": "realtimemotioncapturecamerashell_showAppNotice",
+          "next": "s20b67",
+          "parent": "s20b49",
+          "inputs": {
+            "MESSAGE": [
+              3,
+              "s20b68",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b68": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s20b66",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s20b69",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "）。全部そろいました。"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b69": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s20b68",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "このQRコードは読み取り済みです（"
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s20b70",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b70": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingLastReadDetail",
+          "next": null,
+          "parent": "s20b69",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b67": {
+          "opcode": "data_setvariableto",
+          "next": null,
+          "parent": "s20b66",
+          "inputs": {
+            "VALUE": [
+              3,
+              "s20b71",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "pairing QR reported at",
+              "variable:pairing-qr-reported-at"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b71": {
+          "opcode": "operator_multiply",
+          "next": null,
+          "parent": "s20b67",
+          "inputs": {
+            "NUM1": [
+              3,
+              "s20b72",
+              [
+                10,
+                ""
+              ]
+            ],
+            "NUM2": [
+              1,
+              [
+                4,
+                "86400"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b72": {
+          "opcode": "sensing_dayssince2000",
+          "next": null,
+          "parent": "s20b71",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b73": {
+          "opcode": "realtimemotioncapturecamerashell_showAppNotice",
+          "next": "s20b74",
+          "parent": "s20b46",
+          "inputs": {
+            "MESSAGE": [
+              3,
+              "s20b75",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b75": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s20b73",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s20b76",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "）。"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b76": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s20b75",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "注意: 別のペアリングのQRコードを読んだため、無視しました（"
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s20b77",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b77": {
+          "opcode": "kubohiroyawebrtcqrcodepairing_pairingLastReadDetail",
+          "next": null,
+          "parent": "s20b76",
+          "inputs": {
+            "SESSION": [
+              3,
+              [
+                12,
+                "pairing session",
+                "variable:pairing-session"
+              ],
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b74": {
+          "opcode": "data_setvariableto",
+          "next": null,
+          "parent": "s20b73",
+          "inputs": {
+            "VALUE": [
+              3,
+              "s20b78",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "pairing QR reported at",
+              "variable:pairing-qr-reported-at"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b78": {
+          "opcode": "operator_multiply",
+          "next": null,
+          "parent": "s20b74",
+          "inputs": {
+            "NUM1": [
+              3,
+              "s20b79",
+              [
+                10,
+                ""
+              ]
+            ],
+            "NUM2": [
+              1,
+              [
+                4,
+                "86400"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b79": {
+          "opcode": "sensing_dayssince2000",
+          "next": null,
+          "parent": "s20b78",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s20b8": {
           "opcode": "control_wait",
           "next": null,
-          "parent": "s20b6",
+          "parent": "s20b7",
           "inputs": {
             "DURATION": [
               1,
