@@ -77,7 +77,8 @@
     "build:player": "node --experimental-strip-types scripts/build-player.ts",
     "build:binary": "node --experimental-strip-types scripts/build-binary.ts",
     "build:scripts": "node --experimental-strip-types scripts/build-app-scripts.ts --write",
-    "pose3d:eval": "node --experimental-strip-types packages/pose-3d-service/scripts/pose-3d-eval.ts"
+    "pose3d:eval": "node --experimental-strip-types packages/pose-3d-service/scripts/pose-3d-eval.ts",
+    "measure:recording": "node --experimental-strip-types scripts/measure-recording.ts"
   },
   "devDependencies": {
     "@eslint/js": "9.39.5",
