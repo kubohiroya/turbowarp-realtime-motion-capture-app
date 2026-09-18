@@ -87,6 +87,18 @@
       }
     },
     {
+      "opcode": "setPredictionLead",
+      "blockType": "COMMAND",
+      "text": "predict 3D pose to [LEAD_MS] ms after each request",
+      "description": "Extrapolates each person's measured joints from the fused instant, a frame behind the newest camera frame, to the moment of the request plus LEAD_MS, for at most 200 ms, and marks them predicted. A negative LEAD_MS turns prediction off.",
+      "arguments": {
+        "LEAD_MS": {
+          "type": "NUMBER",
+          "defaultValue": 0
+        }
+      }
+    },
+    {
       "opcode": "requestPose3d",
       "blockType": "COMMAND",
       "text": "request 3D pose",

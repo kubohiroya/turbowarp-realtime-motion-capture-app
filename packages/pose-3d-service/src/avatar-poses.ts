@@ -91,7 +91,9 @@ export class AvatarPoseSlots {
     frame: PoseFrame3DV2,
     frames2d: ReadonlyMap<string, PoseFrame2D>,
   ): AvatarPoses {
-    const v1 = toPoseFrame3DV1(frame) as FrameV1 & Record<string, unknown>;
+    // A predicted joint is where the joint will be when the avatar is shown, which is what it needs.
+    const v1 = toPoseFrame3DV1(frame, { acceptPredicted: true }) as FrameV1 &
+      Record<string, unknown>;
     const views = new Map(
       frame.persons.map((person) => [person.personId, person.views ?? []]),
     );

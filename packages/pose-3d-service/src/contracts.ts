@@ -205,7 +205,17 @@ export type ServiceRequest =
       'frame2d',
       { readonly cameraId: string; readonly frame: PoseFrame2D }
     >
-  | Envelope<'requestPose3d', { readonly timestampUs: number | null }>;
+  | Envelope<
+      'requestPose3d',
+      {
+        readonly timestampUs: number | null;
+        /**
+         * The instant, on the capture clock, to extrapolate each person to (#34 stage 6), or
+         * null for the fused instant itself.
+         */
+        readonly predictToUs?: number | null;
+      }
+    >;
 
 export type ServiceResponse =
   | Envelope<'configured', { readonly cameraIds: readonly string[] }>
@@ -627,7 +637,10 @@ export function validateResponse(value: unknown): Validation<ServiceResponse> {
  * was not measured or constrained keeps its place with score 0, so a consumer that reads version 1
  * cannot take a prediction for a measurement.
  */
-export function toPoseFrame3DV1(frame: PoseFrame3DV2): unknown {
+export function toPoseFrame3DV1(
+  frame: PoseFrame3DV2,
+  options: { readonly acceptPredicted?: boolean } = {},
+): unknown {
   const persons = frame.persons.flatMap((person) => {
     const cameraIds = [
       ...new Set(person.joints.flatMap((joint) => joint.cameraIds)),
@@ -645,7 +658,9 @@ export function toPoseFrame3DV1(frame: PoseFrame3DV2): unknown {
           y: joint.y,
           z: joint.z,
           score:
-            joint.state === 'measured' || joint.state === 'constrained'
+            joint.state === 'measured' ||
+            joint.state === 'constrained' ||
+            (options.acceptPredicted === true && joint.state === 'predicted')
               ? person.confidence
               : 0,
         })),

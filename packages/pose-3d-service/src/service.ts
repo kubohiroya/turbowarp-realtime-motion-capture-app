@@ -64,7 +64,7 @@ export class Pose3dService {
       case 'frame2d':
         return this.acceptFrame(id, message['payload']);
       case 'requestPose3d':
-        return this.pose3d(id);
+        return this.pose3d(id, predictionTarget(message['payload']));
       default:
         return response(id, 'error', {
           code: 'invalid-payload',
@@ -144,7 +144,10 @@ export class Pose3dService {
     });
   }
 
-  private pose3d(id: number): ServiceResponse | null {
+  private pose3d(
+    id: number,
+    predictToUs: number | null,
+  ): ServiceResponse | null {
     const configuration = this.configuration;
     if (!configuration)
       return response(id, 'error', {
@@ -152,7 +155,7 @@ export class Pose3dService {
         message: 'Configure the service first.',
       });
     if (configuration.implementation === 'fusion-v0') {
-      return response(id, 'pose3d', this.fusion.estimate(null));
+      return response(id, 'pose3d', this.fusion.estimate(null, predictToUs));
     }
     if (configuration.implementation === 'stub-timeout') return null;
     if (this.latest.size === 0) return response(id, 'pose3d', null);
@@ -224,4 +227,13 @@ function readId(message: unknown): number {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/** The prediction target a request asks for, or null when it asks for none or for nonsense. */
+function predictionTarget(payload: unknown): number | null {
+  if (typeof payload !== 'object' || payload === null) return null;
+  const value = (payload as Record<string, unknown>)['predictToUs'];
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0
+    ? value
+    : null;
 }

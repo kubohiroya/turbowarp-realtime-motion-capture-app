@@ -123,6 +123,30 @@ describe('Pose3dServiceExtension', () => {
     );
   });
 
+  it('extrapolates the fused frame when a prediction lead is set', async () => {
+    const extension = new Pose3dServiceExtension(port);
+    extension.setPredictionLead({ LEAD_MS: 30 });
+    extension.beginConfiguration({
+      IMPLEMENTATION: 'fusion-v0',
+      REFERENCE_ID: 'venue-projection',
+    });
+    for (const cameraId of ['camera-1', 'camera-2']) {
+      extension.addCamera({
+        CAMERA_ID: cameraId,
+        MODEL_JSON: JSON.stringify(
+          model(cameraId === 'camera-1' ? 'cal-1' : 'cal-2'),
+        ),
+        PLACEMENT_JSON: placement,
+        TIME_JSON: '',
+      });
+    }
+    await extension.applyConfiguration();
+    expect(extension.serviceState()).toBe('ready');
+    // No frame has arrived yet, so there is nothing to predict from: the request still answers.
+    await extension.requestPose3d();
+    expect(extension.serviceState()).toBe('ready');
+  });
+
   it('clears everything when stopped', async () => {
     const extension = new Pose3dServiceExtension(port);
     extension.stopService();

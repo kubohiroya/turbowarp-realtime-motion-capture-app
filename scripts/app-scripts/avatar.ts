@@ -47,6 +47,12 @@ export const avatarSlotHoldMs = 1000;
 const assetId = 'performer';
 const avatarClass = 'twrmc-avatar';
 const vrmUrlSetting = 'avatarVrmUrl';
+/**
+ * How far past each 3D request the joints are extrapolated to (#34 stage 6). The service fuses a
+ * frame behind the newest camera frame; 0 carries the avatars to the moment of the request. The
+ * time a frame then takes to reach the screen is not measured yet, so nothing is added for it.
+ */
+const predictionLeadMs = 0;
 /** Joint and person confidence below which a bone keeps its last rotation. */
 const confidence = 0.3;
 /**
@@ -121,6 +127,9 @@ export class AvatarSteps {
       block(`${this.shell}_showAppLoading`, {
         LABEL: text('アバターを準備しています'),
       }),
+      block(`${pose3dService}_setPredictionLead`, {
+        LEAD_MS: number(predictionLeadMs),
+      }),
       aframeBlock('createScene', {
         LAYER: text('above-stage'),
         MODE: text('3d'),
@@ -183,7 +192,10 @@ export class AvatarSteps {
 
   /** Removes the avatars; the next start binds them again. */
   public stop(): BlockNode[] {
-    return [avatarBlock('resetAvatarRetarget')];
+    return [
+      avatarBlock('resetAvatarRetarget'),
+      block(`${pose3dService}_setPredictionLead`, { LEAD_MS: number(-1) }),
+    ];
   }
 
   /** For the once-a-second line: how many avatars the last frame moved, and why none if so. */

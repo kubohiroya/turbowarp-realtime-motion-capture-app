@@ -41,6 +41,7 @@ import {
   type JitterBufferOptions,
 } from './jitter-buffer.ts';
 import { PersonIdentities } from './identity.ts';
+import { JointPrediction } from './prediction.ts';
 import type { CameraModel, FusedPerson } from './types.ts';
 
 export interface FusionOptions {
@@ -79,6 +80,7 @@ export class FusionEstimator {
   private lastOutputTimestampUs = 0;
   private lastPersons = 0;
   private readonly identities = new PersonIdentities();
+  private readonly prediction = new JointPrediction();
 
   public constructor(options: FusionOptions = DEFAULT_FUSION_OPTIONS) {
     this.options = options;
@@ -97,6 +99,7 @@ export class FusionEstimator {
     this.lastOutputTimestampUs = 0;
     this.lastPersons = 0;
     this.identities.reset();
+    this.prediction.reset();
   }
 
   public accept(frame: PoseFrame2D): void {
@@ -109,7 +112,10 @@ export class FusionEstimator {
    * Returns nothing rather than a guess when no instant has two cameras that agree on somebody: an
    * empty answer is a fact the consumer can act on, and a lone camera's person is not a 3D person.
    */
-  public estimate(timestampUs: number | null): PoseFrame3DV2 | null {
+  public estimate(
+    timestampUs: number | null,
+    predictToUs: number | null = null,
+  ): PoseFrame3DV2 | null {
     if (this.models.size === 0) return null;
     const newest = this.buffer.newestTimestampUs();
     if (newest === undefined) return null;
@@ -127,16 +133,21 @@ export class FusionEstimator {
     this.lastPersons = persons.length;
     if (persons.length === 0) return null;
     const personIds = this.identities.assign(persons, outputTimestampUs);
+    const predicted = this.prediction.apply(
+      persons.map((person, index) =>
+        this.toPerson(person, personIds[index] as string),
+      ),
+      outputTimestampUs,
+      predictToUs,
+    );
     return {
       schema: POSE_FRAME_3D_SCHEMA,
       version: POSE_FRAME_3D_VERSION,
       sequence: this.sequence++,
-      timestampUs: outputTimestampUs,
+      timestampUs: predicted.timestampUs,
       referenceId: this.referenceId,
       implementation: 'fusion-v0',
-      persons: persons.map((person, index) =>
-        this.toPerson(person, personIds[index] as string),
-      ),
+      persons: predicted.persons,
     };
   }
 

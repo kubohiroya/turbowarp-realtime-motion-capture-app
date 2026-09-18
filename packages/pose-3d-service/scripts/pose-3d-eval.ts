@@ -28,9 +28,13 @@ const usage = `Usage:
                           [--frame-rate n] [--noise-px n] [--occlusion-rate n] [--identity-switch-rate n]
   pose-3d-eval replay --session <file> [--implementation ${IMPLEMENTATIONS.join('|')}] [--out <file>]
   pose-3d-eval evaluate [--session <file>] [--implementation ...] [--json] [same scene options]
+                       [--lead-ms n] [--predict]
 
 Sessions are read as JSONL (v2) or as the single JSON document v1 wrote, compressed when the name
-ends in .gz. Without --session, evaluate generates a scene with the options given.`;
+ends in .gz. Without --session, evaluate generates a scene with the options given.
+
+--lead-ms is how long after its request an answer is shown; the display error is measured against
+the truth at that moment. --predict asks the service to extrapolate each answer to it.`;
 
 async function main(argv: readonly string[]): Promise<number> {
   const command = argv[0];
@@ -60,10 +64,11 @@ async function main(argv: readonly string[]): Promise<number> {
     ? await readSession(options['session'])
     : generateScene(sceneOptions(options)).session;
   const implementation = readImplementation(options['implementation']);
-  const replay = replaySession(
-    session,
-    implementation ? { implementation } : {},
-  );
+  const replay = replaySession(session, {
+    ...(implementation ? { implementation } : {}),
+    displayLeadUs: Number(options['lead-ms'] ?? 0) * 1000,
+    predict: options['predict'] !== undefined,
+  });
 
   if (command === 'replay') {
     const target = options['out'] ?? 'pose-3d-answers.json';
