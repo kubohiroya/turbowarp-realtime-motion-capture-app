@@ -12,7 +12,7 @@
     "@kubohiroya/turbowarp-diagnostic-overlay": "0.4.0",
     "@kubohiroya/turbowarp-realtime-motion-capture": "0.7.0",
     "@kubohiroya/turbowarp-time-space-sync": "0.2.0",
-    "@kubohiroya/turbowarp-title-menu": "0.2.2",
+    "@kubohiroya/turbowarp-title-menu": "0.2.3",
     "@kubohiroya/turbowarp-yaml-json": "0.3.0"
   }
 }
