@@ -56,6 +56,40 @@ export const appFlagNames = [
 ] as const;
 export type AppFlagName = (typeof appFlagNames)[number];
 
+/**
+ * Reads a comma separated list of application flags, refusing a name that is not one.
+ *
+ * Used for `TWRMC_APP_FLAGS`, which turns flags on for a measurement build. A misspelt flag would
+ * otherwise produce a build that looks like a measurement build and measures nothing, so it stops the
+ * build instead.
+ */
+export function parseAppFlags(text: string): AppFlagName[] {
+  const names = text
+    .split(',')
+    .map((name) => name.trim())
+    .filter((name) => name !== '');
+  for (const name of names) {
+    if (!(appFlagNames as readonly string[]).includes(name)) {
+      throw new Error(
+        `Unknown application flag ${name}. One of: ${appFlagNames.join(', ')}`,
+      );
+    }
+  }
+  return [...new Set(names)] as AppFlagName[];
+}
+
+/** The configuration with flags added, each once. */
+export function withAppFlags(
+  config: AppShellAppConfig,
+  extra: readonly AppFlagName[],
+): AppShellAppConfig {
+  if (extra.length === 0) return config;
+  return {
+    ...config,
+    appFlags: [...new Set([...(config.appFlags ?? []), ...extra])],
+  };
+}
+
 const idPattern = /^[a-z0-9]+$/;
 
 /** Validates one application configuration before a build or a registration uses it. */

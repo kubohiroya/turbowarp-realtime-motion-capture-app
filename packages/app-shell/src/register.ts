@@ -1,4 +1,9 @@
-import type { AppShellAppConfig, ShellLocale } from './app-config.js';
+import {
+  withAppFlags,
+  type AppShellAppConfig,
+  type ShellLocale,
+} from './app-config.js';
+import { buildAppFlags } from './build-flags.js';
 import { applyFeatureFlags, contractAlreadyLoaded } from './feature-flags.js';
 import {
   createBrowserLensCalibrationHost,
@@ -35,7 +40,8 @@ import {
  * The title dialog, the application menu, and DSL file storage come from
  * `@kubohiroya/turbowarp-title-menu`, which follows this extension in the same bundle.
  */
-export function registerAppShell(config: AppShellAppConfig): void {
+export function registerAppShell(base: AppShellAppConfig): void {
+  const config = withAppFlags(base, buildAppFlags);
   const flags = applyFeatureFlags(config.featureFlags, {
     contractLoaded: contractAlreadyLoaded,
     timeSpaceSync: config.timeSpaceSync === true,
