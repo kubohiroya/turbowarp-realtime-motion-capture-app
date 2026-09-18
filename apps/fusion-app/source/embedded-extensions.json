@@ -157,14 +157,14 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-realtime-motion-capture",
-        "version": "0.3.0",
+        "version": "0.4.0",
         "artifact": "dist/turbowarp-realtime-motion-capture.js",
-        "integrity": "sha256-kLz2I+OedC1p6fWreK/P9wspgyv1Pg6zCXgivVcK1wk=",
+        "integrity": "sha256-tjExv+ZiJMb4qzJwurwrfpx+NRymXWrvonUIt2Bd6G8=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyarealtimemotioncapture.manifest.json",
           "formatVersion": 1,
-          "integrity": "sha256-OcQwa1B0ALxw7ZY6cPMWLSe+g695Eg9KkAE/KQQueuQ="
+          "integrity": "sha256-OESUj/s4IORZZGZXwGuPUUzA+/6+/kBeZZhT068UjFs="
         }
       }
     },
@@ -197,14 +197,14 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-aframe",
-        "version": "0.3.0",
+        "version": "0.4.0",
         "artifact": "dist/turbowarp-aframe.js",
-        "integrity": "sha256-ur4KaBXAKRkTLbj6uEP1xNrJS4V69uX0wXlpLc5/YqQ=",
+        "integrity": "sha256-a11Tr3vK/Olk2I1kxEtBM/jAxdoJL2HdFSo0+aEWsQA=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/turbowarpaframe.manifest.json",
           "formatVersion": 1,
-          "integrity": "sha256-TYkgq6cEb0i+ZarTdsjgsMD0ODQy8WzYaCFelWwaf8E="
+          "integrity": "sha256-hU0J1jCo6ZyXCtdp6LAB1XUkG9/G7xp4/LHiFzaLEiA="
         }
       }
     },
