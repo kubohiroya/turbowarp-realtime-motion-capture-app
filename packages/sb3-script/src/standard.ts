@@ -111,6 +111,15 @@ export const setVariable = (
 export const add = (left: InputValue, right: InputValue): BlockNode =>
   block('operator_add', { NUM1: left, NUM2: right });
 
+export const subtract = (left: InputValue, right: InputValue): BlockNode =>
+  block('operator_subtract', { NUM1: left, NUM2: right });
+
+export const multiply = (left: InputValue, right: InputValue): BlockNode =>
+  block('operator_multiply', { NUM1: left, NUM2: right });
+
+/** Days since 2000 with a fraction: the project's wall clock, finer than the frame rate. */
+export const daysSince2000 = (): BlockNode => block('sensing_dayssince2000');
+
 export const modulo = (left: InputValue, right: InputValue): BlockNode =>
   block('operator_mod', { NUM1: left, NUM2: right });
 
