@@ -54,6 +54,7 @@ import {
 import {
   concatenate,
   linkTestMessage,
+  pairingBroadcasts,
   pairingButtons,
   pairingReferences,
   PairingSteps,
@@ -80,6 +81,12 @@ const action = {
 
 /** The camera the answer is read with. Its own name, so it never shares a lease with anything else. */
 const answerCameraId = 'pairing';
+/**
+ * How long each offer code stays on the projection before the next. The camera app reads every
+ * frame and takes the codes in any order, so the codes cycle by themselves; this is long enough for a
+ * camera to catch each one in several frames, and a missed one comes round again.
+ */
+const offerCycleSeconds = 0.8;
 
 const pairingRefs = pairingReferences();
 const networkRefs = networkReferences();
@@ -136,7 +143,9 @@ export const fusionAppStageData = {
     [pairedCameraCount.id]: [pairedCameraCount.name, 0],
   },
   lists: fusionSyncLists(syncRefs),
-  broadcasts: {},
+  broadcasts: {
+    ...pairingBroadcasts(pairingRefs),
+  },
 } as const;
 
 const shellBlock = (
@@ -381,13 +390,10 @@ export const fusionAppScripts: readonly Script[] = [
                 variable(pairingRefs.session),
                 text('）'),
               ),
-              'カメラアプリのカメラに写してください。Answerを運んできたら「Answerを読み取る」を押します',
-              [
-                pairingButtons.next,
-                pairingButtons.readAnswer,
-                pairingButtons.cancel,
-              ],
+              'カメラアプリのカメラに写してください。QRは自動で切り替わり、順番は問いません。Answerを運んできたら「Answerを読み取る」を押します',
+              [pairingButtons.readAnswer, pairingButtons.cancel],
               pairing.pairing('isPairingConnected'),
+              offerCycleSeconds,
             ),
             ifElse(
               // The exchange can connect while the Offer is still on screen: the camera app's answer
@@ -404,7 +410,7 @@ export const fusionAppScripts: readonly Script[] = [
                   [
                     pairing.notice(
                       text(
-                        'スマートフォンに表示したAnswerのQRコードを、このPCのカメラに写してください。複数枚のときは全部を写します。',
+                        'スマートフォンに表示したAnswerのQRコードを、このPCのカメラに写してください。複数枚のときは順番を問わず全部を写します。',
                       ),
                     ),
                     block(`${cameraSource}_startSharedCamera`, {
@@ -417,9 +423,7 @@ export const fusionAppScripts: readonly Script[] = [
                     }),
                     ...menu(),
                     block(`${titleMenu}_showMenu`),
-                    pairing.pairing('scanPairingQrFromCamera', {
-                      CAMERA_ID: text(answerCameraId),
-                    }),
+                    ...pairing.scanWithReport(text(answerCameraId)),
                     ...stopAnswerPreview(),
                     pairing.awaitConnection(),
                     ifElse(
@@ -448,6 +452,9 @@ export const fusionAppScripts: readonly Script[] = [
     ...menu(),
     block(`${titleMenu}_showMenu`),
   ]),
+
+  /** Says what each code the answer camera read was, while the scan above runs. */
+  script({ x: 600, y: 1700 }, pairing.readReportScript()),
 
   script({ x: 600, y: 1400 }, [
     block(

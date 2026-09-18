@@ -57,9 +57,9 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-jsqr",
-        "version": "0.3.0",
+        "version": "0.4.0",
         "artifact": "dist/jsqr.js",
-        "integrity": "sha256-nevtga4QoYtQ4kvIvs7n8gDQdXhZvLmJua7d/Nie1AE=",
+        "integrity": "sha256-1coCsu5Z/3V7StD8m+PoL1K/M4+DpzxjHsPAmMm4RWM=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyajsqr.manifest.json",
@@ -97,14 +97,14 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-webrtc-qrcode-pairing",
-        "version": "0.1.0",
+        "version": "0.2.2",
         "artifact": "dist/webrtc-qrcode-pairing.js",
-        "integrity": "sha256-nGjTYCflVd95ZeOGNtaHJW2NY/RUCCiyY+RzBkHUX7g=",
+        "integrity": "sha256-FYAxUNWZDsmFJEwRn5QH6OdtgB5AnH/M4xFghUizdBQ=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyawebrtcqrcodepairing.manifest.json",
           "formatVersion": 1,
-          "integrity": "sha256-TZgP1QjIo8jcs8tA7+be0JKyTrx1SkeHzkOTEXHs1kQ="
+          "integrity": "sha256-2YqrWxMlRh0gcCPNsfq5X0M7X3odbaTHi8KVCEDnfU0="
         }
       }
     },

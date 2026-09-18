@@ -52,6 +52,7 @@ import {
 } from './space-time.ts';
 import {
   linkTestMessage,
+  pairingBroadcasts,
   pairingButtons,
   pairingReferences,
   PairingSteps,
@@ -171,6 +172,7 @@ export const cameraAppStageData = {
     [lensCalibrationRequested.id]: lensCalibrationRequested.name,
     [cameraDeviceSelected.id]: cameraDeviceSelected.name,
     [menuActionsRequested.id]: menuActionsRequested.name,
+    ...pairingBroadcasts(pairingRefs),
   },
 } as const;
 
@@ -907,13 +909,11 @@ export const cameraAppScripts: readonly Script[] = [
             pairing.pairing('setPairingTimeout', { SECONDS: number(600) }),
             pairing.notice(
               text(
-                '統合アプリが投影しているOfferのQRコードを、このカメラに写してください。複数枚のときは全部を写します。',
+                '統合アプリが投影しているOfferのQRコードを、このカメラに写したままにしてください。QRは統合アプリが自動で切り替え、順番を問わず全部そろった時点で受信が完了します。',
               ),
             ),
             block(`${titleMenu}_showMenu`),
-            pairing.pairing('scanPairingQrFromCamera', {
-              CAMERA_ID: text(cameraId),
-            }),
+            ...pairing.scanWithReport(text(cameraId)),
             waitUntil(
               or(
                 pairing.phaseIs('answer-ready'),
@@ -952,6 +952,9 @@ export const cameraAppScripts: readonly Script[] = [
     ),
     block(`${titleMenu}_showMenu`),
   ]),
+
+  /** Says what each offer code the camera read was, while the scan above runs. */
+  script({ x: 2000, y: 1700 }, pairing.readReportScript()),
 
   script({ x: 2000, y: 1400 }, [
     block(
