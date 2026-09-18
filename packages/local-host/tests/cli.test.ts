@@ -1,8 +1,9 @@
 import { createServer, type Server } from 'node:net';
+import { mkdtemp, readdir, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   describeFailure,
@@ -14,6 +15,16 @@ import {
 
 let running: CliOutcome[] = [];
 let sockets: Server[] = [];
+/**
+ * Each test's own lock and recordings directories. The defaults are the venue's: a camera app the
+ * operator has running on this PC keeps its lock in `resolveLockDirectory`'s directory, and a test
+ * that used it would be refused as a second copy — or worse, disturb the running one.
+ */
+let directory: string;
+
+beforeEach(async () => {
+  directory = await mkdtemp(join(tmpdir(), 'multiview-pose-cli-'));
+});
 
 function freePort(): Promise<number> {
   const server = createServer();
@@ -53,7 +64,9 @@ async function run(
     port,
     player: '<!doctype html><title>player</title>',
     argv: [],
-    env: { XDG_RUNTIME_DIR: tmpdir(), LANG: 'en_US.UTF-8' },
+    lockDirectory: join(directory, 'run'),
+    recordingsDirectory: join(directory, 'recordings'),
+    env: { LANG: 'en_US.UTF-8' },
     write: (line) => lines.push(line),
     writeError: (line) => errors.push(line),
     openBrowser: async (url) => {
@@ -77,6 +90,7 @@ afterEach(async () => {
     ),
   );
   sockets = [];
+  await rm(directory, { force: true, recursive: true });
 });
 
 describe('resolveLockDirectory', () => {
@@ -126,7 +140,7 @@ describe('running', () => {
 
   it('reports in Japanese when the environment asks for it', async () => {
     const { lines } = await run({
-      env: { XDG_RUNTIME_DIR: tmpdir(), LANG: 'ja_JP.UTF-8' },
+      env: { LANG: 'ja_JP.UTF-8' },
     });
     expect(lines.join('\n')).toContain('起動しました');
   });
@@ -190,6 +204,42 @@ describe('failures', () => {
     expect(outcome.code).toBe(1);
     expect(errors.join('\n')).toMatch(/another program/);
     expect(errors.join('\n')).not.toMatch(/camera-app|fusion-app/);
+  });
+});
+
+describe('isolation from an application the operator has running', () => {
+  it('starts beside the same application whose lock is elsewhere, and leaves that lock alone', async () => {
+    // Stands in for the venue's camera app, with its lock in the venue's own directory.
+    const venueLocks = join(directory, 'venue-run');
+    const venue = await run({ lockDirectory: venueLocks });
+    expect(venue.outcome.code).toBe(0);
+    const venueLock = await readFile(
+      join(venueLocks, 'camera-app.lock'),
+      'utf8',
+    );
+
+    const test = await run();
+    expect(test.outcome.code).toBe(0);
+    expect(test.errors).toEqual([]);
+
+    await test.outcome.host?.stop();
+    running = running.filter((outcome) => outcome !== test.outcome);
+    expect(await readdir(venueLocks)).toEqual(['camera-app.lock']);
+    expect(await readFile(join(venueLocks, 'camera-app.lock'), 'utf8')).toBe(
+      venueLock,
+    );
+    const response = await fetch(`http://127.0.0.1:${venue.port}/`);
+    expect(response.status).toBeLessThan(500);
+  });
+
+  it('still refuses a second copy that shares the lock directory', async () => {
+    const locks = join(directory, 'shared-run');
+    const first = await run({ lockDirectory: locks });
+    const second = await run({ lockDirectory: locks });
+
+    expect(first.outcome.code).toBe(0);
+    expect(second.outcome.code).toBe(1);
+    expect(second.errors.join('\n')).toMatch(/already running/);
   });
 });
 

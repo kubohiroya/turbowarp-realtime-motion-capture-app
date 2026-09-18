@@ -22,6 +22,12 @@ export interface LocalHostCliOptions {
   readonly lensCalibrationPlayer?: string;
   /** Where pose recordings are kept. Shared by every application on this PC. */
   readonly recordingsDirectory?: string;
+  /**
+   * Where run locks live. The venue binary leaves it to `resolveLockDirectory`, so every copy of an
+   * application on this PC sees the same locks. Tests give each run a directory of its own, so an
+   * application the operator has running is neither refused nor touched by a test.
+   */
+  readonly lockDirectory?: string;
   readonly argv?: readonly string[];
   readonly env?: Readonly<Record<string, string | undefined>>;
   readonly write?: (line: string) => void;
@@ -141,7 +147,7 @@ export async function runLocalHostCli(
     app: options.app,
     title: options.title,
     port: options.port,
-    lockDirectory: resolveLockDirectory(env),
+    lockDirectory: options.lockDirectory ?? resolveLockDirectory(env),
     player: { html: options.player },
     ...(options.lensCalibrationPlayer === undefined
       ? {}
