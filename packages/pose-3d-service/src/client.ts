@@ -74,6 +74,9 @@ export class Pose3dServiceClient {
   private configuration: ServiceConfiguration | undefined;
   private readonly lastSequence = new Map<string, number>();
   private readonly frames2d = new Map<string, PoseFrame2D>();
+  /** The newest capture instant forwarded, and when, on this clock, it was received. */
+  private newestCapture: { captureUs: number; receivedMs: number } | undefined;
+  private predictionLeadMs: number | null = null;
   private latest: PoseFrame3DV2 | undefined;
   private latestAtMs = 0;
   private requestInFlight: Promise<void> | undefined;
@@ -111,6 +114,7 @@ export class Pose3dServiceClient {
     this.latest = undefined;
     this.lastSequence.clear();
     this.frames2d.clear();
+    this.newestCapture = undefined;
     const answer = await this.send(
       'configure',
       checked.value,
@@ -187,6 +191,15 @@ export class Pose3dServiceClient {
     }
     this.framesSent += 1;
     this.frames2d.set(cameraId, frame.value);
+    if (
+      this.newestCapture === undefined ||
+      frame.value.captureTimestampUs >= this.newestCapture.captureUs
+    ) {
+      this.newestCapture = {
+        captureUs: frame.value.captureTimestampUs,
+        receivedMs: this.clock.nowMs() - receivedAgoMs,
+      };
+    }
     void this.send(
       'frame2d',
       { cameraId, frame: frame.value },
@@ -217,7 +230,7 @@ export class Pose3dServiceClient {
     const started = this.clock.nowMs();
     const answer = await this.send(
       'requestPose3d',
-      { timestampUs: null },
+      { timestampUs: null, predictToUs: this.predictionTarget() },
       LIMITS.requestTimeoutMs,
     );
     // The service may have failed or been reconfigured while this request was out.
@@ -248,6 +261,29 @@ export class Pose3dServiceClient {
     this.state = 'ready';
     this.errorCode = '';
     this.errorMessage = '';
+  }
+
+  /**
+   * Asks each later 3D frame to be extrapolated to the moment of the request plus `leadMs`, the
+   * time the frame then takes to reach the screen; null asks for the fused instant as before.
+   */
+  public setPredictionLead(leadMs: number | null): void {
+    this.predictionLeadMs =
+      leadMs !== null && Number.isFinite(leadMs) && leadMs >= 0 ? leadMs : null;
+  }
+
+  /**
+   * The request's moment on the capture clock: the newest capture instant, plus how long ago it
+   * was received, plus the lead. The capture clock is taken to run at the rate of this one.
+   */
+  private predictionTarget(): number | null {
+    if (this.predictionLeadMs === null || this.newestCapture === undefined)
+      return null;
+    const sinceReceivedMs = this.clock.nowMs() - this.newestCapture.receivedMs;
+    return Math.round(
+      this.newestCapture.captureUs +
+        (sinceReceivedMs + this.predictionLeadMs) * 1000,
+    );
   }
 
   public latestFrame(): PoseFrame3DV2 | undefined {
@@ -289,6 +325,7 @@ export class Pose3dServiceClient {
     this.configuration = undefined;
     this.latest = undefined;
     this.frames2d.clear();
+    this.newestCapture = undefined;
     this.state = 'idle';
   }
 

@@ -49,6 +49,12 @@ export interface TruthMetrics {
   readonly identitySwitches: number;
   /** Truth frames the answers were matched against. */
   readonly matchedFrames: number;
+  /**
+   * Distance from each reported joint, whatever its state but missing, to where the truth joint is
+   * when the answer is shown: its request plus the display lead, interpolated between truth
+   * frames. What a viewer sees, and what prediction (#34 stage 6) is for.
+   */
+  readonly displayErrorMeters: Distribution;
 }
 
 /** A joint is triangulable when two cameras or more saw it; nothing else can be asked of a service. */
@@ -139,6 +145,88 @@ function truthMetrics(
     jointRecall: recallable === 0 ? 0 : round4(recalled / recallable),
     identitySwitches,
     matchedFrames,
+    displayErrorMeters: distribution(displayErrors(truth, replay)),
+  };
+}
+
+function displayErrors(
+  truth: readonly TruthFrame[],
+  replay: ReplayResult,
+): number[] {
+  const errors: number[] = [];
+  for (const answer of replay.answers) {
+    if (!answer.frame) continue;
+    const shown = truthAt(truth, answer.atUs + replay.displayLeadUs);
+    if (!shown) continue;
+    const expected = shown.persons.filter((person) =>
+      person.joints.some((joint) => joint.cameraIds.length >= MINIMUM_CAMERAS),
+    );
+    for (const [truthPerson, reported] of matchPersons(
+      expected,
+      answer.frame,
+    )) {
+      for (const joint of truthPerson.joints) {
+        if (joint.cameraIds.length < MINIMUM_CAMERAS) continue;
+        const estimated = reported.joints.find(
+          (candidate) => candidate.id === joint.id,
+        );
+        if (!estimated || estimated.state === 'missing') continue;
+        errors.push(
+          Math.hypot(
+            estimated.x - joint.x,
+            estimated.y - joint.y,
+            estimated.z - joint.z,
+          ),
+        );
+      }
+    }
+  }
+  return errors;
+}
+
+/** The truth at an instant, each joint interpolated between the frames either side of it. */
+function truthAt(
+  truth: readonly TruthFrame[],
+  timestampUs: number,
+): TruthFrame | undefined {
+  let before: TruthFrame | undefined;
+  let after: TruthFrame | undefined;
+  for (const frame of truth) {
+    if (frame.timestampUs <= timestampUs) {
+      if (!before || frame.timestampUs > before.timestampUs) before = frame;
+    } else if (!after || frame.timestampUs < after.timestampUs) {
+      after = frame;
+    }
+  }
+  if (!before || !after) return undefined;
+  const span = after.timestampUs - before.timestampUs;
+  const t = span > 0 ? (timestampUs - before.timestampUs) / span : 0;
+  const later = new Map(
+    after.persons.map((person) => [person.personId, person]),
+  );
+  return {
+    timestampUs,
+    persons: before.persons.flatMap((person) => {
+      const next = later.get(person.personId);
+      if (!next) return [];
+      return [
+        {
+          ...person,
+          joints: person.joints.map((joint) => {
+            const other = next.joints.find(
+              (candidate) => candidate.id === joint.id,
+            );
+            if (!other) return joint;
+            return {
+              ...joint,
+              x: joint.x + (other.x - joint.x) * t,
+              y: joint.y + (other.y - joint.y) * t,
+              z: joint.z + (other.z - joint.z) * t,
+            };
+          }),
+        },
+      ];
+    }),
   };
 }
 
@@ -268,6 +356,7 @@ export function formatMetrics(metrics: EvaluationMetrics): string {
       `joint error m: p50 ${metrics.truth.jointErrorMeters.p50}, p95 ${metrics.truth.jointErrorMeters.p95}, max ${metrics.truth.jointErrorMeters.max} (${metrics.truth.jointErrorMeters.count} joints)`,
       `joint recall: ${metrics.truth.jointRecall}`,
       `identity switches: ${metrics.truth.identitySwitches}`,
+      `display error m: p50 ${metrics.truth.displayErrorMeters.p50}, p95 ${metrics.truth.displayErrorMeters.p95}, max ${metrics.truth.displayErrorMeters.max} (${metrics.truth.displayErrorMeters.count} joints)`,
     );
   }
   return lines.join('\n');

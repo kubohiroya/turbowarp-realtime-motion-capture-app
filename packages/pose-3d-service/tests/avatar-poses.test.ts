@@ -239,6 +239,29 @@ describe('AvatarPoseSlots', () => {
     expect(slots.assignments()).toEqual([{ slotId: 'slot-1', personId: a }]);
   });
 
+  it('uses predicted joints, which are where the person will be when shown', () => {
+    const slots = new AvatarPoseSlots(6, 1000);
+    const base = frame3d(0, [a]);
+    const person = base.persons[0]!;
+    const predicted: PoseFrame3DV2 = {
+      ...base,
+      persons: [
+        {
+          ...person,
+          joints: person.joints.map((joint) => ({
+            ...joint,
+            x: joint.x + 0.1,
+            state: 'predicted' as const,
+          })),
+        },
+      ],
+    };
+    const keypoints = (slots.update(predicted, views([])).pose3d as Frame3dV1)
+      .persons[0]!.keypoints as Array<{ x: number; score: number }>;
+    expect(keypoints.every((keypoint) => keypoint.score === 0.9)).toBe(true);
+    expect(keypoints[0]?.x).toBeCloseTo(0.1, 10);
+  });
+
   it('refuses slot counts and holds it cannot honour', () => {
     expect(() => new AvatarPoseSlots(0, 1000)).toThrow(/1 through 6/u);
     expect(() => new AvatarPoseSlots(7, 1000)).toThrow(/1 through 6/u);

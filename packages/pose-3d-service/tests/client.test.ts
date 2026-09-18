@@ -91,6 +91,44 @@ const send = (client: Pose3dServiceClient, sequence: number, age = 10) => {
 };
 
 describe('Pose3dServiceClient', () => {
+  it('asks for the moment of the request plus the lead, on the capture clock', async () => {
+    const { clock, advance } = manualClock();
+    const service = new Pose3dService();
+    let listener: (message: unknown) => void = () => undefined;
+    const requests: unknown[] = [];
+    const port: ServicePort = {
+      post: (message) => {
+        if (message.type === 'requestPose3d') requests.push(message.payload);
+        queueMicrotask(() => {
+          const reply = service.handle(JSON.parse(JSON.stringify(message)));
+          if (reply !== null) listener(reply);
+        });
+      },
+      onMessage: (next) => {
+        listener = next;
+      },
+      onFailure: () => undefined,
+      close: () => undefined,
+    };
+    const client = new Pose3dServiceClient(port, clock);
+    await client.configure(configuration('stub-normal'));
+    // Received 10 ms before it was forwarded.
+    send(client, 1, 10);
+    const captured = frame('camera-1', 'cal-1', 1).captureTimestampUs;
+    await advance(5);
+    await client.requestPose3d();
+    client.setPredictionLead(20);
+    await advance(0);
+    await client.requestPose3d();
+    client.setPredictionLead(-1);
+    await client.requestPose3d();
+    expect(requests).toEqual([
+      { timestampUs: null, predictToUs: null },
+      { timestampUs: null, predictToUs: captured + (10 + 5 + 20) * 1000 },
+      { timestampUs: null, predictToUs: null },
+    ]);
+  });
+
   it('configures, forwards frames and reports a validated 3D frame', async () => {
     const { client } = await configured();
     expect(client.status().state).toBe('ready');

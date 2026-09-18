@@ -59,6 +59,7 @@ export class Pose3dServiceExtension implements TurboWarpExtension {
     | undefined;
   private draftError = '';
   private avatarSlots: AvatarPoseSlots | undefined;
+  private predictionLeadMs: number | null = null;
   private avatarPoses: AvatarPoses | undefined;
 
   public constructor(
@@ -166,6 +167,7 @@ export class Pose3dServiceExtension implements TurboWarpExtension {
     }
     this.client?.close();
     this.client = new Pose3dServiceClient(this.createPort(), this.clock);
+    this.client.setPredictionLead(this.predictionLeadMs);
     await this.client.configure(draft);
   }
 
@@ -179,6 +181,14 @@ export class Pose3dServiceExtension implements TurboWarpExtension {
       Scratch.Cast.toString(args.FRAME_JSON),
       Scratch.Cast.toNumber(args.AGE_MS),
     );
+  }
+
+  /** A negative lead turns prediction off; the 3D frame is then the fused instant itself. */
+  public setPredictionLead(args: { LEAD_MS: unknown }): void {
+    const leadMs = Scratch.Cast.toNumber(args.LEAD_MS);
+    this.predictionLeadMs =
+      Number.isFinite(leadMs) && leadMs >= 0 ? leadMs : null;
+    this.client?.setPredictionLead(this.predictionLeadMs);
   }
 
   public async requestPose3d(): Promise<void> {

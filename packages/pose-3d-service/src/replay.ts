@@ -32,6 +32,8 @@ export interface ReplayAnswer {
 
 export interface ReplayResult {
   readonly answers: readonly ReplayAnswer[];
+  /** How long after its request each answer is taken to be shown, microseconds. */
+  readonly displayLeadUs: number;
   readonly framesSent: number;
   readonly framesAccepted: number;
   readonly requests: number;
@@ -50,6 +52,10 @@ export interface ReplayOptions {
   readonly service?: ServiceHandler;
   /** Monotonic milliseconds. Injected so a test can measure without a real clock. */
   readonly nowMs?: () => number;
+  /** How long after its request each answer is shown, microseconds; 0 when not given. */
+  readonly displayLeadUs?: number;
+  /** Asks the service to extrapolate each answer to its request plus `displayLeadUs`. */
+  readonly predict?: boolean;
 }
 
 export function replaySession(
@@ -94,6 +100,7 @@ export function replaySession(
         };
     return {
       answers: [],
+      displayLeadUs: options.displayLeadUs ?? 0,
       framesSent: 0,
       framesAccepted: 0,
       requests: 0,
@@ -121,7 +128,15 @@ export function replaySession(
       continue;
     }
     requests += 1;
-    const raw = send(request(id++, 'requestPose3d', { timestampUs: null }));
+    const raw = send(
+      request(id++, 'requestPose3d', {
+        timestampUs: null,
+        predictToUs:
+          options.predict === true
+            ? event.atUs + (options.displayLeadUs ?? 0)
+            : null,
+      }),
+    );
     if (raw === null || raw === undefined) {
       unanswered += 1;
       continue;
@@ -151,6 +166,7 @@ export function replaySession(
 
   return {
     answers,
+    displayLeadUs: options.displayLeadUs ?? 0,
     framesSent,
     framesAccepted,
     requests,
