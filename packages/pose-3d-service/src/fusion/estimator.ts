@@ -23,7 +23,6 @@ import {
   LIMITS,
   POSE_FRAME_3D_SCHEMA,
   POSE_FRAME_3D_VERSION,
-  personIdOf,
   type Joint3D,
   type PoseFrame2D,
   type PoseFrame3DPerson,
@@ -41,6 +40,7 @@ import {
   DEFAULT_JITTER_BUFFER_OPTIONS,
   type JitterBufferOptions,
 } from './jitter-buffer.ts';
+import { PersonIdentities } from './identity.ts';
 import type { CameraModel, FusedPerson } from './types.ts';
 
 export interface FusionOptions {
@@ -78,6 +78,7 @@ export class FusionEstimator {
   private sequence = 0;
   private lastOutputTimestampUs = 0;
   private lastPersons = 0;
+  private readonly identities = new PersonIdentities();
 
   public constructor(options: FusionOptions = DEFAULT_FUSION_OPTIONS) {
     this.options = options;
@@ -95,6 +96,7 @@ export class FusionEstimator {
     this.sequence = 0;
     this.lastOutputTimestampUs = 0;
     this.lastPersons = 0;
+    this.identities.reset();
   }
 
   public accept(frame: PoseFrame2D): void {
@@ -124,6 +126,7 @@ export class FusionEstimator {
     this.lastOutputTimestampUs = outputTimestampUs;
     this.lastPersons = persons.length;
     if (persons.length === 0) return null;
+    const personIds = this.identities.assign(persons, outputTimestampUs);
     return {
       schema: POSE_FRAME_3D_SCHEMA,
       version: POSE_FRAME_3D_VERSION,
@@ -131,7 +134,9 @@ export class FusionEstimator {
       timestampUs: outputTimestampUs,
       referenceId: this.referenceId,
       implementation: 'fusion-v0',
-      persons: persons.map((person) => this.toPerson(person)),
+      persons: persons.map((person, index) =>
+        this.toPerson(person, personIds[index] as string),
+      ),
     };
   }
 
@@ -146,7 +151,7 @@ export class FusionEstimator {
     };
   }
 
-  private toPerson(person: FusedPerson): PoseFrame3DPerson {
+  private toPerson(person: FusedPerson, personId: string): PoseFrame3DPerson {
     const joints: Joint3D[] = COCO_17_KEYPOINT_IDS.map((id) => {
       const keypoint = person.keypoints.find(
         (candidate) => candidate.id === id,
@@ -177,14 +182,16 @@ export class FusionEstimator {
       };
     });
     return {
-      // Identity lives in the tracker that saw this person at this instant, in the first camera that
-      // saw them: it is unique within the frame because a view belongs to one cluster, and it holds
-      // only while that tracker does. Identity over time is stage 4.
-      personId: identifierOf(person.members[0]),
+      // Identity follows the torso from instant to instant (stage 4); see PersonIdentities.
+      personId,
       confidence: person.score,
       identitySource: 'geometry',
       meanReprojectionErrorPx: person.meanReprojectionErrorPx,
       joints,
+      views: person.members.map((member) => ({
+        cameraId: member.cameraId,
+        trackingId: member.trackingId,
+      })),
     };
   }
 
@@ -213,15 +220,6 @@ export class FusionEstimator {
     }
     return round4(sigma);
   }
-}
-
-function identifierOf(
-  member: { cameraId: string; trackingId: string } | undefined,
-): string {
-  return personIdOf(
-    member?.cameraId ?? 'unknown',
-    member?.trackingId ?? 'unknown',
-  );
 }
 
 function round4(value: number): number {

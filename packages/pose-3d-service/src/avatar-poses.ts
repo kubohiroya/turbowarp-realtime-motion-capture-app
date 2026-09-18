@@ -1,7 +1,7 @@
 import {
-  personIdOf,
   POSE_FRAME_2D_SCHEMA,
   toPoseFrame3DV1,
+  type PersonView,
   type PoseFrame2D,
   type PoseFrame3DV2,
 } from './contracts.ts';
@@ -45,13 +45,12 @@ export interface AvatarPoses {
  * `turbowarp-realtime-motion-capture` read, keyed by a fixed set of avatar slots.
  *
  * The avatar blocks join a 3D person to the 2D person whose tracking ID equals the 3D person ID, and
- * bind avatars to those IDs. fusion-v0 names a person after the camera and tracker that saw them
- * first, so the name changes whenever that tracker does (identity over time is #34 stage 4). Binding
- * an avatar per name would load a VRM each time. Instead avatars are bound once to `slot-1` ...
- * `slot-N`: a person who appears takes the lowest free slot, keeps it while they are seen, and frees
- * it after `holdMs` unseen. Until stage 4, a broken track can move an avatar to another person.
+ * bind avatars to those IDs. Binding an avatar per person would load a VRM each time somebody new
+ * appears. Instead avatars are bound once to `slot-1` ... `slot-N`: a person who appears takes the
+ * lowest free slot, keeps it while their ID lasts, and frees it after `holdMs` unseen. An avatar
+ * moves to another person only when fusion-v0 gives that person a new ID (see PersonIdentities).
  *
- * The 2D person is the one the 3D person's ID names, from that camera's newest frame; the service
+ * The 2D person is one the 3D person was fused from (its `views`), from that camera's newest frame; the service
  * fused a slightly older instant, which is close enough for the screen position Kalidokit reads.
  * Persons from cameras of different sizes are scaled to the first one's size, so the frame keeps one
  * size, as the contract requires.
@@ -93,6 +92,9 @@ export class AvatarPoseSlots {
     frames2d: ReadonlyMap<string, PoseFrame2D>,
   ): AvatarPoses {
     const v1 = toPoseFrame3DV1(frame) as FrameV1 & Record<string, unknown>;
+    const views = new Map(
+      frame.persons.map((person) => [person.personId, person.views ?? []]),
+    );
     const present = new Set(v1.persons.map((person) => person.personId));
     const now = frame.timestampUs;
     this.slots.forEach((slot, index) => {
@@ -124,7 +126,7 @@ export class AvatarPoseSlots {
       if (keypoints === undefined) continue;
       const slotId = slotIdOf(index);
       persons3d.push({ ...person, personId: slotId, keypoints });
-      const source = find2d(person.personId, frames2d);
+      const source = find2d(views.get(person.personId) ?? [], frames2d);
       if (source === undefined) continue;
       size ??= {
         width: source.frame.frameWidth,
@@ -209,14 +211,15 @@ export function slotIdOf(index: number): string {
 }
 
 function find2d(
-  personId: string,
+  views: readonly PersonView[],
   frames2d: ReadonlyMap<string, PoseFrame2D>,
 ): { frame: PoseFrame2D; person: PoseFrame2D['persons'][number] } | undefined {
-  for (const [cameraId, frame] of frames2d) {
-    const person = frame.persons.find(
-      (candidate) => personIdOf(cameraId, candidate.trackingId) === personId,
+  for (const view of views) {
+    const frame = frames2d.get(view.cameraId);
+    const person = frame?.persons.find(
+      (candidate) => candidate.trackingId === view.trackingId,
     );
-    if (person) return { frame, person };
+    if (frame && person) return { frame, person };
   }
   return undefined;
 }

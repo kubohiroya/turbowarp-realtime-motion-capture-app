@@ -3,14 +3,13 @@ import { describe, expect, it } from 'vitest';
 import { AvatarPoseSlots } from '../src/avatar-poses.ts';
 import {
   COCO_17_KEYPOINT_IDS,
-  personIdOf,
   validatePoseFrame2D,
   type PoseFrame2D,
   type PoseFrame3DV2,
 } from '../src/contracts.ts';
 import { frame } from './fixtures.ts';
 
-/** A fusion-v0 3D frame whose persons are named after the camera and tracker that saw them. */
+/** A fusion-v0 3D frame whose persons carry the 2D person each was fused from. */
 function frame3d(
   timestampUs: number,
   personIds: readonly string[],
@@ -27,6 +26,7 @@ function frame3d(
       confidence: 0.9,
       identitySource: 'geometry',
       meanReprojectionErrorPx: 1,
+      views: sources[personId] ? [sources[personId]] : [],
       joints: COCO_17_KEYPOINT_IDS.map((id, joint) => ({
         id,
         // A standing figure: each joint lower than the one before, persons side by side.
@@ -50,9 +50,15 @@ function views(
 type Frame3dV1 = { persons: Array<{ personId: string; keypoints: unknown[] }> };
 type Frame2dV1 = PoseFrame2D;
 
-const a = personIdOf('camera-1', 'movenet-1');
-const b = personIdOf('camera-1', 'movenet-2');
-const c = personIdOf('camera-2', 'movenet-1');
+/** Stable 3D IDs, each fused from one 2D person. */
+const a = 'person-1';
+const b = 'person-2';
+const c = 'person-3';
+const sources: Record<string, { cameraId: string; trackingId: string }> = {
+  [a]: { cameraId: 'camera-1', trackingId: 'movenet-1' },
+  [b]: { cameraId: 'camera-1', trackingId: 'movenet-2' },
+  [c]: { cameraId: 'camera-2', trackingId: 'movenet-1' },
+};
 
 describe('AvatarPoseSlots', () => {
   it('gives each person the lowest free slot and keeps it while they are seen', () => {

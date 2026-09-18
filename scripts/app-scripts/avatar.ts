@@ -28,9 +28,8 @@ import { pose3dService } from './pose-3d.ts';
 /**
  * Shows one VRM avatar per person the 3D service reports, in the fusion app.
  *
- * The 3D service names a person after the camera and tracker that saw them first, so the name
- * changes when that tracker does (identity over time is #34 stage 4). Avatars are therefore bound
- * once, to the service's avatar slots `slot-1` ... `slot-6`, and the service maps persons to slots
+ * Binding an avatar per person would load a VRM each time somebody new appears. Avatars are
+ * therefore bound once, to the service's avatar slots `slot-1` ... `slot-6`, and the service maps persons to slots
  * each frame and pairs each with the 2D view the avatar blocks also read. An avatar is shown while
  * its slot holds a recognized person and hidden otherwise, on the recognition events the avatar
  * blocks emit.
