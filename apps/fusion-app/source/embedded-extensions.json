@@ -157,9 +157,9 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-realtime-motion-capture",
-        "version": "0.6.0",
+        "version": "0.7.0",
         "artifact": "dist/turbowarp-realtime-motion-capture.js",
-        "integrity": "sha256-XW6nzkmF+wFrvTa2MmJEYzIHOhrLCDskrAl/cPhoVUY=",
+        "integrity": "sha256-+f5evih0FL3yd83Vb+WB0gAogWIl2HPTAhAN1Y/cp1M=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyarealtimemotioncapture.manifest.json",

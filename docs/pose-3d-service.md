@@ -112,9 +112,9 @@ fusion appのメニュー「演出ファイルを選ぶ」で演出DSL（`twrmc/
   A-FrameのYXZ順の回転、幅と高さ、客席側`DISTANCE_M`に立って壁の中心を見るカメラの位置を返します。
   fusion appは、四隅が入力されていれば半透明の壁と、4 m手前のカメラをシーンに置きます。
 
-**制約**：アバターの立ち位置は、まだKalidokitが画面上の腰から推定したものに`rootOffset`を足したもので、
-3D統合が測った会場内の位置ではありません。同じカメラの画面上で近い2人は重なって見え、壁の前にも
-立ちません。`turbowarp-realtime-motion-capture`の`root: "world"`（0.6.0）を使うと、3Dの腰の位置に立ちます。
+- **立ち位置**：アバターは、3D統合が測った腰の位置に立ちます（`turbowarp-realtime-motion-capture` 0.7.0の
+  rig mapping `root: "world"`）。関節はアバター用の軸で届き、シーンでは壁やカメラと同じ`(x, -y, -z)`に
+  置かれるため、`rootOffset`は`[0, 0, 0]`です。
 
 ## fusion-v0（#34 段階3）
 
