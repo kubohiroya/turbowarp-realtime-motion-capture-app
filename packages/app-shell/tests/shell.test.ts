@@ -88,6 +88,24 @@ describe('createMultiviewPoseShell', () => {
     expect(headings()).toContain(cameraAppConfig.errorLocales.ja.title);
   });
 
+  it('lets clicks through a notice to the menu, but not through a failure', () => {
+    const { host, mount } = createHost();
+    const shell = createMultiviewPoseShell(cameraAppConfig, host);
+    shell.showNotice('replaying');
+    shell.showError('the camera is not connected', {});
+    const overlays = collect(mount).filter(
+      (element) => element.tagName === 'section',
+    );
+    const pointerEvents = (title: string) =>
+      overlays.find((overlay) =>
+        collect(overlay).some((element) => element.textContent === title),
+      )?.style['pointerEvents'];
+    expect(pointerEvents(cameraAppConfig.noticeLocales.ja.title)).toBe('none');
+    expect(pointerEvents(cameraAppConfig.errorLocales.ja.title)).not.toBe(
+      'none',
+    );
+  });
+
   it('removes every mounted overlay on dispose', () => {
     const { host, mount } = createHost();
     const shell = createMultiviewPoseShell(cameraAppConfig, host);

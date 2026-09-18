@@ -85,6 +85,9 @@ export function createMultiviewPoseShell(
         tone: 'info',
         locales: config.noticeLocales,
       });
+      // A notice covers the whole stage like a dialog but asks nothing of the operator, and the
+      // replay keeps one up while it plays; clicks go through it to the menu underneath.
+      notice.element.style.pointerEvents = 'none';
       const error = createRuntimeMessageIndicator({
         document,
         mount: target,

@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
+import type { PoseReplay } from '../src/pose-replay.js';
 import { installScratchStub } from './scratch-stub.js';
 
 installScratchStub();
@@ -104,6 +105,30 @@ describe('getInfo', () => {
     ).map((block) => block['opcode']);
     expect(fusionOpcodes).toHaveLength(32);
     expect(fusionOpcodes).not.toContain('openLensCalibrationApp');
+    expect(fusionOpcodes).not.toContain('poseFrameAgeMs');
+
+    // The fusion app's replay hands its frames to the 3D service with their age, so a block that
+    // any one of several parts can serve is offered when that part is there.
+    const replaying = new MultiviewPoseAppShellExtension(
+      fusionAppConfig,
+      fusionShell,
+      {
+        flags: resolveFeatureFlags(fusionAppConfig.featureFlags),
+        state: 'applied',
+      },
+      {
+        poseReplay: {
+          frameAgeMs: (frameJson: string) => (frameJson === '' ? -1 : 12.5),
+        } as unknown as PoseReplay,
+      },
+    );
+    const replayingOpcodes = (
+      replaying.getInfo()['blocks'] as Array<Record<string, unknown>>
+    ).map((block) => block['opcode']);
+    expect(replayingOpcodes).toContain('poseFrameAgeMs');
+    expect(replayingOpcodes).toContain('replayPoseFrame');
+    expect(replaying.poseFrameAgeMs({ FRAME_JSON: '{}' })).toBe(12.5);
+    expect(fusion.poseFrameAgeMs({ FRAME_JSON: '{}' })).toBe(-1);
 
     const cameraOpcodes = (
       info['blocks'] as Array<Record<string, unknown>>
