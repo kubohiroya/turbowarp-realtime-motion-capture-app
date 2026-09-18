@@ -17,6 +17,6 @@
     "node": ">=22.18.0"
   },
   "dependencies": {
-    "@kubohiroya/turbowarp-local-preview": "0.1.0"
+    "@kubohiroya/turbowarp-local-preview": "0.1.1"
   }
 }
