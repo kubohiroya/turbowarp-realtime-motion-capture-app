@@ -29,17 +29,19 @@ extension pin、配布artifactを所有する。`turbowarp-realtime-motion-captu
 
 ## 現在のreadiness（2026-09-18確認）
 
-| 役割                  | package/version                                       | 状態                  | 備考                                                                               |
-| --------------------- | ----------------------------------------------------- | --------------------- | ---------------------------------------------------------------------------------- |
-| App UI                | `@kubohiroya/turbowarp-title-menu@0.2.2`              | Ready                 | タイトル、アプリメニュー、DSLファイル管理。メニュー項目はblockから定義する         |
-| Camera source         | `@kubohiroya/turbowarp-camera-source@0.5.0`           | Ready                 | preview block、実width/height/FPS reporter、device列挙まで揃った                   |
-| QR reader             | `@kubohiroya/turbowarp-jsqr@0.3.0`                    | Ready with dependency | 非同期結果がruntime variable経由なので、Temporary Variables依存が残る              |
-| WebRTC                | `@kubohiroya/turbowarp-webrtc@0.3.0`                  | Ready                 | latest-data pose channel、backpressure、clock sync、frame latency reportまで揃った |
-| DSL values/schema     | `@kubohiroya/turbowarp-yaml-json@0.3.0`               | Ready                 | 外部DSL textのsafe parseとJSON Schema検証が揃った                                  |
-| Assets/animation      | `@kubohiroya/turbowarp-asset-manager@0.16.0`          | Ready                 | block API manifestを配布済み。app asset manifestは未確定                           |
-| 3D scene              | `@kubohiroya/turbowarp-aframe@0.5.0`                  | Ready                 | scene capability v2（VRMのボーンと表情）。A-Frame 1.8.0をjsDelivrからSRI付きで読込 |
-| Diagnostics           | `@kubohiroya/turbowarp-diagnostic-overlay@0.4.0`      | Ready                 | block API manifestを配布済み。app readiness payloadは未確定                        |
-| Motion capture blocks | `@kubohiroya/turbowarp-realtime-motion-capture@0.5.0` | Ready                 | 103 block。personにbindしたVRMのボーンと表情を動かす                               |
+| 役割                  | package/version                                       | 状態  | 備考                                                                                                                                                             |
+| --------------------- | ----------------------------------------------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| App UI                | `@kubohiroya/turbowarp-title-menu@0.2.2`              | Ready | タイトル、アプリメニュー、DSLファイル管理。メニュー項目はblockから定義する                                                                                       |
+| Camera source         | `@kubohiroya/turbowarp-camera-source@0.13.0`          | Ready | preview block、実width/height/FPS reporter、device列挙まで揃った                                                                                                 |
+| QR reader             | `@kubohiroya/turbowarp-jsqr@0.4.0`                    | Ready | zxing-cpp。ペアリング拡張がruntime capabilityの`readFrame`で連結QRコードの位置まで読むので、runtime variable経由の受け渡し（Temporary Variables依存、#19）は無い |
+| WebRTC                | `@kubohiroya/turbowarp-webrtc@0.4.0`                  | Ready | runtime capability v3（Offerの受理とAnswer）、latest-data pose channel、clock sync、frame latency report                                                         |
+| QR pairing            | `@kubohiroya/turbowarp-webrtc-qrcode-pairing@0.2.3`   | Ready | Offer／Answerを連結QRコードで運ぶ。交換が終わるとQRのデータを捨てる。WebRTC capability v3が必要                                                                  |
+| Time-space sync       | `@kubohiroya/turbowarp-time-space-sync@0.2.0`         | Ready | 投影に対するカメラのrollは±45°以内、鏡像は不可                                                                                                                   |
+| DSL values/schema     | `@kubohiroya/turbowarp-yaml-json@0.3.0`               | Ready | 外部DSL textのsafe parseとJSON Schema検証が揃った                                                                                                                |
+| Assets/animation      | `@kubohiroya/turbowarp-asset-manager@0.16.0`          | Ready | block API manifestを配布済み。app asset manifestは未確定                                                                                                         |
+| 3D scene              | `@kubohiroya/turbowarp-aframe@0.5.0`                  | Ready | scene capability v2（VRMのボーンと表情）。A-Frame 1.8.0をjsDelivrからSRI付きで読込                                                                               |
+| Diagnostics           | `@kubohiroya/turbowarp-diagnostic-overlay@0.4.0`      | Ready | block API manifestを配布済み。app readiness payloadは未確定                                                                                                      |
+| Motion capture blocks | `@kubohiroya/turbowarp-realtime-motion-capture@0.5.0` | Ready | 103 block。personにbindしたVRMのボーンと表情を動かす                                                                                                             |
 
 すべての固定artifactは`node scripts/check-extension-readiness.ts --verify-network`で公開bundleと
 manifestに照合済みです。release build自体はnetwork accessなしで、commit済みartifactだけを使用します。

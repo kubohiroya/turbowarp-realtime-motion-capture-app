@@ -2,7 +2,7 @@
 
 camera appとfusion appを、QRコードの往復でWebRTC接続します。搬送形式、連結QRコード、hash、peerの対応、
 期限は[`turbowarp-webrtc-qrcode-pairing`](https://github.com/kubohiroya/turbowarp-webrtc-qrcode-pairing)
-0.2.2が担当し、このリポジトリのscriptは、QRを画面に出すこと、運用者のボタン操作を手順に変えること、
+0.2.3が担当し、このリポジトリのscriptは、QRを画面に出すこと、運用者のボタン操作を手順に変えること、
 読み取りの結果を表示することだけを担当します（`scripts/app-scripts/pairing.ts`）。
 
 OfferとAnswerは、それぞれ1つの連結QRコード（Structured Append、ISO/IEC 18004）として運びます。各QRは規格の
@@ -44,7 +44,10 @@ headerに自分の位置と枚数を持つので、読む側は順番を問わ�
   位置も受け取ります。sessionの間1つのcamera leaseを保持します。読取りのブロックは連結QRがそろうまで
   scriptを止めるため、読み取りのたびの状態の表示は、`pairing QR read report`を受け取った別のscriptが
   `pairing QR reads`の増加を見て行います（`PairingSteps.scanWithReport`／`readReportScript`）。
-- 1枚のQRのversionの上限は、ペアリング拡張の既定のまま（Offer 15、Answer 20）です。アプリはjsQRの結果をruntime variableで受け取らないため、Temporary Variables拡張への
+- 1枚のQRのversionの上限は、ペアリング拡張の既定のまま（Offer 15、Answer 20）です。
+- QRには接続情報（SDP）そのものが入っています。ペアリング拡張は交換が終わった時点（接続、失敗、取消、
+  期限切れ）で、作ったQRと受け取ったQRのデータを捨てます。アプリは接続したら`end pairing QR display`で
+  表示を閉じ、QRパネルを隠します。アプリはjsQRの結果をruntime variableで受け取らないため、Temporary Variables拡張への
   依存（#19）はこの経路にはありません。
 - WebRTCはcapability v3が必要なため、`turbowarp-webrtc`を0.4.0へ上げています。
 
@@ -54,6 +57,10 @@ headerに自分の位置と枚数を持つので、読む側は順番を問わ�
 ペアリング拡張の`__TWQP_FEATURE_FLAGS__.qrCodePairing`へも書きます。切り戻すときは
 `packages/app-shell/src/apps/*.ts`の`featureFlags`から外してビルドし直します。ペアリング拡張の
 ブロックが消え、manual pairing（`turbowarp-webrtc`の`create offer code`など）が残ります。
+
+切戻しはビルド単位です。フラグを外した配布物では、メニューの「カメラアプリと接続する」「統合アプリと
+接続する」は「QRペアリングが無効です」と表示するだけで、接続情報を手で運ぶ画面はアプリにありません。
+manual pairingは、SB3をTurboWarpのエディタで開き、`turbowarp-webrtc`のブロックで行います。
 
 ## 実カメラでの確認
 
