@@ -210,6 +210,13 @@
           "apiManifest": "dist/extension-manifest.json"
         },
         {
+          "id": "kubohiroyayamljson",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-yaml-json",
+          "artifact": "dist/turbowarp-yaml-json.js",
+          "apiManifest": "dist/extension-manifest.json"
+        },
+        {
           "id": "kubohiroyarealtimemotioncapture",
           "provider": "npm",
           "package": "@kubohiroya/turbowarp-realtime-motion-capture",

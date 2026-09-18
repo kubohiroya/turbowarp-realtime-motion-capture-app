@@ -132,6 +132,9 @@ importers:
       '@kubohiroya/turbowarp-title-menu':
         specifier: 0.2.2
         version: 0.2.2
+      '@kubohiroya/turbowarp-yaml-json':
+        specifier: 0.3.0
+        version: 0.3.0
 
   packages/app-shell:
     dependencies:
