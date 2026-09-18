@@ -43,3 +43,9 @@ interface ScratchApi {
 }
 
 declare const Scratch: ScratchApi;
+
+/** The MoveNet model the build chose; see pose-model-plugin.ts. */
+declare module 'virtual:twrmc-pose-model' {
+  const spec: import('./pose-model.js').PoseModelSpec;
+  export default spec;
+}

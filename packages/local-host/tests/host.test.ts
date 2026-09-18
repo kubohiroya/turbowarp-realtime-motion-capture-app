@@ -394,3 +394,51 @@ describe('stop', () => {
     await expect(fetch(url)).rejects.toThrow();
   });
 });
+
+describe('files served by exact path', () => {
+  it('serves the files a build asked for, only with the token, with their types', async () => {
+    const modelJson = join(directory, 'model.json');
+    const shard = join(directory, 'group1-shard1of1.bin');
+    await writeFile(modelJson, '{"format":"graph-model"}');
+    await writeFile(shard, new Uint8Array([0, 1, 2, 255]));
+    const result = await start({
+      files: {
+        '/models/pose/model.json': modelJson,
+        '/models/pose/group1-shard1of1.bin': shard,
+      },
+    });
+    expect(result.started).toBe(true);
+    if (!result.started) return;
+    const token = new URL(result.host.url).searchParams.get('token') ?? '';
+    const at = (path: string, withToken = true) =>
+      fetch(
+        `${result.host.origin}${path}${withToken ? `?token=${encodeURIComponent(token)}` : ''}`,
+      );
+
+    const json = await at('/models/pose/model.json');
+    expect(json.status).toBe(200);
+    expect(json.headers.get('content-type')).toContain('application/json');
+    await expect(json.text()).resolves.toBe('{"format":"graph-model"}');
+
+    const bin = await at('/models/pose/group1-shard1of1.bin');
+    expect(bin.headers.get('content-type')).toBe('application/octet-stream');
+    expect([...new Uint8Array(await bin.arrayBuffer())]).toEqual([
+      0, 1, 2, 255,
+    ]);
+
+    expect((await at('/models/pose/model.json', false)).status).toBe(401);
+    expect((await at('/models/pose/other.bin')).status).toBe(404);
+  });
+
+  it('refuses to start when a file it was asked to serve is missing', async () => {
+    const missing = join(directory, 'absent.bin');
+    const result = await start({
+      files: { '/models/pose/absent.bin': missing },
+    });
+    expect(result).toMatchObject({
+      started: false,
+      reason: 'player-missing',
+      path: missing,
+    });
+  });
+});

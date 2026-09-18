@@ -28,6 +28,8 @@ export interface LocalHostCliOptions {
    * application the operator has running is neither refused nor touched by a test.
    */
   readonly lockDirectory?: string;
+  /** Files served by exact path, such as the MoveNet model of a `TWRMC_POSE_MODEL=local` build. */
+  readonly files?: Readonly<Record<string, string>>;
   readonly argv?: readonly string[];
   readonly env?: Readonly<Record<string, string | undefined>>;
   readonly write?: (line: string) => void;
@@ -154,6 +156,7 @@ export async function runLocalHostCli(
       : { lensCalibrationPlayer: { html: options.lensCalibrationPlayer } }),
     recordingsDirectory:
       options.recordingsDirectory ?? resolveRecordingsDirectory(env),
+    ...(options.files === undefined ? {} : { files: options.files }),
   });
 
   if (!result.started) {
