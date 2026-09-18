@@ -182,6 +182,7 @@ These documents are written in Japanese.
 - [Inter-app protocol](docs/protocol.md) — the schemas used, and the compatibility and safety policy
 - [Persistence design](docs/persistence.md) — saving and restoring the performance DSL and calibration data (decided, not implemented)
 - [Local host](docs/local-host.md) — single-binary distribution and venue operation (in design)
+- [Measuring on real hardware](docs/measurement.md) — frame rate and capture-to-pose latency, with a measurement build and the recording analyzer (Japanese)
 - [TurboWarp extension readiness](docs/extension-readiness.md) — availability of external extensions and the adoption gate
 - [Template](docs/template.md) — what this repository takes from turbowarp-app-template, and where it deliberately differs
 

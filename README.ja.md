@@ -164,6 +164,7 @@ GitHub Issuesを進捗の正本とし、start/done/blockedを記録します。
 - [アプリ間protocol](docs/protocol.md) — 利用するschemaと互換性・安全性の方針
 - [永続化設計](docs/persistence.md) — 演出DSLと校正データの保存・復元（方針確定・未実装）
 - [ローカルホスト](docs/local-host.md) — 単体バイナリでの配布と会場運用（設計中）
+- [実機での計測](docs/measurement.md) — 計測用ビルドと録画の解析で、毎秒フレーム数と撮影→ポーズの遅延を測る手順
 - [TurboWarp拡張 readiness](docs/extension-readiness.md) — 外部拡張の利用可否と導入gate
 - [テンプレート](docs/template.md) — turbowarp-app-templateから取り込んだ構成と、意図的に異なる点
 
