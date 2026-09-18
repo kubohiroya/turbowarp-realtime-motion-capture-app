@@ -60,6 +60,13 @@ import {
   PairingSteps,
   pairingVariables,
 } from './pairing.ts';
+import {
+  AvatarSteps,
+  avatarReferences,
+  avatarVariables,
+  avatarVisibilityScripts,
+  chooseAvatarVrmSteps,
+} from './avatar.ts';
 
 const shell = 'realtimemotioncapturefusionshell';
 const titleMenu = 'kubohiroyaturbowarptitlemenu';
@@ -77,6 +84,7 @@ const action = {
   chooseRecording: 'chooseRecording',
   startReplay: 'startReplay',
   stopReplay: 'stopReplay',
+  chooseAvatarVrm: 'chooseAvatarVrm',
 } as const;
 
 /** The camera the answer is read with. Its own name, so it never shares a lease with anything else. */
@@ -92,6 +100,8 @@ const pairingRefs = pairingReferences();
 const networkRefs = networkReferences();
 const syncRefs = fusionSyncReferences();
 const pose3dRefs = fusionPose3dReferences();
+const avatarRefs = avatarReferences();
+const avatar = new AvatarSteps(shell, avatarRefs);
 const poseSummary = {
   index: namedReference('pose summary index', 'variable:pose-summary-index'),
   peer: namedReference('pose summary peer', 'variable:pose-summary-peer'),
@@ -130,6 +140,7 @@ export const fusionAppStageData = {
     ...networkVariables(networkRefs),
     ...fusionSyncVariables(syncRefs),
     ...fusionPose3dVariables(pose3dRefs),
+    ...avatarVariables(avatarRefs),
     [replayRunning.id]: [replayRunning.name, 'false'],
     [replay3dEnabled.id]: [replay3dEnabled.name, 'false'],
     [replayIndex.id]: [replayIndex.name, 0],
@@ -198,6 +209,10 @@ const menu = () => [
         ACTION: text(action.stop3d),
         LABEL: text('3D統合を止める'),
       }),
+      block(`${titleMenu}_addAppMenuAction`, {
+        ACTION: text(action.chooseAvatarVrm),
+        LABEL: text('アバターのVRMを指定する'),
+      }),
     ],
   ),
   ifThen(
@@ -264,7 +279,26 @@ export const fusionAppScripts: readonly Script[] = [
     startAction: action.start3d,
     stopAction: action.stop3d,
     position: { x: 1800, y: 48 },
+    avatar: {
+      setup: avatar.setup(),
+      frame: avatar.frame(),
+      stop: avatar.stop(),
+      status: avatar.status(),
+    },
   }),
+
+  /** Shows each avatar while its person is recognized. */
+  ...avatarVisibilityScripts({ x: 2400, y: 48 }),
+
+  script({ x: 2400, y: 500 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.chooseAvatarVrm },
+    ),
+    ...chooseAvatarVrmSteps(shell),
+    block(`${titleMenu}_showMenu`),
+  ]),
 
   /** M-08, fusion side: project the pattern, collect every camera's result, solve, and gate READY. */
   script({ x: 1200, y: 700 }, [
@@ -629,7 +663,7 @@ export const fusionAppScripts: readonly Script[] = [
             shellBlock('hideAppLoading'),
             ifElse(
               equals(reporter(serviceBlock('serviceState')), text('ready')),
-              [setVariable(replay3dEnabled, text('true'))],
+              [setVariable(replay3dEnabled, text('true')), ...avatar.setup()],
               [
                 setVariable(replay3dEnabled, text('false')),
                 shellBlock('showAppError', {
@@ -699,6 +733,7 @@ export const fusionAppScripts: readonly Script[] = [
             ),
             ifThen(equals(variable(replay3dEnabled), text('true')), [
               serviceBlock('requestPose3d'),
+              ...avatar.frame(),
             ]),
             ifThen(
               greaterThan(
@@ -722,6 +757,7 @@ export const fusionAppScripts: readonly Script[] = [
                         shellValue('replayDurationMs'),
                         text(' ms — '),
                         pose3dStatusText(shell),
+                        avatar.status(),
                       ),
                     }),
                   ],
@@ -748,6 +784,7 @@ export const fusionAppScripts: readonly Script[] = [
         setVariable(replayRunning, text('false')),
         ifThen(equals(variable(replay3dEnabled), text('true')), [
           setVariable(replay3dEnabled, text('false')),
+          ...avatar.stop(),
           serviceBlock('stopService'),
         ]),
         shellBlock('showAppNotice', {

@@ -601,6 +601,16 @@ export function validateResponse(value: unknown): Validation<ServiceResponse> {
  * was not measured or constrained keeps its place with score 0, so a consumer that reads version 1
  * cannot take a prediction for a measurement.
  */
+/**
+ * The person ID fusion-v0 gives a person: the camera and tracker that saw them first, in the
+ * contract's identifier alphabet, which a tracking ID from a detector need not respect.
+ */
+export function personIdOf(cameraId: string, trackingId: string): string {
+  return `${cameraId}.${trackingId}`
+    .replace(/[^A-Za-z0-9._-]/gu, '_')
+    .slice(0, 64);
+}
+
 export function toPoseFrame3DV1(frame: PoseFrame3DV2): unknown {
   const persons = frame.persons.flatMap((person) => {
     const cameraIds = [

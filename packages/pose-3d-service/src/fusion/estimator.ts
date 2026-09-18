@@ -23,6 +23,7 @@ import {
   LIMITS,
   POSE_FRAME_3D_SCHEMA,
   POSE_FRAME_3D_VERSION,
+  personIdOf,
   type Joint3D,
   type PoseFrame2D,
   type PoseFrame3DPerson,
@@ -214,12 +215,13 @@ export class FusionEstimator {
   }
 }
 
-/** The contract's identifier alphabet, which a tracking ID from a detector need not respect. */
 function identifierOf(
   member: { cameraId: string; trackingId: string } | undefined,
 ): string {
-  const text = `${member?.cameraId ?? 'unknown'}.${member?.trackingId ?? 'unknown'}`;
-  return text.replace(/[^A-Za-z0-9._-]/gu, '_').slice(0, 64);
+  return personIdOf(
+    member?.cameraId ?? 'unknown',
+    member?.trackingId ?? 'unknown',
+  );
 }
 
 function round4(value: number): number {

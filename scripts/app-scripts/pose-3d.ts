@@ -164,6 +164,13 @@ export function fusionPose3dScripts(options: {
   readonly startAction: string;
   readonly stopAction: string;
   readonly position: { x: number; y: number };
+  /** Steps that show avatars from the 3D output: once at the start, after each request, at the end. */
+  readonly avatar?: {
+    readonly setup: readonly BlockNode[];
+    readonly frame: readonly BlockNode[];
+    readonly stop: readonly BlockNode[];
+    readonly status: InputValue;
+  };
 }): Script[] {
   const { shell, titleMenu, references: r } = options;
   const notice = (message: InputValue) =>
@@ -251,6 +258,7 @@ export function fusionPose3dScripts(options: {
             json(status(), 'framesRejected'),
             text(' / 2D: '),
             variable(r.cameras),
+            ...(options.avatar ? [options.avatar.status] : []),
           ),
         ),
       ],
@@ -329,6 +337,7 @@ export function fusionPose3dScripts(options: {
                         text('）。'),
                       ),
                     ),
+                    ...(options.avatar?.setup ?? []),
                     block(`${titleMenu}_showMenu`),
                     setVariable(r.windowStart, timer()),
                     repeatUntil(
@@ -352,6 +361,7 @@ export function fusionPose3dScripts(options: {
                           }),
                         ]),
                         service('requestPose3d'),
+                        ...(options.avatar?.frame ?? []),
                         ifThen(
                           greaterThan(
                             reporter(
@@ -366,6 +376,7 @@ export function fusionPose3dScripts(options: {
                         ),
                       ],
                     ),
+                    ...(options.avatar?.stop ?? []),
                     service('stopService'),
                     notice(text('3D統合を止めました。')),
                   ],

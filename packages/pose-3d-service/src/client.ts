@@ -5,6 +5,7 @@ import {
   validateConfiguration,
   validatePoseFrame2D,
   validateResponse,
+  type PoseFrame2D,
   type PoseFrame3DV2,
   type ServiceConfiguration,
   type ServiceErrorCode,
@@ -72,6 +73,7 @@ export class Pose3dServiceClient {
   private nextId = 1;
   private configuration: ServiceConfiguration | undefined;
   private readonly lastSequence = new Map<string, number>();
+  private readonly frames2d = new Map<string, PoseFrame2D>();
   private latest: PoseFrame3DV2 | undefined;
   private latestAtMs = 0;
   private requestInFlight: Promise<void> | undefined;
@@ -108,6 +110,7 @@ export class Pose3dServiceClient {
     this.state = 'configuring';
     this.latest = undefined;
     this.lastSequence.clear();
+    this.frames2d.clear();
     const answer = await this.send(
       'configure',
       checked.value,
@@ -183,6 +186,7 @@ export class Pose3dServiceClient {
       return;
     }
     this.framesSent += 1;
+    this.frames2d.set(cameraId, frame.value);
     void this.send(
       'frame2d',
       { cameraId, frame: frame.value },
@@ -250,6 +254,11 @@ export class Pose3dServiceClient {
     return this.latest;
   }
 
+  /** Each camera's newest 2D frame that was forwarded, for pairing 3D persons with their views. */
+  public latestFrames2d(): ReadonlyMap<string, PoseFrame2D> {
+    return this.frames2d;
+  }
+
   public status(): ClientStatus {
     return {
       state: this.state,
@@ -279,6 +288,7 @@ export class Pose3dServiceClient {
     this.port.close();
     this.configuration = undefined;
     this.latest = undefined;
+    this.frames2d.clear();
     this.state = 'idle';
   }
 
