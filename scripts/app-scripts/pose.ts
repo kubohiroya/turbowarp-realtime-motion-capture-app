@@ -176,6 +176,29 @@ export function cameraPoseScripts(options: {
   const menu = (action: string) =>
     block(`${titleMenu}_whenAppMenuActionSelected`, {}, { ACTION: action });
   const elapsed = () => subtract(timer(), variable(r.windowStart));
+  /**
+   * Whether the applied lens calibration still fits the camera as it is configured now.
+   *
+   * Camera Source judges it against the live track — frame size, zoom, focus — every time it is
+   * asked, so a camera that is refocused or restarted at another size while the pipeline runs is
+   * caught here rather than by the fusion app's 3D service, which would only see frames stamped with
+   * a calibration that no longer describes them.
+   */
+  const lensCompatible = () =>
+    equals(
+      reporter(
+        block(`${cameraSource}_cameraProfileCompatibility`, {
+          CAMERA_ID: text(cameraId),
+        }),
+      ),
+      text('compatible'),
+    );
+  const lensMismatchDetail = () =>
+    reporter(
+      block(`${cameraSource}_cameraProfileCompatibilityDetail`, {
+        CAMERA_ID: text(cameraId),
+      }),
+    );
 
   const resetWindow = (): BlockNode[] => [
     setVariable(r.windowStart, timer()),
@@ -263,16 +286,36 @@ export function cameraPoseScripts(options: {
                   ],
                   [
                     ifElse(
-                      or(equals(variable(r.peer), text('')), not(connected())),
+                      not(lensCompatible()),
                       [
                         error(
-                          text(
-                            '統合アプリと接続していないため、姿勢推定を始めません。先に「統合アプリと接続する」を選んでください。',
+                          concatenate(
+                            text(
+                              'カメラの今の設定（解像度・ズーム・フォーカス）が、適用したレンズ校正と合わないため、姿勢推定を始められません。カメラの設定を戻すか、レンズ校正をやり直してください。（',
+                            ),
+                            lensMismatchDetail(),
+                            text('）'),
                           ),
-                          'POSE_NOT_CONNECTED',
+                          'LENS_INCOMPATIBLE',
                         ),
                       ],
-                      runPipeline(),
+                      [
+                        ifElse(
+                          or(
+                            equals(variable(r.peer), text('')),
+                            not(connected()),
+                          ),
+                          [
+                            error(
+                              text(
+                                '統合アプリと接続していないため、姿勢推定を始めません。先に「統合アプリと接続する」を選んでください。',
+                              ),
+                              'POSE_NOT_CONNECTED',
+                            ),
+                          ],
+                          runPipeline(),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -331,68 +374,74 @@ export function cameraPoseScripts(options: {
                 setVariable(r.stopReason, text('disconnected')),
               ],
               [
-                setVariable(r.inferenceStart, timer()),
-                mc('inferNextPoseFrame', {
-                  CAPTURE_TIMESTAMP_US: round(
-                    reporter(block(`${webrtc}_localTime`)),
-                  ),
-                }),
-                ifElse(
-                  equals(mcValue('posePipelineState'), text('error')),
-                  [
-                    setVariable(r.running, text('false')),
-                    setVariable(r.stopReason, text('error')),
-                  ],
-                  [
-                    setVariable(
-                      r.inferenceSeconds,
-                      sum(
-                        variable(r.inferenceSeconds),
-                        subtract(timer(), variable(r.inferenceStart)),
-                      ),
-                    ),
-                    changeVariable(r.frames, 1),
-                    setVariable(r.frame, mcValue('latestPoseFrame2D')),
-                    ifThen(not(equals(variable(r.frame), text(''))), [
-                      // The flag is checked first, so a build without recording never evaluates a
-                      // block it does not carry.
-                      ifThen(
-                        block(`${shell}_appFeatureEnabled`, {
-                          FEATURE: text(poseReplayFlag),
-                        }),
-                        [
-                          ifThen(
-                            equals(
-                              reporter(block(`${shell}_poseRecordingState`)),
-                              text('recording'),
-                            ),
-                            [
-                              block(`${shell}_recordPoseFrame`, {
-                                FRAME_JSON: variable(r.frame),
-                                CAMERA_ID: variable(r.localPeer),
-                              }),
-                            ],
-                          ),
-                        ],
-                      ),
-                      block(`${webrtc}_sendLatestData`, {
-                        PAYLOAD: variable(r.frame),
-                        CHANNEL: text(poseChannel),
-                        PEER: variable(r.peer),
-                      }),
-                      setVariable(
-                        r.bytes,
-                        sum(variable(r.bytes), lengthOf(variable(r.frame))),
-                      ),
-                    ]),
-                    ifThen(greaterThan(elapsed(), number(1)), [
-                      reportWindow(),
-                      ...resetWindow(),
-                    ]),
-                  ],
-                ),
+                ifThen(not(lensCompatible()), [
+                  setVariable(r.running, text('false')),
+                  setVariable(r.stopReason, text('lens-incompatible')),
+                ]),
               ],
             ),
+            ifThen(equals(variable(r.running), text('true')), [
+              setVariable(r.inferenceStart, timer()),
+              mc('inferNextPoseFrame', {
+                CAPTURE_TIMESTAMP_US: round(
+                  reporter(block(`${webrtc}_localTime`)),
+                ),
+              }),
+              ifElse(
+                equals(mcValue('posePipelineState'), text('error')),
+                [
+                  setVariable(r.running, text('false')),
+                  setVariable(r.stopReason, text('error')),
+                ],
+                [
+                  setVariable(
+                    r.inferenceSeconds,
+                    sum(
+                      variable(r.inferenceSeconds),
+                      subtract(timer(), variable(r.inferenceStart)),
+                    ),
+                  ),
+                  changeVariable(r.frames, 1),
+                  setVariable(r.frame, mcValue('latestPoseFrame2D')),
+                  ifThen(not(equals(variable(r.frame), text(''))), [
+                    // The flag is checked first, so a build without recording never evaluates a
+                    // block it does not carry.
+                    ifThen(
+                      block(`${shell}_appFeatureEnabled`, {
+                        FEATURE: text(poseReplayFlag),
+                      }),
+                      [
+                        ifThen(
+                          equals(
+                            reporter(block(`${shell}_poseRecordingState`)),
+                            text('recording'),
+                          ),
+                          [
+                            block(`${shell}_recordPoseFrame`, {
+                              FRAME_JSON: variable(r.frame),
+                              CAMERA_ID: variable(r.localPeer),
+                            }),
+                          ],
+                        ),
+                      ],
+                    ),
+                    block(`${webrtc}_sendLatestData`, {
+                      PAYLOAD: variable(r.frame),
+                      CHANNEL: text(poseChannel),
+                      PEER: variable(r.peer),
+                    }),
+                    setVariable(
+                      r.bytes,
+                      sum(variable(r.bytes), lengthOf(variable(r.frame))),
+                    ),
+                  ]),
+                  ifThen(greaterThan(elapsed(), number(1)), [
+                    reportWindow(),
+                    ...resetWindow(),
+                  ]),
+                ],
+              ),
+            ]),
           ]),
           mc('stopWebGpuMoveNetMultiPose'),
           ifElse(
@@ -405,19 +454,36 @@ export function cameraPoseScripts(options: {
             ],
             [
               ifElse(
-                equals(variable(r.stopReason), text('error')),
+                equals(variable(r.stopReason), text('lens-incompatible')),
                 [
                   error(
                     concatenate(
-                      text('姿勢推定が止まりました（'),
-                      mcValue('poseErrorCode'),
-                      text('）: '),
-                      mcValue('poseError'),
+                      text(
+                        'カメラの設定（解像度・ズーム・フォーカス）が、適用したレンズ校正と合わなくなったため、姿勢推定を止めました。カメラの設定を戻すか、レンズ校正をやり直してください。（',
+                      ),
+                      lensMismatchDetail(),
+                      text('）'),
                     ),
-                    'POSE_FAILED',
+                    'POSE_LENS_INCOMPATIBLE',
                   ),
                 ],
-                [notice(text('姿勢推定を止めました。'))],
+                [
+                  ifElse(
+                    equals(variable(r.stopReason), text('error')),
+                    [
+                      error(
+                        concatenate(
+                          text('姿勢推定が止まりました（'),
+                          mcValue('poseErrorCode'),
+                          text('）: '),
+                          mcValue('poseError'),
+                        ),
+                        'POSE_FAILED',
+                      ),
+                    ],
+                    [notice(text('姿勢推定を止めました。'))],
+                  ),
+                ],
               ),
             ],
           ),

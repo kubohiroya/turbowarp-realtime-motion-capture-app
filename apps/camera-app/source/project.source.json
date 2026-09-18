@@ -981,11 +981,11 @@
             ],
             "SUBSTACK": [
               2,
-              "s2b30"
+              "s2b28"
             ],
             "SUBSTACK2": [
               2,
-              "s2b31"
+              "s2b32"
             ]
           },
           "fields": {},
@@ -993,17 +993,13 @@
           "topLevel": false
         },
         "s2b25": {
-          "opcode": "operator_or",
+          "opcode": "operator_not",
           "next": null,
           "parent": "s2b24",
           "inputs": {
-            "OPERAND1": [
+            "OPERAND": [
               2,
               "s2b26"
-            ],
-            "OPERAND2": [
-              2,
-              "s2b27"
             ]
           },
           "fields": {},
@@ -1014,6 +1010,180 @@
           "opcode": "operator_equals",
           "next": null,
           "parent": "s2b25",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s2b27",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "compatible"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b27": {
+          "opcode": "kubohiroyacamerasource_cameraProfileCompatibility",
+          "next": null,
+          "parent": "s2b26",
+          "inputs": {
+            "CAMERA_ID": [
+              1,
+              [
+                10,
+                "pose"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b28": {
+          "opcode": "realtimemotioncapturecamerashell_showAppError",
+          "next": null,
+          "parent": "s2b24",
+          "inputs": {
+            "MESSAGE": [
+              3,
+              "s2b29",
+              [
+                10,
+                ""
+              ]
+            ],
+            "DETAILS": [
+              1,
+              [
+                10,
+                "{\"code\":\"LENS_INCOMPATIBLE\"}"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b29": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s2b28",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s2b30",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "）"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b30": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s2b29",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "カメラの今の設定（解像度・ズーム・フォーカス）が、適用したレンズ校正と合わないため、姿勢推定を始められません。カメラの設定を戻すか、レンズ校正をやり直してください。（"
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s2b31",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b31": {
+          "opcode": "kubohiroyacamerasource_cameraProfileCompatibilityDetail",
+          "next": null,
+          "parent": "s2b30",
+          "inputs": {
+            "CAMERA_ID": [
+              1,
+              [
+                10,
+                "pose"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b32": {
+          "opcode": "control_if_else",
+          "next": null,
+          "parent": "s2b24",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s2b33"
+            ],
+            "SUBSTACK": [
+              2,
+              "s2b38"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s2b39"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b33": {
+          "opcode": "operator_or",
+          "next": null,
+          "parent": "s2b32",
+          "inputs": {
+            "OPERAND1": [
+              2,
+              "s2b34"
+            ],
+            "OPERAND2": [
+              2,
+              "s2b35"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b34": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s2b33",
           "inputs": {
             "OPERAND1": [
               3,
@@ -1039,28 +1209,28 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b27": {
+        "s2b35": {
           "opcode": "operator_not",
           "next": null,
-          "parent": "s2b25",
+          "parent": "s2b33",
           "inputs": {
             "OPERAND": [
               2,
-              "s2b28"
+              "s2b36"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b28": {
+        "s2b36": {
           "opcode": "operator_equals",
           "next": null,
-          "parent": "s2b27",
+          "parent": "s2b35",
           "inputs": {
             "OPERAND1": [
               3,
-              "s2b29",
+              "s2b37",
               [
                 10,
                 ""
@@ -1078,10 +1248,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b29": {
+        "s2b37": {
           "opcode": "kubohiroyawebrtc_connectionState",
           "next": null,
-          "parent": "s2b28",
+          "parent": "s2b36",
           "inputs": {
             "PEER": [
               3,
@@ -1100,10 +1270,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b30": {
+        "s2b38": {
           "opcode": "realtimemotioncapturecamerashell_showAppError",
           "next": null,
-          "parent": "s2b24",
+          "parent": "s2b32",
           "inputs": {
             "MESSAGE": [
               1,
@@ -1124,10 +1294,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b31": {
+        "s2b39": {
           "opcode": "data_setvariableto",
-          "next": "s2b32",
-          "parent": "s2b24",
+          "next": "s2b40",
+          "parent": "s2b32",
           "inputs": {
             "VALUE": [
               1,
@@ -1146,10 +1316,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b32": {
+        "s2b40": {
           "opcode": "data_setvariableto",
-          "next": "s2b33",
-          "parent": "s2b31",
+          "next": "s2b41",
+          "parent": "s2b39",
           "inputs": {
             "VALUE": [
               1,
@@ -1168,10 +1338,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b33": {
+        "s2b41": {
           "opcode": "realtimemotioncapturecamerashell_showAppLoading",
-          "next": "s2b34",
-          "parent": "s2b32",
+          "next": "s2b42",
+          "parent": "s2b40",
           "inputs": {
             "LABEL": [
               1,
@@ -1185,14 +1355,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b34": {
+        "s2b42": {
           "opcode": "kubohiroyarealtimemotioncapture_startWebGpuMoveNetMultiPose",
-          "next": "s2b35",
-          "parent": "s2b33",
+          "next": "s2b43",
+          "parent": "s2b41",
           "inputs": {
             "CALIBRATION_ID": [
               3,
-              "s2b37",
+              "s2b45",
               [
                 10,
                 ""
@@ -1222,14 +1392,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b37": {
+        "s2b45": {
           "opcode": "realtimemotioncapturecamerashell_jsonValueAt",
           "next": null,
-          "parent": "s2b34",
+          "parent": "s2b42",
           "inputs": {
             "JSON": [
               3,
-              "s2b38",
+              "s2b46",
               [
                 10,
                 ""
@@ -1247,10 +1417,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b38": {
+        "s2b46": {
           "opcode": "kubohiroyacamerasource_cameraProfileJson",
           "next": null,
-          "parent": "s2b37",
+          "parent": "s2b45",
           "inputs": {
             "CAMERA_ID": [
               1,
@@ -1264,59 +1434,59 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b35": {
+        "s2b43": {
           "opcode": "realtimemotioncapturecamerashell_hideAppLoading",
-          "next": "s2b36",
-          "parent": "s2b34",
+          "next": "s2b44",
+          "parent": "s2b42",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b36": {
+        "s2b44": {
           "opcode": "control_if_else",
           "next": null,
-          "parent": "s2b35",
+          "parent": "s2b43",
           "inputs": {
             "CONDITION": [
               2,
-              "s2b39"
+              "s2b47"
             ],
             "SUBSTACK": [
               2,
-              "s2b42"
+              "s2b50"
             ],
             "SUBSTACK2": [
               2,
-              "s2b49"
+              "s2b57"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b39": {
+        "s2b47": {
           "opcode": "operator_not",
           "next": null,
-          "parent": "s2b36",
+          "parent": "s2b44",
           "inputs": {
             "OPERAND": [
               2,
-              "s2b40"
+              "s2b48"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b40": {
+        "s2b48": {
           "opcode": "operator_equals",
           "next": null,
-          "parent": "s2b39",
+          "parent": "s2b47",
           "inputs": {
             "OPERAND1": [
               3,
-              "s2b41",
+              "s2b49",
               [
                 10,
                 ""
@@ -1334,19 +1504,19 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b41": {
+        "s2b49": {
           "opcode": "kubohiroyarealtimemotioncapture_posePipelineState",
           "next": null,
-          "parent": "s2b40",
+          "parent": "s2b48",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b42": {
+        "s2b50": {
           "opcode": "data_setvariableto",
-          "next": "s2b43",
-          "parent": "s2b36",
+          "next": "s2b51",
+          "parent": "s2b44",
           "inputs": {
             "VALUE": [
               1,
@@ -1365,14 +1535,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b43": {
+        "s2b51": {
           "opcode": "realtimemotioncapturecamerashell_showAppError",
           "next": null,
-          "parent": "s2b42",
+          "parent": "s2b50",
           "inputs": {
             "MESSAGE": [
               3,
-              "s2b44",
+              "s2b52",
               [
                 10,
                 ""
@@ -1390,14 +1560,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b44": {
+        "s2b52": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s2b43",
+          "parent": "s2b51",
           "inputs": {
             "STRING1": [
               3,
-              "s2b45",
+              "s2b53",
               [
                 10,
                 ""
@@ -1405,7 +1575,7 @@
             ],
             "STRING2": [
               3,
-              "s2b48",
+              "s2b56",
               [
                 10,
                 ""
@@ -1416,14 +1586,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b45": {
+        "s2b53": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s2b44",
+          "parent": "s2b52",
           "inputs": {
             "STRING1": [
               3,
-              "s2b46",
+              "s2b54",
               [
                 10,
                 ""
@@ -1441,10 +1611,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b46": {
+        "s2b54": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s2b45",
+          "parent": "s2b53",
           "inputs": {
             "STRING1": [
               1,
@@ -1455,7 +1625,7 @@
             ],
             "STRING2": [
               3,
-              "s2b47",
+              "s2b55",
               [
                 10,
                 ""
@@ -1466,28 +1636,28 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b47": {
+        "s2b55": {
           "opcode": "kubohiroyarealtimemotioncapture_poseErrorCode",
           "next": null,
-          "parent": "s2b46",
+          "parent": "s2b54",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b48": {
+        "s2b56": {
           "opcode": "kubohiroyarealtimemotioncapture_poseError",
           "next": null,
-          "parent": "s2b44",
+          "parent": "s2b52",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b49": {
+        "s2b57": {
           "opcode": "realtimemotioncapturecamerashell_showAppNotice",
-          "next": "s2b50",
-          "parent": "s2b36",
+          "next": "s2b58",
+          "parent": "s2b44",
           "inputs": {
             "MESSAGE": [
               1,
@@ -1501,23 +1671,23 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b50": {
+        "s2b58": {
           "opcode": "kubohiroyaturbowarptitlemenu_showMenu",
-          "next": "s2b51",
-          "parent": "s2b49",
+          "next": "s2b59",
+          "parent": "s2b57",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b51": {
+        "s2b59": {
           "opcode": "data_setvariableto",
-          "next": "s2b52",
-          "parent": "s2b50",
+          "next": "s2b60",
+          "parent": "s2b58",
           "inputs": {
             "VALUE": [
               3,
-              "s2b60",
+              "s2b68",
               [
                 10,
                 ""
@@ -1533,19 +1703,19 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b60": {
+        "s2b68": {
           "opcode": "sensing_timer",
           "next": null,
-          "parent": "s2b51",
+          "parent": "s2b59",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b52": {
+        "s2b60": {
           "opcode": "data_setvariableto",
-          "next": "s2b53",
-          "parent": "s2b51",
+          "next": "s2b61",
+          "parent": "s2b59",
           "inputs": {
             "VALUE": [
               1,
@@ -1564,10 +1734,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b53": {
+        "s2b61": {
           "opcode": "data_setvariableto",
-          "next": "s2b54",
-          "parent": "s2b52",
+          "next": "s2b62",
+          "parent": "s2b60",
           "inputs": {
             "VALUE": [
               1,
@@ -1586,10 +1756,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b54": {
+        "s2b62": {
           "opcode": "data_setvariableto",
-          "next": "s2b55",
-          "parent": "s2b53",
+          "next": "s2b63",
+          "parent": "s2b61",
           "inputs": {
             "VALUE": [
               1,
@@ -1608,14 +1778,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b55": {
+        "s2b63": {
           "opcode": "data_setvariableto",
-          "next": "s2b56",
-          "parent": "s2b54",
+          "next": "s2b64",
+          "parent": "s2b62",
           "inputs": {
             "VALUE": [
               3,
-              "s2b61",
+              "s2b69",
               [
                 10,
                 ""
@@ -1631,10 +1801,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b61": {
+        "s2b69": {
           "opcode": "kubohiroyawebrtc_latestDataSentCount",
           "next": null,
-          "parent": "s2b55",
+          "parent": "s2b63",
           "inputs": {
             "CHANNEL": [
               1,
@@ -1660,14 +1830,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b56": {
+        "s2b64": {
           "opcode": "data_setvariableto",
-          "next": "s2b57",
-          "parent": "s2b55",
+          "next": "s2b65",
+          "parent": "s2b63",
           "inputs": {
             "VALUE": [
               3,
-              "s2b62",
+              "s2b70",
               [
                 10,
                 ""
@@ -1683,10 +1853,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b62": {
+        "s2b70": {
           "opcode": "kubohiroyawebrtc_latestDataDroppedCount",
           "next": null,
-          "parent": "s2b56",
+          "parent": "s2b64",
           "inputs": {
             "CHANNEL": [
               1,
@@ -1712,42 +1882,42 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b57": {
+        "s2b65": {
           "opcode": "control_repeat_until",
-          "next": "s2b58",
-          "parent": "s2b56",
+          "next": "s2b66",
+          "parent": "s2b64",
           "inputs": {
             "CONDITION": [
               2,
-              "s2b63"
+              "s2b71"
             ],
             "SUBSTACK": [
               2,
-              "s2b65"
+              "s2b73"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b63": {
+        "s2b71": {
           "opcode": "operator_not",
           "next": null,
-          "parent": "s2b57",
+          "parent": "s2b65",
           "inputs": {
             "OPERAND": [
               2,
-              "s2b64"
+              "s2b72"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b64": {
+        "s2b72": {
           "opcode": "operator_equals",
           "next": null,
-          "parent": "s2b63",
+          "parent": "s2b71",
           "inputs": {
             "OPERAND1": [
               3,
@@ -1773,50 +1943,50 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b65": {
+        "s2b73": {
           "opcode": "control_if_else",
-          "next": null,
-          "parent": "s2b57",
+          "next": "s2b74",
+          "parent": "s2b65",
           "inputs": {
             "CONDITION": [
               2,
-              "s2b66"
+              "s2b75"
             ],
             "SUBSTACK": [
               2,
-              "s2b69"
+              "s2b78"
             ],
             "SUBSTACK2": [
               2,
-              "s2b71"
+              "s2b80"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b66": {
+        "s2b75": {
           "opcode": "operator_not",
           "next": null,
-          "parent": "s2b65",
+          "parent": "s2b73",
           "inputs": {
             "OPERAND": [
               2,
-              "s2b67"
+              "s2b76"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b67": {
+        "s2b76": {
           "opcode": "operator_equals",
           "next": null,
-          "parent": "s2b66",
+          "parent": "s2b75",
           "inputs": {
             "OPERAND1": [
               3,
-              "s2b68",
+              "s2b77",
               [
                 10,
                 ""
@@ -1834,10 +2004,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b68": {
+        "s2b77": {
           "opcode": "kubohiroyawebrtc_connectionState",
           "next": null,
-          "parent": "s2b67",
+          "parent": "s2b76",
           "inputs": {
             "PEER": [
               3,
@@ -1856,10 +2026,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b69": {
+        "s2b78": {
           "opcode": "data_setvariableto",
-          "next": "s2b70",
-          "parent": "s2b65",
+          "next": "s2b79",
+          "parent": "s2b73",
           "inputs": {
             "VALUE": [
               1,
@@ -1878,10 +2048,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b70": {
+        "s2b79": {
           "opcode": "data_setvariableto",
           "next": null,
-          "parent": "s2b69",
+          "parent": "s2b78",
           "inputs": {
             "VALUE": [
               1,
@@ -1900,113 +2070,46 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b71": {
-          "opcode": "data_setvariableto",
-          "next": "s2b72",
-          "parent": "s2b65",
-          "inputs": {
-            "VALUE": [
-              3,
-              "s2b74",
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {
-            "VARIABLE": [
-              "pose inference start",
-              "variable:pose-inference-start"
-            ]
-          },
-          "shadow": false,
-          "topLevel": false
-        },
-        "s2b74": {
-          "opcode": "sensing_timer",
-          "next": null,
-          "parent": "s2b71",
-          "inputs": {},
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s2b72": {
-          "opcode": "kubohiroyarealtimemotioncapture_inferNextPoseFrame",
-          "next": "s2b73",
-          "parent": "s2b71",
-          "inputs": {
-            "CAPTURE_TIMESTAMP_US": [
-              3,
-              "s2b75",
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s2b75": {
-          "opcode": "operator_round",
-          "next": null,
-          "parent": "s2b72",
-          "inputs": {
-            "NUM": [
-              3,
-              "s2b76",
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s2b76": {
-          "opcode": "kubohiroyawebrtc_localTime",
-          "next": null,
-          "parent": "s2b75",
-          "inputs": {},
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s2b73": {
-          "opcode": "control_if_else",
-          "next": null,
-          "parent": "s2b72",
-          "inputs": {
-            "CONDITION": [
-              2,
-              "s2b77"
-            ],
-            "SUBSTACK": [
-              2,
-              "s2b79"
-            ],
-            "SUBSTACK2": [
-              2,
-              "s2b81"
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s2b77": {
-          "opcode": "operator_equals",
+        "s2b80": {
+          "opcode": "control_if",
           "next": null,
           "parent": "s2b73",
           "inputs": {
+            "CONDITION": [
+              2,
+              "s2b81"
+            ],
+            "SUBSTACK": [
+              2,
+              "s2b84"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b81": {
+          "opcode": "operator_not",
+          "next": null,
+          "parent": "s2b80",
+          "inputs": {
+            "OPERAND": [
+              2,
+              "s2b82"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b82": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s2b81",
+          "inputs": {
             "OPERAND1": [
               3,
-              "s2b78",
+              "s2b83",
               [
                 10,
                 ""
@@ -2016,7 +2119,7 @@
               1,
               [
                 10,
-                "error"
+                "compatible"
               ]
             ]
           },
@@ -2024,19 +2127,27 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b78": {
-          "opcode": "kubohiroyarealtimemotioncapture_posePipelineState",
+        "s2b83": {
+          "opcode": "kubohiroyacamerasource_cameraProfileCompatibility",
           "next": null,
-          "parent": "s2b77",
-          "inputs": {},
+          "parent": "s2b82",
+          "inputs": {
+            "CAMERA_ID": [
+              1,
+              [
+                10,
+                "pose"
+              ]
+            ]
+          },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b79": {
+        "s2b84": {
           "opcode": "data_setvariableto",
-          "next": "s2b80",
-          "parent": "s2b73",
+          "next": "s2b85",
+          "parent": "s2b80",
           "inputs": {
             "VALUE": [
               1,
@@ -2055,10 +2166,234 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b80": {
+        "s2b85": {
           "opcode": "data_setvariableto",
           "next": null,
-          "parent": "s2b79",
+          "parent": "s2b84",
+          "inputs": {
+            "VALUE": [
+              1,
+              [
+                10,
+                "lens-incompatible"
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "pose stop reason",
+              "variable:pose-stop-reason"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b74": {
+          "opcode": "control_if",
+          "next": null,
+          "parent": "s2b73",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s2b86"
+            ],
+            "SUBSTACK": [
+              2,
+              "s2b87"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b86": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s2b74",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              [
+                12,
+                "pose running",
+                "variable:pose-running"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "true"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b87": {
+          "opcode": "data_setvariableto",
+          "next": "s2b88",
+          "parent": "s2b74",
+          "inputs": {
+            "VALUE": [
+              3,
+              "s2b90",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "pose inference start",
+              "variable:pose-inference-start"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b90": {
+          "opcode": "sensing_timer",
+          "next": null,
+          "parent": "s2b87",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b88": {
+          "opcode": "kubohiroyarealtimemotioncapture_inferNextPoseFrame",
+          "next": "s2b89",
+          "parent": "s2b87",
+          "inputs": {
+            "CAPTURE_TIMESTAMP_US": [
+              3,
+              "s2b91",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b91": {
+          "opcode": "operator_round",
+          "next": null,
+          "parent": "s2b88",
+          "inputs": {
+            "NUM": [
+              3,
+              "s2b92",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b92": {
+          "opcode": "kubohiroyawebrtc_localTime",
+          "next": null,
+          "parent": "s2b91",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b89": {
+          "opcode": "control_if_else",
+          "next": null,
+          "parent": "s2b88",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s2b93"
+            ],
+            "SUBSTACK": [
+              2,
+              "s2b95"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s2b97"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b93": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s2b89",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              "s2b94",
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "error"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b94": {
+          "opcode": "kubohiroyarealtimemotioncapture_posePipelineState",
+          "next": null,
+          "parent": "s2b93",
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b95": {
+          "opcode": "data_setvariableto",
+          "next": "s2b96",
+          "parent": "s2b89",
+          "inputs": {
+            "VALUE": [
+              1,
+              [
+                10,
+                "false"
+              ]
+            ]
+          },
+          "fields": {
+            "VARIABLE": [
+              "pose running",
+              "variable:pose-running"
+            ]
+          },
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b96": {
+          "opcode": "data_setvariableto",
+          "next": null,
+          "parent": "s2b95",
           "inputs": {
             "VALUE": [
               1,
@@ -2077,14 +2412,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b81": {
+        "s2b97": {
           "opcode": "data_setvariableto",
-          "next": "s2b82",
-          "parent": "s2b73",
+          "next": "s2b98",
+          "parent": "s2b89",
           "inputs": {
             "VALUE": [
               3,
-              "s2b86",
+              "s2b102",
               [
                 10,
                 ""
@@ -2100,10 +2435,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b86": {
+        "s2b102": {
           "opcode": "operator_add",
           "next": null,
-          "parent": "s2b81",
+          "parent": "s2b97",
           "inputs": {
             "NUM1": [
               3,
@@ -2119,7 +2454,7 @@
             ],
             "NUM2": [
               3,
-              "s2b87",
+              "s2b103",
               [
                 10,
                 ""
@@ -2130,14 +2465,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b87": {
+        "s2b103": {
           "opcode": "operator_subtract",
           "next": null,
-          "parent": "s2b86",
+          "parent": "s2b102",
           "inputs": {
             "NUM1": [
               3,
-              "s2b88",
+              "s2b104",
               [
                 10,
                 ""
@@ -2160,19 +2495,19 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b88": {
+        "s2b104": {
           "opcode": "sensing_timer",
           "next": null,
-          "parent": "s2b87",
+          "parent": "s2b103",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b82": {
+        "s2b98": {
           "opcode": "data_changevariableby",
-          "next": "s2b83",
-          "parent": "s2b81",
+          "next": "s2b99",
+          "parent": "s2b97",
           "inputs": {
             "VALUE": [
               1,
@@ -2191,14 +2526,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b83": {
+        "s2b99": {
           "opcode": "data_setvariableto",
-          "next": "s2b84",
-          "parent": "s2b82",
+          "next": "s2b100",
+          "parent": "s2b98",
           "inputs": {
             "VALUE": [
               3,
-              "s2b89",
+              "s2b105",
               [
                 10,
                 ""
@@ -2214,51 +2549,51 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b89": {
+        "s2b105": {
           "opcode": "kubohiroyarealtimemotioncapture_latestPoseFrame2D",
           "next": null,
-          "parent": "s2b83",
+          "parent": "s2b99",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b84": {
+        "s2b100": {
           "opcode": "control_if",
-          "next": "s2b85",
-          "parent": "s2b83",
+          "next": "s2b101",
+          "parent": "s2b99",
           "inputs": {
             "CONDITION": [
               2,
-              "s2b90"
+              "s2b106"
             ],
             "SUBSTACK": [
               2,
-              "s2b92"
+              "s2b108"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b90": {
+        "s2b106": {
           "opcode": "operator_not",
           "next": null,
-          "parent": "s2b84",
+          "parent": "s2b100",
           "inputs": {
             "OPERAND": [
               2,
-              "s2b91"
+              "s2b107"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b91": {
+        "s2b107": {
           "opcode": "operator_equals",
           "next": null,
-          "parent": "s2b90",
+          "parent": "s2b106",
           "inputs": {
             "OPERAND1": [
               3,
@@ -2284,28 +2619,28 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b92": {
+        "s2b108": {
           "opcode": "control_if",
-          "next": "s2b93",
-          "parent": "s2b84",
+          "next": "s2b109",
+          "parent": "s2b100",
           "inputs": {
             "CONDITION": [
               2,
-              "s2b95"
+              "s2b111"
             ],
             "SUBSTACK": [
               2,
-              "s2b96"
+              "s2b112"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b95": {
+        "s2b111": {
           "opcode": "realtimemotioncapturecamerashell_appFeatureEnabled",
           "next": null,
-          "parent": "s2b92",
+          "parent": "s2b108",
           "inputs": {
             "FEATURE": [
               1,
@@ -2319,32 +2654,32 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b96": {
+        "s2b112": {
           "opcode": "control_if",
           "next": null,
-          "parent": "s2b92",
+          "parent": "s2b108",
           "inputs": {
             "CONDITION": [
               2,
-              "s2b97"
+              "s2b113"
             ],
             "SUBSTACK": [
               2,
-              "s2b99"
+              "s2b115"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b97": {
+        "s2b113": {
           "opcode": "operator_equals",
           "next": null,
-          "parent": "s2b96",
+          "parent": "s2b112",
           "inputs": {
             "OPERAND1": [
               3,
-              "s2b98",
+              "s2b114",
               [
                 10,
                 ""
@@ -2362,19 +2697,19 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b98": {
+        "s2b114": {
           "opcode": "realtimemotioncapturecamerashell_poseRecordingState",
           "next": null,
-          "parent": "s2b97",
+          "parent": "s2b113",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b99": {
+        "s2b115": {
           "opcode": "realtimemotioncapturecamerashell_recordPoseFrame",
           "next": null,
-          "parent": "s2b96",
+          "parent": "s2b112",
           "inputs": {
             "FRAME_JSON": [
               3,
@@ -2405,10 +2740,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b93": {
+        "s2b109": {
           "opcode": "kubohiroyawebrtc_sendLatestData",
-          "next": "s2b94",
-          "parent": "s2b92",
+          "next": "s2b110",
+          "parent": "s2b108",
           "inputs": {
             "PAYLOAD": [
               3,
@@ -2446,14 +2781,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b94": {
+        "s2b110": {
           "opcode": "data_setvariableto",
           "next": null,
-          "parent": "s2b93",
+          "parent": "s2b109",
           "inputs": {
             "VALUE": [
               3,
-              "s2b100",
+              "s2b116",
               [
                 10,
                 ""
@@ -2469,10 +2804,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b100": {
+        "s2b116": {
           "opcode": "operator_add",
           "next": null,
-          "parent": "s2b94",
+          "parent": "s2b110",
           "inputs": {
             "NUM1": [
               3,
@@ -2488,7 +2823,7 @@
             ],
             "NUM2": [
               3,
-              "s2b101",
+              "s2b117",
               [
                 10,
                 ""
@@ -2499,10 +2834,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b101": {
+        "s2b117": {
           "opcode": "operator_length",
           "next": null,
-          "parent": "s2b100",
+          "parent": "s2b116",
           "inputs": {
             "STRING": [
               3,
@@ -2521,32 +2856,32 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b85": {
+        "s2b101": {
           "opcode": "control_if",
           "next": null,
-          "parent": "s2b84",
+          "parent": "s2b100",
           "inputs": {
             "CONDITION": [
               2,
-              "s2b102"
+              "s2b118"
             ],
             "SUBSTACK": [
               2,
-              "s2b105"
+              "s2b121"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b102": {
+        "s2b118": {
           "opcode": "operator_gt",
           "next": null,
-          "parent": "s2b85",
+          "parent": "s2b101",
           "inputs": {
             "OPERAND1": [
               3,
-              "s2b103",
+              "s2b119",
               [
                 10,
                 ""
@@ -2564,14 +2899,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b103": {
+        "s2b119": {
           "opcode": "operator_subtract",
           "next": null,
-          "parent": "s2b102",
+          "parent": "s2b118",
           "inputs": {
             "NUM1": [
               3,
-              "s2b104",
+              "s2b120",
               [
                 10,
                 ""
@@ -2594,23 +2929,23 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b104": {
+        "s2b120": {
           "opcode": "sensing_timer",
           "next": null,
-          "parent": "s2b103",
+          "parent": "s2b119",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b105": {
+        "s2b121": {
           "opcode": "realtimemotioncapturecamerashell_showAppNotice",
-          "next": "s2b106",
-          "parent": "s2b85",
+          "next": "s2b122",
+          "parent": "s2b101",
           "inputs": {
             "MESSAGE": [
               3,
-              "s2b112",
+              "s2b128",
               [
                 10,
                 ""
@@ -2621,14 +2956,269 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b112": {
+        "s2b128": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s2b105",
+          "parent": "s2b121",
           "inputs": {
             "STRING1": [
               3,
-              "s2b113",
+              "s2b129",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s2b158",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b129": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s2b128",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s2b130",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                " KB/s / seq: "
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b130": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s2b129",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s2b131",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s2b153",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b131": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s2b130",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s2b132",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                " 件 / 送信量: "
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b132": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s2b131",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s2b133",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s2b151",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b133": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s2b132",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s2b134",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                " 件 / 破棄: "
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b134": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s2b133",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s2b135",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s2b149",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b135": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s2b134",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s2b136",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                " ms / 送信: "
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b136": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s2b135",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s2b137",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s2b146",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b137": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s2b136",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s2b138",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                " / 推論1回（フレーム待ちを含む）: "
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b138": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s2b137",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s2b139",
               [
                 10,
                 ""
@@ -2647,269 +3237,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b113": {
+        "s2b139": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s2b112",
+          "parent": "s2b138",
           "inputs": {
             "STRING1": [
               3,
-              "s2b114",
-              [
-                10,
-                ""
-              ]
-            ],
-            "STRING2": [
-              1,
-              [
-                10,
-                " KB/s / seq: "
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s2b114": {
-          "opcode": "operator_join",
-          "next": null,
-          "parent": "s2b113",
-          "inputs": {
-            "STRING1": [
-              3,
-              "s2b115",
-              [
-                10,
-                ""
-              ]
-            ],
-            "STRING2": [
-              3,
-              "s2b137",
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s2b115": {
-          "opcode": "operator_join",
-          "next": null,
-          "parent": "s2b114",
-          "inputs": {
-            "STRING1": [
-              3,
-              "s2b116",
-              [
-                10,
-                ""
-              ]
-            ],
-            "STRING2": [
-              1,
-              [
-                10,
-                " 件 / 送信量: "
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s2b116": {
-          "opcode": "operator_join",
-          "next": null,
-          "parent": "s2b115",
-          "inputs": {
-            "STRING1": [
-              3,
-              "s2b117",
-              [
-                10,
-                ""
-              ]
-            ],
-            "STRING2": [
-              3,
-              "s2b135",
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s2b117": {
-          "opcode": "operator_join",
-          "next": null,
-          "parent": "s2b116",
-          "inputs": {
-            "STRING1": [
-              3,
-              "s2b118",
-              [
-                10,
-                ""
-              ]
-            ],
-            "STRING2": [
-              1,
-              [
-                10,
-                " 件 / 破棄: "
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s2b118": {
-          "opcode": "operator_join",
-          "next": null,
-          "parent": "s2b117",
-          "inputs": {
-            "STRING1": [
-              3,
-              "s2b119",
-              [
-                10,
-                ""
-              ]
-            ],
-            "STRING2": [
-              3,
-              "s2b133",
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s2b119": {
-          "opcode": "operator_join",
-          "next": null,
-          "parent": "s2b118",
-          "inputs": {
-            "STRING1": [
-              3,
-              "s2b120",
-              [
-                10,
-                ""
-              ]
-            ],
-            "STRING2": [
-              1,
-              [
-                10,
-                " ms / 送信: "
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s2b120": {
-          "opcode": "operator_join",
-          "next": null,
-          "parent": "s2b119",
-          "inputs": {
-            "STRING1": [
-              3,
-              "s2b121",
-              [
-                10,
-                ""
-              ]
-            ],
-            "STRING2": [
-              3,
-              "s2b130",
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s2b121": {
-          "opcode": "operator_join",
-          "next": null,
-          "parent": "s2b120",
-          "inputs": {
-            "STRING1": [
-              3,
-              "s2b122",
-              [
-                10,
-                ""
-              ]
-            ],
-            "STRING2": [
-              1,
-              [
-                10,
-                " / 推論1回（フレーム待ちを含む）: "
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s2b122": {
-          "opcode": "operator_join",
-          "next": null,
-          "parent": "s2b121",
-          "inputs": {
-            "STRING1": [
-              3,
-              "s2b123",
-              [
-                10,
-                ""
-              ]
-            ],
-            "STRING2": [
-              3,
-              "s2b126",
-              [
-                10,
-                ""
-              ]
-            ]
-          },
-          "fields": {},
-          "shadow": false,
-          "topLevel": false
-        },
-        "s2b123": {
-          "opcode": "operator_join",
-          "next": null,
-          "parent": "s2b122",
-          "inputs": {
-            "STRING1": [
-              3,
-              "s2b124",
+              "s2b140",
               [
                 10,
                 ""
@@ -2927,10 +3262,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b124": {
+        "s2b140": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s2b123",
+          "parent": "s2b139",
           "inputs": {
             "STRING1": [
               1,
@@ -2941,7 +3276,7 @@
             ],
             "STRING2": [
               3,
-              "s2b125",
+              "s2b141",
               [
                 10,
                 ""
@@ -2952,10 +3287,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b125": {
+        "s2b141": {
           "opcode": "realtimemotioncapturecamerashell_jsonValueAt",
           "next": null,
-          "parent": "s2b124",
+          "parent": "s2b140",
           "inputs": {
             "JSON": [
               3,
@@ -2981,14 +3316,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b126": {
+        "s2b142": {
           "opcode": "operator_round",
           "next": null,
-          "parent": "s2b122",
+          "parent": "s2b138",
           "inputs": {
             "NUM": [
               3,
-              "s2b127",
+              "s2b143",
               [
                 10,
                 ""
@@ -2999,10 +3334,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b127": {
+        "s2b143": {
           "opcode": "operator_divide",
           "next": null,
-          "parent": "s2b126",
+          "parent": "s2b142",
           "inputs": {
             "NUM1": [
               3,
@@ -3018,7 +3353,7 @@
             ],
             "NUM2": [
               3,
-              "s2b128",
+              "s2b144",
               [
                 10,
                 ""
@@ -3029,14 +3364,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b128": {
+        "s2b144": {
           "opcode": "operator_subtract",
           "next": null,
-          "parent": "s2b127",
+          "parent": "s2b143",
           "inputs": {
             "NUM1": [
               3,
-              "s2b129",
+              "s2b145",
               [
                 10,
                 ""
@@ -3059,23 +3394,23 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b129": {
+        "s2b145": {
           "opcode": "sensing_timer",
           "next": null,
-          "parent": "s2b128",
+          "parent": "s2b144",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b130": {
+        "s2b146": {
           "opcode": "operator_round",
           "next": null,
-          "parent": "s2b120",
+          "parent": "s2b136",
           "inputs": {
             "NUM": [
               3,
-              "s2b131",
+              "s2b147",
               [
                 10,
                 ""
@@ -3086,14 +3421,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b131": {
+        "s2b147": {
           "opcode": "operator_multiply",
           "next": null,
-          "parent": "s2b130",
+          "parent": "s2b146",
           "inputs": {
             "NUM1": [
               3,
-              "s2b132",
+              "s2b148",
               [
                 10,
                 ""
@@ -3111,10 +3446,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b132": {
+        "s2b148": {
           "opcode": "operator_divide",
           "next": null,
-          "parent": "s2b131",
+          "parent": "s2b147",
           "inputs": {
             "NUM1": [
               3,
@@ -3145,14 +3480,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b133": {
+        "s2b149": {
           "opcode": "operator_subtract",
           "next": null,
-          "parent": "s2b118",
+          "parent": "s2b134",
           "inputs": {
             "NUM1": [
               3,
-              "s2b134",
+              "s2b150",
               [
                 10,
                 ""
@@ -3175,10 +3510,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b134": {
+        "s2b150": {
           "opcode": "kubohiroyawebrtc_latestDataSentCount",
           "next": null,
-          "parent": "s2b133",
+          "parent": "s2b149",
           "inputs": {
             "CHANNEL": [
               1,
@@ -3204,14 +3539,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b135": {
+        "s2b151": {
           "opcode": "operator_subtract",
           "next": null,
-          "parent": "s2b116",
+          "parent": "s2b132",
           "inputs": {
             "NUM1": [
               3,
-              "s2b136",
+              "s2b152",
               [
                 10,
                 ""
@@ -3234,10 +3569,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b136": {
+        "s2b152": {
           "opcode": "kubohiroyawebrtc_latestDataDroppedCount",
           "next": null,
-          "parent": "s2b135",
+          "parent": "s2b151",
           "inputs": {
             "CHANNEL": [
               1,
@@ -3263,14 +3598,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b137": {
+        "s2b153": {
           "opcode": "operator_round",
           "next": null,
-          "parent": "s2b114",
+          "parent": "s2b130",
           "inputs": {
             "NUM": [
               3,
-              "s2b138",
+              "s2b154",
               [
                 10,
                 ""
@@ -3281,14 +3616,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b138": {
+        "s2b154": {
           "opcode": "operator_divide",
           "next": null,
-          "parent": "s2b137",
+          "parent": "s2b153",
           "inputs": {
             "NUM1": [
               3,
-              "s2b139",
+              "s2b155",
               [
                 10,
                 ""
@@ -3296,7 +3631,7 @@
             ],
             "NUM2": [
               3,
-              "s2b140",
+              "s2b156",
               [
                 10,
                 ""
@@ -3307,10 +3642,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b139": {
+        "s2b155": {
           "opcode": "operator_divide",
           "next": null,
-          "parent": "s2b138",
+          "parent": "s2b154",
           "inputs": {
             "NUM1": [
               3,
@@ -3336,14 +3671,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b140": {
+        "s2b156": {
           "opcode": "operator_subtract",
           "next": null,
-          "parent": "s2b138",
+          "parent": "s2b154",
           "inputs": {
             "NUM1": [
               3,
-              "s2b141",
+              "s2b157",
               [
                 10,
                 ""
@@ -3366,19 +3701,19 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b141": {
+        "s2b157": {
           "opcode": "sensing_timer",
           "next": null,
-          "parent": "s2b140",
+          "parent": "s2b156",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b142": {
+        "s2b158": {
           "opcode": "realtimemotioncapturecamerashell_jsonValueAt",
           "next": null,
-          "parent": "s2b112",
+          "parent": "s2b128",
           "inputs": {
             "JSON": [
               3,
@@ -3404,14 +3739,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b106": {
+        "s2b122": {
           "opcode": "data_setvariableto",
-          "next": "s2b107",
-          "parent": "s2b105",
+          "next": "s2b123",
+          "parent": "s2b121",
           "inputs": {
             "VALUE": [
               3,
-              "s2b143",
+              "s2b159",
               [
                 10,
                 ""
@@ -3427,19 +3762,19 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b143": {
+        "s2b159": {
           "opcode": "sensing_timer",
           "next": null,
-          "parent": "s2b106",
+          "parent": "s2b122",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b107": {
+        "s2b123": {
           "opcode": "data_setvariableto",
-          "next": "s2b108",
-          "parent": "s2b106",
+          "next": "s2b124",
+          "parent": "s2b122",
           "inputs": {
             "VALUE": [
               1,
@@ -3458,10 +3793,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b108": {
+        "s2b124": {
           "opcode": "data_setvariableto",
-          "next": "s2b109",
-          "parent": "s2b107",
+          "next": "s2b125",
+          "parent": "s2b123",
           "inputs": {
             "VALUE": [
               1,
@@ -3480,10 +3815,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b109": {
+        "s2b125": {
           "opcode": "data_setvariableto",
-          "next": "s2b110",
-          "parent": "s2b108",
+          "next": "s2b126",
+          "parent": "s2b124",
           "inputs": {
             "VALUE": [
               1,
@@ -3502,14 +3837,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b110": {
+        "s2b126": {
           "opcode": "data_setvariableto",
-          "next": "s2b111",
-          "parent": "s2b109",
+          "next": "s2b127",
+          "parent": "s2b125",
           "inputs": {
             "VALUE": [
               3,
-              "s2b144",
+              "s2b160",
               [
                 10,
                 ""
@@ -3525,10 +3860,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b144": {
+        "s2b160": {
           "opcode": "kubohiroyawebrtc_latestDataSentCount",
           "next": null,
-          "parent": "s2b110",
+          "parent": "s2b126",
           "inputs": {
             "CHANNEL": [
               1,
@@ -3554,14 +3889,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b111": {
+        "s2b127": {
           "opcode": "data_setvariableto",
           "next": null,
-          "parent": "s2b110",
+          "parent": "s2b126",
           "inputs": {
             "VALUE": [
               3,
-              "s2b145",
+              "s2b161",
               [
                 10,
                 ""
@@ -3577,10 +3912,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b145": {
+        "s2b161": {
           "opcode": "kubohiroyawebrtc_latestDataDroppedCount",
           "next": null,
-          "parent": "s2b111",
+          "parent": "s2b127",
           "inputs": {
             "CHANNEL": [
               1,
@@ -3606,41 +3941,41 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b58": {
+        "s2b66": {
           "opcode": "kubohiroyarealtimemotioncapture_stopWebGpuMoveNetMultiPose",
-          "next": "s2b59",
-          "parent": "s2b57",
+          "next": "s2b67",
+          "parent": "s2b65",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b59": {
+        "s2b67": {
           "opcode": "control_if_else",
           "next": null,
-          "parent": "s2b58",
+          "parent": "s2b66",
           "inputs": {
             "CONDITION": [
               2,
-              "s2b146"
+              "s2b162"
             ],
             "SUBSTACK": [
               2,
-              "s2b147"
+              "s2b163"
             ],
             "SUBSTACK2": [
               2,
-              "s2b148"
+              "s2b164"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b146": {
+        "s2b162": {
           "opcode": "operator_equals",
           "next": null,
-          "parent": "s2b59",
+          "parent": "s2b67",
           "inputs": {
             "OPERAND1": [
               3,
@@ -3666,10 +4001,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b147": {
+        "s2b163": {
           "opcode": "realtimemotioncapturecamerashell_showAppError",
           "next": null,
-          "parent": "s2b59",
+          "parent": "s2b67",
           "inputs": {
             "MESSAGE": [
               1,
@@ -3690,32 +4025,175 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b148": {
+        "s2b164": {
           "opcode": "control_if_else",
           "next": null,
-          "parent": "s2b59",
+          "parent": "s2b67",
           "inputs": {
             "CONDITION": [
               2,
-              "s2b149"
+              "s2b165"
             ],
             "SUBSTACK": [
               2,
-              "s2b150"
+              "s2b166"
             ],
             "SUBSTACK2": [
               2,
-              "s2b156"
+              "s2b170"
             ]
           },
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b149": {
+        "s2b165": {
           "opcode": "operator_equals",
           "next": null,
-          "parent": "s2b148",
+          "parent": "s2b164",
+          "inputs": {
+            "OPERAND1": [
+              3,
+              [
+                12,
+                "pose stop reason",
+                "variable:pose-stop-reason"
+              ],
+              [
+                10,
+                ""
+              ]
+            ],
+            "OPERAND2": [
+              1,
+              [
+                10,
+                "lens-incompatible"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b166": {
+          "opcode": "realtimemotioncapturecamerashell_showAppError",
+          "next": null,
+          "parent": "s2b164",
+          "inputs": {
+            "MESSAGE": [
+              3,
+              "s2b167",
+              [
+                10,
+                ""
+              ]
+            ],
+            "DETAILS": [
+              1,
+              [
+                10,
+                "{\"code\":\"POSE_LENS_INCOMPATIBLE\"}"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b167": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s2b166",
+          "inputs": {
+            "STRING1": [
+              3,
+              "s2b168",
+              [
+                10,
+                ""
+              ]
+            ],
+            "STRING2": [
+              1,
+              [
+                10,
+                "）"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b168": {
+          "opcode": "operator_join",
+          "next": null,
+          "parent": "s2b167",
+          "inputs": {
+            "STRING1": [
+              1,
+              [
+                10,
+                "カメラの設定（解像度・ズーム・フォーカス）が、適用したレンズ校正と合わなくなったため、姿勢推定を止めました。カメラの設定を戻すか、レンズ校正をやり直してください。（"
+              ]
+            ],
+            "STRING2": [
+              3,
+              "s2b169",
+              [
+                10,
+                ""
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b169": {
+          "opcode": "kubohiroyacamerasource_cameraProfileCompatibilityDetail",
+          "next": null,
+          "parent": "s2b168",
+          "inputs": {
+            "CAMERA_ID": [
+              1,
+              [
+                10,
+                "pose"
+              ]
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b170": {
+          "opcode": "control_if_else",
+          "next": null,
+          "parent": "s2b164",
+          "inputs": {
+            "CONDITION": [
+              2,
+              "s2b171"
+            ],
+            "SUBSTACK": [
+              2,
+              "s2b172"
+            ],
+            "SUBSTACK2": [
+              2,
+              "s2b178"
+            ]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "s2b171": {
+          "opcode": "operator_equals",
+          "next": null,
+          "parent": "s2b170",
           "inputs": {
             "OPERAND1": [
               3,
@@ -3741,14 +4219,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b150": {
+        "s2b172": {
           "opcode": "realtimemotioncapturecamerashell_showAppError",
           "next": null,
-          "parent": "s2b148",
+          "parent": "s2b170",
           "inputs": {
             "MESSAGE": [
               3,
-              "s2b151",
+              "s2b173",
               [
                 10,
                 ""
@@ -3766,14 +4244,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b151": {
+        "s2b173": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s2b150",
+          "parent": "s2b172",
           "inputs": {
             "STRING1": [
               3,
-              "s2b152",
+              "s2b174",
               [
                 10,
                 ""
@@ -3781,7 +4259,7 @@
             ],
             "STRING2": [
               3,
-              "s2b155",
+              "s2b177",
               [
                 10,
                 ""
@@ -3792,14 +4270,14 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b152": {
+        "s2b174": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s2b151",
+          "parent": "s2b173",
           "inputs": {
             "STRING1": [
               3,
-              "s2b153",
+              "s2b175",
               [
                 10,
                 ""
@@ -3817,10 +4295,10 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b153": {
+        "s2b175": {
           "opcode": "operator_join",
           "next": null,
-          "parent": "s2b152",
+          "parent": "s2b174",
           "inputs": {
             "STRING1": [
               1,
@@ -3831,7 +4309,7 @@
             ],
             "STRING2": [
               3,
-              "s2b154",
+              "s2b176",
               [
                 10,
                 ""
@@ -3842,28 +4320,28 @@
           "shadow": false,
           "topLevel": false
         },
-        "s2b154": {
+        "s2b176": {
           "opcode": "kubohiroyarealtimemotioncapture_poseErrorCode",
           "next": null,
-          "parent": "s2b153",
+          "parent": "s2b175",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b155": {
+        "s2b177": {
           "opcode": "kubohiroyarealtimemotioncapture_poseError",
           "next": null,
-          "parent": "s2b151",
+          "parent": "s2b173",
           "inputs": {},
           "fields": {},
           "shadow": false,
           "topLevel": false
         },
-        "s2b156": {
+        "s2b178": {
           "opcode": "realtimemotioncapturecamerashell_showAppNotice",
           "next": null,
-          "parent": "s2b148",
+          "parent": "s2b170",
           "inputs": {
             "MESSAGE": [
               1,
