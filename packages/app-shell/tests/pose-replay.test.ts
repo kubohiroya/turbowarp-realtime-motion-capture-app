@@ -512,9 +512,13 @@ describe('replaying', () => {
     expect(replay.frameFor('cam-2')).toBe('');
 
     clock.us += 10_000;
-    expect(JSON.parse(replay.frameFor('cam-2')).captureTimestampUs).toBe(
-      startedAt + 10_000,
-    );
+    const late = replay.frameFor('cam-2');
+    expect(JSON.parse(late).captureTimestampUs).toBe(startedAt + 10_000);
+    // Its age is how late it is handed on, as for a live camera, not how old the recording is.
+    clock.us += 2_500;
+    expect(replay.frameAgeMs(late)).toBe(2.5);
+    expect(replay.frameAgeMs('not a frame')).toBe(-1);
+    clock.us -= 2_500;
 
     clock.us += 90_000;
     const second = JSON.parse(replay.frameFor('cam-1'));

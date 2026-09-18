@@ -38,9 +38,13 @@ interface BlockDefinition {
   text: string;
   description: string;
   arguments: Record<string, DefinitionArgument>;
-  /** Present on blocks only an application with that capability offers. */
-  requires?: 'lensCalibration' | 'cameraGrid' | 'poseReplay';
+  /**
+   * Present on blocks only an application with that part offers; a list means any one of them.
+   */
+  requires?: ShellPart | readonly ShellPart[];
 }
+
+type ShellPart = 'lensCalibration' | 'cameraGrid' | 'poseReplay';
 
 const blockDefinitions = definitions.blocks as readonly BlockDefinition[];
 
@@ -106,6 +110,17 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
     this.settings = parts.settings ?? null;
   }
 
+  private hasPart(part: ShellPart): boolean {
+    switch (part) {
+      case 'lensCalibration':
+        return this.lensCalibration !== null;
+      case 'cameraGrid':
+        return this.cameraGrid !== null;
+      case 'poseReplay':
+        return this.poseReplay !== null;
+    }
+  }
+
   public getInfo(): Record<string, unknown> {
     return {
       id: this.config.id,
@@ -116,10 +131,10 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
         .filter(
           (block) =>
             block.requires === undefined ||
-            (block.requires === 'lensCalibration' &&
-              this.lensCalibration !== null) ||
-            (block.requires === 'cameraGrid' && this.cameraGrid !== null) ||
-            (block.requires === 'poseReplay' && this.poseReplay !== null),
+            (typeof block.requires === 'string'
+              ? [block.requires]
+              : block.requires
+            ).some((part) => this.hasPart(part)),
         )
         .map((block) => this.toScratchBlock(block)),
       menus: {
@@ -487,8 +502,11 @@ export class MultiviewPoseAppShellExtension implements TurboWarpExtension {
   }
 
   public poseFrameAgeMs(args: { FRAME_JSON: unknown }): number {
+    const frameJson = Scratch.Cast.toString(args.FRAME_JSON);
     return (
-      this.poseMeter?.frameAgeMs(Scratch.Cast.toString(args.FRAME_JSON)) ?? -1
+      this.poseMeter?.frameAgeMs(frameJson) ??
+      this.poseReplay?.frameAgeMs(frameJson) ??
+      -1
     );
   }
 

@@ -26,6 +26,8 @@
  * Version 1 — a single JSON document — is still read, so recordings taken before this still replay.
  */
 
+import { poseFrameAgeMs } from './pose-meter.js';
+
 export const RECORDING_SCHEMA = 'twrmc/pose-3d-session';
 export const RECORDING_VERSION = 2;
 /** The single-document format this one grew out of. Read, never written. */
@@ -741,6 +743,14 @@ export class PoseReplay {
       captureTimestampUs:
         this.replayStartedAtUs + (captureOf(chosen) - this.originStartUs),
     });
+  }
+
+  /**
+   * How long ago a replayed frame was captured on this page's clock. `frameFor` re-stamps each frame
+   * onto that clock, so this is how late the frame is being handed on, as it is for a live camera.
+   */
+  public frameAgeMs(frameJson: string): number {
+    return poseFrameAgeMs(frameJson, this.host.pageTimeUs());
   }
 
   public replayStateName(): ReplayState {
