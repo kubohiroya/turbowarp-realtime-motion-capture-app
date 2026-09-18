@@ -17,7 +17,8 @@ page, and design documents.
 > published version and already embedded in the SB3, and the block scripts run from startup through
 > camera selection, QR pairing, pose estimation and streaming, and space-time calibration. None of
 > that has been verified on real hardware yet. The fusion app shows a VRM avatar per performer from
-> the 3D output; skeleton constraints and the avatar performance are not implemented.
+> the 3D output and shows Performance DSL effects as expressions; skeleton constraints and performer
+> identification are not implemented.
 
 ## What's included
 
@@ -38,7 +39,7 @@ page, and design documents.
 | 3D pose service, stage 1 (interface v1, stub service, and the fusion app's forwarding, validation and status; flag `external3dServiceV1` off by default)                                 | Available (stub only; see [3D pose service](docs/pose-3d-service.md), #34)                                  |
 | Distribution page offering the three SB3s for download                                                                                                                                   | Available                                                                                                   |
 | Avatars in the fusion app (a VRM per performer from the 3D output, up to six; flag `external3dServiceV1`)                                                                                | Available (synthetic data only; see [3D pose service](docs/pose-3d-service.md))                             |
-| Skeleton constraints and smoothing (#34 stage 5 and later) and avatar performance (Performance DSL effects)                                                                              | Not implemented                                                                                             |
+| Skeleton constraints and smoothing (#34 stage 5 and later) and performer identification (glow sticks)                                                                                    | Not implemented                                                                                             |
 | Persistence of settings and performance DSL                                                                                                                                              | Decided, not implemented ([Persistence design](docs/persistence.md))                                        |
 | Local-host distribution as a single binary                                                                                                                                               | In design ([Local host](docs/local-host.md))                                                                |
 | End-to-end verification on venue hardware and the v0.1.0 release                                                                                                                         | Not started                                                                                                 |
@@ -52,7 +53,7 @@ source of truth for progress. Per-extension readiness is recorded in
 
 ## Planned
 
-- Implement skeleton constraints and smoothing, and the block scripts that show Performance DSL effects on the avatars.
+- Implement skeleton constraints and smoothing, and performer identification (glow sticks).
 - Implement persistence for settings and the performance DSL (the design is settled).
 - Distribute the local host as a single binary.
 - Verify end to end on venue hardware and release v0.1.0.

@@ -86,6 +86,18 @@ fusion appは、3D統合の出力から演者ごとのVRMアバターを表示�
 ビルドへ流し、90フレームすべてでエラーなく、2体が表示され、56フレームで2体とも、34フレームで1体が
 動きました。関節の置き換え前は、手首と足首が測れない人物が毎フレーム失われていました。
 
+### 演出DSLのエフェクト
+
+fusion appのメニュー「演出ファイルを選ぶ」で演出DSL（`twrmc/performance-dsl` v1、YAMLかJSON）を開くと、
+`turbowarp-yaml-json`で読み、`turbowarp-realtime-motion-capture`の契約の検証を通ったものだけを使います。
+読めない、正しくない、演出DSLでないときは、理由を表示して前のDSLを使い続けます。
+
+- 演者はDSLの並び順で枠に対応させます（1人目が`slot-1`）。演者の識別（サイリウム）が入るまでの代わりです。
+- アバターが認識されると、その演者の`recognitionStartEffect`を1、`recognitionEndEffect`を0にし、見失うと
+  逆にします。VRMに同じ名前の表情があるときだけ設定し、なければ何もしません。見失ったアバターは隠すので、
+  終了のエフェクトは表示の方針を変えるまで見えません。
+- デモのDSLは`apps/fusion-app/avatars/demo-performance.yaml`です。デモのアバターが持つ`happy`と`glow`を使います。
+
 ### 投影パターンを基準にした配置
 
 アバターは、空間と時刻の校正で投影したパターン（壁）を基準（マーカー）にして置きます（`src/avatar-stage.ts`）。

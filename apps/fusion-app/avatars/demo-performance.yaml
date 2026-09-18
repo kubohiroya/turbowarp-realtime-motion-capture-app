@@ -1,0 +1,19 @@
+# A Performance DSL (twrmc/performance-dsl v1) for the demo avatar.
+# Open it from the fusion app's menu「演出ファイルを選ぶ」. Performers are given to the avatars in
+# slot order: the first to slot-1, the second to slot-2. An effect whose name is an expression of
+# the VRM is shown with it: the demo avatar has `happy` and `glow`.
+schema: twrmc/performance-dsl
+version: 1
+performers:
+  - performerId: performer-1
+    displayName: Performer 1
+    glowStickColor: '#00FFAA'
+    recognitionStartEffect: happy
+    recognitionEndEffect: glow
+    avatarAsset: performer
+  - performerId: performer-2
+    displayName: Performer 2
+    glowStickColor: '#FF55AA'
+    recognitionStartEffect: glow
+    recognitionEndEffect: happy
+    avatarAsset: performer
