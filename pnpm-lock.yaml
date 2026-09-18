@@ -152,8 +152,8 @@ importers:
   packages/local-host:
     dependencies:
       '@kubohiroya/turbowarp-local-preview':
-        specifier: 0.1.0
-        version: 0.1.0
+        specifier: 0.1.1
+        version: 0.1.1
     devDependencies:
       '@types/node':
         specifier: 24.13.3
@@ -314,8 +314,8 @@ packages:
       '@kubohiroya/turbowarp-camera-source':
         optional: true
 
-  '@kubohiroya/turbowarp-local-preview@0.1.0':
-    resolution: {integrity: sha512-vHvrT+jKBivLiKK86j8bIwzw2iSq5Sj4FbPkXxfByqMnuZszKCgMzlvM7CBaTo8hPvqcmMisoRGoDOXsOHGRBg==}
+  '@kubohiroya/turbowarp-local-preview@0.1.1':
+    resolution: {integrity: sha512-9s4yoRvfvs/Yoo7rx0TJFawBZv3cN+W9ABV8NCJQ1qgckzRlyAW1v2qMvpzPNogtP1N5ztYMAN1gkuJdbuPq/A==}
     engines: {node: '>=22'}
 
   '@kubohiroya/turbowarp-realtime-motion-capture@0.3.0':
@@ -1718,7 +1718,7 @@ snapshots:
     optionalDependencies:
       '@kubohiroya/turbowarp-camera-source': 0.13.0
 
-  '@kubohiroya/turbowarp-local-preview@0.1.0': {}
+  '@kubohiroya/turbowarp-local-preview@0.1.1': {}
 
   '@kubohiroya/turbowarp-realtime-motion-capture@0.3.0(@kubohiroya/turbowarp-aframe@0.3.0)(@kubohiroya/turbowarp-jsqr@0.3.0(@kubohiroya/turbowarp-camera-source@0.13.0))(@kubohiroya/turbowarp-webrtc@0.4.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))':
     dependencies:

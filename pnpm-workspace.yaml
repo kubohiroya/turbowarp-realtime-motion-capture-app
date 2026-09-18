@@ -13,5 +13,6 @@ minimumReleaseAgeExclude:
   - '@kubohiroya/turbowarp-yaml-json@0.3.0'
   - '@kubohiroya/turbowarp-time-space-sync@0.2.0'
   - '@kubohiroya/turbowarp-title-menu@0.2.0 || 0.2.1 || 0.2.2'
+  - '@kubohiroya/turbowarp-local-preview@0.1.1'
 
 onlyBuiltDependencies: []
