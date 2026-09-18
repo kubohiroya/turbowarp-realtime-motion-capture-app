@@ -147,6 +147,25 @@ describe('Pose3dServiceExtension', () => {
     expect(extension.serviceState()).toBe('ready');
   });
 
+  it('reports the avatar stage, and why axes or corners cannot be used', () => {
+    const extension = new Pose3dServiceExtension(port);
+    expect(
+      JSON.parse(
+        extension.avatarStageJson({
+          CORNERS: '0,0;2,0;2,1.5;0,1.5',
+          DISTANCE_M: 4,
+        }),
+      ),
+    ).toMatchObject({ wallX: 1, wallWidth: 2, cameraZ: 4 });
+    expect(extension.avatarStageError()).toBe('');
+    extension.setAvatarAxes({ UP: '-y', AUDIENCE: '-y' });
+    expect(extension.avatarStageError()).toMatch(/perpendicular/u);
+    expect(extension.avatarStageJson({ CORNERS: 'none', DISTANCE_M: 4 })).toBe(
+      '',
+    );
+    expect(extension.avatarStageError()).toMatch(/tlX,tlY/u);
+  });
+
   it('clears everything when stopped', async () => {
     const extension = new Pose3dServiceExtension(port);
     extension.stopService();

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { AvatarPoseSlots } from '../src/avatar-poses.ts';
+import { AvatarAxes } from '../src/avatar-stage.ts';
 import {
   COCO_17_KEYPOINT_IDS,
   validatePoseFrame2D,
@@ -260,6 +261,17 @@ describe('AvatarPoseSlots', () => {
       .persons[0]!.keypoints as Array<{ x: number; score: number }>;
     expect(keypoints.every((keypoint) => keypoint.score === 0.9)).toBe(true);
     expect(keypoints[0]?.x).toBeCloseTo(0.1, 10);
+  });
+
+  it('turns the 3D joints into the axes the avatars read', () => {
+    const slots = new AvatarPoseSlots(6, 1000);
+    slots.axes = AvatarAxes.parse('-z', '+y');
+    const keypoints = (
+      slots.update(frame3d(0, [a]), views([])).pose3d as Frame3dV1
+    ).persons[0]!.keypoints as Array<{ x: number; y: number; z: number }>;
+    // Reference (0, 0.5, 3): avatar x = 0, y = z = 3 (down), z = -y = -0.5 (away).
+    const shoulder = keypoints[5]!;
+    expect([shoulder.x, shoulder.y, shoulder.z]).toEqual([0, 3, -0.5]);
   });
 
   it('refuses slot counts and holds it cannot honour', () => {

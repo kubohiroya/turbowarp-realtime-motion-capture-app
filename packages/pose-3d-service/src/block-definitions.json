@@ -136,6 +136,45 @@
       }
     },
     {
+      "opcode": "setAvatarAxes",
+      "blockType": "COMMAND",
+      "text": "avatar axes: up is reference [UP], audience is towards [AUDIENCE]",
+      "description": "Names which reference axis points up and which towards the audience, each one of +x, -x, +y, -y, +z, -z. The avatar 3D pose is turned from the reference frame to those axes. The defaults, -y and -z, fit corners measured from the top-left, x right and y down.",
+      "arguments": {
+        "UP": {
+          "type": "STRING",
+          "defaultValue": "-y"
+        },
+        "AUDIENCE": {
+          "type": "STRING",
+          "defaultValue": "-z"
+        }
+      }
+    },
+    {
+      "opcode": "avatarStageJson",
+      "blockType": "REPORTER",
+      "text": "avatar stage JSON for corners [CORNERS] camera at [DISTANCE_M] m",
+      "description": "The projected pattern as a plane in the scene (centre, A-Frame rotation, width, height) and a camera DISTANCE_M in front of its centre facing it, from corners tlX,tlY;trX,trY;brX,brY;blX,blY in metres. Empty when they cannot be read.",
+      "arguments": {
+        "CORNERS": {
+          "type": "STRING",
+          "defaultValue": "0,0;2,0;2,1.5;0,1.5"
+        },
+        "DISTANCE_M": {
+          "type": "NUMBER",
+          "defaultValue": 4
+        }
+      }
+    },
+    {
+      "opcode": "avatarStageError",
+      "blockType": "REPORTER",
+      "text": "avatar stage error",
+      "description": "Why the last avatar axes or stage could not be used, or empty.",
+      "arguments": {}
+    },
+    {
       "opcode": "avatarPose3dJson",
       "blockType": "REPORTER",
       "text": "avatar 3D pose JSON",

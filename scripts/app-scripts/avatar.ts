@@ -47,6 +47,10 @@ export const avatarSlotHoldMs = 1000;
 const assetId = 'performer';
 const avatarClass = 'twrmc-avatar';
 const vrmUrlSetting = 'avatarVrmUrl';
+const upAxisSetting = 'avatarUpAxis';
+const audienceAxisSetting = 'avatarAudienceAxis';
+/** How far in front of the projected pattern the audience camera stands, metres. */
+const cameraDistanceM = 4;
 /**
  * How far past each 3D request the joints are extrapolated to (#34 stage 6). The service fuses a
  * frame behind the newest camera frame; 0 carries the avatars to the moment of the request. The
@@ -74,6 +78,12 @@ export const demoVrmUrl = `data:model/gltf-binary;base64,${readFileSync(
 export const avatarReferences = () => ({
   vrmUrl: namedReference('avatar VRM URL', 'variable:avatar-vrm-url'),
   index: namedReference('avatar index', 'variable:avatar-index'),
+  stage: namedReference('avatar stage', 'variable:avatar-stage'),
+  upAxis: namedReference('avatar up axis', 'variable:avatar-up-axis'),
+  audienceAxis: namedReference(
+    'avatar audience axis',
+    'variable:avatar-audience-axis',
+  ),
 });
 
 export type AvatarReferences = ReturnType<typeof avatarReferences>;
@@ -81,6 +91,9 @@ export type AvatarReferences = ReturnType<typeof avatarReferences>;
 export const avatarVariables = (r: AvatarReferences) => ({
   [r.vrmUrl.id]: [r.vrmUrl.name, ''],
   [r.index.id]: [r.index.name, 0],
+  [r.stage.id]: [r.stage.name, ''],
+  [r.upAxis.id]: [r.upAxis.name, ''],
+  [r.audienceAxis.id]: [r.audienceAxis.name, ''],
 });
 
 const aframeBlock = (
@@ -99,10 +112,20 @@ const numbered = (prefix: string, reference: NamedReference) =>
 export class AvatarSteps {
   private readonly shell: string;
   private readonly r: AvatarReferences;
+  private readonly corners: NamedReference;
 
-  public constructor(shell: string, references: AvatarReferences) {
+  /**
+   * `corners` holds the projected pattern's corners as the operator entered them for the
+   * placement reference, or nothing before the space-time calibration.
+   */
+  public constructor(
+    shell: string,
+    references: AvatarReferences,
+    corners: NamedReference,
+  ) {
     this.shell = shell;
     this.r = references;
+    this.corners = corners;
   }
 
   /**
@@ -134,6 +157,7 @@ export class AvatarSteps {
         LAYER: text('above-stage'),
         MODE: text('3d'),
       }),
+      ...this.stage(),
       avatarBlock('registerAvatarAsset', {
         ASSET_ID: text(assetId),
         VRM_URL: variable(r.vrmUrl),
@@ -169,6 +193,118 @@ export class AvatarSteps {
             ),
           ),
           DETAILS: text(JSON.stringify({ code: 'AVATAR_SETUP_FAILED' })),
+        }),
+      ]),
+    ];
+  }
+
+  /**
+   * The projected pattern is the marker the avatars are placed by: its reference frame is the one
+   * the 3D service measures in. The axes from the settings turn it to the avatars' axes, the pattern
+   * is drawn as a faint plane where it was measured, and a camera in the audience faces it.
+   */
+  private stage(): BlockNode[] {
+    const { r } = this;
+    const axis = (
+      target: NamedReference,
+      key: string,
+      fallback: string,
+    ): BlockNode[] => [
+      setVariable(
+        target,
+        reporter(block(`${this.shell}_rememberedSetting`, { KEY: text(key) })),
+      ),
+      ifThen(equals(variable(target), text('')), [
+        setVariable(target, text(fallback)),
+      ]),
+    ];
+    const at = (key: string) =>
+      reporter(
+        block(`${this.shell}_jsonValueAt`, {
+          JSON: variable(r.stage),
+          PATH: text(key),
+        }),
+      );
+    return [
+      ...axis(r.upAxis, upAxisSetting, '-y'),
+      ...axis(r.audienceAxis, audienceAxisSetting, '-z'),
+      block(`${pose3dService}_setAvatarAxes`, {
+        UP: variable(r.upAxis),
+        AUDIENCE: variable(r.audienceAxis),
+      }),
+      ifThen(not(equals(serviceValue('avatarStageError'), text(''))), [
+        block(`${this.shell}_showAppNotice`, {
+          MESSAGE: reporter(
+            join(
+              text('アバターの向きの設定を使えないため既定の向きにしました: '),
+              serviceValue('avatarStageError'),
+            ),
+          ),
+        }),
+      ]),
+      setVariable(r.stage, text('')),
+      ifThen(not(equals(variable(this.corners), text(''))), [
+        setVariable(
+          r.stage,
+          reporter(
+            block(`${pose3dService}_avatarStageJson`, {
+              CORNERS: variable(this.corners),
+              DISTANCE_M: number(cameraDistanceM),
+            }),
+          ),
+        ),
+      ]),
+      ifThen(not(equals(variable(r.stage), text(''))), [
+        aframeBlock('createNode', {
+          TYPE: text('plane'),
+          ID: text('avatar-stage-wall'),
+          PARENT: text('#scene'),
+        }),
+        aframeBlock('setPosition', {
+          SELECTOR: text('#avatar-stage-wall'),
+          X: at('wallX'),
+          Y: at('wallY'),
+          Z: at('wallZ'),
+        }),
+        aframeBlock('setRotation', {
+          SELECTOR: text('#avatar-stage-wall'),
+          X: at('wallRotationX'),
+          Y: at('wallRotationY'),
+          Z: at('wallRotationZ'),
+        }),
+        aframeBlock('setAttribute', {
+          SELECTOR: text('#avatar-stage-wall'),
+          NAME: text('width'),
+          VALUE: at('wallWidth'),
+        }),
+        aframeBlock('setAttribute', {
+          SELECTOR: text('#avatar-stage-wall'),
+          NAME: text('height'),
+          VALUE: at('wallHeight'),
+        }),
+        aframeBlock('setAttribute', {
+          SELECTOR: text('#avatar-stage-wall'),
+          NAME: text('material'),
+          VALUE: text(
+            'color: #7aa7ff; opacity: 0.2; transparent: true; side: double',
+          ),
+        }),
+        aframeBlock('createNode', {
+          TYPE: text('camera'),
+          ID: text('avatar-stage-camera'),
+          PARENT: text('#scene'),
+        }),
+        aframeBlock('setPosition', {
+          SELECTOR: text('#avatar-stage-camera'),
+          X: at('cameraX'),
+          Y: at('cameraY'),
+          Z: at('cameraZ'),
+        }),
+        aframeBlock('setRotation', {
+          SELECTOR: text('#avatar-stage-camera'),
+          X: at('wallRotationX'),
+          Y: at('wallRotationY'),
+          Z: at('wallRotationZ'),
         }),
       ]),
     ];
@@ -279,5 +415,33 @@ export function chooseAvatarVrmSteps(shell: string): BlockNode[] {
         }),
       ],
     ),
+  ];
+}
+
+/**
+ * Asks which axis of the space-time reference points up and which towards the audience, and
+ * remembers them. Empty answers return to the defaults, which fit corners measured from the
+ * top-left with x to the right and y downwards.
+ */
+export function chooseAvatarAxesSteps(shell: string): BlockNode[] {
+  const answer = () => reporter(block('sensing_answer'));
+  const ask = (question: string, key: string): BlockNode[] => [
+    block('sensing_askandwait', { QUESTION: text(question) }),
+    block(`${shell}_rememberSetting`, { KEY: text(key), VALUE: answer() }),
+  ];
+  return [
+    ...ask(
+      '基準座標系で上を向く軸を入力してください（+x, -x, +y, -y, +z, -z。空欄で既定の -y）',
+      upAxisSetting,
+    ),
+    ...ask(
+      '基準座標系で客席の側を向く軸を入力してください（空欄で既定の -z）',
+      audienceAxisSetting,
+    ),
+    block(`${shell}_showAppNotice`, {
+      MESSAGE: text(
+        'アバターの向きを設定しました。次に3D出力を始めたときから使います。',
+      ),
+    }),
   ];
 }

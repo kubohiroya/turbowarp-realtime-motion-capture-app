@@ -1,4 +1,9 @@
 import {
+  AvatarAxes,
+  DEFAULT_AUDIENCE_AXIS,
+  DEFAULT_UP_AXIS,
+} from './avatar-stage.ts';
+import {
   POSE_FRAME_2D_SCHEMA,
   toPoseFrame3DV1,
   type PersonView,
@@ -83,6 +88,9 @@ export class AvatarPoseSlots {
     this.holdUs = holdMs * 1000;
   }
 
+  /** Turns the 3D joints from the reference frame into the avatars' axes (see AvatarAxes). */
+  public axes = new AvatarAxes(DEFAULT_UP_AXIS, DEFAULT_AUDIENCE_AXIS);
+
   public get count(): number {
     return this.slots.length;
   }
@@ -127,7 +135,14 @@ export class AvatarPoseSlots {
       const keypoints = this.held(index, person.keypoints);
       if (keypoints === undefined) continue;
       const slotId = slotIdOf(index);
-      persons3d.push({ ...person, personId: slotId, keypoints });
+      persons3d.push({
+        ...person,
+        personId: slotId,
+        keypoints: keypoints.map((keypoint) => ({
+          ...keypoint,
+          ...this.axes.toAvatar(keypoint),
+        })),
+      });
       const source = find2d(views.get(person.personId) ?? [], frames2d);
       if (source === undefined) continue;
       size ??= {

@@ -65,6 +65,7 @@ import {
   avatarReferences,
   avatarVariables,
   avatarVisibilityScripts,
+  chooseAvatarAxesSteps,
   chooseAvatarVrmSteps,
 } from './avatar.ts';
 
@@ -85,6 +86,7 @@ const action = {
   startReplay: 'startReplay',
   stopReplay: 'stopReplay',
   chooseAvatarVrm: 'chooseAvatarVrm',
+  chooseAvatarAxes: 'chooseAvatarAxes',
 } as const;
 
 /** The camera the answer is read with. Its own name, so it never shares a lease with anything else. */
@@ -101,7 +103,7 @@ const networkRefs = networkReferences();
 const syncRefs = fusionSyncReferences();
 const pose3dRefs = fusionPose3dReferences();
 const avatarRefs = avatarReferences();
-const avatar = new AvatarSteps(shell, avatarRefs);
+const avatar = new AvatarSteps(shell, avatarRefs, syncRefs.corners);
 const poseSummary = {
   index: namedReference('pose summary index', 'variable:pose-summary-index'),
   peer: namedReference('pose summary peer', 'variable:pose-summary-peer'),
@@ -213,6 +215,10 @@ const menu = () => [
         ACTION: text(action.chooseAvatarVrm),
         LABEL: text('アバターのVRMを指定する'),
       }),
+      block(`${titleMenu}_addAppMenuAction`, {
+        ACTION: text(action.chooseAvatarAxes),
+        LABEL: text('アバターの向きを設定する'),
+      }),
     ],
   ),
   ifThen(
@@ -297,6 +303,16 @@ export const fusionAppScripts: readonly Script[] = [
       { ACTION: action.chooseAvatarVrm },
     ),
     ...chooseAvatarVrmSteps(shell),
+    block(`${titleMenu}_showMenu`),
+  ]),
+
+  script({ x: 2400, y: 900 }, [
+    block(
+      `${titleMenu}_whenAppMenuActionSelected`,
+      {},
+      { ACTION: action.chooseAvatarAxes },
+    ),
+    ...chooseAvatarAxesSteps(shell),
     block(`${titleMenu}_showMenu`),
   ]),
 

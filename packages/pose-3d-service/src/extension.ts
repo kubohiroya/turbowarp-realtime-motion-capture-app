@@ -5,6 +5,12 @@ import {
   type ServicePort,
 } from './client.ts';
 import { AvatarPoseSlots, type AvatarPoses } from './avatar-poses.ts';
+import {
+  AvatarAxes,
+  avatarStage,
+  DEFAULT_AUDIENCE_AXIS,
+  DEFAULT_UP_AXIS,
+} from './avatar-stage.ts';
 import { toPoseFrame3DV1, type ServiceCamera } from './contracts.ts';
 
 type BlockTypeName = 'COMMAND' | 'REPORTER';
@@ -60,6 +66,8 @@ export class Pose3dServiceExtension implements TurboWarpExtension {
   private draftError = '';
   private avatarSlots: AvatarPoseSlots | undefined;
   private predictionLeadMs: number | null = null;
+  private avatarAxes = new AvatarAxes(DEFAULT_UP_AXIS, DEFAULT_AUDIENCE_AXIS);
+  private stageError = '';
   private avatarPoses: AvatarPoses | undefined;
 
   public constructor(
@@ -215,11 +223,51 @@ export class Pose3dServiceExtension implements TurboWarpExtension {
     if (this.avatarSlots?.count !== count) {
       this.avatarSlots = new AvatarPoseSlots(count, holdMs);
     }
+    this.avatarSlots.axes = this.avatarAxes;
     const frame = this.client?.latestFrame();
     this.avatarPoses =
       frame && this.client
         ? this.avatarSlots.update(frame, this.client.latestFrames2d())
         : undefined;
+  }
+
+  /**
+   * Which reference axis points up and which towards the audience. A pair that is not two
+   * perpendicular axes leaves the axes as they were and is reported by `avatar stage error`.
+   */
+  public setAvatarAxes(args: { UP: unknown; AUDIENCE: unknown }): void {
+    try {
+      this.avatarAxes = AvatarAxes.parse(
+        Scratch.Cast.toString(args.UP),
+        Scratch.Cast.toString(args.AUDIENCE),
+      );
+      this.stageError = '';
+    } catch (error) {
+      this.stageError = error instanceof Error ? error.message : String(error);
+    }
+  }
+
+  /** The wall and an audience camera in the scene, or empty with `avatar stage error` set. */
+  public avatarStageJson(args: {
+    CORNERS: unknown;
+    DISTANCE_M: unknown;
+  }): string {
+    try {
+      const stage = avatarStage(
+        Scratch.Cast.toString(args.CORNERS),
+        Scratch.Cast.toNumber(args.DISTANCE_M),
+        this.avatarAxes,
+      );
+      this.stageError = '';
+      return JSON.stringify(stage);
+    } catch (error) {
+      this.stageError = error instanceof Error ? error.message : String(error);
+      return '';
+    }
+  }
+
+  public avatarStageError(): string {
+    return this.stageError;
   }
 
   public avatarPose3dJson(): string {
