@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "documentation": "The MoveNet MultiPose Lightning model the camera and local apps run, pinned file by file. `pnpm run fetch:pose-model` downloads it from TF Hub into models/<id>/ and checks every file against the SHA-256 here; the model is not committed, the same way the extension bundles are not. A build with TWRMC_POSE_MODEL=local or embedded reads it from there. See docs/pose-stream.md.",
+  "id": "movenet-multipose-lightning",
+  "source": "https://tfhub.dev/google/tfjs-model/movenet/multipose/lightning/1",
+  "license": "Apache-2.0",
+  "files": [
+    {
+      "name": "model.json",
+      "bytes": 249070,
+      "sha256": "7d1875fc5508a0e094de7f4c6a9ab8037680fde8f1c8780da9b09d966983ae7a"
+    },
+    {
+      "name": "group1-shard1of3.bin",
+      "bytes": 4194304,
+      "sha256": "67b47c89fdec3307e0523e7e9854ea762e7e8f332c71e7a255d94eff96b37f7c"
+    },
+    {
+      "name": "group1-shard2of3.bin",
+      "bytes": 4194304,
+      "sha256": "44e8bcd60443be39f69c53242324bdf1ef7e19a934816097e00f05792c71baa5"
+    },
+    {
+      "name": "group1-shard3of3.bin",
+      "bytes": 1060230,
+      "sha256": "bebbeadc125f787f07948865c88d1a998d9f3fc1f67e1ecaa7e76f8e5fdf8bf0"
+    }
+  ]
+}

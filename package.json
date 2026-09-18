@@ -76,10 +76,12 @@
     "snapshot": "node --experimental-strip-types scripts/release-snapshot.ts --write",
     "build:player": "node --experimental-strip-types scripts/build-player.ts",
     "build:binary": "node --experimental-strip-types scripts/build-binary.ts",
+    "fetch:pose-model": "node --experimental-strip-types scripts/fetch-pose-model.ts",
     "build:scripts": "node --experimental-strip-types scripts/build-app-scripts.ts --write",
     "pose3d:eval": "node --experimental-strip-types packages/pose-3d-service/scripts/pose-3d-eval.ts",
     "measure:recording": "node --experimental-strip-types scripts/measure-recording.ts",
     "build:measurement": "node --experimental-strip-types scripts/build-measurement.ts",
+    "build:offline": "node --experimental-strip-types scripts/build-offline.ts",
     "serve:app": "node --experimental-strip-types scripts/serve-app.ts",
     "analyze:recording": "node --experimental-strip-types scripts/analyze-recording.ts",
     "measure:qr": "node --experimental-strip-types scripts/measure-qr.ts"

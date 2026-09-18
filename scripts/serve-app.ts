@@ -9,6 +9,7 @@
  *   pnpm run serve:app -- camera-app
  */
 
+import { servedPoseModelFiles } from '../packages/app-shell/pose-model-files.ts';
 import { readFile } from 'node:fs/promises';
 
 import { runLocalHostCli } from '../packages/local-host/src/cli.ts';
@@ -42,12 +43,19 @@ const lensCalibrationPlayer = await readFile(
   'utf8',
 ).catch(() => undefined);
 
+// A shell built with TWRMC_POSE_MODEL=local asks this host for the MoveNet model.
+const files = await servedPoseModelFiles(app).catch((error: Error) => {
+  console.error(`${app}: ${error.message}`);
+  process.exit(1);
+});
+
 const outcome = await runLocalHostCli({
   app,
   title: entry.title,
   port: entry.port,
   player,
   ...(lensCalibrationPlayer === undefined ? {} : { lensCalibrationPlayer }),
+  ...(files === undefined ? {} : { files }),
   argv: rest,
 });
 process.exitCode = outcome.code;
