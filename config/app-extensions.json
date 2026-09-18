@@ -217,6 +217,13 @@
           "apiManifest": "dist/extension-manifest.json"
         },
         {
+          "id": "turbowarpaframe",
+          "provider": "npm",
+          "package": "@kubohiroya/turbowarp-aframe",
+          "artifact": "dist/turbowarp-aframe.js",
+          "apiManifest": "dist/extension-manifest.json"
+        },
+        {
           "id": "realtimemotioncapturepose3dservice",
           "provider": "workspace",
           "package": "@turbowarp-realtime-motion-capture-app/pose-3d-service",
