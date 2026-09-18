@@ -80,6 +80,22 @@ describe('Pose3dServiceExtension', () => {
       persons: 2,
     });
     expect(extension.serviceError()).toBe('');
+
+    extension.updateAvatarPoses({ SLOTS: 6, HOLD_MS: 1000 });
+    const avatar3d = JSON.parse(extension.avatarPose3dJson()) as {
+      version: number;
+      persons: Array<{ personId: string }>;
+    };
+    expect(avatar3d.version).toBe(1);
+    expect(avatar3d.persons.map((person) => person.personId)).toEqual([
+      'slot-1',
+      'slot-2',
+    ]);
+    expect(JSON.parse(extension.avatarPose2dJson())).toMatchObject({
+      schema: 'twrmc/pose-frame-2d',
+      version: 1,
+    });
+    expect(JSON.parse(extension.avatarSlotsJson())).toHaveLength(2);
   });
 
   it('reports a camera missing from the placement as a configuration error', async () => {
@@ -112,5 +128,9 @@ describe('Pose3dServiceExtension', () => {
     extension.stopService();
     expect(extension.serviceState()).toBe('idle');
     expect(extension.latestPose3dJson()).toBe('');
+    extension.updateAvatarPoses({ SLOTS: 6, HOLD_MS: 1000 });
+    expect(extension.avatarPose3dJson()).toBe('');
+    expect(extension.avatarPose2dJson()).toBe('');
+    expect(extension.avatarSlotsJson()).toBe('[]');
   });
 });

@@ -4,6 +4,7 @@ import {
   type ClientClock,
   type ServicePort,
 } from './client.ts';
+import { AvatarPoseSlots, type AvatarPoses } from './avatar-poses.ts';
 import { toPoseFrame3DV1, type ServiceCamera } from './contracts.ts';
 
 type BlockTypeName = 'COMMAND' | 'REPORTER';
@@ -57,6 +58,8 @@ export class Pose3dServiceExtension implements TurboWarpExtension {
     | { implementation: string; referenceId: string; cameras: ServiceCamera[] }
     | undefined;
   private draftError = '';
+  private avatarSlots: AvatarPoseSlots | undefined;
+  private avatarPoses: AvatarPoses | undefined;
 
   public constructor(
     createPort: PortFactory,
@@ -192,6 +195,35 @@ export class Pose3dServiceExtension implements TurboWarpExtension {
     return frame ? JSON.stringify(toPoseFrame3DV1(frame)) : '';
   }
 
+  /**
+   * Pairs the latest 3D frame with its 2D views under avatar slots. Without a 3D frame the avatar
+   * poses are empty and the slots are kept, so a timeout does not reshuffle the avatars.
+   */
+  public updateAvatarPoses(args: { SLOTS: unknown; HOLD_MS: unknown }): void {
+    const count = Scratch.Cast.toNumber(args.SLOTS);
+    const holdMs = Scratch.Cast.toNumber(args.HOLD_MS);
+    if (this.avatarSlots?.count !== count) {
+      this.avatarSlots = new AvatarPoseSlots(count, holdMs);
+    }
+    const frame = this.client?.latestFrame();
+    this.avatarPoses =
+      frame && this.client
+        ? this.avatarSlots.update(frame, this.client.latestFrames2d())
+        : undefined;
+  }
+
+  public avatarPose3dJson(): string {
+    return this.avatarPoses ? JSON.stringify(this.avatarPoses.pose3d) : '';
+  }
+
+  public avatarPose2dJson(): string {
+    return this.avatarPoses ? JSON.stringify(this.avatarPoses.pose2d) : '';
+  }
+
+  public avatarSlotsJson(): string {
+    return JSON.stringify(this.avatarSlots?.assignments() ?? []);
+  }
+
   public serviceState(): string {
     return this.client?.status().state ?? 'idle';
   }
@@ -213,5 +245,7 @@ export class Pose3dServiceExtension implements TurboWarpExtension {
     this.client = undefined;
     this.draft = undefined;
     this.draftError = '';
+    this.avatarSlots = undefined;
+    this.avatarPoses = undefined;
   }
 }

@@ -108,6 +108,43 @@
       "arguments": {}
     },
     {
+      "opcode": "updateAvatarPoses",
+      "blockType": "COMMAND",
+      "text": "update avatar poses for [SLOTS] slots releasing after [HOLD_MS] ms",
+      "description": "Pairs the latest 3D frame with its 2D views under avatar slots slot-1 to slot-N. A person takes the lowest free slot and frees it after HOLD_MS unseen. Empty without a 3D frame.",
+      "arguments": {
+        "SLOTS": {
+          "type": "NUMBER",
+          "defaultValue": 6
+        },
+        "HOLD_MS": {
+          "type": "NUMBER",
+          "defaultValue": 1000
+        }
+      }
+    },
+    {
+      "opcode": "avatarPose3dJson",
+      "blockType": "REPORTER",
+      "text": "avatar 3D pose JSON",
+      "description": "PoseFrame3D v1 with person IDs replaced by avatar slots, or empty.",
+      "arguments": {}
+    },
+    {
+      "opcode": "avatarPose2dJson",
+      "blockType": "REPORTER",
+      "text": "avatar 2D pose JSON",
+      "description": "PoseFrame2D v1 whose tracking IDs are the avatar slots, or empty.",
+      "arguments": {}
+    },
+    {
+      "opcode": "avatarSlotsJson",
+      "blockType": "REPORTER",
+      "text": "avatar slots JSON",
+      "description": "Which person holds which avatar slot, as a JSON array of {slotId, personId}.",
+      "arguments": {}
+    },
+    {
       "opcode": "serviceState",
       "blockType": "REPORTER",
       "text": "3D service state",

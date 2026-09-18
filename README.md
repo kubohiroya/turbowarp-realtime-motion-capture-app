@@ -16,8 +16,8 @@ page, and design documents.
 > Development towards v0.1.0 is in progress. Every required TurboWarp extension is pinned to a
 > published version and already embedded in the SB3, and the block scripts run from startup through
 > camera selection, QR pairing, pose estimation and streaming, and space-time calibration. None of
-> that has been verified on real hardware yet, and the 3D estimation itself and the avatar
-> performance are not implemented.
+> that has been verified on real hardware yet. The fusion app shows a VRM avatar per performer from
+> the 3D output; identity over time and the avatar performance are not implemented.
 
 ## What's included
 
@@ -37,7 +37,8 @@ page, and design documents.
 | Space-time calibration (the fusion app projects the time pattern, each camera app measures time correspondence and the pattern corners, the fusion app solves placement and gates READY) | Available (not yet verified on real hardware; see [space-time calibration](docs/space-time-calibration.md)) |
 | 3D pose service, stage 1 (interface v1, stub service, and the fusion app's forwarding, validation and status; flag `external3dServiceV1` off by default)                                 | Available (stub only; see [3D pose service](docs/pose-3d-service.md), #34)                                  |
 | Distribution page offering the three SB3s for download                                                                                                                                   | Available                                                                                                   |
-| 3D estimation itself and avatar performance                                                                                                                                              | Not implemented                                                                                             |
+| Avatars in the fusion app (a VRM per performer from the 3D output, up to six; flag `external3dServiceV1`)                                                                                | Available (synthetic data only; see [3D pose service](docs/pose-3d-service.md))                             |
+| Identity over time (#34 stage 4 and later) and avatar performance (Performance DSL effects)                                                                                              | Not implemented                                                                                             |
 | Persistence of settings and performance DSL                                                                                                                                              | Decided, not implemented ([Persistence design](docs/persistence.md))                                        |
 | Local-host distribution as a single binary                                                                                                                                               | In design ([Local host](docs/local-host.md))                                                                |
 | End-to-end verification on venue hardware and the v0.1.0 release                                                                                                                         | Not started                                                                                                 |
@@ -51,7 +52,7 @@ source of truth for progress. Per-extension readiness is recorded in
 
 ## Planned
 
-- Implement the 3D estimation itself and the block scripts for the avatar performance.
+- Implement identity over time, and the block scripts that show Performance DSL effects on the avatars.
 - Implement persistence for settings and the performance DSL (the design is settled).
 - Distribute the local host as a single binary.
 - Verify end to end on venue hardware and release v0.1.0.
