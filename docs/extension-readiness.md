@@ -27,7 +27,7 @@ application repositoryはSB3 script、アプリシェル、performance DSL、cal
 extension pin、配布artifactを所有する。`turbowarp-realtime-motion-capture`は再利用可能なmultiview固有処理を
 所有するが、完成品applicationは所有しない。
 
-## 現在のreadiness（2026-09-14確認）
+## 現在のreadiness（2026-09-18確認）
 
 | 役割                  | package/version                                       | 状態                  | 備考                                                                               |
 | --------------------- | ----------------------------------------------------- | --------------------- | ---------------------------------------------------------------------------------- |
@@ -37,9 +37,9 @@ extension pin、配布artifactを所有する。`turbowarp-realtime-motion-captu
 | WebRTC                | `@kubohiroya/turbowarp-webrtc@0.3.0`                  | Ready                 | latest-data pose channel、backpressure、clock sync、frame latency reportまで揃った |
 | DSL values/schema     | `@kubohiroya/turbowarp-yaml-json@0.3.0`               | Ready                 | 外部DSL textのsafe parseとJSON Schema検証が揃った                                  |
 | Assets/animation      | `@kubohiroya/turbowarp-asset-manager@0.16.0`          | Ready                 | block API manifestを配布済み。app asset manifestは未確定                           |
-| 3D scene              | `@kubohiroya/turbowarp-aframe@0.3.0`                  | Ready                 | scene capability v1を公開済みで、avatar retargetが依存できる                       |
+| 3D scene              | `@kubohiroya/turbowarp-aframe@0.4.0`                  | Ready                 | scene capability v2（VRM）を公開済み。A-Frame 1.8.0をjsDelivrからSRI付きで読み込む |
 | Diagnostics           | `@kubohiroya/turbowarp-diagnostic-overlay@0.4.0`      | Ready                 | block API manifestを配布済み。app readiness payloadは未確定                        |
-| Motion capture blocks | `@kubohiroya/turbowarp-realtime-motion-capture@0.2.1` | Ready                 | 93 block。frame sync、3D fusion、glow stickまで公開済み                            |
+| Motion capture blocks | `@kubohiroya/turbowarp-realtime-motion-capture@0.4.0` | Ready                 | 101 block。avatar retargetはcapability v2でVRMを動かす                             |
 
 すべての固定artifactは`node scripts/check-extension-readiness.ts --verify-network`で公開bundleと
 manifestに照合済みです。release build自体はnetwork accessなしで、commit済みartifactだけを使用します。

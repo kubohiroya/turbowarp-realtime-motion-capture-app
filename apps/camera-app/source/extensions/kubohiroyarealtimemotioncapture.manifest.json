@@ -525,7 +525,7 @@
           "type": "STRING"
         },
         {
-          "id": "TEMPLATE_JSON",
+          "id": "VRM_URL",
           "type": "STRING"
         }
       ]
