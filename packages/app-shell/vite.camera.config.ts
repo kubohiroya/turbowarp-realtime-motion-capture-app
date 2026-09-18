@@ -1,6 +1,7 @@
 import { turboWarpExtension } from '@kubohiroya/vite-plugin-turbowarp-extension';
 import { defineConfig } from 'vite';
 
+import { poseModel } from './pose-model-plugin.js';
 import { parseAppFlags } from './src/app-config.js';
 
 import { cameraAppConfig } from './src/apps/camera.js';
@@ -15,6 +16,7 @@ export default defineConfig({
   // One output directory per app: the plugin always clears its own outDir before writing.
   build: { outDir: 'dist/camera-app' },
   plugins: [
+    poseModel(),
     turboWarpExtension({
       id: cameraAppConfig.id,
       name: cameraAppConfig.name,

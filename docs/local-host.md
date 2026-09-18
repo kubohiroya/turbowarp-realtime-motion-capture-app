@@ -69,6 +69,13 @@ camera appのホストは、`/lens-calibration`でレンズ校正アプリ（`tu
 SHA-256を表示して`camera-app-lens-calibration-player.html`を作り、`build:binary`はそれを同梱します。
 無ければ警告して続行し、camera appは「校正アプリを開けない」と表示してファイルの読込みを案内します。
 
+## MoveNetのモデルの配信
+
+`TWRMC_POSE_MODEL=local`でビルドしたcamera app／local appのホストは、MoveNetのモデル
+（`model.json`とweight）を`/models/movenet-multipose-lightning/`で配信します。ホストはパスごとに固定の
+ファイルを返すだけで（`startLocalHost`の`files`）、読めないファイルがあれば起動しません。単体バイナリは
+そのファイルを同梱します。詳しくは[姿勢推定と送信](pose-stream.md#モデルの読込み元)を参照してください。
+
 ## 決定事項
 
 ### portは固定する

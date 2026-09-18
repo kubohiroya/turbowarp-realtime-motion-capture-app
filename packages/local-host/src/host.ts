@@ -51,6 +51,12 @@ export interface LocalHostOptions {
    * recording made in one can be replayed in another. Absent leaves the route out.
    */
   readonly recordingsDirectory?: string;
+  /**
+   * Files served as they are, by exact path: the MoveNet model of a build that serves it from here
+   * (`TWRMC_POSE_MODEL=local`). Each is read once at start, and one that cannot be read refuses the
+   * start the way a missing player does, because the build that asked for it is broken.
+   */
+  readonly files?: Readonly<Record<string, string>>;
   readonly onError?: (error: unknown) => void;
   /** Test seam for process and port liveness. */
   readonly runLock?: Omit<RunLockEnvironment, 'directory'>;
@@ -97,6 +103,34 @@ function redirectScript(): string {
   return `location.replace(${JSON.stringify(playerPath)} + location.search);`;
 }
 
+const contentTypes: Readonly<Record<string, string>> = {
+  '.json': 'application/json; charset=utf-8',
+  '.bin': 'application/octet-stream',
+};
+
+function fileResponse(path: string, bytes: Uint8Array<ArrayBuffer>): Response {
+  const extension = path.slice(path.lastIndexOf('.'));
+  return new Response(bytes, {
+    headers: {
+      'Content-Type': contentTypes[extension] ?? 'application/octet-stream',
+      // The files belong to the build, and a rebuilt application may carry different ones.
+      'Cache-Control': 'no-cache',
+    },
+  });
+}
+
+async function readFiles(
+  files: Readonly<Record<string, string>>,
+): Promise<Map<string, Uint8Array<ArrayBuffer>> | { missing: string }> {
+  const read = new Map<string, Uint8Array<ArrayBuffer>>();
+  for (const [route, path] of Object.entries(files)) {
+    const bytes = await readFile(path).catch(() => null);
+    if (bytes === null) return { missing: path };
+    read.set(route, new Uint8Array(bytes));
+  }
+  return read;
+}
+
 function htmlResponse(html: string): Response {
   return new Response(html, {
     headers: {
@@ -141,6 +175,10 @@ export async function startLocalHost(
       path: lensCalibration.missing,
     };
   }
+  const files = await readFiles(options.files ?? {});
+  if ('missing' in files) {
+    return { started: false, reason: 'player-missing', path: files.missing };
+  }
 
   const lockEnvironment = {
     directory: options.lockDirectory,
@@ -164,6 +202,7 @@ export async function startLocalHost(
       options,
       player.html,
       lensCalibration?.html ?? null,
+      files,
       acquired.lock,
     );
   } catch (error) {
@@ -189,6 +228,7 @@ async function serve(
   options: LocalHostOptions,
   html: string,
   lensCalibrationHtml: string | null,
+  files: ReadonlyMap<string, Uint8Array<ArrayBuffer>>,
   lock: RunLock,
 ): Promise<LocalHostResult> {
   let published: DslPublication | null = null;
@@ -210,6 +250,12 @@ async function serve(
         ? {}
         : { [lensCalibrationPath]: () => htmlResponse(lensCalibrationHtml) }),
       ...(recordings === null ? {} : { [recordingsPath]: recordings }),
+      ...Object.fromEntries(
+        [...files].map(([route, bytes]) => [
+          route,
+          () => fileResponse(route, bytes),
+        ]),
+      ),
     },
     /**
      * The host does not flush the event stream until it writes, so a page that connects before any

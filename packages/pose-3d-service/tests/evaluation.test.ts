@@ -11,6 +11,8 @@ import { evaluate, formatMetrics } from '../src/metrics.ts';
 import { replaySession, type ServiceHandler } from '../src/replay.ts';
 import {
   parseSession,
+  parseSessionHeader,
+  parseSessionLine,
   serializeSession,
   SessionRecorder,
   type Session,
@@ -362,6 +364,31 @@ describe('sessions', () => {
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
     expect(parsed.session.events).toHaveLength(3);
+  });
+
+  it('reads a session one line at a time as it reads it whole', () => {
+    const { session } = scene();
+    const lines = serializeSession(session).split('\n');
+    const header = parseSessionHeader(lines[0] ?? '');
+    expect(header.ok).toBe(true);
+    if (!header.ok) return;
+    expect(header.header.producer).toBe(session.producer);
+    const kinds = lines
+      .slice(1)
+      .map((line, index) => parseSessionLine(line, index + 2).kind);
+    expect(kinds.filter((kind) => kind === 'event')).toHaveLength(
+      session.events.length,
+    );
+    expect(kinds.filter((kind) => kind === 'truth')).toHaveLength(60);
+    expect(parseSessionLine('{"type":"frame2d","atUs":', 9).kind).toBe('end');
+    expect(parseSessionLine('{"type":"spaceTime"}', 9).kind).toBe('other');
+    expect(parseSessionLine('{"type":"frame2d","atUs":1}', 9)).toEqual({
+      kind: 'failed',
+      reason: 'Event 9 needs a cameraId.',
+    });
+    expect(parseSessionHeader('{"schema":"twrmc/pose-3d-session"}').ok).toBe(
+      false,
+    );
   });
 
   it('refuses what it cannot replay', () => {
