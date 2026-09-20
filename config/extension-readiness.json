@@ -1333,13 +1333,13 @@
     },
     {
       "role": "asset-runtime",
-      "repository": "kubohiroya/turbowarp-asset-manager",
-      "package": "@kubohiroya/turbowarp-asset-manager",
-      "version": "0.16.0",
-      "extensionId": "kubohiroyaassetmanager",
-      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-asset-manager@0.16.0/dist/asset-manager.js",
-      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-asset-manager@0.16.0/dist/extension-manifest.json",
-      "sha256": "153fd2d85ae9acdfecea8032e89c6232b07853ed690749d9b614217399db18fb",
+      "repository": "kubohiroya/turbowarp-asset-cache",
+      "package": "@kubohiroya/turbowarp-asset-cache",
+      "version": "0.1.0",
+      "extensionId": "kubohiroyaassetcache",
+      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-asset-cache@0.1.0/dist/asset-cache.js",
+      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-asset-cache@0.1.0/dist/extension-manifest.json",
+      "sha256": "52573178350310f724540d5f7f8031d63da4338738366e96922c9811cced24be",
       "status": "ready",
       "embeddedIn": [
         "fusion-app"

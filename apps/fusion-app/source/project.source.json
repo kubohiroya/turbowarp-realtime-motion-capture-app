@@ -34182,7 +34182,7 @@
     "kubohiroyatimespacesync",
     "kubohiroyayamljson",
     "kubohiroyarealtimemotioncapture",
-    "kubohiroyaassetmanager",
+    "kubohiroyaassetcache",
     "turbowarpaframe",
     "realtimemotioncapturepose3dservice",
     "kubohiroyadiagnosticoverlay"
@@ -34197,7 +34197,7 @@
     "kubohiroyatimespacesync": "embedded-extension:extensions/kubohiroyatimespacesync.js",
     "kubohiroyayamljson": "embedded-extension:extensions/kubohiroyayamljson.js",
     "kubohiroyarealtimemotioncapture": "embedded-extension:extensions/kubohiroyarealtimemotioncapture.js",
-    "kubohiroyaassetmanager": "embedded-extension:extensions/kubohiroyaassetmanager.js",
+    "kubohiroyaassetcache": "embedded-extension:extensions/kubohiroyaassetcache.js",
     "turbowarpaframe": "embedded-extension:extensions/turbowarpaframe.js",
     "realtimemotioncapturepose3dservice": "embedded-extension:extensions/realtimemotioncapturepose3dservice.js",
     "kubohiroyadiagnosticoverlay": "embedded-extension:extensions/kubohiroyadiagnosticoverlay.js"

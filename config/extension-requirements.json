@@ -544,10 +544,10 @@
     },
     {
       "role": "asset-runtime",
-      "repository": "kubohiroya/turbowarp-asset-manager",
-      "package": "@kubohiroya/turbowarp-asset-manager",
-      "extensionId": "kubohiroyaassetmanager",
-      "artifactPath": "dist/asset-manager.js",
+      "repository": "kubohiroya/turbowarp-asset-cache",
+      "package": "@kubohiroya/turbowarp-asset-cache",
+      "extensionId": "kubohiroyaassetcache",
+      "artifactPath": "dist/asset-cache.js",
       "manifestPath": "dist/extension-manifest.json",
       "status": "ready",
       "requiredOperations": [
