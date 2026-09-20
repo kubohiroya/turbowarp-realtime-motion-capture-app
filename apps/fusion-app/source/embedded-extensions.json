@@ -169,23 +169,17 @@
       }
     },
     {
-      "id": "kubohiroyaassetmanager",
-      "path": "extensions/kubohiroyaassetmanager.js",
+      "id": "kubohiroyaassetcache",
+      "path": "extensions/kubohiroyaassetcache.js",
       "mediaType": "text/javascript",
       "parameters": [],
       "encoding": "base64",
       "source": {
         "provider": "npm",
-        "package": "@kubohiroya/turbowarp-asset-manager",
-        "version": "0.16.0",
-        "artifact": "dist/asset-manager.js",
-        "integrity": "sha256-FT/S2FrprN/s6oAy6JxiMrB4U+1pB0nZthQhc5nbGPs=",
-        "apiManifest": {
-          "artifact": "dist/extension-manifest.json",
-          "path": "extensions/kubohiroyaassetmanager.manifest.json",
-          "formatVersion": 1,
-          "integrity": "sha256-GGGXRwfIajmlctUQINMIJFw/ZQPBmVdhoEBOlk8LK8w="
-        }
+        "package": "@kubohiroya/turbowarp-asset-cache",
+        "version": "0.1.0",
+        "artifact": "dist/asset-cache.js",
+        "integrity": "sha256-UlcxeDUDEPckVA1ff4Ax1j2kM4c4Nm6WkiyYEcztJL4="
       }
     },
     {
@@ -250,7 +244,7 @@
         "kubohiroyatimespacesync",
         "kubohiroyayamljson",
         "kubohiroyarealtimemotioncapture",
-        "kubohiroyaassetmanager",
+        "kubohiroyaassetcache",
         "turbowarpaframe",
         "realtimemotioncapturepose3dservice",
         "kubohiroyadiagnosticoverlay"

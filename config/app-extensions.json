@@ -145,11 +145,10 @@
           "apiManifest": "dist/extension-manifest.json"
         },
         {
-          "id": "kubohiroyaassetmanager",
+          "id": "kubohiroyaassetcache",
           "provider": "npm",
-          "package": "@kubohiroya/turbowarp-asset-manager",
-          "artifact": "dist/asset-manager.js",
-          "apiManifest": "dist/extension-manifest.json"
+          "package": "@kubohiroya/turbowarp-asset-cache",
+          "artifact": "dist/asset-cache.js"
         },
         {
           "id": "turbowarpaframe",
