@@ -1,6 +1,6 @@
 {
   "name": "@turbowarp-realtime-motion-capture-app/local-app",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "build": "node ../../scripts/ensure-source-directories.ts local-app && sb3-toolchain build source --output dist/local-app.sb3 --yes",
@@ -8,11 +8,11 @@
   },
   "devDependencies": {
     "@kubohiroya/turbowarp-aframe": "0.5.0",
-    "@kubohiroya/turbowarp-camera-source": "0.19.0",
+    "@kubohiroya/turbowarp-camera-source": "0.19.1",
     "@kubohiroya/turbowarp-diagnostic-overlay": "0.4.0",
-    "@kubohiroya/turbowarp-realtime-motion-capture": "0.8.2",
-    "@kubohiroya/turbowarp-time-space-sync": "0.3.2",
-    "@kubohiroya/turbowarp-title-menu": "0.2.5",
+    "@kubohiroya/turbowarp-realtime-motion-capture": "0.8.3",
+    "@kubohiroya/turbowarp-time-space-sync": "0.3.3",
+    "@kubohiroya/turbowarp-title-menu": "0.2.6",
     "@kubohiroya/turbowarp-yaml-json": "0.3.0"
   }
 }

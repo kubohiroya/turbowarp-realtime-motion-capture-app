@@ -1,6 +1,6 @@
 {
   "name": "turbowarp-realtime-motion-capture-app",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": false,
   "description": "Reproducible source workspace for the TurboWarp Realtime Motion Capture camera and fusion apps.",
   "license": "MPL-2.0",
@@ -101,6 +101,6 @@
     "zxing-wasm": "3.1.4"
   },
   "dependencies": {
-    "@kubohiroya/turbowarp-app-shell": "0.3.0"
+    "@kubohiroya/turbowarp-app-shell": "0.3.1"
   }
 }
