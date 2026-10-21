@@ -17,9 +17,9 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-title-menu",
-        "version": "0.2.3",
+        "version": "0.2.5",
         "artifact": "dist/turbowarp-title-menu.js",
-        "integrity": "sha256-uqbzYmfjECWpzWBs6CFaE9bBajA0HjhxzUbPMdldqRw=",
+        "integrity": "sha256-JS3KjpkSJjdKJztLbTGf9QIKmGhvhXRC61L4Xw0Kl7k=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyaturbowarptitlemenu.manifest.json",
@@ -37,14 +37,14 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-camera-source",
-        "version": "0.13.0",
+        "version": "0.19.0",
         "artifact": "dist/camera-source.js",
-        "integrity": "sha256-zG0rTxHcNDC46BvGEvetSKbCGFv5oJmjn8p08Qv4RmU=",
+        "integrity": "sha256-DhST83mxBPLivJGbFB94FbUpUUB4tT3aSLgNaxwdAEw=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyacamerasource.manifest.json",
           "formatVersion": 1,
-          "integrity": "sha256-duocay88ioI1SNDzkH8QqOu0ZjZfW6K+Vz9pf70URbk="
+          "integrity": "sha256-QvTdKNrXCSMnJOuUEjo1IiJUUhqQ7MiYst0pfSTVojk="
         }
       }
     },
@@ -57,9 +57,9 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-jsqr",
-        "version": "0.4.0",
+        "version": "0.4.2",
         "artifact": "dist/jsqr.js",
-        "integrity": "sha256-1coCsu5Z/3V7StD8m+PoL1K/M4+DpzxjHsPAmMm4RWM=",
+        "integrity": "sha256-EOTZbt6T4CA9r7t8wAxv6uw/+XZq7En32BIFcHHcZnE=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyajsqr.manifest.json",
@@ -97,9 +97,9 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-webrtc-qrcode-pairing",
-        "version": "0.2.3",
+        "version": "0.2.5",
         "artifact": "dist/webrtc-qrcode-pairing.js",
-        "integrity": "sha256-hHvmrZYNeoVZylmaNnAhjaTfXSWJdtwrmEdpFLvM5/Q=",
+        "integrity": "sha256-C0T8A2B7vc6o5fWDgTyFwXZjyQ39/jAb76K3fL/8NvY=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyawebrtcqrcodepairing.manifest.json",
@@ -117,9 +117,9 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-time-space-sync",
-        "version": "0.2.0",
+        "version": "0.3.2",
         "artifact": "dist/time-space-sync.js",
-        "integrity": "sha256-j+QQhLB2CwPhjO01ajiumYcIXhN+sCrRxqyhv0RKVBc=",
+        "integrity": "sha256-/zqwaeeXI6EM1/zNna/f9HFdzgg5nzFwuoMNNdiUtd0=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyatimespacesync.manifest.json",
@@ -137,9 +137,9 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-realtime-motion-capture",
-        "version": "0.7.0",
+        "version": "0.8.2",
         "artifact": "dist/turbowarp-realtime-motion-capture.js",
-        "integrity": "sha256-+f5evih0FL3yd83Vb+WB0gAogWIl2HPTAhAN1Y/cp1M=",
+        "integrity": "sha256-dI0on3CyaKjSZTUH7SyCiH6Nlg5Q9Irh5vOhJgguO9Q=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyarealtimemotioncapture.manifest.json",

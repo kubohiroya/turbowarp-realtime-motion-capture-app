@@ -1,6 +1,6 @@
 {
   "name": "@turbowarp-realtime-motion-capture-app/app-shell",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,10 +10,10 @@
     "check": "pnpm run typecheck && pnpm run test && pnpm run build"
   },
   "dependencies": {
-    "@kubohiroya/turbowarp-app-shell": "0.2.0"
+    "@kubohiroya/turbowarp-app-shell": "0.3.0"
   },
   "devDependencies": {
-    "@kubohiroya/turbowarp-camera-source": "0.13.0",
+    "@kubohiroya/turbowarp-camera-source": "0.19.0",
     "@kubohiroya/vite-plugin-turbowarp-extension": "0.5.0",
     "@types/node": "24.13.3",
     "typescript": "5.9.3",
