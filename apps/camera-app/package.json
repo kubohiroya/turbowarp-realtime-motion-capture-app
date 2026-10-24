@@ -1,19 +1,19 @@
 {
   "name": "@turbowarp-realtime-motion-capture-app/camera-app",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "scripts": {
     "build": "node ../../scripts/ensure-source-directories.ts camera-app && sb3-toolchain build source --output dist/camera-app.sb3 --yes",
     "check": "node ../../scripts/ensure-source-directories.ts camera-app && sb3-toolchain check source"
   },
   "devDependencies": {
-    "@kubohiroya/turbowarp-camera-source": "0.19.2",
+    "@kubohiroya/turbowarp-camera-source": "0.19.3",
     "@kubohiroya/turbowarp-diagnostic-overlay": "0.4.0",
-    "@kubohiroya/turbowarp-jsqr": "0.4.3",
-    "@kubohiroya/turbowarp-realtime-motion-capture": "0.8.3",
-    "@kubohiroya/turbowarp-time-space-sync": "0.3.3",
+    "@kubohiroya/turbowarp-jsqr": "0.4.4",
+    "@kubohiroya/turbowarp-realtime-motion-capture": "0.8.4",
+    "@kubohiroya/turbowarp-time-space-sync": "0.3.4",
     "@kubohiroya/turbowarp-title-menu": "0.2.6",
     "@kubohiroya/turbowarp-webrtc": "0.4.0",
-    "@kubohiroya/turbowarp-webrtc-qrcode-pairing": "0.2.6"
+    "@kubohiroya/turbowarp-webrtc-qrcode-pairing": "0.2.7"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@turbowarp-realtime-motion-capture-app/fusion-app",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "scripts": {
     "build": "node ../../scripts/ensure-source-directories.ts fusion-app && sb3-toolchain build source --output dist/fusion-app.sb3 --yes",
@@ -8,15 +8,15 @@
   },
   "devDependencies": {
     "@kubohiroya/turbowarp-aframe": "0.5.0",
-    "@kubohiroya/turbowarp-asset-cache": "0.1.0",
-    "@kubohiroya/turbowarp-camera-source": "0.19.2",
+    "@kubohiroya/turbowarp-asset-cache": "0.3.1",
+    "@kubohiroya/turbowarp-camera-source": "0.19.3",
     "@kubohiroya/turbowarp-diagnostic-overlay": "0.4.0",
-    "@kubohiroya/turbowarp-jsqr": "0.4.3",
-    "@kubohiroya/turbowarp-realtime-motion-capture": "0.8.3",
-    "@kubohiroya/turbowarp-time-space-sync": "0.3.3",
+    "@kubohiroya/turbowarp-jsqr": "0.4.4",
+    "@kubohiroya/turbowarp-realtime-motion-capture": "0.8.4",
+    "@kubohiroya/turbowarp-time-space-sync": "0.3.4",
     "@kubohiroya/turbowarp-title-menu": "0.2.6",
     "@kubohiroya/turbowarp-webrtc": "0.4.0",
-    "@kubohiroya/turbowarp-webrtc-qrcode-pairing": "0.2.6",
+    "@kubohiroya/turbowarp-webrtc-qrcode-pairing": "0.2.7",
     "@kubohiroya/turbowarp-yaml-json": "0.3.0"
   }
 }

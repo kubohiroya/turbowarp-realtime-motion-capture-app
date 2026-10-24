@@ -1,11 +1,11 @@
 {
   "formatVersion": 1,
   "state": "candidate",
-  "sourceIdentity": "sha256:726945c2cf9a03c1e1bdab91316638f5ef72db136ebf941f61e2696d22b1b5c2",
+  "sourceIdentity": "sha256:633ba8edfa792c1ee6aa815670f46c0227c3ee66e908a0ce93542dc09f61640b",
   "artifact": {
     "filename": "camera-app.sb3",
-    "sha256": "d11d53f2a7d84d211c180d35ab4515584f5004121193443fcddc6131ed1756df",
-    "size": 7699467
+    "sha256": "aefbaa66135f547bb8383a3470aa6dba3c354a73649d834cf786969ce908e601",
+    "size": 7699595
   },
   "publication": {}
 }

@@ -3,6 +3,12 @@ packages:
   - packages/*
 
 minimumReleaseAgeExclude:
+  - '@kubohiroya/turbowarp-asset-cache@0.3.1'
+  - '@kubohiroya/turbowarp-jsqr@0.4.4'
+  - '@kubohiroya/turbowarp-time-space-sync@0.3.4'
+  - '@kubohiroya/turbowarp-realtime-motion-capture@0.8.4'
+  - '@kubohiroya/turbowarp-webrtc-qrcode-pairing@0.2.7'
+  - '@kubohiroya/turbowarp-camera-source@0.19.3'
   - '@kubohiroya/turbowarp-webrtc-qrcode-pairing@0.2.6'
   - '@kubohiroya/turbowarp-title-menu@0.2.6'
   - '@kubohiroya/turbowarp-jsqr@0.4.3'

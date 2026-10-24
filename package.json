@@ -1,6 +1,6 @@
 {
   "name": "turbowarp-realtime-motion-capture-app",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": false,
   "description": "Reproducible source workspace for the TurboWarp Realtime Motion Capture camera and fusion apps.",
   "license": "MPL-2.0",
