@@ -140,11 +140,11 @@
       "role": "camera-source",
       "repository": "kubohiroya/turbowarp-camera-source",
       "package": "@kubohiroya/turbowarp-camera-source",
-      "version": "0.19.1",
+      "version": "0.19.2",
       "extensionId": "kubohiroyacamerasource",
       "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.19.2/dist/camera-source.js",
       "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.19.2/dist/extension-manifest.json",
-      "sha256": "23ab9888ea11d472a5f33bdf489015444a7e5bd4fedf8d6fdb407840dc495d29",
+      "sha256": "3e1f66d8ffcf0d3e83d6db615eb83eb89419f24a92ceff712a19af33e2644f87",
       "status": "ready",
       "embeddedIn": [
         "camera-app",
