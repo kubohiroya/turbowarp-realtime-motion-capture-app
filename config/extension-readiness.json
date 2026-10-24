@@ -142,8 +142,8 @@
       "package": "@kubohiroya/turbowarp-camera-source",
       "version": "0.19.1",
       "extensionId": "kubohiroyacamerasource",
-      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.19.1/dist/camera-source.js",
-      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.19.1/dist/extension-manifest.json",
+      "artifact": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.19.2/dist/camera-source.js",
+      "manifest": "https://cdn.jsdelivr.net/npm/@kubohiroya/turbowarp-camera-source@0.19.2/dist/extension-manifest.json",
       "sha256": "23ab9888ea11d472a5f33bdf489015444a7e5bd4fedf8d6fdb407840dc495d29",
       "status": "ready",
       "embeddedIn": [
