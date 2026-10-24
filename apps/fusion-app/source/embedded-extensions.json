@@ -37,9 +37,9 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-camera-source",
-        "version": "0.19.2",
+        "version": "0.19.3",
         "artifact": "dist/camera-source.js",
-        "integrity": "sha256-Ph9m2P/PDT6D1tthXrg+uJQZ8kqSzv9xKhmvM+JkT4c=",
+        "integrity": "sha256-BcxIQL6kxBh4EddhfD4mjXEIwCkMNTPL2j6qGh3cuZw=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyacamerasource.manifest.json",
@@ -57,7 +57,7 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-jsqr",
-        "version": "0.4.3",
+        "version": "0.4.4",
         "artifact": "dist/jsqr.js",
         "integrity": "sha256-EOTZbt6T4CA9r7t8wAxv6uw/+XZq7En32BIFcHHcZnE=",
         "apiManifest": {
@@ -97,7 +97,7 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-webrtc-qrcode-pairing",
-        "version": "0.2.6",
+        "version": "0.2.7",
         "artifact": "dist/webrtc-qrcode-pairing.js",
         "integrity": "sha256-C0T8A2B7vc6o5fWDgTyFwXZjyQ39/jAb76K3fL/8NvY=",
         "apiManifest": {
@@ -117,7 +117,7 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-time-space-sync",
-        "version": "0.3.3",
+        "version": "0.3.4",
         "artifact": "dist/time-space-sync.js",
         "integrity": "sha256-/zqwaeeXI6EM1/zNna/f9HFdzgg5nzFwuoMNNdiUtd0=",
         "apiManifest": {
@@ -157,7 +157,7 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-realtime-motion-capture",
-        "version": "0.8.3",
+        "version": "0.8.4",
         "artifact": "dist/turbowarp-realtime-motion-capture.js",
         "integrity": "sha256-dI0on3CyaKjSZTUH7SyCiH6Nlg5Q9Irh5vOhJgguO9Q=",
         "apiManifest": {
@@ -177,9 +177,9 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-asset-cache",
-        "version": "0.1.0",
+        "version": "0.3.1",
         "artifact": "dist/asset-cache.js",
-        "integrity": "sha256-UlcxeDUDEPckVA1ff4Ax1j2kM4c4Nm6WkiyYEcztJL4="
+        "integrity": "sha256-t+ieNdJHP3LQ2UyzQwbRdYuME/+//OC2YvHWebkxV7Y="
       }
     },
     {
