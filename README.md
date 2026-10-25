@@ -1,6 +1,6 @@
 # TurboWarp Realtime Motion Capture Apps
 
-**English** | [日本語](README.ja.md)
+English | [日本語](README.ja.md)
 
 TurboWarp-based applications that estimate the 2D pose of people from several cameras and use the
 reconstructed 3D pose to drive a performance. Three SB3s are provided: a `camera app` that runs once

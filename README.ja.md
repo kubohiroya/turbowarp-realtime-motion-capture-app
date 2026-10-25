@@ -1,6 +1,6 @@
 # TurboWarp Realtime Motion Capture Apps
 
-[English](README.md) | **日本語**
+[English](README.md) | 日本語
 
 複数のカメラで人物の2D姿勢を推定し、復元した3D姿勢を演出に利用する、TurboWarpベースのアプリケーション
 です。カメラごとに動かす`camera app`、各カメラの結果を集約する`fusion app`、1台のPCに接続した複数の
