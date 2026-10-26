@@ -16,8 +16,8 @@ importers:
         specifier: 9.39.5
         version: 9.39.5
       '@kubohiroya/qrcode-structured-append':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^0.1.1
+        version: 0.1.1
       '@kubohiroya/sb3-toolchain':
         specifier: ^0.17.0
         version: 0.17.0
@@ -287,10 +287,6 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
-
-  '@kubohiroya/qrcode-structured-append@0.1.0':
-    resolution: {integrity: sha512-00SV1k0V//7UNLauriHLo8ubj304Ka8nvToJTGui9G0xK27M1YiDfdyXJ0oMqBYEqahXOZ0CDb+AHWEXppRBqQ==}
-    engines: {node: '>=22.18.0'}
 
   '@kubohiroya/qrcode-structured-append@0.1.1':
     resolution: {integrity: sha512-PtwPuSi8m9AbWK1v0zN8ppXBVQWopM6FZysDZDazCNGNDdV76sEQmAR8gGIA5eXEjVyMaDqSgyeaqi6naZo7jA==}
@@ -1936,8 +1932,6 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
-
-  '@kubohiroya/qrcode-structured-append@0.1.0': {}
 
   '@kubohiroya/qrcode-structured-append@0.1.1': {}
 
