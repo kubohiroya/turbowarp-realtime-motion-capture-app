@@ -1,6 +1,6 @@
 {
   "name": "@kubohiroya/turbowarp-realtime-motion-capture-app",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": false,
   "description": "Reproducible source workspace for the TurboWarp Realtime Motion Capture camera and fusion apps.",
   "license": "MPL-2.0",
@@ -88,7 +88,7 @@
   },
   "devDependencies": {
     "@eslint/js": "9.39.5",
-    "@kubohiroya/qrcode-structured-append": "^0.1.0",
+    "@kubohiroya/qrcode-structured-append": "^0.1.1",
     "@kubohiroya/sb3-toolchain": "^0.17.0",
     "@turbowarp/packager": "3.13.0",
     "@types/node": "24.13.3",
