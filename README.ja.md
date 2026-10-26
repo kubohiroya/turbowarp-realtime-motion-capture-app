@@ -96,9 +96,10 @@ app shellが先頭なのは意図的です。Realtime Motion Capture拡張は評
 
 ## 構成と開発
 
-Node.js >=22.18.0、pnpm 11.11.0。
+Node.js >=24、pnpm 11.28.8。
 
 ```bash
+npm install --global corepack@latest
 corepack enable
 pnpm install --frozen-lockfile
 pnpm check
