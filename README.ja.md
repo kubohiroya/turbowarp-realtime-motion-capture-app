@@ -6,7 +6,7 @@
 です。カメラごとに動かす`camera app`、各カメラの結果を集約する`fusion app`、1台のPCに接続した複数の
 USBカメラから3Dアバターまでを1つのSB3で通す`local app`の3つのSB3を提供します。
 
-npm package `turbowarp-realtime-motion-capture-app`は、これらのアプリを再現可能にビルドするための
+npm package `@kubohiroya/turbowarp-realtime-motion-capture-app`は、これらのアプリを再現可能にビルドするための
 ソースworkspaceを配布します。完成済みのlibrary runtimeではなく、SB3ソース、固定した拡張情報、
 ビルド・検証script、配布ページ、設計文書をまとめたapplication source packageです。
 

@@ -7,7 +7,7 @@ reconstructed 3D pose to drive a performance. Three SB3s are provided: a `camera
 per camera, a `fusion app` that aggregates the results from every camera, and a `local app` that
 carries several USB cameras on one PC through to 3D avatars inside a single SB3.
 
-The npm package `turbowarp-realtime-motion-capture-app` distributes the source workspace that makes
+The npm package `@kubohiroya/turbowarp-realtime-motion-capture-app` distributes the source workspace that makes
 these apps reproducibly buildable. It is not a finished library runtime but an application source
 package: SB3 sources, pinned extension information, build and verification scripts, a distribution
 page, and design documents.
