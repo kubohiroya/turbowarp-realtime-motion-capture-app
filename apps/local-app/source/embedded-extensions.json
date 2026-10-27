@@ -17,9 +17,9 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-title-menu",
-        "version": "0.3.0",
+        "version": "0.4.0",
         "artifact": "dist/turbowarp-title-menu.js",
-        "integrity": "sha256-sFzO0iNpiDWJX7qWm5IUyh6+9U09GBTm7R89mxiRxnY=",
+        "integrity": "sha256-OV/14BTcOr+1ZzcoXZAywi1mr4WN9EOLdazI5y7RMi8=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyaturbowarptitlemenu.manifest.json",
@@ -37,7 +37,7 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-camera-source",
-        "version": "0.20.0",
+        "version": "0.21.0",
         "artifact": "dist/camera-source.js",
         "integrity": "sha256-oo7pQFOr4JUK/XvknCmWsnfEobL/hphyV93kIQxqpVI=",
         "apiManifest": {
@@ -57,7 +57,7 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-time-space-sync",
-        "version": "0.4.0",
+        "version": "0.5.0",
         "artifact": "dist/time-space-sync.js",
         "integrity": "sha256-j5GarZGisWAg4i54puU51iueO3zYBWTp7zn1hm0oelU=",
         "apiManifest": {
@@ -77,9 +77,9 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-yaml-json",
-        "version": "0.5.0",
+        "version": "0.6.0",
         "artifact": "dist/turbowarp-yaml-json.js",
-        "integrity": "sha256-Py4KYRmXT0JevmaELnrNLqGCxxSuygeylMTYDkO6wY0=",
+        "integrity": "sha256-+QRBmt4pglWErZOQ9Nq9z8ptPBwZSxH4x+b6LBpifsQ=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyayamljson.manifest.json",
@@ -97,7 +97,7 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-realtime-motion-capture",
-        "version": "0.9.0",
+        "version": "0.10.0",
         "artifact": "dist/turbowarp-realtime-motion-capture.js",
         "integrity": "sha256-XiznUHvcbp+QB9l/ESSdQJ3kE6jC1ZII0FoV/zTTUKs=",
         "apiManifest": {
@@ -117,7 +117,7 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-aframe",
-        "version": "0.9.0",
+        "version": "0.10.0",
         "artifact": "dist/turbowarp-aframe.js",
         "integrity": "sha256-b5hMA+63lD8UlykOIqFWq35SqQiXrA4sGBrIFq7UP2A=",
         "apiManifest": {
@@ -144,7 +144,7 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-diagnostic-overlay",
-        "version": "0.6.0",
+        "version": "0.7.0",
         "artifact": "dist/diagnostic-overlay.js",
         "integrity": "sha256-dTAsmFSnnoK0PjqFP90vB3h19h7T2w0f9wYSjY9kRBI=",
         "apiManifest": {
