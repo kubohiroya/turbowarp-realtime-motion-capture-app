@@ -9,18 +9,18 @@ importers:
   .:
     dependencies:
       '@kubohiroya/turbowarp-app-shell':
-        specifier: ^0.4.0
-        version: 0.4.0
+        specifier: ^0.5.0
+        version: 0.5.0
     devDependencies:
       '@eslint/js':
         specifier: 9.39.5
         version: 9.39.5
       '@kubohiroya/qrcode-structured-append':
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^0.2.0
+        version: 0.2.0
       '@kubohiroya/sb3-toolchain':
-        specifier: ^0.17.0
-        version: 0.17.0
+        specifier: ^0.18.0
+        version: 0.18.0(supports-color@7.2.0)
       '@turbowarp/packager':
         specifier: 3.13.0
         version: 3.13.0
@@ -29,7 +29,7 @@ importers:
         version: 24.13.3
       eslint:
         specifier: 9.39.5
-        version: 9.39.5
+        version: 9.39.5(supports-color@7.2.0)
       prettier:
         specifier: 3.9.6
         version: 3.9.6
@@ -38,7 +38,7 @@ importers:
         version: 5.9.3
       typescript-eslint:
         specifier: 8.66.0
-        version: 8.66.0(eslint@9.39.5)(typescript@5.9.3)
+        version: 8.66.0(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)
       vite:
         specifier: 8.2.2
         version: 8.2.2(@types/node@24.13.3)(yaml@2.9.1)
@@ -47,107 +47,107 @@ importers:
         version: 5.0.0(@types/node@24.13.3)(vite@8.2.2(@types/node@24.13.3)(yaml@2.9.1))
       zxing-wasm:
         specifier: 3.1.4
-        version: 3.1.4(@types/emscripten@0.0.34)
+        version: 3.1.4(@types/emscripten@1.41.6)
 
   apps/camera-app:
     devDependencies:
       '@kubohiroya/turbowarp-camera-source':
-        specifier: 0.20.0
-        version: 0.20.0
+        specifier: 0.21.0
+        version: 0.21.0
       '@kubohiroya/turbowarp-diagnostic-overlay':
-        specifier: 0.6.0
-        version: 0.6.0(react@18.3.1)
+        specifier: 0.7.0
+        version: 0.7.0(react@18.3.1)
       '@kubohiroya/turbowarp-jsqr':
-        specifier: 0.5.0
-        version: 0.5.0(@kubohiroya/turbowarp-camera-source@0.20.0)(@types/emscripten@0.0.34)
+        specifier: 0.6.0
+        version: 0.6.0(@kubohiroya/turbowarp-camera-source@0.21.0)(@types/emscripten@1.41.6)
       '@kubohiroya/turbowarp-realtime-motion-capture':
-        specifier: 0.9.0
-        version: 0.9.0(@kubohiroya/turbowarp-aframe@0.9.0(react@18.3.1))(@kubohiroya/turbowarp-jsqr@0.5.0(@kubohiroya/turbowarp-camera-source@0.20.0)(@types/emscripten@0.0.34))(@kubohiroya/turbowarp-webrtc@0.5.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))(react@18.3.1)
+        specifier: 0.10.0
+        version: 0.10.0(@kubohiroya/turbowarp-aframe@0.10.0(react@18.3.1))(@kubohiroya/turbowarp-jsqr@0.6.0(@kubohiroya/turbowarp-camera-source@0.21.0)(@types/emscripten@1.41.6))(@kubohiroya/turbowarp-webrtc@0.6.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))(react@18.3.1)
       '@kubohiroya/turbowarp-time-space-sync':
-        specifier: 0.4.0
-        version: 0.4.0(react@18.3.1)
-      '@kubohiroya/turbowarp-title-menu':
-        specifier: 0.3.0
-        version: 0.3.0
-      '@kubohiroya/turbowarp-webrtc':
         specifier: 0.5.0
-        version: 0.5.0
+        version: 0.5.0(react@18.3.1)
+      '@kubohiroya/turbowarp-title-menu':
+        specifier: 0.4.0
+        version: 0.4.0
+      '@kubohiroya/turbowarp-webrtc':
+        specifier: 0.6.0
+        version: 0.6.0
       '@kubohiroya/turbowarp-webrtc-qrcode-pairing':
-        specifier: 0.3.0
-        version: 0.3.0(@kubohiroya/turbowarp-camera-source@0.20.0)(@kubohiroya/turbowarp-jsqr@0.5.0(@kubohiroya/turbowarp-camera-source@0.20.0)(@types/emscripten@0.0.34))(@kubohiroya/turbowarp-webrtc@0.5.0)
+        specifier: 0.4.0
+        version: 0.4.0(@kubohiroya/turbowarp-camera-source@0.21.0)(@kubohiroya/turbowarp-jsqr@0.6.0(@kubohiroya/turbowarp-camera-source@0.21.0)(@types/emscripten@1.41.6))(@kubohiroya/turbowarp-webrtc@0.6.0)
 
   apps/fusion-app:
     devDependencies:
       '@kubohiroya/turbowarp-aframe':
-        specifier: 0.9.0
-        version: 0.9.0(react@18.3.1)
+        specifier: 0.10.0
+        version: 0.10.0(react@18.3.1)
       '@kubohiroya/turbowarp-asset-cache':
-        specifier: 0.4.0
-        version: 0.4.0(@kubohiroya/turbowarp-named-data@0.3.1)
+        specifier: 0.5.0
+        version: 0.5.0(@kubohiroya/turbowarp-named-data@0.6.0)
       '@kubohiroya/turbowarp-camera-source':
-        specifier: 0.20.0
-        version: 0.20.0
+        specifier: 0.21.0
+        version: 0.21.0
       '@kubohiroya/turbowarp-diagnostic-overlay':
-        specifier: 0.6.0
-        version: 0.6.0(react@18.3.1)
+        specifier: 0.7.0
+        version: 0.7.0(react@18.3.1)
       '@kubohiroya/turbowarp-jsqr':
-        specifier: 0.5.0
-        version: 0.5.0(@kubohiroya/turbowarp-camera-source@0.20.0)(@types/emscripten@0.0.34)
+        specifier: 0.6.0
+        version: 0.6.0(@kubohiroya/turbowarp-camera-source@0.21.0)(@types/emscripten@1.41.6)
       '@kubohiroya/turbowarp-realtime-motion-capture':
-        specifier: 0.9.0
-        version: 0.9.0(@kubohiroya/turbowarp-aframe@0.9.0(react@18.3.1))(@kubohiroya/turbowarp-jsqr@0.5.0(@kubohiroya/turbowarp-camera-source@0.20.0)(@types/emscripten@0.0.34))(@kubohiroya/turbowarp-webrtc@0.5.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))(react@18.3.1)
+        specifier: 0.10.0
+        version: 0.10.0(@kubohiroya/turbowarp-aframe@0.10.0(react@18.3.1))(@kubohiroya/turbowarp-jsqr@0.6.0(@kubohiroya/turbowarp-camera-source@0.21.0)(@types/emscripten@1.41.6))(@kubohiroya/turbowarp-webrtc@0.6.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))(react@18.3.1)
       '@kubohiroya/turbowarp-time-space-sync':
-        specifier: 0.4.0
-        version: 0.4.0(react@18.3.1)
+        specifier: 0.5.0
+        version: 0.5.0(react@18.3.1)
       '@kubohiroya/turbowarp-title-menu':
-        specifier: 0.3.0
-        version: 0.3.0
+        specifier: 0.4.0
+        version: 0.4.0
       '@kubohiroya/turbowarp-webrtc':
-        specifier: 0.5.0
-        version: 0.5.0
+        specifier: 0.6.0
+        version: 0.6.0
       '@kubohiroya/turbowarp-webrtc-qrcode-pairing':
-        specifier: 0.3.0
-        version: 0.3.0(@kubohiroya/turbowarp-camera-source@0.20.0)(@kubohiroya/turbowarp-jsqr@0.5.0(@kubohiroya/turbowarp-camera-source@0.20.0)(@types/emscripten@0.0.34))(@kubohiroya/turbowarp-webrtc@0.5.0)
+        specifier: 0.4.0
+        version: 0.4.0(@kubohiroya/turbowarp-camera-source@0.21.0)(@kubohiroya/turbowarp-jsqr@0.6.0(@kubohiroya/turbowarp-camera-source@0.21.0)(@types/emscripten@1.41.6))(@kubohiroya/turbowarp-webrtc@0.6.0)
       '@kubohiroya/turbowarp-yaml-json':
-        specifier: 0.5.0
-        version: 0.5.0
+        specifier: 0.6.0
+        version: 0.6.0
 
   apps/local-app:
     devDependencies:
       '@kubohiroya/turbowarp-aframe':
-        specifier: 0.9.0
-        version: 0.9.0(react@18.3.1)
+        specifier: 0.10.0
+        version: 0.10.0(react@18.3.1)
       '@kubohiroya/turbowarp-camera-source':
-        specifier: 0.20.0
-        version: 0.20.0
+        specifier: 0.21.0
+        version: 0.21.0
       '@kubohiroya/turbowarp-diagnostic-overlay':
-        specifier: 0.6.0
-        version: 0.6.0(react@18.3.1)
+        specifier: 0.7.0
+        version: 0.7.0(react@18.3.1)
       '@kubohiroya/turbowarp-realtime-motion-capture':
-        specifier: 0.9.0
-        version: 0.9.0(@kubohiroya/turbowarp-aframe@0.9.0(react@18.3.1))(@kubohiroya/turbowarp-jsqr@0.5.0(@kubohiroya/turbowarp-camera-source@0.20.0)(@types/emscripten@0.0.34))(@kubohiroya/turbowarp-webrtc@0.5.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))(react@18.3.1)
+        specifier: 0.10.0
+        version: 0.10.0(@kubohiroya/turbowarp-aframe@0.10.0(react@18.3.1))(@kubohiroya/turbowarp-jsqr@0.6.0(@kubohiroya/turbowarp-camera-source@0.21.0)(@types/emscripten@1.41.6))(@kubohiroya/turbowarp-webrtc@0.6.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))(react@18.3.1)
       '@kubohiroya/turbowarp-time-space-sync':
-        specifier: 0.4.0
-        version: 0.4.0(react@18.3.1)
-      '@kubohiroya/turbowarp-title-menu':
-        specifier: 0.3.0
-        version: 0.3.0
-      '@kubohiroya/turbowarp-yaml-json':
         specifier: 0.5.0
-        version: 0.5.0
+        version: 0.5.0(react@18.3.1)
+      '@kubohiroya/turbowarp-title-menu':
+        specifier: 0.4.0
+        version: 0.4.0
+      '@kubohiroya/turbowarp-yaml-json':
+        specifier: 0.6.0
+        version: 0.6.0
 
   packages/app-shell:
     dependencies:
       '@kubohiroya/turbowarp-app-shell':
-        specifier: 0.4.0
-        version: 0.4.0
+        specifier: 0.5.0
+        version: 0.5.0
     devDependencies:
       '@kubohiroya/turbowarp-camera-source':
-        specifier: 0.20.0
-        version: 0.20.0
+        specifier: 0.21.0
+        version: 0.21.0
       '@kubohiroya/vite-plugin-turbowarp-extension':
-        specifier: 0.8.0
-        version: 0.8.0(vite@8.2.2(@types/node@24.13.3)(yaml@2.9.1))
+        specifier: 0.9.0
+        version: 0.9.0(vite@8.2.2(@types/node@24.13.3)(yaml@2.9.1))
       '@types/node':
         specifier: 24.13.3
         version: 24.13.3
@@ -164,8 +164,8 @@ importers:
   packages/local-host:
     dependencies:
       '@kubohiroya/turbowarp-local-preview':
-        specifier: 0.1.1
-        version: 0.1.1
+        specifier: 0.2.0
+        version: 0.2.0
     devDependencies:
       '@types/node':
         specifier: 24.13.3
@@ -180,8 +180,8 @@ importers:
   packages/pose-3d-service:
     devDependencies:
       '@kubohiroya/vite-plugin-turbowarp-extension':
-        specifier: 0.8.0
-        version: 0.8.0(vite@8.2.2(@types/node@24.13.3)(yaml@2.9.1))
+        specifier: 0.9.0
+        version: 0.9.0(vite@8.2.2(@types/node@24.13.3)(yaml@2.9.1))
       '@types/node':
         specifier: 24.13.3
         version: 24.13.3
@@ -288,40 +288,40 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@kubohiroya/qrcode-structured-append@0.1.1':
-    resolution: {integrity: sha512-PtwPuSi8m9AbWK1v0zN8ppXBVQWopM6FZysDZDazCNGNDdV76sEQmAR8gGIA5eXEjVyMaDqSgyeaqi6naZo7jA==}
-    engines: {node: '>=22.18.0'}
+  '@kubohiroya/qrcode-structured-append@0.2.0':
+    resolution: {integrity: sha512-quJCIElZ98CI6eQP21VCIu7N91IwbJJOlHutlcCOYKoJRjg/4MQPi8r69PGqmXKKQPdfJRwkK59R++1l/igyXw==}
+    engines: {node: '>=24'}
 
-  '@kubohiroya/sb3-toolchain@0.17.0':
-    resolution: {integrity: sha512-FH8fU6G0wCBVuxUHsnCRDnSQQbA7FvloBHFZt+WoS0blddOzGAgonsG6w0HFmCEqp7FWoSXIYM6lemkkfBCRUw==}
-    engines: {node: '>=22.12.0'}
+  '@kubohiroya/sb3-toolchain@0.18.0':
+    resolution: {integrity: sha512-lzb72VnPESRQoTnP3oIA8jbpHgIqaj///xX7WBg/8lqEbgPA0G46Osm6NH9Mp19gqNHfS87Em4yC2b4bTlHe3w==}
+    engines: {node: '>=24'}
     hasBin: true
 
-  '@kubohiroya/turbowarp-aframe@0.9.0':
-    resolution: {integrity: sha512-JOed/C/RTp15lseRtPmIkKLt5hVcfPWqh7H6GLjk8TeflbDE4DjfPI6990OF5Y7thte6z4Z+ky1hVtXRqaITTg==}
-    engines: {node: '>=22.18.0'}
+  '@kubohiroya/turbowarp-aframe@0.10.0':
+    resolution: {integrity: sha512-zLMZDUdIIekXpOSTRFjogXtVWykKr9hcJpw7Gic7Jhn0B5aE/jPC5AV6G2ubzVzFB2ZN4uWs7u+m+UCGqEc/Fw==}
+    engines: {node: '>=24'}
 
-  '@kubohiroya/turbowarp-app-shell@0.4.0':
-    resolution: {integrity: sha512-+VpjRIWHuZ9qJ+VWH01GHAKRr7arfuN5YZgrtVRc5ZAxD/1/I9HI4zfZO14Oe2VWSDPaz/misZuWwscv2D4ObA==}
-    engines: {node: '>=22'}
+  '@kubohiroya/turbowarp-app-shell@0.5.0':
+    resolution: {integrity: sha512-psDDUSfTCz9gZYrM9OS0KHMr49Wqqro1F2lEzXTpOhyKqgcvyw086HcitgAUaJVT87txQSM94ZzTDol0F/GVZw==}
+    engines: {node: '>=24'}
 
-  '@kubohiroya/turbowarp-asset-cache@0.4.0':
-    resolution: {integrity: sha512-xv70nLJA/+LqIArdaBmH5kimTOsWX7dI1UJOQbe0Jockly+Npdr2phPOr1QDfP+SGtKv+lYWMTM8vL9wl5VY7A==}
-    engines: {node: '>=22.18.0'}
+  '@kubohiroya/turbowarp-asset-cache@0.5.0':
+    resolution: {integrity: sha512-+qIXUmaEgdu+wBkZUjiDvNg1ADHKjFW84vZblbkHyW72pvPlgIpPCUiH38lT9m4jPEkz09Ml5f5tIXwE25hSxQ==}
+    engines: {node: '>=24'}
     peerDependencies:
-      '@kubohiroya/turbowarp-named-data': ^0.5.0
+      '@kubohiroya/turbowarp-named-data': ^0.6.0
 
-  '@kubohiroya/turbowarp-camera-source@0.20.0':
-    resolution: {integrity: sha512-JnDFZPDZs/TPSRVGv6amDR98L+jg5A6JcnL23+VwRiLZenU7qXBqeTGDOFNTEf6g2PXrerN1YQgbOZfA93EXyw==}
-    engines: {node: '>=22.18.0'}
+  '@kubohiroya/turbowarp-camera-source@0.21.0':
+    resolution: {integrity: sha512-G0/euh+VRbB6EKFKPRXuMdOFEdMdp860dg/rDEG8ADr0Ghcivu72pEdlGwtCHQySG01nlJ06tgxgtFM6PCq7kw==}
+    engines: {node: '>=24'}
 
-  '@kubohiroya/turbowarp-diagnostic-overlay@0.6.0':
-    resolution: {integrity: sha512-SCjydDYsfZd35/4JbAtUjG5SLn8cuCpDDx5vQ98WQS6oW4YJJrtNxyRcCYG6vczvbUi9J7dp9K5aPPwKLqyRhA==}
-    engines: {node: '>=22.18.0'}
+  '@kubohiroya/turbowarp-diagnostic-overlay@0.7.0':
+    resolution: {integrity: sha512-0wHhQ+NDlolWVRHY0pPrAv52ql+vAjgAxE01GiIsDLsIm0Z5hYXoHx0GjskIszElqg3N1853pWwgaJlspF98KA==}
+    engines: {node: '>=24'}
 
-  '@kubohiroya/turbowarp-extension-data-editor@0.3.4':
-    resolution: {integrity: sha512-/hvZCzqqFiu3r54wmo5yYezRTEbchsCAIJjjREJH3aZzxKQ+4YoRDSjFiW8MX49usc05bfxogp/WtpFyeut2RA==}
-    engines: {node: '>=22'}
+  '@kubohiroya/turbowarp-extension-data-editor@0.4.0':
+    resolution: {integrity: sha512-AijNYwf8LG+i0NLx48wYsKpObWRZ347BEtrsLv4PNIc20UItC4hs4yTwnGNd+ffGHIrSqcWUjt3ZJysFt/KzsQ==}
+    engines: {node: '>=24'}
     peerDependencies:
       react: ^16.14.0 || ^17 || ^18
       react-dom: ^16.14.0 || ^17 || ^18
@@ -331,30 +331,30 @@ packages:
       react-dom:
         optional: true
 
-  '@kubohiroya/turbowarp-jsqr@0.5.0':
-    resolution: {integrity: sha512-F3AHC1gLjPOUq8jp4xKgbmRRPAwHHigXQjSIGfUC+lndGA35vCbMMncg7EKy6pKhrXWUCMZb9pr+RZmlaDKXTw==}
-    engines: {node: '>=22.18.0'}
+  '@kubohiroya/turbowarp-jsqr@0.6.0':
+    resolution: {integrity: sha512-CouIOhZPWTuDffIqOGCvGdWLG5Dl3iQpFjyUvNh5xtFb2rtu/sJ9tFoHRKu1pLBADXZYQLGNqNhCW4tmFLxxBg==}
+    engines: {node: '>=24'}
     peerDependencies:
-      '@kubohiroya/turbowarp-camera-source': ^0.20.0
+      '@kubohiroya/turbowarp-camera-source': ^0.21.0
     peerDependenciesMeta:
       '@kubohiroya/turbowarp-camera-source':
         optional: true
 
-  '@kubohiroya/turbowarp-local-preview@0.1.1':
-    resolution: {integrity: sha512-9s4yoRvfvs/Yoo7rx0TJFawBZv3cN+W9ABV8NCJQ1qgckzRlyAW1v2qMvpzPNogtP1N5ztYMAN1gkuJdbuPq/A==}
-    engines: {node: '>=22'}
+  '@kubohiroya/turbowarp-local-preview@0.2.0':
+    resolution: {integrity: sha512-KE3546s6QgaEiNdsqZTCXzWbk/orAStApH8XQTeP9uF160nfMMUP/6YeQUOOsSMwr0J8NuTjJxSquOMeE9ge1g==}
+    engines: {node: '>=24'}
 
-  '@kubohiroya/turbowarp-named-data@0.3.1':
-    resolution: {integrity: sha512-Djs+UU+ReiGHMmvpZRBfH1JQbeQp5Veau0wx8wB40j0M02b8Ax4LoueF0GRwp8S/TE4cK5lxmJi8TP9Nvb3KvA==}
-    engines: {node: '>=22.18.0'}
+  '@kubohiroya/turbowarp-named-data@0.6.0':
+    resolution: {integrity: sha512-SsKA0F5tFisCmSJ0wnZ85Ll4pRiKSirkUPe90YFhTtY1uLPBQh7+44MO9uH29u8ZzwPuKYzgRa9EimVUXjw1Gw==}
+    engines: {node: '>=24'}
 
-  '@kubohiroya/turbowarp-realtime-motion-capture@0.9.0':
-    resolution: {integrity: sha512-eNbb06JNqLS1dpy6tGjldoilY/uJ8Gzx9fwkAB2dqLLfp4FYqE+uKqdvHli4II7fNnyBYwe/iVczM1fTFkARSg==}
-    engines: {node: '>=22.18.0'}
+  '@kubohiroya/turbowarp-realtime-motion-capture@0.10.0':
+    resolution: {integrity: sha512-CbUgOSsFIZBLFZX4ztEnfeVpU+9vv3K3ek/5gypbpRpiZWKVscKcYbF24UKW9bgWri3DJUhe0MUxFpVX+K61kg==}
+    engines: {node: '>=24'}
     peerDependencies:
-      '@kubohiroya/turbowarp-aframe': ^0.9.0
-      '@kubohiroya/turbowarp-jsqr': ^0.5.0
-      '@kubohiroya/turbowarp-webrtc': ^0.5.0
+      '@kubohiroya/turbowarp-aframe': ^0.10.0
+      '@kubohiroya/turbowarp-jsqr': ^0.6.0
+      '@kubohiroya/turbowarp-webrtc': ^0.6.0
     peerDependenciesMeta:
       '@kubohiroya/turbowarp-aframe':
         optional: true
@@ -363,21 +363,21 @@ packages:
       '@kubohiroya/turbowarp-webrtc':
         optional: true
 
-  '@kubohiroya/turbowarp-time-space-sync@0.4.0':
-    resolution: {integrity: sha512-pDQXZUTQADh7EG88R2dfehdTxZtIeKCl7nhuzApVq5QrPvFp5nHeaRHLdZgOIxTmGYCknXdzHreY6gSkoin1iQ==}
-    engines: {node: '>=22.18.0'}
+  '@kubohiroya/turbowarp-time-space-sync@0.5.0':
+    resolution: {integrity: sha512-wa3OXWZl2EcsOuUngb2APUEOzvCNIOVLjlaWNJ8HeecdnPey68bSKbxQL0tnLV7Wr4QIpsSXrIfoFWYrc43Syg==}
+    engines: {node: '>=24'}
 
-  '@kubohiroya/turbowarp-title-menu@0.3.0':
-    resolution: {integrity: sha512-XddDGKpow81teP1rDml3GHiIw3CvzszbP5b++h/FfixGUHWmsLFdGmLBPfrILkqnpS9qHR42FLuAVhTyuj/5QA==}
-    engines: {node: '>=22'}
+  '@kubohiroya/turbowarp-title-menu@0.4.0':
+    resolution: {integrity: sha512-pIwiH7ngpLGosHrN9zbo+iqPdgLv224sXNM4bKJBJXt/CuctXy9+OqALvmL/UVNgY2i0d0j3hHJlj4fexxZI8Q==}
+    engines: {node: '>=24'}
 
-  '@kubohiroya/turbowarp-webrtc-qrcode-pairing@0.3.0':
-    resolution: {integrity: sha512-AQop/JAtdjnTMIL5Wo72kC2t5bnIpfnX73u3918ahR9CKYXrBvKOFO+O3FbPhdmjHuuEQXb1YnE+rl3k2VFuvg==}
-    engines: {node: '>=22.18.0'}
+  '@kubohiroya/turbowarp-webrtc-qrcode-pairing@0.4.0':
+    resolution: {integrity: sha512-6skkLK5ppQn/Z7h32aTHlzAJEGM/npSLJCMzM5P8czBsTM3WsyZTeMIm6pzthgzLABsQbNNtETF7dNQq725KDw==}
+    engines: {node: '>=24'}
     peerDependencies:
-      '@kubohiroya/turbowarp-camera-source': ^0.20.0
-      '@kubohiroya/turbowarp-jsqr': ^0.5.0
-      '@kubohiroya/turbowarp-webrtc': ^0.5.0
+      '@kubohiroya/turbowarp-camera-source': ^0.21.0
+      '@kubohiroya/turbowarp-jsqr': ^0.6.0
+      '@kubohiroya/turbowarp-webrtc': ^0.6.0
     peerDependenciesMeta:
       '@kubohiroya/turbowarp-camera-source':
         optional: true
@@ -386,17 +386,17 @@ packages:
       '@kubohiroya/turbowarp-webrtc':
         optional: true
 
-  '@kubohiroya/turbowarp-webrtc@0.5.0':
-    resolution: {integrity: sha512-CKdPDRRMrk+EQFuMmnMssKyCBBt87afbqgiGFyJS+E1h6aqz2lJrciuLLmWqRfKaeuqu3HoLnfxOy/s6a3U2tg==}
-    engines: {node: '>=22.18.0'}
+  '@kubohiroya/turbowarp-webrtc@0.6.0':
+    resolution: {integrity: sha512-6zRDOGDmRABkdIAOwk9ZtcN9v4+a07mtUNzokRqbifBSfLQf0gQgMU8t3TsYpqjpvtyymgji3R2xatTk5t1qEg==}
+    engines: {node: '>=24'}
 
-  '@kubohiroya/turbowarp-yaml-json@0.5.0':
-    resolution: {integrity: sha512-TyPl6LhJXj+SsBUtHmfnUIozaTDaDY0NBE1m56rlpZu2VOAs0BM7Iw0H3UskiNquq7lC6DHWLmLsG5k4npkjbA==}
-    engines: {node: '>=22.18.0'}
+  '@kubohiroya/turbowarp-yaml-json@0.6.0':
+    resolution: {integrity: sha512-LBackO/MP4QxYFRIjtttBHhCjv2HALYGMGKBHnjmXRL6Pn1nFLMXd4kjH8YCgPn2qHwAwOXMxOM4d6kmJL1eCA==}
+    engines: {node: '>=24'}
 
-  '@kubohiroya/vite-plugin-turbowarp-extension@0.8.0':
-    resolution: {integrity: sha512-UuIWhr+YPxecXLpXMHUIyPT3Xw17ZTF2y8wSJe7VW9FyVQRCl6EYmg8TX6af8bmaMObkdIHgzLmQ0ZuCcxNMGA==}
-    engines: {node: '>=22.18.0'}
+  '@kubohiroya/vite-plugin-turbowarp-extension@0.9.0':
+    resolution: {integrity: sha512-RU1+s/xJ02rsuEdMvYMEcxiPpTF7eyiTFlodmF780rzC91cAiESPf4HiFqQCJix6zd+eNbu3SulI2piQK6C1Zw==}
+    engines: {node: '>=24'}
     peerDependencies:
       vite: '>=8.0.0'
 
@@ -698,6 +698,9 @@ packages:
 
   '@types/emscripten@0.0.34':
     resolution: {integrity: sha512-QSb9ojDincskc+uKMI0KXp8e1NALFINCrMlp8VGKGcTSxeEyRTTKyjWw75NYrCZHUsVEEEpr1tYHpbtaC++/sQ==}
+
+  '@types/emscripten@1.41.6':
+    resolution: {integrity: sha512-uN+9i8bFT5CUcZfyIEYDrSueACEyKGbUs5kC/72DGlZZoinh84sJfVV0i8UOJD1asdzkvLPBRrKs41kZ8MdEXg==}
 
   '@types/estree@1.0.9':
     resolution: {integrity: sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg==}
@@ -1855,17 +1858,17 @@ snapshots:
 
   '@borewit/text-codec@0.2.2': {}
 
-  '@eslint-community/eslint-utils@4.10.1(eslint@9.39.5)':
+  '@eslint-community/eslint-utils@4.10.1(eslint@9.39.5(supports-color@7.2.0))':
     dependencies:
-      eslint: 9.39.5
+      eslint: 9.39.5(supports-color@7.2.0)
       eslint-visitor-keys: 3.4.3
 
   '@eslint-community/regexpp@4.12.2': {}
 
-  '@eslint/config-array@0.21.2':
+  '@eslint/config-array@0.21.2(supports-color@7.2.0)':
     dependencies:
       '@eslint/object-schema': 2.1.7
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@7.2.0)
       minimatch: 3.1.5
     transitivePeerDependencies:
       - supports-color
@@ -1878,10 +1881,10 @@ snapshots:
     dependencies:
       '@types/json-schema': 7.0.15
 
-  '@eslint/eslintrc@3.3.7':
+  '@eslint/eslintrc@3.3.7(supports-color@7.2.0)':
     dependencies:
       ajv: 6.15.0
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@7.2.0)
       espree: 10.4.0
       globals: 14.0.0
       ignore: 5.3.2
@@ -1933,69 +1936,69 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
 
-  '@kubohiroya/qrcode-structured-append@0.1.1': {}
+  '@kubohiroya/qrcode-structured-append@0.2.0': {}
 
-  '@kubohiroya/sb3-toolchain@0.17.0':
+  '@kubohiroya/sb3-toolchain@0.18.0(supports-color@7.2.0)':
     dependencies:
       fflate: 0.8.3
-      music-metadata: 11.14.0
+      music-metadata: 11.14.0(supports-color@7.2.0)
       rolldown: 1.2.7
       semver: 7.8.5
       yaml: 2.9.0
     transitivePeerDependencies:
       - supports-color
 
-  '@kubohiroya/turbowarp-aframe@0.9.0(react@18.3.1)':
+  '@kubohiroya/turbowarp-aframe@0.10.0(react@18.3.1)':
     dependencies:
-      '@kubohiroya/turbowarp-extension-data-editor': 0.3.4(react@18.3.1)
+      '@kubohiroya/turbowarp-extension-data-editor': 0.4.0(react@18.3.1)
     transitivePeerDependencies:
       - react
       - react-dom
 
-  '@kubohiroya/turbowarp-app-shell@0.4.0': {}
+  '@kubohiroya/turbowarp-app-shell@0.5.0': {}
 
-  '@kubohiroya/turbowarp-asset-cache@0.4.0(@kubohiroya/turbowarp-named-data@0.3.1)':
+  '@kubohiroya/turbowarp-asset-cache@0.5.0(@kubohiroya/turbowarp-named-data@0.6.0)':
     dependencies:
-      '@kubohiroya/turbowarp-named-data': 0.3.1
+      '@kubohiroya/turbowarp-named-data': 0.6.0
 
-  '@kubohiroya/turbowarp-camera-source@0.20.0': {}
+  '@kubohiroya/turbowarp-camera-source@0.21.0': {}
 
-  '@kubohiroya/turbowarp-diagnostic-overlay@0.6.0(react@18.3.1)':
+  '@kubohiroya/turbowarp-diagnostic-overlay@0.7.0(react@18.3.1)':
     dependencies:
-      '@kubohiroya/turbowarp-extension-data-editor': 0.3.4(react@18.3.1)
+      '@kubohiroya/turbowarp-extension-data-editor': 0.4.0(react@18.3.1)
     transitivePeerDependencies:
       - react
       - react-dom
 
-  '@kubohiroya/turbowarp-extension-data-editor@0.3.4(react@18.3.1)':
+  '@kubohiroya/turbowarp-extension-data-editor@0.4.0(react@18.3.1)':
     dependencies:
       '@rjsf/core': 5.24.13(@rjsf/utils@5.24.13(react@18.3.1))(react@18.3.1)
       '@rjsf/utils': 5.24.13(react@18.3.1)
       '@rjsf/validator-ajv8': 5.24.13(@rjsf/utils@5.24.13(react@18.3.1))
       ajv: 8.20.0
-      ajv-formats: 2.1.1(ajv@8.20.0)
+      ajv-formats: 2.1.1
       fast-uri: 3.1.9
       yaml: 2.9.1
     optionalDependencies:
       react: 18.3.1
 
-  '@kubohiroya/turbowarp-jsqr@0.5.0(@kubohiroya/turbowarp-camera-source@0.20.0)(@types/emscripten@0.0.34)':
+  '@kubohiroya/turbowarp-jsqr@0.6.0(@kubohiroya/turbowarp-camera-source@0.21.0)(@types/emscripten@1.41.6)':
     dependencies:
-      zxing-wasm: 3.1.4(@types/emscripten@0.0.34)
+      zxing-wasm: 3.1.4(@types/emscripten@1.41.6)
     optionalDependencies:
-      '@kubohiroya/turbowarp-camera-source': 0.20.0
+      '@kubohiroya/turbowarp-camera-source': 0.21.0
     transitivePeerDependencies:
       - '@types/emscripten'
 
-  '@kubohiroya/turbowarp-local-preview@0.1.1': {}
+  '@kubohiroya/turbowarp-local-preview@0.2.0': {}
 
-  '@kubohiroya/turbowarp-named-data@0.3.1': {}
+  '@kubohiroya/turbowarp-named-data@0.6.0': {}
 
-  '@kubohiroya/turbowarp-realtime-motion-capture@0.9.0(@kubohiroya/turbowarp-aframe@0.9.0(react@18.3.1))(@kubohiroya/turbowarp-jsqr@0.5.0(@kubohiroya/turbowarp-camera-source@0.20.0)(@types/emscripten@0.0.34))(@kubohiroya/turbowarp-webrtc@0.5.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))(react@18.3.1)':
+  '@kubohiroya/turbowarp-realtime-motion-capture@0.10.0(@kubohiroya/turbowarp-aframe@0.10.0(react@18.3.1))(@kubohiroya/turbowarp-jsqr@0.6.0(@kubohiroya/turbowarp-camera-source@0.21.0)(@types/emscripten@1.41.6))(@kubohiroya/turbowarp-webrtc@0.6.0)(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))(react@18.3.1)':
     dependencies:
-      '@kubohiroya/turbowarp-camera-source': 0.20.0
-      '@kubohiroya/turbowarp-extension-data-editor': 0.3.4(react@18.3.1)
-      '@kubohiroya/turbowarp-time-space-sync': 0.4.0(react@18.3.1)
+      '@kubohiroya/turbowarp-camera-source': 0.21.0
+      '@kubohiroya/turbowarp-extension-data-editor': 0.4.0(react@18.3.1)
+      '@kubohiroya/turbowarp-time-space-sync': 0.5.0(react@18.3.1)
       '@sinclair/typebox': 0.34.52
       '@techstark/opencv-js': 4.12.0-release.1
       '@tensorflow-models/pose-detection': 2.1.3(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgpu@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-converter@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-core@4.22.0)
@@ -2005,9 +2008,9 @@ snapshots:
       kalidokit: 1.1.5
       qrcode: 1.5.4
     optionalDependencies:
-      '@kubohiroya/turbowarp-aframe': 0.9.0(react@18.3.1)
-      '@kubohiroya/turbowarp-jsqr': 0.5.0(@kubohiroya/turbowarp-camera-source@0.20.0)(@types/emscripten@0.0.34)
-      '@kubohiroya/turbowarp-webrtc': 0.5.0
+      '@kubohiroya/turbowarp-aframe': 0.10.0(react@18.3.1)
+      '@kubohiroya/turbowarp-jsqr': 0.6.0(@kubohiroya/turbowarp-camera-source@0.21.0)(@types/emscripten@1.41.6)
+      '@kubohiroya/turbowarp-webrtc': 0.6.0
     transitivePeerDependencies:
       - '@mediapipe/pose'
       - '@tensorflow/tfjs-backend-wasm'
@@ -2016,35 +2019,35 @@ snapshots:
       - react
       - react-dom
 
-  '@kubohiroya/turbowarp-time-space-sync@0.4.0(react@18.3.1)':
+  '@kubohiroya/turbowarp-time-space-sync@0.5.0(react@18.3.1)':
     dependencies:
-      '@kubohiroya/turbowarp-camera-source': 0.20.0
-      '@kubohiroya/turbowarp-extension-data-editor': 0.3.4(react@18.3.1)
+      '@kubohiroya/turbowarp-camera-source': 0.21.0
+      '@kubohiroya/turbowarp-extension-data-editor': 0.4.0(react@18.3.1)
     transitivePeerDependencies:
       - react
       - react-dom
 
-  '@kubohiroya/turbowarp-title-menu@0.3.0':
+  '@kubohiroya/turbowarp-title-menu@0.4.0':
     dependencies:
-      '@kubohiroya/turbowarp-app-shell': 0.4.0
+      '@kubohiroya/turbowarp-app-shell': 0.5.0
 
-  '@kubohiroya/turbowarp-webrtc-qrcode-pairing@0.3.0(@kubohiroya/turbowarp-camera-source@0.20.0)(@kubohiroya/turbowarp-jsqr@0.5.0(@kubohiroya/turbowarp-camera-source@0.20.0)(@types/emscripten@0.0.34))(@kubohiroya/turbowarp-webrtc@0.5.0)':
+  '@kubohiroya/turbowarp-webrtc-qrcode-pairing@0.4.0(@kubohiroya/turbowarp-camera-source@0.21.0)(@kubohiroya/turbowarp-jsqr@0.6.0(@kubohiroya/turbowarp-camera-source@0.21.0)(@types/emscripten@1.41.6))(@kubohiroya/turbowarp-webrtc@0.6.0)':
     dependencies:
-      '@kubohiroya/qrcode-structured-append': 0.1.1
+      '@kubohiroya/qrcode-structured-append': 0.2.0
     optionalDependencies:
-      '@kubohiroya/turbowarp-camera-source': 0.20.0
-      '@kubohiroya/turbowarp-jsqr': 0.5.0(@kubohiroya/turbowarp-camera-source@0.20.0)(@types/emscripten@0.0.34)
-      '@kubohiroya/turbowarp-webrtc': 0.5.0
+      '@kubohiroya/turbowarp-camera-source': 0.21.0
+      '@kubohiroya/turbowarp-jsqr': 0.6.0(@kubohiroya/turbowarp-camera-source@0.21.0)(@types/emscripten@1.41.6)
+      '@kubohiroya/turbowarp-webrtc': 0.6.0
 
-  '@kubohiroya/turbowarp-webrtc@0.5.0': {}
+  '@kubohiroya/turbowarp-webrtc@0.6.0': {}
 
-  '@kubohiroya/turbowarp-yaml-json@0.5.0':
+  '@kubohiroya/turbowarp-yaml-json@0.6.0':
     dependencies:
       ajv: 8.20.0
       jsonc-parser: 3.3.1
       yaml: 2.9.1
 
-  '@kubohiroya/vite-plugin-turbowarp-extension@0.8.0(vite@8.2.2(@types/node@24.13.3)(yaml@2.9.1))':
+  '@kubohiroya/vite-plugin-turbowarp-extension@0.9.0(vite@8.2.2(@types/node@24.13.3)(yaml@2.9.1))':
     dependencies:
       acorn: 8.18.0
       vite: 8.2.2(@types/node@24.13.3)(yaml@2.9.1)
@@ -2077,7 +2080,7 @@ snapshots:
     dependencies:
       '@rjsf/utils': 5.24.13(react@18.3.1)
       ajv: 8.20.0
-      ajv-formats: 2.1.1(ajv@8.20.0)
+      ajv-formats: 2.1.1
       lodash: 4.18.1
       lodash-es: 4.18.1
 
@@ -2229,9 +2232,9 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@tokenizer/inflate@0.4.1':
+  '@tokenizer/inflate@0.4.1(supports-color@7.2.0)':
     dependencies:
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@7.2.0)
       token-types: 6.1.2
     transitivePeerDependencies:
       - supports-color
@@ -2272,6 +2275,8 @@ snapshots:
 
   '@types/emscripten@0.0.34': {}
 
+  '@types/emscripten@1.41.6': {}
+
   '@types/estree@1.0.9': {}
 
   '@types/json-schema@7.0.15': {}
@@ -2288,15 +2293,15 @@ snapshots:
 
   '@types/seedrandom@2.4.34': {}
 
-  '@typescript-eslint/eslint-plugin@8.66.0(@typescript-eslint/parser@8.66.0(eslint@9.39.5)(typescript@5.9.3))(eslint@9.39.5)(typescript@5.9.3)':
+  '@typescript-eslint/eslint-plugin@8.66.0(@typescript-eslint/parser@8.66.0(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3))(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)':
     dependencies:
       '@eslint-community/regexpp': 4.12.2
-      '@typescript-eslint/parser': 8.66.0(eslint@9.39.5)(typescript@5.9.3)
+      '@typescript-eslint/parser': 8.66.0(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)
       '@typescript-eslint/scope-manager': 8.66.0
-      '@typescript-eslint/type-utils': 8.66.0(eslint@9.39.5)(typescript@5.9.3)
-      '@typescript-eslint/utils': 8.66.0(eslint@9.39.5)(typescript@5.9.3)
+      '@typescript-eslint/type-utils': 8.66.0(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)
+      '@typescript-eslint/utils': 8.66.0(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)
       '@typescript-eslint/visitor-keys': 8.66.0
-      eslint: 9.39.5
+      eslint: 9.39.5(supports-color@7.2.0)
       ignore: 7.0.9
       natural-compare: 1.4.0
       ts-api-utils: 2.5.0(typescript@5.9.3)
@@ -2304,23 +2309,23 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/parser@8.66.0(eslint@9.39.5)(typescript@5.9.3)':
+  '@typescript-eslint/parser@8.66.0(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/scope-manager': 8.66.0
       '@typescript-eslint/types': 8.66.0
-      '@typescript-eslint/typescript-estree': 8.66.0(typescript@5.9.3)
+      '@typescript-eslint/typescript-estree': 8.66.0(supports-color@7.2.0)(typescript@5.9.3)
       '@typescript-eslint/visitor-keys': 8.66.0
-      debug: 4.4.3
-      eslint: 9.39.5
+      debug: 4.4.3(supports-color@7.2.0)
+      eslint: 9.39.5(supports-color@7.2.0)
       typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/project-service@8.66.0(typescript@5.9.3)':
+  '@typescript-eslint/project-service@8.66.0(supports-color@7.2.0)(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/tsconfig-utils': 8.66.0(typescript@5.9.3)
       '@typescript-eslint/types': 8.66.0
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@7.2.0)
       typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
@@ -2334,13 +2339,13 @@ snapshots:
     dependencies:
       typescript: 5.9.3
 
-  '@typescript-eslint/type-utils@8.66.0(eslint@9.39.5)(typescript@5.9.3)':
+  '@typescript-eslint/type-utils@8.66.0(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/types': 8.66.0
-      '@typescript-eslint/typescript-estree': 8.66.0(typescript@5.9.3)
-      '@typescript-eslint/utils': 8.66.0(eslint@9.39.5)(typescript@5.9.3)
-      debug: 4.4.3
-      eslint: 9.39.5
+      '@typescript-eslint/typescript-estree': 8.66.0(supports-color@7.2.0)(typescript@5.9.3)
+      '@typescript-eslint/utils': 8.66.0(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)
+      debug: 4.4.3(supports-color@7.2.0)
+      eslint: 9.39.5(supports-color@7.2.0)
       ts-api-utils: 2.5.0(typescript@5.9.3)
       typescript: 5.9.3
     transitivePeerDependencies:
@@ -2348,13 +2353,13 @@ snapshots:
 
   '@typescript-eslint/types@8.66.0': {}
 
-  '@typescript-eslint/typescript-estree@8.66.0(typescript@5.9.3)':
+  '@typescript-eslint/typescript-estree@8.66.0(supports-color@7.2.0)(typescript@5.9.3)':
     dependencies:
-      '@typescript-eslint/project-service': 8.66.0(typescript@5.9.3)
+      '@typescript-eslint/project-service': 8.66.0(supports-color@7.2.0)(typescript@5.9.3)
       '@typescript-eslint/tsconfig-utils': 8.66.0(typescript@5.9.3)
       '@typescript-eslint/types': 8.66.0
       '@typescript-eslint/visitor-keys': 8.66.0
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@7.2.0)
       minimatch: 10.2.6
       semver: 7.8.5
       tinyglobby: 0.2.17
@@ -2363,13 +2368,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/utils@8.66.0(eslint@9.39.5)(typescript@5.9.3)':
+  '@typescript-eslint/utils@8.66.0(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)':
     dependencies:
-      '@eslint-community/eslint-utils': 4.10.1(eslint@9.39.5)
+      '@eslint-community/eslint-utils': 4.10.1(eslint@9.39.5(supports-color@7.2.0))
       '@typescript-eslint/scope-manager': 8.66.0
       '@typescript-eslint/types': 8.66.0
-      '@typescript-eslint/typescript-estree': 8.66.0(typescript@5.9.3)
-      eslint: 9.39.5
+      '@typescript-eslint/typescript-estree': 8.66.0(supports-color@7.2.0)(typescript@5.9.3)
+      eslint: 9.39.5(supports-color@7.2.0)
       typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
@@ -2398,8 +2403,8 @@ snapshots:
 
   acorn@8.18.0: {}
 
-  ajv-formats@2.1.1(ajv@8.20.0):
-    optionalDependencies:
+  ajv-formats@2.1.1:
+    dependencies:
       ajv: 8.20.0
 
   ajv@6.15.0:
@@ -2514,9 +2519,11 @@ snapshots:
       shebang-command: 2.0.0
       which: 2.0.2
 
-  debug@4.4.3:
+  debug@4.4.3(supports-color@7.2.0):
     dependencies:
       ms: 2.1.3
+    optionalDependencies:
+      supports-color: 7.2.0
 
   decamelize@1.2.0: {}
 
@@ -2563,14 +2570,14 @@ snapshots:
 
   eslint-visitor-keys@5.0.1: {}
 
-  eslint@9.39.5:
+  eslint@9.39.5(supports-color@7.2.0):
     dependencies:
-      '@eslint-community/eslint-utils': 4.10.1(eslint@9.39.5)
+      '@eslint-community/eslint-utils': 4.10.1(eslint@9.39.5(supports-color@7.2.0))
       '@eslint-community/regexpp': 4.12.2
-      '@eslint/config-array': 0.21.2
+      '@eslint/config-array': 0.21.2(supports-color@7.2.0)
       '@eslint/config-helpers': 0.4.2
       '@eslint/core': 0.17.0
-      '@eslint/eslintrc': 3.3.7
+      '@eslint/eslintrc': 3.3.7(supports-color@7.2.0)
       '@eslint/js': 9.39.5
       '@eslint/plugin-kit': 0.4.1
       '@humanfs/node': 0.16.8
@@ -2580,7 +2587,7 @@ snapshots:
       ajv: 6.15.0
       chalk: 4.1.2
       cross-spawn: 7.0.6
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@7.2.0)
       escape-string-regexp: 4.0.0
       eslint-scope: 8.4.0
       eslint-visitor-keys: 4.2.1
@@ -2646,9 +2653,9 @@ snapshots:
     dependencies:
       flat-cache: 4.0.1
 
-  file-type@21.3.4:
+  file-type@21.3.4(supports-color@7.2.0):
     dependencies:
-      '@tokenizer/inflate': 0.4.1
+      '@tokenizer/inflate': 0.4.1(supports-color@7.2.0)
       strtok3: 10.3.5
       token-types: 6.1.2
       uint8array-extras: 1.5.0
@@ -2912,13 +2919,13 @@ snapshots:
 
   ms@2.1.3: {}
 
-  music-metadata@11.14.0:
+  music-metadata@11.14.0(supports-color@7.2.0):
     dependencies:
       '@borewit/text-codec': 0.2.2
       '@tokenizer/token': 0.3.0
       content-type: 2.1.0
-      debug: 4.4.3
-      file-type: 21.3.4
+      debug: 4.4.3(supports-color@7.2.0)
+      file-type: 21.3.4(supports-color@7.2.0)
       media-typer: 2.0.0
       strtok3: 10.3.5
       token-types: 6.1.2
@@ -3204,13 +3211,13 @@ snapshots:
       es-errors: 1.3.0
       is-typed-array: 1.1.15
 
-  typescript-eslint@8.66.0(eslint@9.39.5)(typescript@5.9.3):
+  typescript-eslint@8.66.0(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3):
     dependencies:
-      '@typescript-eslint/eslint-plugin': 8.66.0(@typescript-eslint/parser@8.66.0(eslint@9.39.5)(typescript@5.9.3))(eslint@9.39.5)(typescript@5.9.3)
-      '@typescript-eslint/parser': 8.66.0(eslint@9.39.5)(typescript@5.9.3)
-      '@typescript-eslint/typescript-estree': 8.66.0(typescript@5.9.3)
-      '@typescript-eslint/utils': 8.66.0(eslint@9.39.5)(typescript@5.9.3)
-      eslint: 9.39.5
+      '@typescript-eslint/eslint-plugin': 8.66.0(@typescript-eslint/parser@8.66.0(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3))(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)
+      '@typescript-eslint/parser': 8.66.0(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)
+      '@typescript-eslint/typescript-estree': 8.66.0(supports-color@7.2.0)(typescript@5.9.3)
+      '@typescript-eslint/utils': 8.66.0(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)
+      eslint: 9.39.5(supports-color@7.2.0)
       typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
@@ -3342,7 +3349,7 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  zxing-wasm@3.1.4(@types/emscripten@0.0.34):
+  zxing-wasm@3.1.4(@types/emscripten@1.41.6):
     dependencies:
-      '@types/emscripten': 0.0.34
+      '@types/emscripten': 1.41.6
       type-fest: 5.9.0
