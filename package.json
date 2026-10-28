@@ -1,10 +1,14 @@
 {
   "name": "@kubohiroya/turbowarp-realtime-motion-capture-app",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": false,
   "description": "Reproducible source workspace for the TurboWarp Realtime Motion Capture camera and fusion apps.",
   "license": "MPL-2.0",
-  "author": "Hiroya Kubo",
+  "author": {
+    "name": "Hiroya Kubo",
+    "email": "hiroya@cuc.ac.jp",
+    "url": "https://github.com/kubohiroya"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kubohiroya/turbowarp-realtime-motion-capture-app.git"
@@ -88,8 +92,8 @@
   },
   "devDependencies": {
     "@eslint/js": "9.39.5",
-    "@kubohiroya/qrcode-structured-append": "^0.2.0",
-    "@kubohiroya/sb3-toolchain": "^0.18.0",
+    "@kubohiroya/qrcode-structured-append": "^0.3.0",
+    "@kubohiroya/sb3-toolchain": "^0.19.0",
     "@turbowarp/packager": "3.13.0",
     "@types/node": "24.13.3",
     "eslint": "9.39.5",
@@ -101,6 +105,6 @@
     "zxing-wasm": "3.1.4"
   },
   "dependencies": {
-    "@kubohiroya/turbowarp-app-shell": "^0.5.0"
+    "@kubohiroya/turbowarp-app-shell": "^0.6.0"
   }
 }
