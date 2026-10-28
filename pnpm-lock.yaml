@@ -9,18 +9,18 @@ importers:
   .:
     dependencies:
       '@kubohiroya/turbowarp-app-shell':
-        specifier: ^0.5.0
-        version: 0.5.0
+        specifier: ^0.6.0
+        version: 0.6.0
     devDependencies:
       '@eslint/js':
         specifier: 9.39.5
         version: 9.39.5
       '@kubohiroya/qrcode-structured-append':
-        specifier: ^0.2.0
-        version: 0.2.0
+        specifier: ^0.3.0
+        version: 0.3.0
       '@kubohiroya/sb3-toolchain':
-        specifier: ^0.18.0
-        version: 0.18.0(supports-color@7.2.0)
+        specifier: ^0.19.0
+        version: 0.19.0(supports-color@7.2.0)
       '@turbowarp/packager':
         specifier: 3.13.0
         version: 3.13.0
@@ -292,8 +292,12 @@ packages:
     resolution: {integrity: sha512-quJCIElZ98CI6eQP21VCIu7N91IwbJJOlHutlcCOYKoJRjg/4MQPi8r69PGqmXKKQPdfJRwkK59R++1l/igyXw==}
     engines: {node: '>=24'}
 
-  '@kubohiroya/sb3-toolchain@0.18.0':
-    resolution: {integrity: sha512-lzb72VnPESRQoTnP3oIA8jbpHgIqaj///xX7WBg/8lqEbgPA0G46Osm6NH9Mp19gqNHfS87Em4yC2b4bTlHe3w==}
+  '@kubohiroya/qrcode-structured-append@0.3.0':
+    resolution: {integrity: sha512-6F8XFMjNqU6BCaajTMbg76JIaY7+IujGcp85h1uMdoCZx3zsbG5JCTdjcgtYYKYnF2GeGeWCQqu8CwriBbVOMg==}
+    engines: {node: '>=24'}
+
+  '@kubohiroya/sb3-toolchain@0.19.0':
+    resolution: {integrity: sha512-hVEkzREo1553yYXY9xpCqq9mvz/v/IV+1E8yy/He9wL5cIRbs5a6yzcGhnN5mmWKKXyQS7LPCZYbrWCe5+L5Mw==}
     engines: {node: '>=24'}
     hasBin: true
 
@@ -303,6 +307,10 @@ packages:
 
   '@kubohiroya/turbowarp-app-shell@0.5.0':
     resolution: {integrity: sha512-psDDUSfTCz9gZYrM9OS0KHMr49Wqqro1F2lEzXTpOhyKqgcvyw086HcitgAUaJVT87txQSM94ZzTDol0F/GVZw==}
+    engines: {node: '>=24'}
+
+  '@kubohiroya/turbowarp-app-shell@0.6.0':
+    resolution: {integrity: sha512-+A3tVBy5s7/1s5bxLDd6LNVyEbWotXaF1bFEttIX1Wh5E80Yz4q0G5otphOAPMUPSsKJ023QZDfiLKrtG5U+4g==}
     engines: {node: '>=24'}
 
   '@kubohiroya/turbowarp-asset-cache@0.5.0':
@@ -1938,7 +1946,9 @@ snapshots:
 
   '@kubohiroya/qrcode-structured-append@0.2.0': {}
 
-  '@kubohiroya/sb3-toolchain@0.18.0(supports-color@7.2.0)':
+  '@kubohiroya/qrcode-structured-append@0.3.0': {}
+
+  '@kubohiroya/sb3-toolchain@0.19.0(supports-color@7.2.0)':
     dependencies:
       fflate: 0.8.3
       music-metadata: 11.14.0(supports-color@7.2.0)
@@ -1956,6 +1966,8 @@ snapshots:
       - react-dom
 
   '@kubohiroya/turbowarp-app-shell@0.5.0': {}
+
+  '@kubohiroya/turbowarp-app-shell@0.6.0': {}
 
   '@kubohiroya/turbowarp-asset-cache@0.5.0(@kubohiroya/turbowarp-named-data@0.6.0)':
     dependencies:
