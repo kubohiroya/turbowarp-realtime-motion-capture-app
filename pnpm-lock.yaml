@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@kubohiroya/turbowarp-app-shell':
-        specifier: ^0.6.0
-        version: 0.6.0
+        specifier: ^0.6.1
+        version: 0.6.1
     devDependencies:
       '@eslint/js':
         specifier: 9.39.5
@@ -19,8 +19,8 @@ importers:
         specifier: ^0.3.0
         version: 0.3.0
       '@kubohiroya/sb3-toolchain':
-        specifier: ^0.19.0
-        version: 0.19.0(supports-color@7.2.0)
+        specifier: ^0.28.0
+        version: 0.28.0(supports-color@7.2.0)
       '@turbowarp/packager':
         specifier: 3.13.0
         version: 3.13.0
@@ -296,8 +296,8 @@ packages:
     resolution: {integrity: sha512-6F8XFMjNqU6BCaajTMbg76JIaY7+IujGcp85h1uMdoCZx3zsbG5JCTdjcgtYYKYnF2GeGeWCQqu8CwriBbVOMg==}
     engines: {node: '>=24'}
 
-  '@kubohiroya/sb3-toolchain@0.19.0':
-    resolution: {integrity: sha512-hVEkzREo1553yYXY9xpCqq9mvz/v/IV+1E8yy/He9wL5cIRbs5a6yzcGhnN5mmWKKXyQS7LPCZYbrWCe5+L5Mw==}
+  '@kubohiroya/sb3-toolchain@0.28.0':
+    resolution: {integrity: sha512-SC1Kc1fy+wLrxIYEIO81fYONJWuw2B/uDfd47oW2Lpy+cxcarmrw4Q2145dxjI4Gc54EXspqXNE4vRxMHrw2OQ==}
     engines: {node: '>=24'}
     hasBin: true
 
@@ -309,8 +309,8 @@ packages:
     resolution: {integrity: sha512-psDDUSfTCz9gZYrM9OS0KHMr49Wqqro1F2lEzXTpOhyKqgcvyw086HcitgAUaJVT87txQSM94ZzTDol0F/GVZw==}
     engines: {node: '>=24'}
 
-  '@kubohiroya/turbowarp-app-shell@0.6.0':
-    resolution: {integrity: sha512-+A3tVBy5s7/1s5bxLDd6LNVyEbWotXaF1bFEttIX1Wh5E80Yz4q0G5otphOAPMUPSsKJ023QZDfiLKrtG5U+4g==}
+  '@kubohiroya/turbowarp-app-shell@0.6.1':
+    resolution: {integrity: sha512-IHJWp9QGjQfGyS/et3YFQgsKwaHqEEFMPJw/yXY6mmcaLiscPdfI9BF1uFEeVzjuQU1aq7EiiaGu2UBDEWoFvQ==}
     engines: {node: '>=24'}
 
   '@kubohiroya/turbowarp-asset-cache@0.5.0':
@@ -410,6 +410,10 @@ packages:
 
   '@mediapipe/pose@0.5.1675469404':
     resolution: {integrity: sha512-DFZsNWTsSphRIZppnUCuunzBiHP2FdJXR9ehc7mMi4KG+oPaOH0Em3d6kr7Py+TSyTXC1doH88KcF28k2sBxsQ==}
+
+  '@noble/hashes@2.4.0':
+    resolution: {integrity: sha512-X5XaVWZIBCT7HHZGm5I7ZQXDwLG+bGXuSrMQAW+7Zvl87h1kmc1ZB1VSRJcpUfoUrGQp4Fkoxm5kZ+Ms+aW+eA==}
+    engines: {node: '>= 20.19.0'}
 
   '@oxc-project/types@0.148.0':
     resolution: {integrity: sha512-Nm4s/jB+4FpFsPhWGEC4h7rzksesmtnMXomo6rCMcg/b8zLQuOziRgkCS1fxDCXOlJB/6Q8oABOZ/OP6RIPj9A==}
@@ -1948,8 +1952,9 @@ snapshots:
 
   '@kubohiroya/qrcode-structured-append@0.3.0': {}
 
-  '@kubohiroya/sb3-toolchain@0.19.0(supports-color@7.2.0)':
+  '@kubohiroya/sb3-toolchain@0.28.0(supports-color@7.2.0)':
     dependencies:
+      '@noble/hashes': 2.4.0
       fflate: 0.8.3
       music-metadata: 11.14.0(supports-color@7.2.0)
       rolldown: 1.2.7
@@ -1967,7 +1972,7 @@ snapshots:
 
   '@kubohiroya/turbowarp-app-shell@0.5.0': {}
 
-  '@kubohiroya/turbowarp-app-shell@0.6.0': {}
+  '@kubohiroya/turbowarp-app-shell@0.6.1': {}
 
   '@kubohiroya/turbowarp-asset-cache@0.5.0(@kubohiroya/turbowarp-named-data@0.6.0)':
     dependencies:
@@ -2065,6 +2070,8 @@ snapshots:
       vite: 8.2.2(@types/node@24.13.3)(yaml@2.9.1)
 
   '@mediapipe/pose@0.5.1675469404': {}
+
+  '@noble/hashes@2.4.0': {}
 
   '@oxc-project/types@0.148.0': {}
 
