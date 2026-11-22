@@ -5,7 +5,7 @@
  * off a phone held up to its camera. Neither image is a clean scan: the code is small in the frame,
  * blurred by focus and motion, washed out by a projector in a lit room, seen at an angle, and noisy.
  * This renders the code the way a camera would see it under those conditions and decodes it with the
- * same decoder the apps use (zxing-cpp, which turbowarp-jsqr 0.4.0 wraps), with the codes built the
+ * same decoder the apps use (zxing-cpp, which turbowarp-zxing wraps), with the codes built the
  * way the pairing extension builds them: one Structured Append sequence per message, from
  * `@kubohiroya/qrcode-structured-append`, capped at a QR version, level M. What it reports, per
  * version cap, is how many codes a message takes and the smallest size, in pixels per module and in
@@ -251,7 +251,7 @@ async function decodes(
     rgba[index * 4 + 3] = 255;
   }
   const at = performance.now();
-  // The same options turbowarp-jsqr reads camera frames with.
+  // The same options turbowarp-zxing reads camera frames with.
   const [result] = await readBarcodes(
     new ImageData(rgba, WIDTH, HEIGHT) as never,
     { formats: ['QRCode'], tryHarder: true, maxNumberOfSymbols: 1 },

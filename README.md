@@ -89,11 +89,11 @@ flow.
 Each SB3 embeds every extension it needs as a single static bundle. TurboWarp asks for extension
 permission only once per app.
 
-| App        | Embedded extensions (in bundle member order)                                                                                                                                            |
-| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| camera app | app shell, Title Menu, Camera Source, jsQR, WebRTC, WebRTC QR Pairing, Time-Space Sync, Realtime Motion Capture, Diagnostic Overlay                                                     |
-| fusion app | app shell, Title Menu, Camera Source, jsQR, WebRTC, WebRTC QR Pairing, Time-Space Sync, YAML/JSON, Realtime Motion Capture, Asset Manager, A-Frame, 3D Pose Service, Diagnostic Overlay |
-| local app  | app shell, Title Menu, Camera Source, Time-Space Sync, Realtime Motion Capture, 3D Pose Service, Diagnostic Overlay                                                                     |
+| App        | Embedded extensions (in bundle member order)                                                                                                                                             |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| camera app | app shell, Title Menu, Camera Source, ZXing, WebRTC, WebRTC QR Pairing, Time-Space Sync, Realtime Motion Capture, Diagnostic Overlay                                                     |
+| fusion app | app shell, Title Menu, Camera Source, ZXing, WebRTC, WebRTC QR Pairing, Time-Space Sync, YAML/JSON, Realtime Motion Capture, Asset Manager, A-Frame, 3D Pose Service, Diagnostic Overlay |
+| local app  | app shell, Title Menu, Camera Source, Time-Space Sync, Realtime Motion Capture, 3D Pose Service, Diagnostic Overlay                                                                      |
 
 The app shell comes first deliberately. The Realtime Motion Capture extension fixes its feature flags
 at evaluation time, so the flags have to be written before it. See the

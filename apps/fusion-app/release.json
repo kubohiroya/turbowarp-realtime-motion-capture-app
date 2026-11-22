@@ -1,11 +1,11 @@
 {
   "formatVersion": 1,
   "state": "candidate",
-  "sourceIdentity": "sha256:0063c7b756ed854bfce50d70453a2841a7b455ff97743672958b2683c4a5ef5d",
+  "sourceIdentity": "sha256:7b3b9baf8f674da29b1c10bdec5b5c3ad6158d022b72e1f86f938028825a4f1f",
   "artifact": {
     "filename": "fusion-app.sb3",
-    "sha256": "9921c09e3617d05736c697f9ed80f0600973f3dc52b07e283c04dccf372af46b",
-    "size": 8392325
+    "sha256": "31e1235ed201f019fbb4476d404a57ada3490761e7bc5accbeee593712a81ed5",
+    "size": 8393080
   },
   "publication": {}
 }

@@ -183,10 +183,10 @@
     },
     {
       "role": "qr-reader",
-      "repository": "kubohiroya/turbowarp-jsqr",
-      "package": "@kubohiroya/turbowarp-jsqr",
-      "extensionId": "kubohiroyajsqr",
-      "artifactPath": "dist/jsqr.js",
+      "repository": "kubohiroya/turbowarp-zxing",
+      "package": "@kubohiroya/turbowarp-zxing",
+      "extensionId": "kubohiroyazxing",
+      "artifactPath": "dist/zxing.js",
       "manifestPath": "dist/extension-manifest.json",
       "status": "ready",
       "requiredOperations": [
