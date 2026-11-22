@@ -55,7 +55,7 @@ headerに自分の位置と枚数を持つので、読む側は順番を問わ�
 
 `qrCourierPairing`（起動時固定）が両アプリで有効のときだけメニューに現れます。app shellはこの値を
 ペアリング拡張の`__TWQP_FEATURE_FLAGS__.qrCodePairing`へも書きます。切り戻すときは
-`packages/app-shell/src/apps/*.ts`の`featureFlags`から外してビルドし直します。ペアリング拡張の
+`packages/app-extension/src/apps/*.ts`の`featureFlags`から外してビルドし直します。ペアリング拡張の
 ブロックが消え、manual pairing（`turbowarp-webrtc`の`create offer code`など）が残ります。
 
 切戻しはビルド単位です。フラグを外した配布物では、メニューの「カメラアプリと接続する」「統合アプリと

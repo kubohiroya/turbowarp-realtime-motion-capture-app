@@ -31,7 +31,7 @@ camera appのメニュー「姿勢推定を開始する」「姿勢推定を止�
 
 MoveNet MultiPose Lightningのモデル（`model.json`とweight 3つ、9.7 MB）をどこから読むかは、ビルド時に
 `TWRMC_POSE_MODEL`で選びます。アプリはそれを`turbowarp-realtime-motion-capture` 0.6.0の
-`__TWMP_POSE_MODEL__`に変えて渡します（`packages/app-shell/src/pose-model.ts`）。
+`__TWMP_POSE_MODEL__`に変えて渡します（`packages/app-extension/src/pose-model.ts`）。
 
 | `TWRMC_POSE_MODEL` | 読込み元                                               | 会場のinternet | SB3の大きさ   |
 | ------------------ | ------------------------------------------------------ | -------------- | ------------- |
@@ -46,7 +46,7 @@ MoveNet MultiPose Lightningのモデル（`model.json`とweight 3つ、9.7 MB）
   ビルドを、既定では`local`で行います（`TWRMC_POSE_MODEL=embedded pnpm run build:offline`で同梱）。
   計測ビルドと同じくpinを書き換えるので、コミットせず、`pnpm run build:workspaces && pnpm run
 pin:extensions`で戻します。
-- `local`のビルドは、app shellのビルドが`packages/app-shell/dist/<app>/pose-model.json`に選んだ読込み元を
+- `local`のビルドは、app shellのビルドが`packages/app-extension/dist/<app>/pose-model.json`に選んだ読込み元を
   残します。`serve:app`と`build:binary`はそれを見て、モデルのファイルをホストから配信します
   （単体バイナリにはファイルとして同梱）。ホストはtokenの付いた要求にだけ答えるので、app shellは
   ページのtokenをモデルのURLに付けます。TensorFlow.jsはweightにも同じqueryを付けて取りに行きます。

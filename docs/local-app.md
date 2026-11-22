@@ -89,7 +89,7 @@ READYの条件は、camera app・fusion app（M-08）と同じ閾値です（[�
 ## 段階5の操作（3D推定）
 
 3Dサービスは#34の段階1の実装（stub）しかないため、fusion appと同じく、フラグ`external3dServiceV1`
-（`packages/app-shell/src/apps/local.ts`の`appFlags`）が有効なビルドでだけメニューに出ます。既定では無効です。
+（`packages/app-extension/src/apps/local.ts`の`appFlags`）が有効なビルドでだけメニューに出ます。既定では無効です。
 
 | メニュー       | 動作                                                                                                                                                                                                                |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -138,7 +138,7 @@ READYの条件は、camera app・fusion app（M-08）と同じ閾値です（[�
 しかし本番の動きは二度と同じになりません。そこで、推定した2Dポーズを、そのときの校正ごとファイルに記録し、
 あとからカメラなしで再生できるようにしています。
 
-フラグ`debugPoseReplayV1`（`packages/app-shell/src/apps/local.ts`の`appFlags`）が有効なビルドでだけ、
+フラグ`debugPoseReplayV1`（`packages/app-extension/src/apps/local.ts`の`appFlags`）が有効なビルドでだけ、
 メニューに出ます。既定では無効です。
 
 | メニュー                     | 動作                                                                                                                                                      |

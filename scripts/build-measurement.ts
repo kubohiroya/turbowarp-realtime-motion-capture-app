@@ -16,7 +16,7 @@
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-import { parseAppFlags } from '../packages/app-shell/src/app-config.ts';
+import { parseAppFlags } from '../packages/app-extension/src/app-config.ts';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const flags = parseAppFlags(

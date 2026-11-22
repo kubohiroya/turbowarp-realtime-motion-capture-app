@@ -19,7 +19,7 @@
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-import { poseModelModeOf } from '../packages/app-shell/pose-model-files.ts';
+import { poseModelModeOf } from '../packages/app-extension/pose-model-files.ts';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const mode = poseModelModeOf(process.env['TWRMC_POSE_MODEL'] ?? 'local');

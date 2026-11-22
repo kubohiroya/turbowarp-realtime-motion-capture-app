@@ -6,7 +6,7 @@
 
 録るのはカメラの映像ではなく、推定したあとの2Dポーズ（COCO-17）です。
 
-フラグ`debugPoseReplayV1`（各アプリの`packages/app-shell/src/apps/*.ts`の`appFlags`）が有効なビルドでだけ、
+フラグ`debugPoseReplayV1`（各アプリの`packages/app-extension/src/apps/*.ts`の`appFlags`）が有効なビルドでだけ、
 メニューに出ます。既定では無効で、そのときはブロックも登録されません。
 
 ## 置き場所はファイル

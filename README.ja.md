@@ -128,7 +128,7 @@ pnpm dev
 個別にビルドする場合:
 
 ```bash
-pnpm --filter @turbowarp-realtime-motion-capture-app/app-shell build
+pnpm --filter @turbowarp-realtime-motion-capture-app/app-extension build
 pnpm --filter @turbowarp-realtime-motion-capture-app/camera-app build
 pnpm --filter @turbowarp-realtime-motion-capture-app/fusion-app build
 pnpm --filter @turbowarp-realtime-motion-capture-app/local-app build
@@ -154,7 +154,7 @@ pnpm --filter @turbowarp-realtime-motion-capture-app/local-app build
 
 ## ロールバックとタスク管理
 
-アプリ側の経路は`packages/app-shell/src/apps/`からflagを外して再ビルドし、
+アプリ側の経路は`packages/app-extension/src/apps/`からflagを外して再ビルドし、
 `pnpm run pin:extensions`で埋め込み直すことで止めます。配布ページ自身のフラグは
 `config/feature-flags.ts`にあり、ONにしても何かが実装されるわけではありません。
 

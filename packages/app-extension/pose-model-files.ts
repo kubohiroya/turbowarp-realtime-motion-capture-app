@@ -113,12 +113,15 @@ export async function readPinnedPoseModel(
 
 /**
  * The mode the app shell of one application was last built with, from the marker its build leaves
- * in packages/app-shell/dist/<app>/. Hub when there is no marker, as for a shell built before there
+ * in packages/app-extension/dist/<app>/. Hub when there is no marker, as for a shell built before there
  * was a choice.
  */
 export async function builtPoseModelMode(app: string): Promise<PoseModelMode> {
   const marker = await readFile(
-    new URL(`packages/app-shell/dist/${app}/pose-model.json`, repositoryRoot),
+    new URL(
+      `packages/app-extension/dist/${app}/pose-model.json`,
+      repositoryRoot,
+    ),
     'utf8',
   ).catch(() => null);
   if (marker === null) return 'hub';

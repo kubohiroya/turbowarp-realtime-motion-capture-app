@@ -182,7 +182,7 @@ bind先は設定項目にしません。`createLoopbackPreviewHost`の型が`'12
 `validateLoopbackPreviewUrl`もloopback以外のURLを拒否するため、loopback以外を選ぶ方法がありません。
 選べない項目を設定ファイルに書くと、選べるかのような誤解を生みます。
 
-`packages/app-shell/src/apps/`には書きません。あちらはブラウザ内で動く拡張の設定で、ポートは
+`packages/app-extension/src/apps/`には書きません。あちらはブラウザ内で動く拡張の設定で、ポートは
 サーバ側の関心事です。
 
 複数のcamera appが同じポート番号を使うのは問題ありません。それぞれ別のPCのloopbackなので衝突せず、

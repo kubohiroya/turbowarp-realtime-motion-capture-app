@@ -141,7 +141,7 @@ tracked by Git. Archives are produced with sb3-toolchain.
 To build individually:
 
 ```bash
-pnpm --filter @turbowarp-realtime-motion-capture-app/app-shell build
+pnpm --filter @turbowarp-realtime-motion-capture-app/app-extension build
 pnpm --filter @turbowarp-realtime-motion-capture-app/camera-app build
 pnpm --filter @turbowarp-realtime-motion-capture-app/fusion-app build
 pnpm --filter @turbowarp-realtime-motion-capture-app/local-app build
@@ -170,7 +170,7 @@ For editing the sources and pinning extensions, see the
 
 ## Rollback and task management
 
-An application path is stopped by removing its flag from `packages/app-shell/src/apps/` and pinning
+An application path is stopped by removing its flag from `packages/app-extension/src/apps/` and pinning
 the extensions again; the distribution page's own flags live in `config/feature-flags.ts`. Turning a
 page flag ON does not implement anything.
 
