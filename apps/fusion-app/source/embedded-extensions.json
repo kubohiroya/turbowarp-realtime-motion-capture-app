@@ -77,7 +77,7 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-webrtc",
-        "version": "0.8.1",
+        "version": "0.9.0",
         "artifact": "dist/turbowarp-webrtc.js",
         "integrity": "sha256-zaxmLX0RP8b2i97SFUlKPm2GrjnH7ODjokL8q1TvNCQ=",
         "apiManifest": {
@@ -97,9 +97,9 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-webrtc-qrcode-pairing",
-        "version": "0.6.1",
+        "version": "0.7.0",
         "artifact": "dist/webrtc-qrcode-pairing.js",
-        "integrity": "sha256-IPVdnyTIu4D1lziEFptARJSAfHr0qQMThVe+pmyDdUU=",
+        "integrity": "sha256-mI6qNYzUaG6ypVzMEO4l2PjVug4tELqTCR86Fg5MPUc=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyawebrtcqrcodepairing.manifest.json",
@@ -157,9 +157,9 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-realtime-motion-capture",
-        "version": "0.12.1",
+        "version": "0.13.0",
         "artifact": "dist/turbowarp-realtime-motion-capture.js",
-        "integrity": "sha256-stGTNIcEFCz21olIINj5ZJsJ4Y+nkfa3jA0vLyTeauM=",
+        "integrity": "sha256-ZT7njoB7UngSc1HbP7lCQ82U7Fz981Vq+8AULFwzR2M=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyarealtimemotioncapture.manifest.json",
