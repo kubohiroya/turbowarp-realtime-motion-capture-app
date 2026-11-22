@@ -58,7 +58,7 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "pnpm run build:sb3 && vite build",
-    "build:workspaces": "pnpm --recursive --if-present run build",
+    "build:workspaces": "pnpm --filter \"./packages/*\" --if-present run build && pnpm run check:pins && pnpm --filter \"./apps/*\" --if-present run build",
     "build:sb3": "pnpm run build:workspaces && node --experimental-strip-types scripts/build-downloads.ts",
     "lint": "eslint config scripts src tests vite.config.ts vitest.config.ts",
     "format": "prettier --check .",
