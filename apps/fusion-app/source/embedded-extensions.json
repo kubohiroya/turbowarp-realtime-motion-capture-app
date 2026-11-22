@@ -49,22 +49,22 @@
       }
     },
     {
-      "id": "kubohiroyajsqr",
-      "path": "extensions/kubohiroyajsqr.js",
+      "id": "kubohiroyazxing",
+      "path": "extensions/kubohiroyazxing.js",
       "mediaType": "text/javascript",
       "parameters": [],
       "encoding": "base64",
       "source": {
         "provider": "npm",
-        "package": "@kubohiroya/turbowarp-jsqr",
-        "version": "0.9.1",
-        "artifact": "dist/jsqr.js",
-        "integrity": "sha256-xa4rm0U3auluKqbjjtHdrKPyOc48PmKHENN46F5YxbY=",
+        "package": "@kubohiroya/turbowarp-zxing",
+        "version": "0.11.0",
+        "artifact": "dist/zxing.js",
+        "integrity": "sha256-z66yD44DeimTWI6Tk8VZCOJwKlIebV7+VV9BUJMv3kQ=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
-          "path": "extensions/kubohiroyajsqr.manifest.json",
+          "path": "extensions/kubohiroyazxing.manifest.json",
           "formatVersion": 1,
-          "integrity": "sha256-oGecnsSQS5+IDxooDngN2S4V6SN+oB6dpcHBOzF+AZ8="
+          "integrity": "sha256-1cdAvVGYbJpZ6GvfH9gAbsCDEko1C182Rh1z+r33aos="
         }
       }
     },
@@ -238,7 +238,7 @@
         "realtimemotioncapturefusionshell",
         "kubohiroyaturbowarptitlemenu",
         "kubohiroyacamerasource",
-        "kubohiroyajsqr",
+        "kubohiroyazxing",
         "kubohiroyawebrtc",
         "kubohiroyawebrtcqrcodepairing",
         "kubohiroyatimespacesync",

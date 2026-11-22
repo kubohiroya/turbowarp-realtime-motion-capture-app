@@ -40,14 +40,14 @@ headerに自分の位置と枚数を持つので、読む側は順番を問わ�
 - 両SB3はステージだけのprojectなので、QRはスプライトではなく、app shellのQRパネル
   （`show QR image [IMAGE] caption [CAPTION] buttons [BUTTONS]`）に、ペアリング拡張が作るdata URIで
   表示します。白地・正方形・非平滑化で、quiet zoneを削りません。
-- QRの読取りはペアリング拡張が`turbowarp-jsqr` 0.4.0（zxing-cpp）の`readFrame`で行い、連結QRコードの
+- QRの読取りはペアリング拡張が`turbowarp-zxing` 0.11.0（zxing-cpp）の`readFrame`で行い、連結QRコードの
   位置も受け取ります。sessionの間1つのcamera leaseを保持します。読取りのブロックは連結QRがそろうまで
   scriptを止めるため、読み取りのたびの状態の表示は、`pairing QR read report`を受け取った別のscriptが
   `pairing QR reads`の増加を見て行います（`PairingSteps.scanWithReport`／`readReportScript`）。
 - 1枚のQRのversionの上限は、ペアリング拡張の既定のまま（Offer 15、Answer 20）です。
 - QRには接続情報（SDP）そのものが入っています。ペアリング拡張は交換が終わった時点（接続、失敗、取消、
   期限切れ）で、作ったQRと受け取ったQRのデータを捨てます。アプリは接続したら`end pairing QR display`で
-  表示を閉じ、QRパネルを隠します。アプリはjsQRの結果をruntime variableで受け取らないため、Temporary Variables拡張への
+  表示を閉じ、QRパネルを隠します。アプリはZXingの結果をruntime variableで受け取らないため、Temporary Variables拡張への
   依存（#19）はこの経路にはありません。
 - WebRTCはcapability v3が必要なため、`turbowarp-webrtc`を0.4.0へ上げています。
 
@@ -130,7 +130,7 @@ manual pairingは、SB3をTurboWarpのエディタで開き、`turbowarp-webrtc`
 実機で試す前に、どのくらいの大きさで写れば読めるかを机上で見積もりました。ペアリング拡張と同じ作り方
 （`@kubohiroya/qrcode-structured-append`で作る連結QRコード、誤り訂正M、versionの上限つき）のQRを、カメラの
 画像のように描き（画像の中で5°回した上で、ぼかし・投影で薄まったコントラスト・カメラからの傾き・センサーの
-雑音1%を加える）、アプリと同じ復号器（`turbowarp-jsqr` 0.4.0が使うzxing-cpp）で、連結QRの位置まで正しく
+雑音1%を加える）、アプリと同じ復号器（`turbowarp-zxing`が使うzxing-cpp）で、連結QRの位置まで正しく
 読めるかを調べます。レンズの歪み、モアレ、露出の飛び、圧縮は入っていないので、実機はこれより厳しいと
 見てください。
 
@@ -181,7 +181,7 @@ manual pairingは、SB3をTurboWarpのエディタで開き、`turbowarp-webrtc`
   統合アプリが「接続できませんでした」と出す不具合を見つけて直した（`scripts/app-scripts/fusion-app.ts`：
   ボタンの結果より先に接続の成立を見る）。
 - ブラウザ（カメラの読取りの経路を通して）：カメラの代わりにQRを描いた画面を`getUserMedia`として渡し、
-  アプリ自身の読取り（`scan pairing QR from camera`、Camera Sourceのフレーム→jsQR）でペアリングを通した。
+  アプリ自身の読取り（`scan pairing QR from camera`、Camera Sourceのフレーム→ZXing）でペアリングを通した。
   - カメラアプリが、投影に見立てたOffer（1枚、version 31、1モジュール4.5 px、5°回転）を自分のカメラで読み、
     Answerを表示した。
   - 統合アプリで「Answerを読み取る」を押し、Answer（1枚、version 32、1モジュール4.4 px、5°回転）を統合PCの

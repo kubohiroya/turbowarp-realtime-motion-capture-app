@@ -81,11 +81,11 @@ frame alignment、人物対応付け、triangulation、3D solveは高位拡張`t
 各SB3は、必要な拡張をすべて1つのstatic bundleとして埋め込みます。TurboWarpでの拡張許可プロンプトは
 アプリごとに1回だけです。
 
-| アプリ     | 埋め込む拡張（bundle member順）                                                                                                                                                         |
-| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| camera app | app shell、Title Menu、Camera Source、jsQR、WebRTC、WebRTC QR Pairing、Time-Space Sync、Realtime Motion Capture、Diagnostic Overlay                                                     |
-| fusion app | app shell、Title Menu、Camera Source、jsQR、WebRTC、WebRTC QR Pairing、Time-Space Sync、YAML/JSON、Realtime Motion Capture、Asset Manager、A-Frame、3D Pose Service、Diagnostic Overlay |
-| local app  | app shell、Title Menu、Camera Source、Time-Space Sync、Realtime Motion Capture、3D Pose Service、Diagnostic Overlay                                                                     |
+| アプリ     | 埋め込む拡張（bundle member順）                                                                                                                                                          |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| camera app | app shell、Title Menu、Camera Source、ZXing、WebRTC、WebRTC QR Pairing、Time-Space Sync、Realtime Motion Capture、Diagnostic Overlay                                                     |
+| fusion app | app shell、Title Menu、Camera Source、ZXing、WebRTC、WebRTC QR Pairing、Time-Space Sync、YAML/JSON、Realtime Motion Capture、Asset Manager、A-Frame、3D Pose Service、Diagnostic Overlay |
+| local app  | app shell、Title Menu、Camera Source、Time-Space Sync、Realtime Motion Capture、3D Pose Service、Diagnostic Overlay                                                                      |
 
 app shellが先頭なのは意図的です。Realtime Motion Capture拡張は評価時にfeature flagを固定するため、それより
 先にflagを書き込む必要があります。詳細は[SB3開発ガイド](docs/repository-layout.md)を参照してください。

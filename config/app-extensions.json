@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "documentation": "Embedded extension composition for each SB3. The first member of every bundle is the app shell, because it writes the contract feature flags the later members read while they are evaluated. The shared title, menu, and DSL file UI follows it. The QR pairing extension follows WebRTC, Camera Source and jsQR, which it reaches through the runtime when a pairing starts, and reads its own startup flag, which the app shell also writes first. Time-Space Sync follows them too: it reaches Camera Source and WebRTC through the runtime, and reads its startup flags, which the app shell writes first.",
+  "documentation": "Embedded extension composition for each SB3. The first member of every bundle is the app shell, because it writes the contract feature flags the later members read while they are evaluated. The shared title, menu, and DSL file UI follows it. The QR pairing extension follows WebRTC, Camera Source and ZXing, which it reaches through the runtime when a pairing starts, and reads its own startup flag, which the app shell also writes first. Time-Space Sync follows them too: it reaches Camera Source and WebRTC through the runtime, and reads its startup flags, which the app shell writes first.",
   "apps": [
     {
       "app": "camera-app",
@@ -31,10 +31,10 @@
           "apiManifest": "dist/extension-manifest.json"
         },
         {
-          "id": "kubohiroyajsqr",
+          "id": "kubohiroyazxing",
           "provider": "npm",
-          "package": "@kubohiroya/turbowarp-jsqr",
-          "artifact": "dist/jsqr.js",
+          "package": "@kubohiroya/turbowarp-zxing",
+          "artifact": "dist/zxing.js",
           "apiManifest": "dist/extension-manifest.json"
         },
         {
@@ -103,10 +103,10 @@
           "apiManifest": "dist/extension-manifest.json"
         },
         {
-          "id": "kubohiroyajsqr",
+          "id": "kubohiroyazxing",
           "provider": "npm",
-          "package": "@kubohiroya/turbowarp-jsqr",
-          "artifact": "dist/jsqr.js",
+          "package": "@kubohiroya/turbowarp-zxing",
+          "artifact": "dist/zxing.js",
           "apiManifest": "dist/extension-manifest.json"
         },
         {
