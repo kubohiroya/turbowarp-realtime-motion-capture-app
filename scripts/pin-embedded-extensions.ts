@@ -40,10 +40,7 @@ function packageDirectory(
     return new URL(`${extension.directory}/`, repositoryRoot);
   }
   if (extension.provider === 'npm') {
-    return new URL(
-      `apps/${application}/node_modules/${extension.package}/`,
-      repositoryRoot,
-    );
+    return new URL(`node_modules/${extension.package}/`, repositoryRoot);
   }
   throw new Error(
     `Unknown provider for ${extension.id}: ${String(extension.provider)}`,
@@ -178,7 +175,7 @@ for (const { app, bundle, extensions } of declaration.apps) {
 if (differences.length > 0) {
   console.error(differences.map((difference) => `- ${difference}`).join('\n'));
   console.error(
-    'Run `pnpm run pin:extensions` after building packages/app-shell.',
+    'Run `pnpm run pin:extensions` after building packages/app-extension.',
   );
   process.exitCode = 1;
 } else {

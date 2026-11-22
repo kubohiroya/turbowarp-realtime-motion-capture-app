@@ -38,23 +38,23 @@ v0.1.0の基準構成ではfusion appが拡張のfusion blockで3Dを復元し�
 
 画面まわりは2つの拡張が分担します。どちらもアプリより下の層にあり、SB3 bundleの先頭2つを占めます。
 
-| 拡張                                                                             | 担当                                                            |
-| -------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| `@turbowarp-realtime-motion-capture-app/app-shell`（本リポジトリ所有、member 1） | contract feature flagの注入、読み込み表示、エラー表示、flag診断 |
-| `@kubohiroya/turbowarp-title-menu`（member 2）                                   | タイトル／about画面、アプリメニュー、DSLファイルの保管と管理    |
+| 拡張                                                                                 | 担当                                                            |
+| ------------------------------------------------------------------------------------ | --------------------------------------------------------------- |
+| `@turbowarp-realtime-motion-capture-app/app-extension`（本リポジトリ所有、member 1） | contract feature flagの注入、読み込み表示、エラー表示、flag診断 |
+| `@kubohiroya/turbowarp-title-menu`（member 2）                                       | タイトル／about画面、アプリメニュー、DSLファイルの保管と管理    |
 
 順序には意味があります。`turbowarp-realtime-motion-capture`は評価時にfeature flagを固定するため、それを
-書き込むapp-shellが必ず先頭でなければなりません。
+書き込むapp-extensionが必ず先頭でなければなりません。
 
 タイトルとメニューをtitle-menuへ寄せているのは、同じUIを二重に実装しないためです。メニューの項目は
 固定ではなく、SB3が`add app menu action`で登録し`when app menu action selected`で受けます。
 camera appはDSLを使いませんが、メニューとタイトルのために同じ拡張を埋め込みます。
 
-app-shellがtitle-menuに渡さず持ち続けているのは、title-menuに相当するprimitiveが無い2つ、
+app-extensionがtitle-menuに渡さず持ち続けているのは、title-menuに相当するprimitiveが無い2つ、
 読み込みoverlayと実行時メッセージoverlayです。メニューの状態行はメニューごとtitle-menuへ移ったため、
 現在SB3からは設定できません。
 
-app-shellの役割は次の2つです。
+app-extensionの役割は次の2つです。
 
 1. `turbowarp-realtime-motion-capture`が読むfeature flagを、その拡張が評価される前に書き込む。
 2. `@kubohiroya/turbowarp-app-shell`のDOM primitiveを使い、日本語・英語のロケール対応で、

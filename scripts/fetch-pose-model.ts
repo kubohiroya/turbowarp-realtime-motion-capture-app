@@ -15,7 +15,7 @@ import {
   fileProblem,
   poseModelDirectory,
   readPoseModelPin,
-} from '../packages/app-shell/pose-model-files.ts';
+} from '../packages/app-extension/pose-model-files.ts';
 
 const checkOnly = process.argv.includes('--check');
 const pin = await readPoseModelPin();

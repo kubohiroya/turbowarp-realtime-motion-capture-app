@@ -12,8 +12,8 @@
         {
           "id": "realtimemotioncapturecamerashell",
           "provider": "workspace",
-          "package": "@turbowarp-realtime-motion-capture-app/app-shell",
-          "directory": "packages/app-shell",
+          "package": "@turbowarp-realtime-motion-capture-app/app-extension",
+          "directory": "packages/app-extension",
           "artifact": "dist/camera-app/camera-app-shell.js"
         },
         {
@@ -84,8 +84,8 @@
         {
           "id": "realtimemotioncapturefusionshell",
           "provider": "workspace",
-          "package": "@turbowarp-realtime-motion-capture-app/app-shell",
-          "directory": "packages/app-shell",
+          "package": "@turbowarp-realtime-motion-capture-app/app-extension",
+          "directory": "packages/app-extension",
           "artifact": "dist/fusion-app/fusion-app-shell.js"
         },
         {
@@ -183,8 +183,8 @@
         {
           "id": "realtimemotioncapturelocalshell",
           "provider": "workspace",
-          "package": "@turbowarp-realtime-motion-capture-app/app-shell",
-          "directory": "packages/app-shell",
+          "package": "@turbowarp-realtime-motion-capture-app/app-extension",
+          "directory": "packages/app-extension",
           "artifact": "dist/local-app/local-app-shell.js"
         },
         {

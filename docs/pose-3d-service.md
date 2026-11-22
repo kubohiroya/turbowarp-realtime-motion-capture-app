@@ -41,7 +41,7 @@ TurboWarp拡張`realtimemotioncapturepose3dservice`として埋め込まれ、�
 
 ## fusion app
 
-フラグ`external3dServiceV1`（`packages/app-shell/src/apps/fusion.ts`の`appFlags`）が有効なときだけ、
+フラグ`external3dServiceV1`（`packages/app-extension/src/apps/fusion.ts`の`appFlags`）が有効なときだけ、
 メニューに「3D統合を開始する」「3D統合を止める」が出ます。アプリが要求する実装は`fusion-v0`です。
 実機で測るまでは既定で無効のままにしています。
 

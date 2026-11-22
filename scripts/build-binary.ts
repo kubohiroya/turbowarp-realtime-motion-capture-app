@@ -1,4 +1,4 @@
-import { servedPoseModelFiles } from '../packages/app-shell/pose-model-files.ts';
+import { servedPoseModelFiles } from '../packages/app-extension/pose-model-files.ts';
 import { execFile } from 'node:child_process';
 import { access, writeFile } from 'node:fs/promises';
 import { promisify } from 'node:util';

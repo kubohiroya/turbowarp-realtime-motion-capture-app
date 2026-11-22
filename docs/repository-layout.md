@@ -30,7 +30,7 @@ apps/
     release.json
     dist/local-app.sb3（ignore）
 packages/
-  app-shell/            アプリ所有のTurboWarp拡張（feature flagと画面）
+  app-extension/        アプリ所有のTurboWarp拡張（feature flagと画面）
   local-host/           ローカルホストの部品（[ローカルホスト](local-host.md)）
   pose-3d-service/      3Dサービスのinterfaceと実装（[3Dサービス](pose-3d-service.md)）
   sb3-script/           SB3のblock列を組み立てる
@@ -63,7 +63,7 @@ scripts/                     TypeScriptで書き、`node scripts/<name>.ts`で�
 | `assets/`                  | costume、soundなどのproject asset                                                    |
 | `extensions/`              | 固定した拡張bundleとAPI manifest。生成される                                         |
 
-`extensions/*.js`はcommitしません。`node_modules`の固定versionと`packages/app-shell`のビルド出力から
+`extensions/*.js`はcommitしません。`node_modules`の固定versionと`packages/app-extension`のビルド出力から
 再生成でき、合計27 MBに達するためです。代わりに、その`.js`のSHA-256を`embedded-extensions.json`が、
 block APIを`extensions/*.manifest.json`が記録し、どちらもcommitします。つまりreviewできる形で
 固定されたまま、リポジトリには大きなbundleが入りません。
@@ -112,7 +112,7 @@ pnpm dev
 個別にも検証・ビルドできます。
 
 ```bash
-pnpm --filter @turbowarp-realtime-motion-capture-app/app-shell check
+pnpm --filter @turbowarp-realtime-motion-capture-app/app-extension check
 pnpm --filter @turbowarp-realtime-motion-capture-app/camera-app check
 pnpm --filter @turbowarp-realtime-motion-capture-app/camera-app build
 ```
@@ -123,13 +123,13 @@ SHA-256の変化がソース変更に対応していることをreviewします�
 
 ## アプリシェル拡張
 
-`packages/app-shell`はcamera app用、fusion app用、local app用の3つのTurboWarp拡張bundleをビルドします。
+`packages/app-extension`はcamera app用、fusion app用、local app用の3つのTurboWarp拡張bundleをビルドします。
 
 ```bash
-pnpm --filter @turbowarp-realtime-motion-capture-app/app-shell build
-# packages/app-shell/dist/camera-app/camera-app-shell.js
-# packages/app-shell/dist/fusion-app/fusion-app-shell.js
-# packages/app-shell/dist/local-app/local-app-shell.js
+pnpm --filter @turbowarp-realtime-motion-capture-app/app-extension build
+# packages/app-extension/dist/camera-app/camera-app-shell.js
+# packages/app-extension/dist/fusion-app/fusion-app-shell.js
+# packages/app-extension/dist/local-app/local-app-shell.js
 ```
 
 このシェルが持つのは、feature flagの注入と、読み込み・エラーのoverlayだけです。タイトル画面、
@@ -145,7 +145,7 @@ memberとして入ります。
 flagの適用結果は実行時にも`feature flag state`reporterで確認できます。`applied`以外なら、
 bundleの並び順が壊れています。
 
-有効にするflagは`packages/app-shell/src/apps/`で宣言します。機能を切り戻すときはここからflagを
+有効にするflagは`packages/app-extension/src/apps/`で宣言します。機能を切り戻すときはここからflagを
 外して再ビルドし、`pnpm run pin:extensions`で埋め込み直します。アプリメニューの項目はSB3側で
 `add app menu action`により登録するので、ここには書きません。
 

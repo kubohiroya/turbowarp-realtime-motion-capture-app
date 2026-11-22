@@ -67,7 +67,7 @@ for (const requirement of requirements.extensions) {
   const javascript = await readFile(new URL(pin.path, sourceDirectory));
   const manifest = await readJson<ExtensionManifest>(
     new URL(
-      `apps/${pin.app}/node_modules/${requirement.package}/${requirement.manifestPath}`,
+      `node_modules/${requirement.package}/${requirement.manifestPath}`,
       repositoryRoot,
     ),
   );

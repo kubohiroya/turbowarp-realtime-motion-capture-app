@@ -9,7 +9,7 @@
  *   pnpm run serve:app -- camera-app
  */
 
-import { servedPoseModelFiles } from '../packages/app-shell/pose-model-files.ts';
+import { servedPoseModelFiles } from '../packages/app-extension/pose-model-files.ts';
 import { readFile } from 'node:fs/promises';
 
 import { runLocalHostCli } from '../packages/local-host/src/cli.ts';

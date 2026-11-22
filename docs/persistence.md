@@ -118,7 +118,7 @@ camera appは、カメラが動き始めた直後にレンズ校正を確かめ�
 標準の部分はROSやOpenCV系のツールもそのまま読み、ROSに置き場の無い校正日時・撮影条件・品質は
 `turbowarp_camera_source`の項目に入ります。TurboWarpはリストの書き出しを`profile.txt`として保存するので、
 ファイル選択は`.txt`／`.yaml`／`.yml`／`.json`を受け付けます。形式の判別はcamera-sourceがテキストから行います。
-`packages/app-shell/tests/lens-calibration-file.test.ts`は、校正アプリの契約fixtureを、camera appが埋め込む
+`packages/app-extension/tests/lens-calibration-file.test.ts`は、校正アプリの契約fixtureを、camera appが埋め込む
 camera-sourceのバンドルに、この入口と同じ順序で読ませて確かめます。
 
 同じoriginであることが前提です。turbowarp.orgやファイルで開いたSB3には校正アプリが並んでいないため、
@@ -141,7 +141,7 @@ IndexedDBの読み書きblockはどの拡張も持っていません。選択肢
 
 1. 汎用のstorage拡張を新設する。リポジトリ境界の原則（単一拡張で表現できる操作はgeneric extensionへ）
    に沿う。
-2. 当面はこのリポジトリが所有する`@turbowarp-realtime-motion-capture-app/app-shell`拡張に置き、2つ目のアプリが必要とした
+2. 当面はこのリポジトリが所有する`@turbowarp-realtime-motion-capture-app/app-extension`拡張に置き、2つ目のアプリが必要とした
    時点で汎用拡張へ昇格する。
 
 2から始めて1へ移すのが現実的です。app shellはすでに各SB3のbundleに入っており、ブラウザAPIを
