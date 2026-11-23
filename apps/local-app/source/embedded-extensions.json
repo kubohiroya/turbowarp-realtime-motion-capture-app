@@ -77,9 +77,9 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-yaml-json",
-        "version": "0.12.0",
+        "version": "0.12.1",
         "artifact": "dist/turbowarp-yaml-json.js",
-        "integrity": "sha256-KxSe2QGHjw+cYpHEwWOyg1T79a6USmWJY6T6EEdVV5U=",
+        "integrity": "sha256-N/aPkErWJ0LcLIyY0LW/CcyvyqXEliFgrQGAVzekymI=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyayamljson.manifest.json",
