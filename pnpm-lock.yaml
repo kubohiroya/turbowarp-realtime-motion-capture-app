@@ -52,8 +52,8 @@ importers:
         specifier: 0.7.0
         version: 0.7.0(@kubohiroya/turbowarp-camera-source@0.25.0)(@kubohiroya/turbowarp-webrtc@0.9.0)(@kubohiroya/turbowarp-zxing@0.11.0(@kubohiroya/turbowarp-camera-source@0.25.0)(@types/emscripten@1.41.6))
       '@kubohiroya/turbowarp-yaml-json':
-        specifier: 0.12.0
-        version: 0.12.0
+        specifier: 0.12.1
+        version: 0.12.1
       '@kubohiroya/turbowarp-zxing':
         specifier: 0.11.0
         version: 0.11.0(@kubohiroya/turbowarp-camera-source@0.25.0)(@types/emscripten@1.41.6)
@@ -260,8 +260,8 @@ packages:
     resolution: {integrity: sha512-YKQLdF6KJtLc44EzDrcf4XAJ9J+hFRq4m10ibkwXXOOXQKT3pxVY2G3kQjzarEgrx7/Ox/gHU7fghAE5fa+g0g==}
     engines: {node: '>=24'}
 
-  '@kubohiroya/turbowarp-document-source@0.4.0':
-    resolution: {integrity: sha512-rHcgB6YLMPsXTp39wrEkZboRtYMfjCeJ4qcOSJu5Ns2PblUxHPXcOGnMdV9SM/cCKRSg/7FlJg3XsXlNKH27aQ==}
+  '@kubohiroya/turbowarp-document-source@0.4.1':
+    resolution: {integrity: sha512-j8j8EVwJOLMVZ6ngRunNlDEGwifcGcSUiDLGffGrYrigVHF7zQr6hYTtmz4JyB3sno4SiLIdXnXREJ4FkHl8mw==}
     engines: {node: '>=22'}
 
   '@kubohiroya/turbowarp-extension-data-editor@0.11.2':
@@ -330,8 +330,8 @@ packages:
     resolution: {integrity: sha512-VVJ4CJReFXFZOnrj5sBENpsL6b6B2BvhRCllNHYTEIV0fs0PU1WHJ5BXJWSmMfwDxXGD4mrHeDe2DL0XAHCpLw==}
     engines: {node: '>=24'}
 
-  '@kubohiroya/turbowarp-yaml-json@0.12.0':
-    resolution: {integrity: sha512-b6P738qftuibtV61fPQBr2abjtlfIlKSlKyIPHnKotT8ZAimTspuaxkM1NFoiBBivI0EHMsrkh2p+/LU5UVeow==}
+  '@kubohiroya/turbowarp-yaml-json@0.12.1':
+    resolution: {integrity: sha512-YJtas6zJ5SCpwzSLWPaHNCqjncHfytDnNf514fOS4Gogu1HTzasIIrg1ExlUAZAXS4/HhZCWoJr5AU7wWc3DsA==}
     engines: {node: '>=24'}
 
   '@kubohiroya/turbowarp-zxing@0.11.0':
@@ -1941,7 +1941,7 @@ snapshots:
       - react
       - react-dom
 
-  '@kubohiroya/turbowarp-document-source@0.4.0': {}
+  '@kubohiroya/turbowarp-document-source@0.4.1': {}
 
   '@kubohiroya/turbowarp-extension-data-editor@0.11.2(react@18.3.1)':
     dependencies:
@@ -2009,9 +2009,9 @@ snapshots:
 
   '@kubohiroya/turbowarp-webrtc@0.9.0': {}
 
-  '@kubohiroya/turbowarp-yaml-json@0.12.0':
+  '@kubohiroya/turbowarp-yaml-json@0.12.1':
     dependencies:
-      '@kubohiroya/turbowarp-document-source': 0.4.0
+      '@kubohiroya/turbowarp-document-source': 0.4.1
       ajv: 8.20.0
       jsonc-parser: 3.3.1
       yaml: 2.9.1
