@@ -22,8 +22,8 @@ importers:
         specifier: ^0.28.0
         version: 0.28.0(supports-color@7.2.0)
       '@kubohiroya/turbowarp-aframe':
-        specifier: 0.14.1
-        version: 0.14.1(react@18.3.1)
+        specifier: 0.14.2
+        version: 0.14.2(react@18.3.1)
       '@kubohiroya/turbowarp-asset-cache':
         specifier: 0.10.1
         version: 0.10.1(@kubohiroya/turbowarp-named-data@0.9.0)
@@ -31,14 +31,14 @@ importers:
         specifier: 0.25.1
         version: 0.25.1
       '@kubohiroya/turbowarp-diagnostic-overlay':
-        specifier: 0.11.1
-        version: 0.11.1(react@18.3.1)
+        specifier: 0.11.2
+        version: 0.11.2(react@18.3.1)
       '@kubohiroya/turbowarp-local-preview':
         specifier: 0.3.0
         version: 0.3.0
       '@kubohiroya/turbowarp-realtime-motion-capture':
         specifier: 0.13.1
-        version: 0.13.1(@kubohiroya/turbowarp-aframe@0.14.1(react@18.3.1))(@kubohiroya/turbowarp-webrtc@0.9.1)(@kubohiroya/turbowarp-zxing@0.11.1(@kubohiroya/turbowarp-camera-source@0.25.1)(@types/emscripten@1.41.6))(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))(react@18.3.1)
+        version: 0.13.1(@kubohiroya/turbowarp-aframe@0.14.2(react@18.3.1))(@kubohiroya/turbowarp-webrtc@0.9.1)(@kubohiroya/turbowarp-zxing@0.11.1(@kubohiroya/turbowarp-camera-source@0.25.1)(@types/emscripten@1.41.6))(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))(react@18.3.1)
       '@kubohiroya/turbowarp-time-space-sync':
         specifier: 0.8.1
         version: 0.8.1(react@18.3.1)
@@ -238,8 +238,8 @@ packages:
     engines: {node: '>=24'}
     hasBin: true
 
-  '@kubohiroya/turbowarp-aframe@0.14.1':
-    resolution: {integrity: sha512-oBOESZj0b81I51rQb/ByiPlxvSDJIM5LOfXWtZtP3d6mrl1CCIjSRJqhfa6jjU6QTM/JV3bBqXfMm1zaEU4BCw==}
+  '@kubohiroya/turbowarp-aframe@0.14.2':
+    resolution: {integrity: sha512-XB/8mAd+Q4ZFMje1bHmM6T2oX6CfAQ7hX+5K0kx6frOir3TEJ9JHfFrULc7ncED4/Hpo/UAUYa1wkKHOcm0d3Q==}
     engines: {node: '>=24'}
 
   '@kubohiroya/turbowarp-app-shell@0.6.1':
@@ -256,8 +256,8 @@ packages:
     resolution: {integrity: sha512-MTAWn6wyuUf+YIkMotyQUPsUUZi/ps/Tas/H3579OYfctS9tSAOqwL6yH/nGZV233Tlcr+GmQnqkqKe7nuL3/w==}
     engines: {node: '>=24'}
 
-  '@kubohiroya/turbowarp-diagnostic-overlay@0.11.1':
-    resolution: {integrity: sha512-WOPrQ6kWYnvX2p8jxgxsZoGaVwc+dWPe+y6UWvWyj6Yq47gnVBfIxokeECmCiTGSCpa5KiGSBpg+ISb+BeTcpg==}
+  '@kubohiroya/turbowarp-diagnostic-overlay@0.11.2':
+    resolution: {integrity: sha512-Nk/2lGMehIZoJSwsMDsagP2E2fE/xz1ZfI/StMTW8dKVLPzhiJ3puEavPCzy9qCtWoq34tjIv2J6wS24FJP3sQ==}
     engines: {node: '>=24'}
 
   '@kubohiroya/turbowarp-document-source@0.4.1':
@@ -266,6 +266,18 @@ packages:
 
   '@kubohiroya/turbowarp-extension-data-editor@0.11.4':
     resolution: {integrity: sha512-kERbN1zFSoSUPwuZBgW3Ia7R6KHZ3B5MwDDomtVtIOr5QtjHx3NYMmxGE++w46KlkMWZvHFnneND7siFeNLQFw==}
+    engines: {node: '>=24'}
+    peerDependencies:
+      react: ^16.14.0 || ^17 || ^18
+      react-dom: ^16.14.0 || ^17 || ^18
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
+  '@kubohiroya/turbowarp-extension-data-editor@0.11.5':
+    resolution: {integrity: sha512-2lrj3S7axeOFdXClt8f1kJne2LxmZHPXISEumLEztWIvZM4JYhkmoHUSyYT0QxCX+2CkTU+i775Ft1dc4JTzRg==}
     engines: {node: '>=24'}
     peerDependencies:
       react: ^16.14.0 || ^17 || ^18
@@ -1919,9 +1931,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@kubohiroya/turbowarp-aframe@0.14.1(react@18.3.1)':
+  '@kubohiroya/turbowarp-aframe@0.14.2(react@18.3.1)':
     dependencies:
-      '@kubohiroya/turbowarp-extension-data-editor': 0.11.4(react@18.3.1)
+      '@kubohiroya/turbowarp-extension-data-editor': 0.11.5(react@18.3.1)
     transitivePeerDependencies:
       - react
       - react-dom
@@ -1934,9 +1946,9 @@ snapshots:
 
   '@kubohiroya/turbowarp-camera-source@0.25.1': {}
 
-  '@kubohiroya/turbowarp-diagnostic-overlay@0.11.1(react@18.3.1)':
+  '@kubohiroya/turbowarp-diagnostic-overlay@0.11.2(react@18.3.1)':
     dependencies:
-      '@kubohiroya/turbowarp-extension-data-editor': 0.11.4(react@18.3.1)
+      '@kubohiroya/turbowarp-extension-data-editor': 0.11.5(react@18.3.1)
     transitivePeerDependencies:
       - react
       - react-dom
@@ -1955,13 +1967,25 @@ snapshots:
     optionalDependencies:
       react: 18.3.1
 
+  '@kubohiroya/turbowarp-extension-data-editor@0.11.5(react@18.3.1)':
+    dependencies:
+      '@rjsf/core': 5.24.13(@rjsf/utils@5.24.13(react@18.3.1))(react@18.3.1)
+      '@rjsf/utils': 5.24.13(react@18.3.1)
+      '@rjsf/validator-ajv8': 5.24.13(@rjsf/utils@5.24.13(react@18.3.1))
+      ajv: 8.20.0
+      ajv-formats: 3.0.1
+      fast-uri: 4.2.3
+      yaml: 2.9.1
+    optionalDependencies:
+      react: 18.3.1
+
   '@kubohiroya/turbowarp-extension-loader@0.13.1': {}
 
   '@kubohiroya/turbowarp-local-preview@0.3.0': {}
 
   '@kubohiroya/turbowarp-named-data@0.9.0': {}
 
-  '@kubohiroya/turbowarp-realtime-motion-capture@0.13.1(@kubohiroya/turbowarp-aframe@0.14.1(react@18.3.1))(@kubohiroya/turbowarp-webrtc@0.9.1)(@kubohiroya/turbowarp-zxing@0.11.1(@kubohiroya/turbowarp-camera-source@0.25.1)(@types/emscripten@1.41.6))(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))(react@18.3.1)':
+  '@kubohiroya/turbowarp-realtime-motion-capture@0.13.1(@kubohiroya/turbowarp-aframe@0.14.2(react@18.3.1))(@kubohiroya/turbowarp-webrtc@0.9.1)(@kubohiroya/turbowarp-zxing@0.11.1(@kubohiroya/turbowarp-camera-source@0.25.1)(@types/emscripten@1.41.6))(@mediapipe/pose@0.5.1675469404)(@tensorflow/tfjs-backend-wasm@4.22.0(@tensorflow/tfjs-core@4.22.0))(@tensorflow/tfjs-backend-webgl@4.22.0(@tensorflow/tfjs-core@4.22.0))(react@18.3.1)':
     dependencies:
       '@kubohiroya/turbowarp-camera-source': 0.25.1
       '@kubohiroya/turbowarp-extension-data-editor': 0.11.4(react@18.3.1)
@@ -1975,7 +1999,7 @@ snapshots:
       kalidokit: 1.1.5
       qrcode: 1.5.4
     optionalDependencies:
-      '@kubohiroya/turbowarp-aframe': 0.14.1(react@18.3.1)
+      '@kubohiroya/turbowarp-aframe': 0.14.2(react@18.3.1)
       '@kubohiroya/turbowarp-webrtc': 0.9.1
       '@kubohiroya/turbowarp-zxing': 0.11.1(@kubohiroya/turbowarp-camera-source@0.25.1)(@types/emscripten@1.41.6)
     transitivePeerDependencies:
