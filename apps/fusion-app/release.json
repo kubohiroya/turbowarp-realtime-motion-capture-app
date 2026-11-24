@@ -1,7 +1,7 @@
 {
   "formatVersion": 1,
   "state": "candidate",
-  "sourceIdentity": "sha256:1a7bf45f38531c23a7a82601bf294294d5ec5db46106aa66dff312df56833743",
+  "sourceIdentity": "sha256:9b901b43ed196f7d435bb18ff1d978a45509d18ed62d85b51e41dbc23e609fa3",
   "artifact": {
     "filename": "fusion-app.sb3",
     "sha256": "e0fbdec64ec6ca05f65c6618082b49965316c7491b63b2882a2ba2c5bcd68581",
