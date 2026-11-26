@@ -1,6 +1,6 @@
 {
   "name": "@kubohiroya/turbowarp-realtime-motion-capture-app",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "private": false,
   "description": "Reproducible source workspace for the TurboWarp Realtime Motion Capture camera and fusion apps.",
   "license": "MPL-2.0",
@@ -102,7 +102,7 @@
     "@kubohiroya/turbowarp-local-preview": "0.3.0",
     "@kubohiroya/turbowarp-realtime-motion-capture": "0.13.2",
     "@kubohiroya/turbowarp-time-space-sync": "0.8.2",
-    "@kubohiroya/turbowarp-title-menu": "0.8.1",
+    "@kubohiroya/turbowarp-title-menu": "0.8.2",
     "@kubohiroya/turbowarp-webrtc": "0.9.1",
     "@kubohiroya/turbowarp-webrtc-qrcode-pairing": "0.7.1",
     "@kubohiroya/turbowarp-yaml-json": "0.12.2",
