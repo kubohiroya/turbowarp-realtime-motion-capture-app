@@ -43,8 +43,8 @@ importers:
         specifier: 0.8.2
         version: 0.8.2(react@18.3.1)
       '@kubohiroya/turbowarp-title-menu':
-        specifier: 0.8.1
-        version: 0.8.1
+        specifier: 0.8.2
+        version: 0.8.2
       '@kubohiroya/turbowarp-webrtc':
         specifier: 0.9.1
         version: 0.9.1
@@ -288,8 +288,8 @@ packages:
       react-dom:
         optional: true
 
-  '@kubohiroya/turbowarp-extension-loader@0.13.1':
-    resolution: {integrity: sha512-yCp+965xm+CzoyCNxqZgK/0139mghR+ycMUAh3RzORxVavKidK6fW81WWCKLgK+F/UlwZzL5bCB9CVmIk+WFeg==}
+  '@kubohiroya/turbowarp-extension-loader@0.16.1':
+    resolution: {integrity: sha512-jDrbc+QDRor1fxOg9CtQde7M9qOltxJj+RsS+mCK0awUWmTTPB2zxExVQaOC/jx7xbkiGGQsC+cQ+ngAjTPKnw==}
     engines: {node: '>=26'}
 
   '@kubohiroya/turbowarp-extension-manifest@0.8.0':
@@ -323,8 +323,8 @@ packages:
     resolution: {integrity: sha512-4qKUEBolteycPw8dJG3jg88fnYJ7ro2/rip0dUnmvrRLhU6r8tAsBH0Or0Y+QnCFQq/DTV+9+9lpYj7aUXecBA==}
     engines: {node: '>=24'}
 
-  '@kubohiroya/turbowarp-title-menu@0.8.1':
-    resolution: {integrity: sha512-fRoH36jdv39aEfO6eIb9w8S1QC6WYKEHHpk0eHl7WprRSyuL7JpBDxBIUY0SlxqIWNc+IiBxLqwofbG70NCv/Q==}
+  '@kubohiroya/turbowarp-title-menu@0.8.2':
+    resolution: {integrity: sha512-lQC7YTp50iZpdjV3mAPCPqYrydAvrlLuo8qwa2Loe4zGeGXUSRbz9+bWb0ixVvOw8B3nTEdL98BsudiSmpYR3g==}
     engines: {node: '>=24'}
 
   '@kubohiroya/turbowarp-webrtc-qrcode-pairing@0.7.1':
@@ -2012,7 +2012,7 @@ snapshots:
     optionalDependencies:
       react: 18.3.1
 
-  '@kubohiroya/turbowarp-extension-loader@0.13.1': {}
+  '@kubohiroya/turbowarp-extension-loader@0.16.1': {}
 
   '@kubohiroya/turbowarp-extension-manifest@0.8.0': {}
 
@@ -2053,10 +2053,10 @@ snapshots:
       - react
       - react-dom
 
-  '@kubohiroya/turbowarp-title-menu@0.8.1':
+  '@kubohiroya/turbowarp-title-menu@0.8.2':
     dependencies:
       '@kubohiroya/turbowarp-app-shell': 0.6.1
-      '@kubohiroya/turbowarp-extension-loader': 0.13.1
+      '@kubohiroya/turbowarp-extension-loader': 0.16.1
 
   '@kubohiroya/turbowarp-webrtc-qrcode-pairing@0.7.1(@kubohiroya/turbowarp-camera-source@0.25.1)(@kubohiroya/turbowarp-webrtc@0.9.1)(@kubohiroya/turbowarp-zxing@0.11.1(@kubohiroya/turbowarp-camera-source@0.25.1)(@types/emscripten@1.41.6))':
     dependencies:
