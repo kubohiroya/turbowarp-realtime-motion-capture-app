@@ -57,7 +57,7 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-time-space-sync",
-        "version": "0.8.1",
+        "version": "0.8.2",
         "artifact": "dist/time-space-sync.js",
         "integrity": "sha256-qMTc4x/Qc6kQhVSCmsBWWXPnYAvViPz2iE4FgYCbLD4=",
         "apiManifest": {
@@ -97,7 +97,7 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-realtime-motion-capture",
-        "version": "0.13.1",
+        "version": "0.13.2",
         "artifact": "dist/turbowarp-realtime-motion-capture.js",
         "integrity": "sha256-ZT7njoB7UngSc1HbP7lCQ82U7Fz981Vq+8AULFwzR2M=",
         "apiManifest": {
