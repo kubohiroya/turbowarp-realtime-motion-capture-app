@@ -17,9 +17,9 @@
       "source": {
         "provider": "npm",
         "package": "@kubohiroya/turbowarp-title-menu",
-        "version": "0.8.2",
+        "version": "0.8.3",
         "artifact": "dist/turbowarp-title-menu.js",
-        "integrity": "sha256-Xr4DFt3+EtjyFU2xaWm5WnUC0OIA49TLXWe4WeML8uk=",
+        "integrity": "sha256-3h/tVLHSWcz1qXWLHJBkztpC0AUtlguHctrFba9oRDU=",
         "apiManifest": {
           "artifact": "dist/extension-manifest.json",
           "path": "extensions/kubohiroyaturbowarptitlemenu.manifest.json",
