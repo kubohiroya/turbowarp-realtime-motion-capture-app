@@ -107,15 +107,15 @@
     "@kubohiroya/turbowarp-webrtc-qrcode-pairing": "0.7.1",
     "@kubohiroya/turbowarp-yaml-json": "0.12.2",
     "@kubohiroya/vite-plugin-turbowarp-extension": "0.12.0",
-    "@turbowarp/packager": "3.13.0",
-    "@types/node": "24.13.3",
+    "@turbowarp/packager": "3.14.0",
+    "@types/node": "24.19.4",
     "eslint": "9.39.5",
-    "prettier": "3.9.6",
+    "prettier": "3.10.1",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.66.0",
-    "vite": "8.2.2",
-    "vitest": "5.0.0",
-    "zxing-wasm": "3.1.4"
+    "typescript-eslint": "8.74.0",
+    "vite": "8.4.0",
+    "vitest": "5.1.2",
+    "zxing-wasm": "3.1.8"
   },
   "dependencies": {
     "@kubohiroya/turbowarp-app-shell": "^0.6.1"

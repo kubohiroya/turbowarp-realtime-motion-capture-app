@@ -24,5 +24,6 @@ minimumReleaseAgeExclude:
   - '@kubohiroya/turbowarp-extension-loader@0.13.0 || 0.13.1 || 0.16.2'
   - '@kubohiroya/turbowarp-document-source@0.4.1'
   - '@kubohiroya/turbowarp-plus-editor-test@0.4.0'
+  - vite@8.4.0
 
 onlyBuiltDependencies: []
